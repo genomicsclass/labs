@@ -21,3 +21,4 @@ getMethod("method","class") # prints source code for methods
 showMethods(classes="class") # show all methods for class
 ```
 
+

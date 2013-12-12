@@ -1,0 +1,15 @@
+# Exploratory Data Analysis
+
+Lorem ipsum
+
+```{r}
+x <- list(a=rnorm(100),b=rnorm(100),c=rnorm(100))
+str(x)
+```
+
+Lorem ipsum
+
+```{r}
+boxplot(x)
+```
+
