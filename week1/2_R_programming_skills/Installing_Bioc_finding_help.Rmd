@@ -4,14 +4,14 @@
 
 Installing Bioconductor from the R command line takes only two lines:
 
-```{r}
+```{r, eval=FALSE}
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 ```
 
 ## Finding help
 
-```{r}
+```{r, eval=FALSE}
 ?functionName
 ?"eSet-class"  # classes need the '-class' on the end
 vignette("topic")
