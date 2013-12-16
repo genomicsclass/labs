@@ -1,13 +1,13 @@
 # Exploratory Data Analysis
 
-In this document, we will review the meaning and how to generata some core plots for exploring data: boxplots, scatterplots, histograms and stripplots.
+In this document, we will review the meaning and how to generate some key plots for exploring data: boxplots, scatterplots, histograms and stripplots.
 
 ## Download and load a microarray expression set
 
 ```{r, message=FALSE}
 if (!"maPooling" %in% installed.packages()) {
   if (!"devtools" %in% installed.packages()) {
-    install("devtools")
+    install.packages("devtools")
     }
   library("devtools")
   install_github("maPooling","mikelove")
