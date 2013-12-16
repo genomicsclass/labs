@@ -188,10 +188,12 @@ hljs.initHighlightingOnLoad();
 biocLite()
 </code></pre>
 
-<p>This will install the core Bioconductor packages. Further packages can be installed using the <code>biocLite</code> function and specifying a character vector of which packages to install. For example:</p>
+<p>This will install the core Bioconductor packages. Further packages can be installed using the <code>biocLite</code> function and specifying a character vector of which packages to install. For example, to install the &ldquo;affy&rdquo; and &ldquo;genefilter&rdquo; libraries you would type:</p>
 
 <pre><code class="r">biocLite(c(&quot;affy&quot;, &quot;genefilter&quot;))
 </code></pre>
+
+<p>More information on installing and updating Bioconductor packages can be found at <a href="http://bioconductor.org/install/">http://bioconductor.org/install/</a>.</p>
 
 <h2>Finding help</h2>
 
@@ -214,7 +216,9 @@ biocLite()
 
 <h2>Vignettes</h2>
 
-<p>&ldquo;Vignettes&rdquo; are documents which accompany R packages and are required for every Bioconductor package. They typically show an example workflow of the functions of the package using code chunks with descriptive text, exactly as the document you are currently reading. You can find Bioconductor vignettes in PDF or R script form on the Bioconductor website, but they are even easier to access directly through R. Furthermore, accessing vignettes through R guarantees that the vignette is for the correct version of the package that you are using. The following code will list the names of the vignettes for a given package:</p>
+<p>&ldquo;Vignettes&rdquo; are documents which accompany R packages and are required for every Bioconductor package. They typically show an example workflow of the functions of the package using &ldquo;chunks&rdquo; of code with descriptive text, exactly as the document you are currently reading. </p>
+
+<p>You can find Bioconductor vignettes in PDF or R script form on the Bioconductor website, but they are even easier to access directly through R. Furthermore, accessing vignettes through R guarantees that the vignette is for the correct version of the package that you are using. The following code will list the names of the vignettes for a given package:</p>
 
 <pre><code class="r">library(&quot;Biobase&quot;)  # first load the package
 vignette(package = &quot;Biobase&quot;)
