@@ -25,20 +25,20 @@ There are many ways to find help directly from within R. Typically, every functi
 
 
 ```r
-`?`(median)
+?median
 ```
 
 
 Simply typing the name of the function, without parenthises, and hitting return will show the source code of the function.
 
-The manual page contains a *description*, example *usage*, explanation of all *arguments*, further *details*, explanation of the returned *value*, *references*, "*see also*", and *examples*.
+The manual page contains a **description**, example **usage**, explanation of all **arguments**, further **details**, explanation of the returned **value**, **references**, **see also** linking to other functions, and **examples**.
 
 If you have a question about a particular object in R, you might want to look up the help for the "class" of that object, which will tell you how to construct such an object and what methods are available for manipulating such objects. For example, we can find the name of the class of an object and look up help:
 
 
 ```r
 class(6)
-`?`(numeric)
+?numeric
 ```
 
 

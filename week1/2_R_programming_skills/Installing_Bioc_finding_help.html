@@ -197,17 +197,17 @@ biocLite()
 
 <p>There are many ways to find help directly from within R. Typically, every function will have its own manual page which is accessible by typing a question mark ?, followed by the function name and hitting return.</p>
 
-<pre><code class="r">`?`(median)
+<pre><code class="r">?median
 </code></pre>
 
 <p>Simply typing the name of the function, without parenthises, and hitting return will show the source code of the function.</p>
 
-<p>The manual page contains a <em>description</em>, example <em>usage</em>, explanation of all <em>arguments</em>, further <em>details</em>, explanation of the returned <em>value</em>, <em>references</em>, &ldquo;<em>see also</em>&rdquo;, and <em>examples</em>.</p>
+<p>The manual page contains a <strong>description</strong>, example <strong>usage</strong>, explanation of all <strong>arguments</strong>, further <strong>details</strong>, explanation of the returned <strong>value</strong>, <strong>references</strong>, <strong>see also</strong> linking to other functions, and <strong>examples</strong>.</p>
 
 <p>If you have a question about a particular object in R, you might want to look up the help for the &ldquo;class&rdquo; of that object, which will tell you how to construct such an object and what methods are available for manipulating such objects. For example, we can find the name of the class of an object and look up help:</p>
 
 <pre><code class="r">class(6)
-`?`(numeric)
+?numeric
 </code></pre>
 
 <p>Sometimes, it is necessary to put &ldquo;-class&rdquo; on the end of the class name and wrap the class name in quote marks, as in <code>?&quot;eSet-class&quot;</code>.</p>
