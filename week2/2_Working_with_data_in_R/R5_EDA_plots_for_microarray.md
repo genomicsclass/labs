@@ -3,6 +3,7 @@
 
 ```r
 shistogram <- function(z, unit) {
+    n <- length(z)
     h <- hist(z, breaks = seq(from = min(z) - unit, to = max(z) + unit, by = unit), 
         col = "grey")
     d <- density(z)

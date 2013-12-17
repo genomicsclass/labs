@@ -181,6 +181,7 @@ hljs.initHighlightingOnLoad();
 <h1>EDA plots for microarray</h1>
 
 <pre><code class="r">shistogram &lt;- function(z, unit) {
+    n &lt;- length(z)
     h &lt;- hist(z, breaks = seq(from = min(z) - unit, to = max(z) + unit, by = unit), 
         col = &quot;grey&quot;)
     d &lt;- density(z)
