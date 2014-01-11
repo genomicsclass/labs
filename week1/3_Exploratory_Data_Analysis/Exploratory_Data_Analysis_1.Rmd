@@ -2,7 +2,7 @@
 
 In this document, we will review the meaning and how to generate some key plots for exploring data: scatterplots, boxplots, histograms and stripplots.
 
-## Scatterplot
+## On parents and children
 
 ```{r}
 if (!"UsingR" %in% installed.packages()[,1]) install.packages("UsingR")
@@ -11,6 +11,26 @@ data("father.son")
 head(father.son)
 plot(father.son$fheight, father.son$sheight,
      main="Pearson's data set on heights\nof fathers and their sons")
+abline(0,1)
+```
+
+
+```{r}
+if (!"HistData" %in% installed.packages()[,1]) install.packages("HistData")
+library("HistData")
+data("PearsonLee")
+head(PearsonLee)
+maxfreq <- max(PearsonLee$freq)
+PearsonLee$weight <- PearsonLee$freq / maxfreq
+PearsonLee$col <- rgb(0,0,0,PearsonLee$weight)
+with(PearsonLee[PearsonLee$gp == "fs",],
+     plot(parent, child,
+     main="fathers and sons", pch=16, col=col))
+abline(0,1)
+with(PearsonLee[PearsonLee$gp == "md",],
+     plot(parent, child,
+     main="mothers and daughters", pch=16, col=col))
+abline(0,1)
 ```
 
 ## Download and load a microarray expression set
