@@ -1,9 +1,0 @@
-\documentclass{article}
-
-\begin{document}
-
-\section{test of math}
-
-$$ \sum_{i=1}^n \log(x_i) $$
-
-\end{document}
