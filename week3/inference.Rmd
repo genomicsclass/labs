@@ -63,7 +63,7 @@ women=sample(dat$Height[dat$Gender==0],10)
 ```
 Here is a quick plot
 ```{r}
-stripchart(list(women,men),vertical=TRUE)
+stripchart(list(women,men),vertical=TRUE,method="jitter")
 ```
 We want to know if the difference between the average heights are positive, negative, or practically 0.  The observed difference is a mere 3.3 inches. 
 ```{r}
@@ -105,8 +105,8 @@ As expected the p-value using the t-distribution is larger than the one obtained
 ```{r}
 mean(dat$Height[dat$Gender==1])-mean(dat$Height[dat$Gender==0])
 library(rafalib)
-shist(dat$Height[dat$Gender==1],plotHist=FALSE,lineCol=1,unit=1,xlim=range(dat$Height))
-shist(dat$Height[dat$Gender==0],plotHist=FALSE,lineCol=2,add=TRUE,unit=1)
+shist(dat$Height[dat$Gender==1],plotHist=FALSE,col=1,unit=1,xlim=range(dat$Height))
+shist(dat$Height[dat$Gender==0],plotHist=FALSE,col=2,add=TRUE,unit=1)
 ```
 
 Homework: is the distribution of dat$Gener approximated by normal, t or neither?
@@ -127,7 +127,11 @@ Note that the true difference is in fact included in the sample above
 We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
 
 ```{r}
+library(Biobase,quietly=TRUE,verbose=FALSE)
+library(genefilter)
 library(maPooling)
+data(maPooling)
+pd=pData(maPooling)
 pooled=which(rowSums(pd)==12)
 y2=exprs(maPooling[,pooled])
 group2=factor(as.numeric(grepl("b",names(pooled))))
@@ -153,12 +157,7 @@ But would these results hold up if we selected another 24 mice? Note that the eq
 
 It turns we also have microarray data for each individual mice. For each strain we have 12 _biological replicates_. 
 
-```{r, echo=FALSE}
-library(Biobase,quietly=TRUE,verbose=FALSE)
-library(genefilter)
-library(maPooling)
-data(maPooling)
-pd=pData(maPooling)
+```{r}
 individuals=which(rowSums(pd)==1)
 ##remove replicates
 individuals=individuals[-grep("tr",names(individuals))]
@@ -168,12 +167,11 @@ group=factor(as.numeric(grepl("b",names(individuals))))
 
 We can compute the sample variance for each gene and compare to the standard deviation obtained with the technical replicates.
 ```{r}
-technicalsd <- rowSds(y2[,group==0])
+technicalsd <- rowSds(y2[,group2==0])
 biologicalsd <- rowSds(y[,group==0])
 LIM=range(c(technicalsd,biologicalsd))
 mypar(1,1)
 boxplot(technicalsd,biologicalsd,names=c("technical","biological"),xlab="standard deviation")
-abline(0,1)
 ```
 
 Note the biological variance is much larger than the technical one. And also that the variability of variances is also for biological variance. Here are the two genes we showed above but now for each individual mouse 
