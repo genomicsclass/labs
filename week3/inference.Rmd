@@ -63,7 +63,9 @@ women=sample(dat$Height[dat$Gender==0],10)
 ```
 Here is a quick plot
 ```{r}
-stripchart(list(women,men),vertical=TRUE,method="jitter")
+library(rafalib)
+mypar()
+stripchart(list(women,men),vertical=TRUE,method="jitter",col=c(1,2),pch=15,group.names=c("women","men"))
 ```
 We want to know if the difference between the average heights are positive, negative, or practically 0.  The observed difference is a mere 3.3 inches. 
 ```{r}
@@ -77,7 +79,7 @@ The Central Limit Theorem (or CLT) is one of the most used mathematical results 
 
 This is imply that this ratio:
 $$
-\sqrt{N}\frac{\bar{Y}-\bar{X}}{\sqrt{\sigma_X^2 +\sigma_Y^2}}
+\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} +\frac{\sigma_Y^2}/{N}}
 $$
 is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under value. For example, only 5% values of larger than 2 (in absolute value):
 ```{r}
@@ -105,8 +107,9 @@ As expected the p-value using the t-distribution is larger than the one obtained
 ```{r}
 mean(dat$Height[dat$Gender==1])-mean(dat$Height[dat$Gender==0])
 library(rafalib)
-shist(dat$Height[dat$Gender==1],plotHist=FALSE,col=1,unit=1,xlim=range(dat$Height))
-shist(dat$Height[dat$Gender==0],plotHist=FALSE,col=2,add=TRUE,unit=1)
+plot(0,0,type="n",xlim=range(dat$Height),ylim=c(0,1750),xlab="Heights",ylab="Frequency")
+shist(dat$Height[dat$Gender==1],plotHist=FALSE,col=1,unit=1,add=TRUE)
+shist(dat$Height[dat$Gender==0],plotHist=FALSE,col=2,unit=1,add=TRUE)
 ```
 
 Homework: is the distribution of dat$Gener approximated by normal, t or neither?
@@ -144,7 +147,7 @@ i=11425;j=11878
 library(rafalib)
 mypar(1,2)
 stripchart(split(y2[i,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 1",xlab="Group",pch=15)
-stripchart(split(y2[j,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 2",ylab="Group",pch=15)
+stripchart(split(y2[j,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 2",xlab="Group",pch=15)
 ```
 Note that if we compute a t-test from these values we obtain highly significant results
 ```{r}
@@ -171,7 +174,7 @@ technicalsd <- rowSds(y2[,group2==0])
 biologicalsd <- rowSds(y[,group==0])
 LIM=range(c(technicalsd,biologicalsd))
 mypar(1,1)
-boxplot(technicalsd,biologicalsd,names=c("technical","biological"),xlab="standard deviation")
+boxplot(technicalsd,biologicalsd,names=c("technical","biological"),ylab="standard deviation")
 ```
 
 Note the biological variance is much larger than the technical one. And also that the variability of variances is also for biological variance. Here are the two genes we showed above but now for each individual mouse 
@@ -216,8 +219,8 @@ If we use the 0.05 cutoff we will be reporting 840 false postives. That's a lot!
 
 ```{r}
 mypar(1,2)
-hist(tt$p.value,main="p-values from experiment",freq=FALSE,ylim=c(0,4),col=3)
-hist(nullt$p.value,main="p-values from shuffled data",freq=FALSE,ylim=c(0,4),col=3)
+hist(tt$p.value,xlab="p-values",main="p-values from experiment",freq=FALSE,ylim=c(0,4),col=3)
+hist(nullt$p.value,xlab="p-values",main="p-values from shuffled data",freq=FALSE,ylim=c(0,4),col=3)
 ```
 
 ## Power
@@ -226,7 +229,7 @@ In practice it is quite common to have only three samples. When this is the case
 smallset <- c(1:3,13:15)
 smallsett <- rowttests(y[,smallset],group[smallset])
 mypar(1,1)
-plot(smallsett$dm,-log10(smallsett$p.value))
+plot(smallsett$dm,-log10(smallsett$p.value),xlab="Effect size",ylab="log -10 (p-value)")
 abline(h=-log10(0.01),lty=2)
 abline(v=c(-1,1)*log2(1.5),lty=2)
 ```
