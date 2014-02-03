@@ -1,0 +1,5 @@
+library(affy)
+fns <- list.celfiles(path="CEL",full=TRUE)
+CelData <- ReadAffy(filenames=fns,verbose=TRUE)
+dilution <- rma(CelData,verbose=TRUE)
+save(dilution, file="dilution.RData")
