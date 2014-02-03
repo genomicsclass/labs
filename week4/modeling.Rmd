@@ -23,3 +23,38 @@ $$
 \mbox{Pr}(S=k) = {N \choose k}p^k (1-p)^{N-k}
 $$
 with $p$ the probability of observing a head in out toss.
+
+## NGS experiments and the Poisson distribution
+
+```{r}
+library(parathyroidSE)
+data(parathyroidGenesSE)
+```
+
+This library contains SummarizedExperiment data, which will be discussed in a later lab. The important thing to know is that the SummarizedExperiment has a matrix of data, similar to the ExpressionSet, where each row is a genomic feature, and each column is a sample. For this dataset, the value in single cell in the matrix is count of reads which aligned to a given gene for a given sample.
+
+```{r}
+se <- parathyroidGenesSE
+as.data.frame(colData(se))
+```
+
+```{r}
+readsPerSamplePerMill <- round(colSums(assay(se))/1e6, 1)
+cbind(experiment=as.data.frame(colData(se))[,"experiment"], rpm=readsPerSamplePerMill)
+```
+
+```{r}
+x <- assay(se)[,23]
+y <- assay(se)[,24]
+plot(x,y,log="xy")
+abline(0,1,col="red")
+```
+
+```{r}
+sf <- c(1, sum(y)/sum(x))
+z <- cbind(x/sf[1], y/sf[2])
+rm <- rowMeans(z)
+rv <- (y - rm*sf[2])^2
+plot(rm, rv, log="xy", col=rgb(0,0,0,.2))
+abline(0,1,col="red")
+```
