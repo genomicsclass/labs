@@ -1,0 +1,25 @@
+# Modeling
+
+"All models are wrong, but some are useful" -George E. P. Box
+
+When we see a p-value in the literature it means a probability distribution of some sort was used to quatify the null hypothesis. Many times deciding which probability distribution to use a relatively straight forward. For example, in the tea tasting example. Many p-values in the scientific literature are based on sample averages, or least squares estimates from a linear model, and make use of the CLT to approximate the null distribution of their statistic as normal.
+
+The CLT is backed by theoretical results that guarantee that the approximation is accurate. However, we cannot always use this approximation, for example when our sample size is too small. In a previous module we described how the sample average can be approximated with t-distribution when the population data is approximately normal. Note that there is no theoretical backing for this assumption. We are now *modeling*. In the case of height, we know from experience that this turns out to be a very good model. 
+
+```{r}
+datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
+dat=read.csv(file.path(datadir,"USheights_subsample.csv"))
+men=dat$Height[dat$Gender==1]
+qqnorm(men)
+qqline(men)
+```
+
+But this doesn not imply that every dataset we collect will follow a normal distribtion. Example are: coin tosses, the numner of people who win the lottery, and US incomes.The normal is not the only parametric distribution that is available from modeling. Here we show we describe some useful parametric distribution and their use in genomics
+
+## The Poisson distribution
+
+A distribution that one should be familiar is the binomial distribution. It described the probability of the total number of observed heads $S=k$ heads when tossing N heads as
+$$
+\mbox{Pr}(S=k) = {N \choose k}p^k (1-p)^{N-k}
+$$
+with $p$ the probability of observing a head in out toss.
