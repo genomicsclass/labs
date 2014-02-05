@@ -25,7 +25,7 @@ $$
 
 with $p$ the probability of observing a head in one coin toss. Note that $S/N$ is the average of independent random variables and thus the CLT tells us that $S$ is approximately normal. This distribution is used by some of the variant callers and genotypers based on NGS to decide if the data is consistent 
 
-## The Poissin distribution
+## The Poisson distribution
 
 The number of people that win the lottery follows a binomial distribution (we assume each person buys one ticket). The number of "tosses" $N$ is the number of people that buy tickets and very large. However, the number of people that win the lottery oscilates between 0 and 3. So why does CLT not hold? One can explain this mathematically, but the intuition is that with most the average so close to and also constrained to be larger than 0, it is impossible for the distribution to be normal. Here is a quick simulation
 
@@ -76,26 +76,98 @@ se <- parathyroidGenesSE
 as.data.frame(colData(se))
 ```
 
-```{r}
-readsPerSamplePerMill <- round(colSums(assay(se))/1e6, 1)
-cbind(experiment=as.data.frame(colData(se))[,"experiment"], rpm=readsPerSamplePerMill)
-```
+A similar plot of technical replicates reveals that the behaviour predicted by the model is present in real data
 
 ```{r}
 x <- assay(se)[,23]
 y <- assay(se)[,24]
-plot(x,y,log="xy")
-abline(0,1,col="red")
+ind=which(y>0 & x>0)##make sure no 0s due to ratio and log
+plot((log2(x[ind])+log2(y[ind]))/2,log(x[ind]/y[ind]))
 ```
 
+When it comes to modeling, one limitation of the Poisson model is 
+that it lacks flexibility when it comes to scale. Note that the Poisson only has one parameter which determins its mean $\lambda$ which is also its variance (standard deviation squared).
+
+If we compute the standard deviations across four individuals it is quite a bit higher than what is predicted by a poisson model. Assuming most genes are differentially expressed across individuals, then if the Poisson model is appropriate their should be a linear relationship in this plot:
+
 ```{r}
-sf <- c(1, sum(y)/sum(x))
-z <- cbind(x/sf[1], y/sf[2])
-rm <- rowMeans(z)
-rv <- (y - rm*sf[2])^2
-plot(rm, rv, log="xy", col=rgb(0,0,0,.2))
-abline(0,1,col="red")
+library(rafalib)
+library(matrixStats)
+vars=rowVars(assay(se)[,c(2,8,16,21)]) ##we now these four are 4
+means=rowMeans(assay(se)[,c(2,8,16,21)]) ##different individulsa
+splot(means,vars,log="xy") ##plot a subset of data
+abline(0,1,col=red)
 ```
+Note that the variability plotted here includes biological variability which the motivation for the Poisson does not include. In a later module we learn about a the negative binomial distribution which combines the sampling variability of a Poisson and biological variability. The negative binomial permits has two parameters and permits more flexibility for count data. The Poisson is a special case of the negative bionomial distribution.
+
+## Distributions for positive continuos values
+
+In a previous module we learned that different genes vary differently accross biological replicates. In a latter module [advanced inference/differential expression] we will demonstrate that knowing this distribution can help improve downstream analysis. 
+
+So can we model the distribution of these standard errors? Are they normal? Note that we are modeling the population standard errors so CLT does not apply. Here are some exploratory plots of the sample standard errors
+
+```{r}
+library(maPooling)
+data(maPooling)
+pd=pData(maPooling)
+strain=factor(as.numeric(grepl("b",rownames(pd))))
+pooled=which(rowSums(pd)==12 & strain==1)
+techreps=exprs(maPooling[,pooled])
+individuals=which(rowSums(pd)==1 & strain==1)
+##remove replicates
+individuals=individuals[-grep("tr",names(individuals))]
+bioreps=exprs(maPooling)[,individuals]
+###now compute the gene specific standard deviations
+library(matrixStats)
+techsds=rowSds(techreps)
+biosds=rowSds(bioreps)
+###now plot
+library(rafalib)
+mypar()
+shist(biosds,unit=0.1,col=1,xlim=c(0,1.5))
+shist(techsds,unit=0.1,col=2,add=TRUE)
+```
+
+First notice that the normal distribution is not appropriate here since the right tail is rather large. Also, because SDs are strictly positive there is a limitation to how symmetric this distribution can be.
+A qqplot shows it very clearly
+```{r}
+qqnorm(biosds)
+qqline(biosds)
+```
+
+There are parametric distributions that posses these properties (striclty positive and _heavy_ right tails). Two example sarethe _gamma_ and _F_ distributions. The desnity of the gamma distribution is defined by 
+$$
+f(x;\alpha,\beta)=\frac{\beta^\alpha x^{\alpha-1}\exp{-\beta x}}{\Gamma(\alpha)}
+$$
+Itis defined by two parameters $\alpha$ and $\beta$ that can, indirectly, control location and scale. They also control the shape of the distribution. For more on this distribution please refer [CITE BOOKs]. 
+
+Two special cases of the gamma distribution are the chi-sqaured distribution, which we used earlier to analyze a 2x2 table and the exponential distribution which we will use later in this section. For chi-square we $\alpha=\nu/2$ and $\beta=2$ with $\nu$ the degrees of freedom. For exponential we have $\alpha=1$ and $\beta=\lambda$ the rate.
+
+The F-distribution comes up in analysis of variance (ANOVA). It is also always positive and has large right tails. Two parameters control it's shape:
+$$
+f(x,d_1,d_2)=\frac{1}{B\left( \frac{d1}{2},\frac{d2}{2}\right)}
+  \left(\frac{d_1}{d_2}\right)^{\frac{d_1}{2}}  
+  x^{\frac{d_1}{2}-1}\left(1+\frac{d1}{d2}x\right)^{-\frac{d_1+d_2}{2}}
+$$  
+with $B$ the _beta function_
+
+
+### Modeling precision
+
+In a later module we will learn about empirical bayes approaches to improve estimates of variance. In these cases it is mathematically convinient (see Bayesian book) to model the precision $1/\sigma^2$. We will model that with a 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
