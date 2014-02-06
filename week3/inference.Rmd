@@ -52,79 +52,82 @@ chisq.test(tab)$p.value
 ```
 
 ## The t-test
-Suppose we have never seen men and women before and are asked if the in a given population of 25,000 people, men are, on average, taller than women. Suppose we are charged $1000 for each measurement and are given a $50,000 prize if we answer correclty, how many men and women do we measure? Let's start with 10
+Suppose we are asked if new borns from smoking mothers weigh less than those from non-smoker mothers in a population of 1,236 babies. Suppose we are charged $1000 for each measurement and are given a $50,000 prize if we answer correclty, how many babies do we weigh? Let's start with 10
 
 ```{r}
-datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
-dat=read.csv(file.path(datadir,"USheights_subsample.csv"))
-set.seed(1)
-men=sample(dat$Height[dat$Gender==1],10)
-women=sample(dat$Height[dat$Gender==0],10)
+dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
+daset.seed(0)
+smokers=sample(dat$bwt[dat$smoke==1],10)
+nonsmokers=sample(dat$bwt[dat$smoke==0],10)
 ```
 Here is a quick plot
 ```{r}
 library(rafalib)
 mypar()
-stripchart(list(women,men),vertical=TRUE,method="jitter",col=c(1,2),pch=15,group.names=c("women","men"))
+stripchart(list(smokers,nonsmokers),vertical=TRUE,method="jitter",col=c(1,2),pch=15,group.names=c("smokers","nonsmokers"))
+cat("observed difference = ",mean(smokers)-mean(nonsmokers)," ounces")
 ```
-We want to know if the difference between the average heights are positive, negative, or practically 0.  The observed difference is a mere 3.3 inches. 
-```{r}
-mean(men)-mean(women)
-```
-Will this difference hold up if we take another sample? Remeber we have to pay for each measurement. 
+We want to know if the difference between the average weight are positive, negative, or practically 0.  The observed difference is a mere 12.2 ounces. Will this difference hold up if we take another sample? Remeber we have to pay for each measurement. 
 
 ### Central limit theorem
 
-The Central Limit Theorem (or CLT) is one of the most used mathematical results in science. It tells us that when the sample size is large the average of random a sample follows a normal distribution centered at the population average (what we want to know), call it $\mu$, and with standard deviation equal to the population standard deviation, call it $\sigma$, divded by the square root of the sample size. This implies that under the null hypothese that there is no difference between the population averages, the difference between the sample averages $\hat{Y}-\hat{X}$ with $\hat{X}$ and $\hat{Y}$ the sample average for women and men respectiveley, is approximated by a normal distribution centered at 0 (there is no difference) and with standard deviation $\sqrt{\sigma_X^2 +\sigma_Y^2}/\sqrt{N}$. To see that this is the standard devition you need to know that the varaince of the sum of two independent random varialbes is the sum of their variances and the standard deviation is the square root of the variance. 
+The Central Limit Theorem (or CLT) is one of the most used mathematical results in science. It tells us that when the sample size is large the average $\bar{X}$ of a random sample follows a normal distribution centered at the population average (what we want to know), call it $\mu$, and with standard deviation equal to the population standard deviation, call it $\sigma$, divided by the square root of the sample size $N$. This implies that if we take many samples of size $N$ then the quantity 
+$$
+\frac{\hat{X} - \mu}{\sigma/\sqrt{N}}
+$$
+is approximated with a nomral distribution centered at 0 and with standard deviation 1.
 
-This is imply that this ratio:
+This is very useful for the purposes of our study becase we have two sample averages and are interested in the difference. Becasue both are normal the difference is normal as well, and the variance (the standard deviation squared) is the sum of the two variance.
+Under the null hypothese that there is no difference between the population averages, the difference between the sample averages $\hat{Y}-\hat{X}$, with $\hat{X}$ and $\hat{Y}$ the sample average for smokers and non-smokers respectiveley, is approximated by a normal distribution centered at 0 (there is no difference) and with standard deviation $\sqrt{\sigma_X^2 +\sigma_Y^2}/\sqrt{N}$. 
+
+This is imply that this ratio, 
 $$
 \frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} +\frac{\sigma_Y^2}/{N}}
 $$
-is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under value. For example, only 5% values of larger than 2 (in absolute value):
+is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under any value. For example, only 5% values of larger than 2 (in absolute value):
 ```{r}
 1-pnorm(2)+pnorm(-2)
 ```
-So what is the p-value of our observed differences? Note that we can't compute the ratio above because we don't know the population standard deviations: $\sigma_X$ and $\sigma_Y$. If we use the sample standard deviations, call then $\hat{\sigma}_X$ and $\hat{\sigma}_Y$ we form what is refered to the t-test, a quantity we can actually compute:
+So what is the p-value of our observed differences? Note that we can't compute the ratio above because we don't know the population standard deviations: $\sigma_X$ and $\sigma_Y$. If we use the sample standard deviations, call then $s_X$ and $s_Y$ we form what is refered to the t-test, a quantity we can actually compute:
 $$
-\sqrt{N} \frac{\bar{Y}-\bar{X}}{\sqrt{\hat{\sigma}_X^2 +\hat{\sigma}_Y^2}}
+\sqrt{N} \frac{\bar{Y}-\bar{X}}{\sqrt{s_X^2 +s_Y^2}}
 $$
+
 It turns out that for large enough N, the t-statistic is approximated by a normal distribution centered at 0 and with standard deviation 1. Our t-test is certainly unlikely to occur:
 
 ```{r}
-ttest<-sqrt(length(men)*(mean(men)-mean(women))/sqrt((var(men)+var(women))))
+ttest<-sqrt(length(smokers))*(mean(smokers)-mean(nonsmokers))/sqrt((var(smokers)+var(nonsmokers)))
 ttest
-2*pnorm(-ttest)
+2*pnorm(ttest)
 ```
-But what is large enough? 30 is a rule a thumb and it implies our 10 is not enough. But for cases were the population values are normally distributed (like heights) the exact distribution can be derived and it is the t-distribution (where the t-statistic gets it's name). Not surprisingly the t-distribution has fatter tails (a bigged proportion of larger values) than the normal distribution since the standard deviation estimates add variability (the numerator is normal in this case). We can now obtain a p-value (we need to specify the _degrees of freedom_, which in the case of the sample ttest is the sum of the sample sizes minus 2.
+Giving us a p-valu eof 0.02. But for this p-value to be accurate we need the CLT approximation to hold. So is a sample size of 10 large enough? 30 is a rule a thumb and it implies our 10 is not enough. 
+
+### The t-distribution
+For cases were the population values are normally distributed (like weights) the exact distribution can be derived and it is the t-distribution (where the t-statistic gets it's name). Not surprisingly the t-distribution has fatter tails (a bigged proportion of larger values) than the normal distribution since the standard deviation estimates add variability (the numerator is normal in this case). We can now obtain a p-value (we need to specify the _degrees of freedom_, which in the case of the sample ttest is the sum of the sample sizes minus 2.
 ```{r}
 1-pt(ttest,20-2)+pt(-ttest,20-2)##or
-2*pt(-ttest,20-2)
+2*pt(ttest,20-2)
 ```
 
 As expected the p-value using the t-distribution is larger than the one obtained with the normal approximation which gives underestimates when N is small. Regardless, it seems the chance of observing a difference as large as what we saw under the null is pretty small. We should correctly predict that the average height of men is larger than the average height of women and also confirm that the distributions are approximately normal 
 
 ```{r}
-mean(dat$Height[dat$Gender==1])-mean(dat$Height[dat$Gender==0])
-library(rafalib)
-plot(0,0,type="n",xlim=range(dat$Height),ylim=c(0,1750),xlab="Heights",ylab="Frequency")
-shist(dat$Height[dat$Gender==1],plotHist=FALSE,col=1,unit=1,add=TRUE)
-shist(dat$Height[dat$Gender==0],plotHist=FALSE,col=2,unit=1,add=TRUE)
+mean(dat$bwt[dat$smoke==1])-mean(dat$bwt[dat$smoke==0])
 ```
 
-Homework: is the distribution of dat$Gener approximated by normal, t or neither?
+Homework: is the distribution of dat$bwt approximated by normal, t or neither?
+
+### Confidence interevals
 
 Note that we obtained an estimate but never really reported it. We simply reported the p-value. Although common practice, we do not recommend it. Note that we can obtain statistically significant results that are not scientifically significant. The prefered way to report the estimate is the present both the estimate and its standard deviation: 
 ```{r}
-cat(mean(men)-mean(women),"+/-",sqrt(var(men)+var(women))/sqrt(length(men)),"\n")
+cat(mean(smokers)-mean(nonsmokers),"+/-",sqrt(var(smokers)+var(nonsmokers))/sqrt(length(smokers)),"\n")
 ```
 We can also _confidence intervals_ which should fall on the true difference for 95% of the random samples one could take.
 ```{r}
-cat(mean(men)-mean(women)+c(-2,2)*sqrt(var(men)+var(women))/sqrt(length(men)),sep=",")
+cat(mean(smokers)-mean(nonsmokers)+c(-2,2)*sqrt(var(smokers)+var(nonsmokers))/sqrt(length(smokers)),sep=",")
 ```
 Note that the true difference is in fact included in the sample above
-
-## Monte Carlo simulation
 
 ## Gene expression
 We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 

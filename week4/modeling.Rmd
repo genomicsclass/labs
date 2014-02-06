@@ -7,11 +7,10 @@ When we see a p-value in the literature it means a probability distribution of s
 The CLT is backed by theoretical results that guarantee that the approximation is accurate. However, we cannot always use this approximation, for example when our sample size is too small. In a previous module we described how the sample average can be approximated with t-distribution when the population data is approximately normal. Note that there is no theoretical backing for this assumption. We are now *modeling*. In the case of height, we know from experience that this turns out to be a very good model. 
 
 ```{r}
-datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
-dat=read.csv(file.path(datadir,"USheights_subsample.csv"))
-men=dat$Height[dat$Gender==1]
-qqnorm(men)
-qqline(men)
+dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
+nonsmokers=dat$bwt[dat$smoke==0]
+qqnorm(nonsmokers)
+qqline(nonsmokers)
 ```
 
 But this doesn not imply that every dataset we collect will follow a normal distribtion. Example are: coin tosses, the numner of people who win the lottery, and US incomes.The normal is not the only parametric distribution that is available from modeling. Here we show we describe some useful parametric distribution and their use in genomics. For many more please consult these books [CITE books]
