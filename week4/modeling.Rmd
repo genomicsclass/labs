@@ -62,6 +62,46 @@ Note that for lower values of lambda there is much more variability and that if 
 
 
 
+## Maximum Likelihood Estimation
+We use palindrom locations in the HMCV genome as example. We read in the locations of the palindrom and then count the number of palindroms in each 4,000 basepair segments.
+```{r}
+datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
+x=read.csv(file.path(datadir,"hcmv.csv"))[,2]
+breaks=seq(0,4000*round(max(x)/4000),4000)
+tmp=cut(x,breaks)
+counts=table(tmp)
+mypar(1,2)
+hist(counts)
+@ 
+The counts do appear to follow a Poisson distribution. But what is the rate $\lamba$. The most common approach to estimating this rate is _maximum likelihood estimation_. To find the maximum likelihood estimate (MLE) we note that these data are independent and the probability of observing the values we observed is
+$$
+\Pr(X_1=k_1,\dots,X_n=k_n;\lambda) = \prod_{i=1}^n \lambda^k_i / k_i! \exp ( -\lambda)
+$$
+The MLE is the value of lambda that maximizes the _likeihlood_. 
+$$
+L(\lambda; \X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_1=k_1,\dots,X_n=k_n;\lambda)\right}
+$$
+In practice it is more convinient to maximize the log-likeilhood
+```{r}
+l<-function(lambda) sum(dpois(counts,lambda,log=TRUE))##counts define outside
+
+lambdas<-seq(3,7,len=100)
+ls <- exp(sapply(lambdas,l))
+plot(lambdas,ls,type="l")
+mle=optimize(l,c(0,10),maximum=TRUE)
+abline(v=mle$maximum)
+```
+If you work out the math and do a bit of calculus you realize that this is particularly simple example for which the MLE is the avearge
+```{r}
+print(c(mle$maximum,mean(counts)))
+```
+The fit is quite good in this case
+```{r}
+theoretical<-qpois((seq(0,99)+0.5)/100,mean(counts))
+qqplot(theoretical,counts)
+abline(0,1)
+```
+
 ## NGS experiments and the Poisson distribution
 
 ```{r}
@@ -145,31 +185,50 @@ Two special cases of the gamma distribution are the chi-sqaured distribution, wh
 
 The F-distribution comes up in analysis of variance (ANOVA). It is also always positive and has large right tails. Two parameters control it's shape:
 $$
-f(x,d_1,d_2)=\frac{1}{B\left( \frac{d1}{2},\frac{d2}{2}\right)}
+f(x,d_1,d_2)=\frac{1}{B\left( \frac{d_1}{2},\frac{d_2}{2}\right)}
   \left(\frac{d_1}{d_2}\right)^{\frac{d_1}{2}}  
   x^{\frac{d_1}{2}-1}\left(1+\frac{d1}{d2}x\right)^{-\frac{d_1+d_2}{2}}
 $$  
-with $B$ the _beta function_
+with $B$ the _beta function_ and $d_1$ and $d_2$ are called the degrees of freedom for reasons having to do for how it arises in ANOVA. A third parameter is sometimes used with the F-distribution which is a scale parameter.
 
+### Modeling the variance
 
-### Modeling precision
+In a later module we will learn about empirical bayes approaches to improve estimates of variance. In these cases it is mathematically convinient (see Bayesian book) to model the the distribution of the variance $\sigma^2$. The hierarchichal model (described here [Smyth 2004]) to the mean and variance implies (see paper for details) that the sample standard deviation of genes follows scaled F-statistis
+$$
+s^2 ~ s_0^2 F_{d,d_0}
+$$
+with $d$ the degrees of freedom involved in computing $s^2$; for example in a case comparing 3 verus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data
+```{r}
+library(rafalib)
+mypar(3,3)
+sds=seq(0,2,len=100)
+for(d in c(1,5,10)){
+  for(s0 in c(0.1, 0.2, 0.3)){
+    tmp=hist(biosds,main=paste("s_0 =",s0,"d =",d),xlab="sd",ylab="density",freq=FALSE,nc=100)
+    dd=df(sds^2/s0^2,11,d)
+    k=sum(tmp$density)/sum(dd) ##this is a normalizing constant to assure same are on plot
+    lines(sds,dd*k,type="l",col=2,lwd=2)
+    }
+  }
+```
+Now which $s_0$ and $d$ fit our data best? This is a rather advanced to topic as the MLE does not perform well for this particular distribution (we refer to Smyth (2004)). The Bioconductor limma package provides a function to estimate these parameters
 
-In a later module we will learn about empirical bayes approaches to improve estimates of variance. In these cases it is mathematically convinient (see Bayesian book) to model the precision $1/\sigma^2$. We will model that with a 
+```{r}
 
+estimates=fitFDist(biosds^2,11)
 
+theoretical<- sqrt(qf((seq(0,999)+0.5)/1000,11,estimates$df2)*estimates$scale)
+observed <- biosds
 
-
-
-
-
-
-
-
-
-
-
-
-
+mypar(1,2)
+qqplot(theoretical,observed)
+abline(0,1)
+tmp=hist(biosds,main=paste("s_0 =",s0,"d =",d),xlab="sd",ylab="density",freq=FALSE,nc=100)
+dd=df(sds^2/estimates$scale,11,estimates$df2)
+k=sum(tmp$density)/sum(dd) ##this is a normalizing constant to assure same are on plot
+lines(sds,dd*k,type="l",col=2,lwd=2)
+```
+Apart for one outlier, this is not a bad fit at all. This approximation will come in very handy when we learn about emprical Bayes.
 
 
 
