@@ -56,52 +56,12 @@ lambdas=2^seq(1,16,len=N) ##these are the true abundances of genes
 y=rpois(N,lambdas)##note that the null hypothesis is true for all genes
 x=rpois(N,lambdas) 
 ind=which(y>0 & x>0)##make sure no 0s due to ratio and log
-plot(log2(lambdas[ind]),log2(y/x)[ind])
+splot(log2(lambdas),log2(y/x),subset=ind)
 ```
 Note that for lower values of lambda there is much more variability and that if we were to report anything with a fold change of 2 or more the number of false positives would be quite high for low.
 
 
 
-## Maximum Likelihood Estimation
-We use palindrom locations in the HMCV genome as example. We read in the locations of the palindrom and then count the number of palindroms in each 4,000 basepair segments.
-```{r}
-datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
-x=read.csv(file.path(datadir,"hcmv.csv"))[,2]
-breaks=seq(0,4000*round(max(x)/4000),4000)
-tmp=cut(x,breaks)
-counts=table(tmp)
-library(rafalib)
-mypar(1,2)
-hist(counts)
-```
-The counts do appear to follow a Poisson distribution. But what is the rate $\lambda$. The most common approach to estimating this rate is _maximum likelihood estimation_. To find the maximum likelihood estimate (MLE) we note that these data are independent and the probability of observing the values we observed is
-$$
-\Pr(X_1=k_1,\dots,X_n=k_n;\lambda) = \prod_{i=1}^n \lambda^k_i / k_i! \exp ( -\lambda)
-$$
-The MLE is the value of lambda that maximizes the _likeihlood_. 
-$$
-L(\lambda; \X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_1=k_1,\dots,X_n=k_n;\lambda)\right\}
-$$
-In practice it is more convinient to maximize the log-likeilhood
-```{r}
-l<-function(lambda) sum(dpois(counts,lambda,log=TRUE))##counts define outside
-
-lambdas<-seq(3,7,len=100)
-ls <- exp(sapply(lambdas,l))
-plot(lambdas,ls,type="l")
-mle=optimize(l,c(0,10),maximum=TRUE)
-abline(v=mle$maximum)
-```
-If you work out the math and do a bit of calculus you realize that this is particularly simple example for which the MLE is the avearge
-```{r}
-print(c(mle$maximum,mean(counts)))
-```
-The fit is quite good in this case
-```{r}
-theoretical<-qpois((seq(0,99)+0.5)/100,mean(counts))
-qqplot(theoretical,counts)
-abline(0,1)
-```
 
 ## NGS experiments and the Poisson distribution
 
@@ -136,10 +96,53 @@ library(matrixStats)
 vars=rowVars(assay(se)[,c(2,8,16,21)]) ##we now these four are 4
 means=rowMeans(assay(se)[,c(2,8,16,21)]) ##different individulsa
 splot(means,vars,log="xy",subset=which(means>0&vars>0)) ##plot a subset of data
-abline(0,1,col=2)
+abline(0,1,col=2,lwd=2)
 ```
 
 Note that the variability plotted here includes biological variability which the motivation for the Poisson does not include. In a later module we learn about a the negative binomial distribution which combines the sampling variability of a Poisson and biological variability. The negative binomial permits has two parameters and permits more flexibility for count data. The Poisson is a special case of the negative bionomial distribution.
+
+
+## Maximum Likelihood Estimation
+We use palindrom locations in the HMCV genome as example. We read in the locations of the palindrom and then count the number of palindroms in each 4,000 basepair segments.
+```{r}
+datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
+x=read.csv(file.path(datadir,"hcmv.csv"))[,2]
+breaks=seq(0,4000*round(max(x)/4000),4000)
+tmp=cut(x,breaks)
+counts=table(tmp)
+library(rafalib)
+mypar(1,1)
+hist(counts)
+```
+The counts do appear to follow a Poisson distribution. But what is the rate $\lambda$. The most common approach to estimating this rate is _maximum likelihood estimation_. To find the maximum likelihood estimate (MLE) we note that these data are independent and the probability of observing the values we observed is
+$$
+\Pr(X_1=k_1,\dots,X_n=k_n;\lambda) = \prod_{i=1}^n \lambda^{k_i} / k_i! \exp ( -\lambda)
+$$
+The MLE is the value of lambda that maximizes the _likeihlood_. 
+$$
+L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_1=k_1,\dots,X_n=k_n;\lambda)\right\}
+$$
+In practice it is more convinient to maximize the log-likeilhood
+```{r}
+l<-function(lambda) sum(dpois(counts,lambda,log=TRUE))##counts define outside
+
+lambdas<-seq(3,7,len=100)
+ls <- exp(sapply(lambdas,l))
+plot(lambdas,ls,type="l")
+mle=optimize(l,c(0,10),maximum=TRUE)
+abline(v=mle$maximum)
+```
+If you work out the math and do a bit of calculus you realize that this is particularly simple example for which the MLE is the avearge
+```{r}
+print(c(mle$maximum,mean(counts)))
+```
+The fit is quite good in this case
+```{r}
+theoretical<-qpois((seq(0,99)+0.5)/100,mean(counts))
+qqplot(theoretical,counts)
+abline(0,1)
+```
+
 
 ## Distributions for positive continuos values
 
@@ -197,7 +200,7 @@ with $B$ the _beta function_ and $d_1$ and $d_2$ are called the degrees of freed
 
 In a later module we will learn about empirical bayes approaches to improve estimates of variance. In these cases it is mathematically convinient (see Bayesian book) to model the the distribution of the variance $\sigma^2$. The hierarchichal model (described here [Smyth 2004]) to the mean and variance implies (see paper for details) that the sample standard deviation of genes follows scaled F-statistis
 $$
-s^2 ~ s_0^2 F_{d,d_0}
+s^2 \sim s_0^2 F_{d,d_0}
 $$
 with $d$ the degrees of freedom involved in computing $s^2$; for example in a case comparing 3 verus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data
 ```{r}
@@ -225,7 +228,7 @@ observed <- biosds
 mypar(1,2)
 qqplot(theoretical,observed)
 abline(0,1)
-tmp=hist(biosds,main=paste("s_0 =",signif(estimates[1],2),"d =",signif(estimates[2],2),xlab="sd",ylab="density",freq=FALSE,nc=100)
+tmp=hist(biosds,main=paste("s_0 =",signif(estimates[[1]],2),"d =",signif(estimates[[2]],2)),xlab="sd",ylab="density",freq=FALSE,nc=100,xlim=c(0,1),ylim=c(0,9))
 dd=df(sds^2/estimates$scale,11,estimates$df2)
 k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
 lines(sds,dd*k,type="l",col=2,lwd=2)
