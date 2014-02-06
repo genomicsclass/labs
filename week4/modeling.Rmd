@@ -120,7 +120,7 @@ $$
 $$
 The MLE is the value of lambda that maximizes the _likeihlood_. 
 $$
-L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_1=k_1,\dots,X_n=k_n;\lambda)\right\}
+L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right\}
 $$
 In practice it is more convinient to maximize the log-likeilhood
 ```{r}
