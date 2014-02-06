@@ -7,29 +7,27 @@ Simulations can also be used to check theoretical or analytical results. Also, m
 We illustrate this with a simple example related to the central limit theorem. In the inference module we used a sample size of 10 men and 10 women to predict the, on average and in the population in question, men are taller than women. We used the central limit theorem to approximate the distribution of the t-statistic as normal with mean 0 and standard deviation 1. But is 10 large enough to use this approximantion? Let's use a monte carlo simulation to corroborate. Below is the code we used to obtain random sample and then the difference of 3.30
 
 ```{r}
-datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
-dat=read.csv(file.path(datadir,"USheights_subsample.csv"))
-set.seed(1)
-men=sample(dat$Height[dat$Gender==1],10)
-women=sample(dat$Height[dat$Gender==0],10)
-print(mean(men)-mean(women))
+dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
+set.seed(0)
+smokers=sample(dat$bwt[dat$smoke==1],10)
+nonsmokers=sample(dat$bwt[dat$smoke==0],10)
+cat("observed difference = ",mean(smokers)-mean(nonsmokers)," ounces")
 ```
 But a different random sample give us a different answer
 ```{r}
 for(i in 1:10){
-  men=sample(dat$Height[dat$Gender==1],10)
-  women=sample(dat$Height[dat$Gender==0],10)
-  cat(signif(mean(men)-mean(women),2),", ",sep="")
-  }
-cat("\n")
+  smokers=sample(dat$bwt[dat$smoke==1],10)
+  nonsmokers=sample(dat$bwt[dat$smoke==0],10)
+  cat("observed difference = ",mean(smokers)-mean(nonsmokers),"ounces\n")
+}
 ```
 The sample means are _random variables_: they are different everytime we take a new random sample. We want to know the statistical properties of these random variables.
 Note that in practice we can afford to measure so many samples, but on a computer it is as easy as writing a loop. Let's take 1,000 random samples and re-computing the t-statistic:
 ```{r}
 ttests <- sapply(1:1000,function(i){
-  men=sample(dat$Height[dat$Gender==1],10)
-  women=sample(dat$Height[dat$Gender==0],10) 
-  return((mean(men)-mean(women))/sqrt((var(men))/10+var(women)/10))
+  smokers=sample(dat$bwt[dat$smoke==1],10)
+  nonsmokers=sample(dat$bwt[dat$smoke==0],10)
+  return((mean(smokers)-mean(nonsmokers))/sqrt((var(smokers))/10+var(nonsmoker)/10))
 })
 ```
 With 1,000 simulated ocurrences of this random variable wecan now get a gimplse of it's distribution
@@ -39,12 +37,6 @@ hist(ttests)
 Now let's check on the theory used on the previous module. Under the null hypothesis the difference in means is 0. To recreate this with our simulation we will sample men twice: there can't be a difference in population average if we sample from the same population.
 So is the distribution of this t-statistic well approximated by the normal distribution?
 ```{r}
-ttests <- sapply(1:1000,function(i){
-  men=sample(dat$Height[dat$Gender==1],10)
-  women=sample(dat$Height[dat$Gender==1],10) 
-  return((mean(men)-mean(women))/sqrt((var(men))/10+var(women)/10))
-})
-
 qqnorm(ttests)
 qqline(ttests)
 ```
@@ -52,9 +44,9 @@ This looks like a very good approximation. So for this particular population a s
 
 ```{r}
 ttests <- sapply(1:1000,function(i){
-  men=sample(dat$Height[dat$Gender==1],3)
-  women=sample(dat$Height[dat$Gender==1],3) 
-  return((mean(men)-mean(women))/sqrt((var(men))/3+var(women)/3))
+  smokers=sample(dat$bwt[dat$smoke==1],3)
+  nonsmokers=sample(dat$bwt[dat$smoke==0],3)
+  return((mean(smokers)-mean(nonsmokers))/sqrt((var(smokers))/3+var(nonsmokers)/3))
 })
 
 qqnorm(ttests)
@@ -66,21 +58,21 @@ qs <- (seq(0,999)+0.5)/1000
 qqplot(qt(qs,df=2*3-2),ttests)
 abline(0,1)
 ```
-The t-distribution is a much better approximation in this case
+The t-distribution is a much better approximation in this case but it is still not perfect.
 
 ### Simulating the observations
 
-In the previous section we sampled from the entire population. In many cases we don't have access to data from the entire population. In these cases we can simulate that data as well. For the case of heights we could use 
+In the previous section we sampled from the entire population. In many cases we don't have access to data from the entire population. In these cases we can simulate that data as well. For the case of wieghts we could use 
 ```{r}
-menheights=rnorm(25000,69,3)
+nonsmokerweights=rnorm(25000,123,17)
 ```
 and repeat the entire excercise.
 
 *Homework*:
 1) How different are the normal(0,1) and t-distribution when degrees of freedom are 
 18? How about 4?
-2) For the case with 10 samples, what is the distribution of the sample median height for me? How does the mean, median of the distribution compare to the population median? 
-3) Repeat the code above but simulated income for men and women. Is the median income the same? is the mean income the same?
+2) For the case with 10 samples, what is the distribution of the sample median wight for smokers? How does the mean, median of the distribution compare to the population median? 
+3) Repeat the code above but simulated income for american and canadians. Is the median income the same? is the mean income the same?
 
 ## Permutations
 Suppose we have a situation in which non of the standard statistical tools apply. We have computed a summary statisitic, such as the difference in mean, but do not have a useful approximation such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation can be useful in these scenarios. 
@@ -88,26 +80,24 @@ Suppose we have a situation in which non of the standard statistical tools apply
 We are back to the scenario were we only have 10 measurements for each group.
 
 ```{r}
-set.seed(1)
-men=sample(dat$Height[dat$Gender==1],10)
-women=sample(dat$Height[dat$Gender==0],10)
-obs=mean(men)-mean(women)
+set.seed(0)
+smokers=sample(dat$bwt[dat$smoke==1],10)
+nonsmokers=sample(dat$bwt[dat$smoke==0],10)
+obs=mean(smokers)-mean(nonsmokers)
 ```
 Is the observed difference significant? Remember we are pretending that we can't use the CLT or the t-distribution approximations. How can we determine the distribution of this difference under the null that there is no difference? Permutations tests take advantege of the fact that if there is no difference the shuffling the data should not matter. So we shuffle the men and women labels, say, 1,000 and see how much the results matter.
 ```{r}
 avgdiff <- sapply(1:1000,function(i){
-    all=sample(c(men,women))
-    menstar=all[1:10]
-    womenstar=all[11:20]
-  return(mean(menstar)-mean(womenstar))
+    all=sample(c(smokers,nonsmokers))
+    smokersstar=all[1:10]
+    nonsmokersstar=all[11:40]
+  return(mean(smokersstar)-mean(nonsmokersstar))
 })  
 hist(avgdiff)
 abline(v=obs)
-print(mean(abs(avgdiff)>obs))
+print(mean(abs(avgdiff)> abs(obs)))
 ```
-Note that the observed difference is larger than 97.7% of the differences obtained after simulation.
-
-Points: Permuations sill have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
+Note that the observed difference is not significant using this approach. Permuations sill have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
 
 
 
