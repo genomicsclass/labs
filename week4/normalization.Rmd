@@ -1,0 +1,69 @@
+# Normalization
+
+```{r}
+library(affy)
+setwd("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/Dilution")
+pd=read.table("pdata.txt",header=TRUE,check.names=FALSE,as.is=TRUE)
+pd<-pd[which(pd[,3]==0),] ##only liver
+dat<-ReadAffy(filenames=paste0(pd[,1],".cel"))
+pms=pm(dat)
+boxplot(log2(pms[,1:5]),range=0,names=1:5,las=3,main="technical replicates")
+shist(log2(pms[,2]),type="n",xlab="log (base 2) intensity",class(dilution))
+for(i in 1:5)
+  shist(log2(pms[,i]),col=i,add=TRUE,lwd=2,lty=i)
+```
+
+```{r}
+i=1;j=2
+M=log2(pms[,i])-log2(pms[,j])
+A=(log2(pms[,i])+log2(pms[,j]))/2
+splot(A,M,ylim=c(-1.5,1.5))
+abline(h=0,col=2,lty=2,lwd=2)
+splot(A,M-median(M),ylim=c(-1.5,1.5))
+abline(h=0,col=2,lty=2,lwd=2)
+```
+
+```{r}
+library(preprocessCore)
+npms<-normalize.quantiles(pms[,1:5])
+M=log2(npms[,i])-log2(npms[,j])
+A=(log2(npms[,i])+log2(npms[,j]))/2
+splot(A,M,ylim=c(-1.5,1.5))
+abline(h=0,col=2,lty=2,lwd=2)
+```
+
+```{r}
+library(SpikeIn)
+data(SpikeIn95)
+spms<-pm(SpikeIn95)
+siNames<-colnames(pData(SpikeIn95))
+i=10
+j=i-1
+M=log2(spms[,i])-log2(spms[,j])
+A=(log2(spms[,i])+log2(spms[,j]))/2
+splot(A,M,ylim=c(-2,2),main=i)
+spikeinIndex=which(probeNames(SpikeIn95)%in%siNames)
+mypar()
+points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=2,pch=21)
+nspms<-normalize.quantiles(spms)
+
+M=log2(nspms[,i])-log2(nspms[,j])
+A=(log2(nspms[,i])+log2(nspms[,j]))/2
+splot(A,M,ylim=c(-2,2),main=i)
+spikeinIndex=which(probeNames(SpikeIn95)%in%siNames)
+points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=2,pch=21)
+```
+
+##loess 
+
+##loess normalization
+
+##a bit on SVN
+
+###Show the problem when assumption is wrong
+
+###hint at the use of spike-ins
+
+##RNAseq
+
+
