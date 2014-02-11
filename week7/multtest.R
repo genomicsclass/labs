@@ -1,0 +1,8 @@
+z <- rnorm(100)
+hist(pnorm(z),col="grey",main="",xlab="p",breaks=0:10/10)
+z <- rnorm(10000)
+hist(pnorm(z),col="grey",main="",xlab="p",breaks=0:10/10)
+z <- c(rnorm(10000), rep(-3.71,500))
+h <- hist(pnorm(z),col="grey",main="",xlab="p",breaks=0:10/10)
+abline(h=1000,col="red",lwd=4,lty=3)
+abline(h=h$counts[1],col="blue",lwd=4,lty=3)
