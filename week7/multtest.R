@@ -38,3 +38,15 @@ abline(h=h$counts[1],col="blue",lwd=4,lty=3)
 h <- hist(pnorm(z),col="grey",main="",xlab="p",breaks=0:10000/10000)
 abline(h=10000/10000,col="red",lwd=4,lty=3)
 abline(h=sum(h$counts[1]),col="blue",lwd=4,lty=3)
+
+
+set.seed(1)
+pvals <- c(runif(90),runif(10,0,.001))
+plot(sort(pvals),xlab="i",ylab="p-value",ylim=c(0,1))
+abline(0, .05/length(pvals))
+legend("top",expression(slope~alpha/m))
+
+plot(sort(pvals),xlab="i",ylab="p-value",ylim=c(0,.03),xlim=c(0,13))
+abline(0, .05/length(pvals))
+legend("top",expression(slope~alpha/m))
+
