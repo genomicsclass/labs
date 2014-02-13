@@ -247,22 +247,23 @@ for(i in 1:20)
 ```{r}
 load("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/pickrell_sumexp.RData")
 library(GenomicRanges)
+library(rafalib)
 f <- assay(pickrell)
 k <- sum(width(reduce(rowData(pickrell)))) / 1e3
 m <- colSums(f) / 1e6
 tmp <- sweep(f, 1, k, "/")
 fpkm <- sweep(tmp, 2, m, "/")
-keep <- which(rowSums(fpkm==0)==0)
 plot(0,0,type="n",ylim=c(0,850),xlim=c(-10,12),ylab="Frequency",xlab="log (base 2) FPKM")
 
-med=rowMeadians(fpkm)
-i=1;j=2
-A<-(log2(fpkm[keep,i])+log2(fpkm[keep,j]))/2
-M<-log2(fpkm[keep,i])-log2(fpkm[keep,j])
-plot(A,M)
-
-for(i in 1:20)
-    shist(log2(fpkm[keep,i]),col=i,add=TRUE,unit=0.25)
+keep <- which(rowSums(fpkm==0)==0)
+mypar(1,2)
+i=2;j=67 ##picking one of the worse culprits
+maplot(log2(fpkm[keep,i]),log2(fpkm[keep,j]))
+shist(log2(fpkm[keep,65]),unit=0.25,ylab="Frequency",xlab="log (base 2) FPKM",col=1)
+for(i in 65:69)
+  shist(log2(fpkm[keep,i]),col=i-64,add=TRUE,unit=0.25)
+mypar(1,1)
+plot(colMeans(fpkm==0),ylab="proportion of 0s",xlab="proportion index",pch=16)
 ```
 
 
