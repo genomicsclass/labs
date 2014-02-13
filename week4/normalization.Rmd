@@ -1,69 +1,427 @@
 # Normalization
 
+Here we show data from five technical replicates.
 ```{r}
+library(rafalib)
 library(affy)
 setwd("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/Dilution")
 pd=read.table("pdata.txt",header=TRUE,check.names=FALSE,as.is=TRUE)
 pd<-pd[which(pd[,3]==0),] ##only liver
-dat<-ReadAffy(filenames=paste0(pd[,1],".cel"))
+dat<-read.celfiles(filenames=paste0(pd[,1],".cel"),verbose=FALSE)
 pms=pm(dat)
-boxplot(log2(pms[,1:5]),range=0,names=1:5,las=3,main="technical replicates")
-shist(log2(pms[,2]),type="n",xlab="log (base 2) intensity",class(dilution))
+mypar()
+boxplot(log2(pms[,1:5]),range=0,names=1:5,las=3,main="Five technical replicates",col=1:5)
+shist(log2(pms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
 for(i in 1:5)
-  shist(log2(pms[,i]),col=i,add=TRUE,lwd=2,lty=i)
+  shist(log2(pms[,i]),unit=0.1,col=i,add=TRUE,lwd=2,lty=i)
 ```
 
+
+Here we show densities
 ```{r}
+mypar(1,2)
 i=1;j=2
-M=log2(pms[,i])-log2(pms[,j])
-A=(log2(pms[,i])+log2(pms[,j]))/2
-splot(A,M,ylim=c(-1.5,1.5))
-abline(h=0,col=2,lty=2,lwd=2)
-splot(A,M-median(M),ylim=c(-1.5,1.5))
-abline(h=0,col=2,lty=2,lwd=2)
+x=log2(pms[,i])
+y=log2(pms[,j])
+maplot(x,y,ylim=c(-1.5,1.5))
+abline(h=0,col=1,lty=2,lwd=2)
+shist(y,unit=0.1,xlab="log (base) intenisty",col=1,main="smooth histogram")
+shist(x,unit=0.1,xlab="log (base) intenisty",add=TRUE,col=2)
 ```
+
+The MA-plot shows non-linear bias
 
 ```{r}
-library(preprocessCore)
-npms<-normalize.quantiles(pms[,1:5])
-M=log2(npms[,i])-log2(npms[,j])
-A=(log2(npms[,i])+log2(npms[,j]))/2
-splot(A,M,ylim=c(-1.5,1.5))
-abline(h=0,col=2,lty=2,lwd=2)
+mypar(1,2)
+i=1;j=2
+M=median(c(x,y))
+x=log2(pms[,i])-median(x)+M
+y=log2(pms[,j])-median(y)+M
+maplot(x,y,ylim=c(-1.5,1.5))
+abline(h=0,col=1,lty=2,lwd=2)
+shist(y,unit=0.1,xlab="log (base) intenisty",col=1,main="smooth histogram")
+shist(x,unit=0.1,xlab="log (base) intenisty",add=TRUE,col=2)
+
 ```
 
+
+With the spike-in we show the downstream consequences: 
 ```{r}
 library(SpikeIn)
 data(SpikeIn95)
 spms<-pm(SpikeIn95)
-siNames<-colnames(pData(SpikeIn95))
-i=10
-j=i-1
+spd=pData(SpikeIn95)
+i=10;j=9 ##example with two samples
+siNames<-colnames(spd)
+siNames=siNames[which(spd[i,]/spd[j,]==2)] ##show probes with expected FC=2
 M=log2(spms[,i])-log2(spms[,j])
 A=(log2(spms[,i])+log2(spms[,j]))/2
-splot(A,M,ylim=c(-2,2),main=i)
+splot(A,M,ylim=c(-1.5,1.5))
 spikeinIndex=which(probeNames(SpikeIn95)%in%siNames)
-mypar()
-points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=2,pch=21)
+points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=1,pch=21)
+```
+
+
+## Loess
+
+
+Loess works by fitting a line to windows around a point. Here is a movie demonstrating it
+
+```{r}
+o<-order(A)
+a<-A[o];m<-M[o]
+ind<-round(seq(1,length(a),len=5000))
+a<-a[ind];m<-m[ind]
+centers <- seq(min(a),max(a),0.1)
+plot(a,m,ylim=c(-1.5,1.5),col="grey")
+windowSize<-1.5
+smooth<-rep(NA,length(centers))
+library(animation)
+saveGIF({
+  for(i in seq(along=centers)){
+  center<-centers[i]
+  ind=which(a>center-windowSize & a<center+windowSize)
+  fit<-lm(m~a,subset=ind)
+  smooth[i]<-predict(fit,newdata=data.frame(a=center))
+  if(center<12){
+    plot(a,m,ylim=c(-1.5,1.5),col="grey")
+    points(a[ind],m[ind])
+    abline(fit,col=3,lty=2,lwd=2)
+    lines(centers[1:i],smooth[1:i],col=2,lwd=2)
+    points(centers[i],smooth[i],col=2,pch=16)
+  }
+  }
+},'loess.gif', interval = .15)
+
+plot(a,m,ylim=c(-1.5,1.5))
+lines(centers,smooth,col=2,lwd=2)
+```
+
+
+Loess in action. Show how we correct bias
+
+```{r}
+o<-order(A)
+a<-A[o];m<-M[o]
+ind<-round(seq(1,length(a),len=5000))
+a<-a[ind];m<-m[ind]
+fit<-loess(m~a)
+bias <- predict(fit,newdata=data.frame(a=A))
+nM<-M-bias
+mypar(1,1)
+splot(A,M,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=1,pch=21)
+lines(a,fit$fitted,col=2,lwd=2)
+splot(A,nM,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],nM[spikeinIndex],ylim=c(-4,4),bg=1,pch=21)
+abline(h=0,col=2,lwd=2)
+```
+
+
+
+## Quantile
+
+Explain quantile. Before an after. Grab pic from power point
+
+```{r}
+library(preprocessCore)
 nspms<-normalize.quantiles(spms)
+
+M=log2(spms[,i])-log2(spms[,j])
+A=(log2(spms[,i])+log2(spms[,j]))/2
+splot(A,M,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],M[spikeinIndex],bg=1,pch=21)
 
 M=log2(nspms[,i])-log2(nspms[,j])
 A=(log2(nspms[,i])+log2(nspms[,j]))/2
-splot(A,M,ylim=c(-2,2),main=i)
-spikeinIndex=which(probeNames(SpikeIn95)%in%siNames)
-points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=2,pch=21)
+splot(A,M,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],M[spikeinIndex],bg=1,pch=21)
 ```
 
-##loess 
+Densities are now identical
 
-##loess normalization
+```{r}
+mypar(1,1)
+shist(log2(pms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
+for(i in 1:5)
+  shist(log2(pms[,i]),unit=0.1,col=i,add=TRUE,lwd=2,lty=i)
+qpms<-normalize.quantiles(pms[,1:5])
+shist(log2(qpms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
+for(i in 1:5)
+  shist(log2(qpms[,i]),unit=0.1,col=i,add=TRUE,lwd=2,lty=i)
 
-##a bit on SVN
+```
 
-###Show the problem when assumption is wrong
+## SVN
 
-###hint at the use of spike-ins
+Simulation of data with SVN model
 
-##RNAseq
+```{r}
+library(rafalib)
+N=10000
+e=rexp(N,1/1000)
+b1=24;b2=20
+A1=1;A2=1.25
+sigma=1;eta=0.05
+y1=b1+rnorm(N,0,sigma)+A1*e*2^rnorm(N,0,eta)
+y2=b2+rnorm(N,0,sigma)+A2*e*2^rnorm(N,0,eta)
+mypar(1,1)
+maplot(log2(y1),log2(y2),ylim=c(-1,1),curve.add=FALSE)
+```
+
+Showing variance mean relationship with simulated data
+
+```{r}
+ny1=(y1-b1)/A1
+ny2=(y2-b2)/A2
+mypar(1,2)
+maplot(ny1,ny2,curve.add=FALE,ylim=c(-500,500))
+maplot(log2(ny1),log2(ny2),ylim=c(-2,2),xlim=c(0,15))
+```
+
+
+VSN at work: normalizng spike- in data
+
+```{r}
+library(vsn)
+nspms<-exprs(vsn2(spms))
+i=10;j=9
+M=log2(spms[,i])-log2(spms[,j])
+A=(log2(spms[,i])+log2(spms[,j]))/2
+splot(A,M,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],M[spikeinIndex],bg=1,pch=21)
+
+M=nspms[,i]-nspms[,j]
+A=(nspms[,i]+nspms[,j])/2
+splot(A,M,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],M[spikeinIndex],bg=1,pch=21)
+```
+
+## RNA-seq
+
+```{r}
+load("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/bottomly_sumexp.RData")
+library(GenomicRanges)
+f <- assay(bottomly)
+pd <- colData(bottomly)
+o<- order(pd$strain=="C57BL/6J")
+f<-f[,o]
+pd<-pd[o,]
+mypar(1,1)
+boxplot(log2(f+0.5),col=as.fumeric(pd[,4]),names=pd[,5],ylab="log (base 2) read counts + 0.5")
+```
+We see that there is also need for normalization. Fragments per Kilobase per Million (FPKM) normalizes by dividing by the total number of reads. This removes much of the variability seen in the first plot
+
+```{r}
+# use 'reduce' to merge overlapping exons
+# 'width' gives the length of each exon
+# 'sum' operates on each element of the integer list
+k <- sum(width(reduce(rowData(bottomly)))) / 1e3
+# here we assume no reads mapped outside of genes...
+m <- colSums(f) / 1e6
+
+
+tmp <- sweep(f, 1, k, "/")
+fpkm <- sweep(tmp, 2, m, "/")
+
+
+boxplot(log2(fpkm+0.001),col=as.fumeric(pd[,4]),names=pd[,5],ylab="log (base 2) RPKM + 0.001")
+```
+
+```{r}
+mypar(2,2)
+for(i in 1:4)
+  hist(log2(fpkm[,i]+0.001),nc=100,main="")
+```
+
+```{r}
+mypar(1,1)
+keep <- which(rowSums(fpkm==0)==0)
+plot(0,0,type="n",ylim=c(0,850),xlim=c(-6,12),ylab="Frequency",xlab="log (base 2) FPKM")
+for(i in 1:20)
+  shist(log2(fpkm[keep,i]),col=i,add=TRUE,unit=0.25)
+```
+
+
+
+```{r}
+load("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/pickrell_sumexp.RData")
+library(GenomicRanges)
+f <- assay(pickrell)
+k <- sum(width(reduce(rowData(pickrell)))) / 1e3
+m <- colSums(f) / 1e6
+tmp <- sweep(f, 1, k, "/")
+fpkm <- sweep(tmp, 2, m, "/")
+keep <- which(rowSums(fpkm==0)==0)
+plot(0,0,type="n",ylim=c(0,850),xlim=c(-10,12),ylab="Frequency",xlab="log (base 2) FPKM")
+
+med=rowMeadians(fpkm)
+i=1;j=2
+A<-(log2(fpkm[keep,i])+log2(fpkm[keep,j]))/2
+M<-log2(fpkm[keep,i])-log2(fpkm[keep,j])
+plot(A,M)
+
+for(i in 1:20)
+    shist(log2(fpkm[keep,i]),col=i,add=TRUE,unit=0.25)
+```
+
+
+
+
+
+
+## When not to use normalization
+
+Boxplots of all Dilution data. Obviousy we don't want to normalize
+
+```{r}
+library(rafalib)
+library(affy)
+library(preprocessCore)
+setwd("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/Dilution")
+pd=read.table("pdata.txt",header=TRUE,check.names=FALSE,as.is=TRUE)
+pd<-pd[which(pd[,3]==0),] ##only liver
+dat<-ReadAffy(filenames=paste0(pd[,1],".cel"),verbose=FALSE)
+pms=pm(dat)
+npms=normalize.quantiles(pms)
+mypar()
+boxplot(log2(pms),col=as.fumeric(pd[,2]),range=0,names=pd[,2],las=3,main="Dilution expreiment")
+boxplot(log2(npms),col=as.fumeric(pd[,2]),range=0,names=pd[,2],las=3,main="Dilution expreiment")
+```
+
+Show the spike-in which are experimentally introduced to be a the same level.
+
+##  spike-ins
+```{r}
+siNames <- colnames(pd)[4:11]
+spikeIndex <-which(probeNames(dat)%in%siNames)
+boxplot(log2(pms)[spikeIndex,],col=as.fumeric(pd[,2]),names=pd[,2],ylim=range(log2(pms)),las=3)
+```
+
+The spike-ins show the problem with normalizing
+
+```{r}
+i=1;j=6
+M=log2(pms[,i])-log2(pms[,j])
+A=(log2(pms[,i])+log2(pms[,j]))/2
+splot(A,M,n=50000,ylim=c(-1,1))
+points(A[spikeIndex],M[spikeIndex],bg=1,pch=21)
+abline(h=0)
+M=log2(npms[,i])-log2(npms[,j])
+A=(log2(npms[,i])+log2(npms[,j]))/2
+splot(A,M,n=50000,ylim=c(-1,1))
+points(A[spikeIndex],M[spikeIndex],bg=1,pch=21)
+abline(h=0)
+```
+
+mention CHARM approach
+
+```{r}
+i=1;j=6
+M=log2(pms[,i])-log2(pms[,j])
+A=(log2(pms[,i])+log2(pms[,j]))/2
+splot(A,M,n=50000,ylim=c(-1.5,1.5))
+points(A[spikeIndex],M[spikeIndex],bg=1,pch=21)
+a<-A[spikeIndex];m<-M[spikeIndex]
+o<-order(a)
+a<-a[o];m<-m[o]
+fit<-loess(m~a,degree=1)
+bias <- predict(fit,newdata=data.frame(a=A))
+lines(a,fit$fitted,col=2,lwd=2)
+nM<-M-bias
+splot(A,nM,n=50000,ylim=c(-1.5,1.5))
+points(A[spikeIndex],nM[spikeIndex],bg=1,pch=21)
+abline(h=0)
+```
+
+However, control genes are not always reliable
+```{r}
+i=1;j=2
+M=log2(pms[,i])-log2(pms[,j])
+A=(log2(pms[,i])+log2(pms[,j]))/2
+splot(A,M,n=50000,ylim=c(-1.5,1.5))
+points(A[spikeIndex],M[spikeIndex],bg=1,pch=21)
+abline(h=0)
+a<-A[spikeIndex];m<-M[spikeIndex]
+o<-order(a)
+a<-a[o];m<-m[o]
+fit<-loess(m~a,degree=1)
+bias <- predict(fit,newdata=data.frame(a=A))
+lines(a,fit$fitted,col=2,lwd=2)
+nM<-M-bias
+splot(A,nM,n=50000,ylim=c(-1.5,1.5))
+points(A[spikeIndex],nM[spikeIndex],bg=1,pch=21)
+abline(h=0)
+
+```
+
+##subset quantile
+##add rick youngs data show it similar to this
+
+Here is a dataset were the spike-ins appear to be performing well, at least in the one sample with biological replicates
+```{r}
+library(mycAffyData)
+data(mycData)
+erccIndex<-grep("ERCC",probeNames(mycData))
+pms<-pm(mycData)
+mypar(1,2)
+for(h in 1:2){
+  i=2*h;j=2*h-1
+  M=log2(pms[,i])-log2(pms[,j])
+  A=(log2(pms[,i])+log2(pms[,j]))/2
+  splot(A,M,n=50000,,ylim=c(-4,4))
+  points(A[erccIndex],M[erccIndex],col=1)
+}
+```
+
+But here are two samples experimentally desinged to be different:
+
+##subset quantile
+```{r}
+library(mycAffyData)
+data(mycData)
+erccIndex<-grep("ERCC",probeNames(mycData))
+pms<-pm(mycData)
+mypar(1,2)
+for(h in 1:2){
+  i=h+2;j=h
+  M=log2(pms[,i])-log2(pms[,j])
+  A=(log2(pms[,i])+log2(pms[,j]))/2
+  splot(A,M,n=50000,,ylim=c(-4,4))
+  points(A[erccIndex],M[erccIndex],col=1)
+}
+```
+
+Cell paper did not consider SQN but it works very wll:
+```{r}
+library(SQN) ##form CRAN
+sqnpms<-SQN(log2(pms),ctrl.id=erccIndex)
+pairs<-list(i=c(1,3,3,4),j=c(2,4,1,2))
+mypar(2,2)
+for(h in 1:4){
+  i=pairs$i[h];j=pairs$j[h]
+  M=log2(pms[,i])-log2(pms[,j])
+  A=(log2(pms[,i])+log2(pms[,j]))/2
+  splot(A,M,n=50000,,ylim=c(-4,4))
+  points(A[erccIndex],M[erccIndex],col=1)
+abline(h=0)
+}
+mypar(2,2)
+for(h in 1:4){
+  i=pairs$i[h];j=pairs$j[h]
+  M=sqnpms[,i]-sqnpms[,j]
+  A=(sqnpms[,i]+sqnpms[,j])/2
+  splot(A,M,n=50000,,ylim=c(-4,4))
+  points(A[erccIndex],M[erccIndex],col=1)
+abline(h=0)
+}
+
+```
+
+
+
+
+
+
 
 
