@@ -2,6 +2,8 @@
 
 ## summary, str
 
+First we load an example data frame:
+
 ```{r}
 rats <- data.frame(id = paste0("rat",1:10),  
                    sex = factor(rep(c("female","male"),each=5)),
@@ -20,6 +22,8 @@ str(rats)
 
 ## match, merge
 
+We load another example data frame, with the original ID and another secretID. Suppose we want to sort the original data frame by the secretID.
+
 ```{r}
 ratsTable <- data.frame(id = paste0("rat",c(6,9,7,3,5,1,10,4,8,2)),
                         secretID = 1:10)
@@ -27,11 +31,14 @@ ratsTable
 rats
 ```
 
+match is a very useful function in R, which can give us this order, but it's easy to get its arguments mixed up. Remember that match gives you, for each element in the first vector, the index of the first match in the second vector. So typically the data.frame or vector you are reordering would appear as the second argument to match(). It's always a good idea to check that you got it right, which you can do by using cbind to line up both data frames.
 
 ```{r}
 rats$weight[match(ratsTable$id, rats$id)] 
 cbind(rats[match(ratsTable$id, rats$id),], ratsTable)
 ```
+
+Or you can use the merge() function which will handle everything for you. You can tell it the names of the columns to merge on, or it will look for columns with the same name.
 
 ```{r}
 ratsMerged <- merge(rats, ratsTable, by.x="id", by.y="id")
@@ -40,19 +47,21 @@ ratsMerged[order(ratsMerged$secretID),]
 
 ## Split, tapply, and dplyr libary
 
+split is a really useful function for breaking up a vector into groups defined by a second vector, typically a factor. Here we split the weights into a list divided by sex. We can then use the lapply function to calculate the average of each element of the list, which are vectors of weights.
+
 ```{r}
 sp <- split(rats$weight, rats$sex)
 sp
 lapply(sp, mean)
 ```
 
-This can also be done with tapply
+A shortcut for this is to use tapply and give the function which should run on each element of the list as a third argument:
 
 ```{r}
 tapply(rats$weight, rats$sex, mean)
 ```
 
-Now with dplyr
+A new library dplyr can accomplish the same task, and can be extended to many other more complicated operations. Here is the same task done with group_by and summarise:
 
 ```{r}
 library(dplyr)
@@ -60,7 +69,7 @@ sexes <- group_by(rats, sex)
 summarise(sexes, ave=mean(weight))
 ```
 
-You can chain operations using the `%.%` operator:
+With dplyr, you can chain operations using the `%.%` operator:
 
 ```{r}
 rats %.% group_by(sex) %.% summarise(ave=mean(weight))
