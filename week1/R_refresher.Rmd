@@ -1,2 +1,67 @@
 # R refresher
 
+## summary, str
+
+```{r}
+rats <- data.frame(id = paste0("rat",1:10),  
+                   sex = factor(rep(c("female","male"),each=5)),
+                   weight = c(2,4,1,11,18,12,7,12,19,20),
+                   length = c(100,105,115,130,95,150,165,180,190,175))
+rats
+```
+
+The summary and str functions are two helpful functions for getting a sense of data. summary works on vectors or matrix-like objects (including data.frames). str works on an arbitrary R object and will compactly display the structure.
+
+```{r}
+summary(rats)
+summary(rats$weight)
+str(rats)
+```
+
+## match, merge
+
+```{r}
+ratsTable <- data.frame(id = paste0("rat",c(6,9,7,3,5,1,10,4,8,2)),
+                        secretID = 1:10)
+ratsTable
+rats
+```
+
+
+```{r}
+rats$weight[match(ratsTable$id, rats$id)] 
+cbind(rats[match(ratsTable$id, rats$id),], ratsTable)
+```
+
+```{r}
+ratsMerged <- merge(rats, ratsTable, by.x="id", by.y="id")
+ratsMerged[order(ratsMerged$secretID),]
+```
+
+## Split, tapply, and dplyr libary
+
+```{r}
+sp <- split(rats$weight, rats$sex)
+sp
+lapply(sp, mean)
+```
+
+This can also be done with tapply
+
+```{r}
+tapply(rats$weight, rats$sex, mean)
+```
+
+Now with dplyr
+
+```{r}
+library(dplyr)
+sexes <- group_by(rats, sex)
+summarise(sexes, ave=mean(weight))
+```
+
+You can chain operations using the `%.%` operator:
+
+```{r}
+rats %.% group_by(sex) %.% summarise(ave=mean(weight))
+```
