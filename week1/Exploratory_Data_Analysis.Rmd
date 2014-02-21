@@ -114,8 +114,12 @@ Here we are analyzing microarray data from eight samples: two groups of four. A 
 
 ```{r,fig.width=6, fig.height=3}
 library(rafalib)
-library(spikeInSubset)
-data(spikeInSubset)
+# this needs to be be downloaded with
+# install("devtools")
+# library(devtools)
+# install_github("dagEDA","mikelove")
+library(dagEDA)
+data(SpikeInEDA)
 mypar(1,2)
 hist(int[,1])
 hist(log2(int[,1]))
