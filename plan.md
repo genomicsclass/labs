@@ -1,10 +1,12 @@
+** means done **
+
 # week 1
 
-- mike RStudio
+- ** mike RStudio **
 
-- mike R refresher
+- ** mike R refresher **
 
-- mike Installing Bioconductor and finding help
+- ** mike Installing Bioconductor and finding help **
 
 - rafa Exploratory data analysis
 
@@ -16,9 +18,11 @@
 
 - mike Mapping algorithms and software
 
-- mike Basic Bioconductor infrastructure: IRanges and GenomicRanges
+- ** mike Basic Bioconductor infrastructure: IRanges **
 
-- mike Basic Bioconductor infrastructure: ExpressionSet and SummarizedExperiment
+- ** mike Basic Bioconductor infrastructure: GenomicRanges **
+
+- ** mike Basic Bioconductor infrastructure: ExpressionSet and SummarizedExperiment **
 
 # week 3
 
