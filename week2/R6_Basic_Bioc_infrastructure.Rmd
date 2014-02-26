@@ -26,6 +26,16 @@ shift(ir, -2)
 Remeber, all of these commands can work on more than one range at once. Here we show the effects of the different methods using a single range:
 
 ```{r}
+shift(ir,-2)
+narrow(ir, start=2)
+narrow(ir, end=5)
+flank(ir, width=3, start=TRUE, both=FALSE)
+flank(ir, width=3, start=FALSE, both=FALSE)
+flank(ir, width=3, start=TRUE, both=TRUE)
+```
+
+
+```{r}
 # set up a plotting window so we can look at range operations
 plotir <- function(ir,i) { arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3) }
 plot(0,0,xlim=c(0,15),ylim=c(0,8),type="n",xlab="",ylab="",xaxt="n")
@@ -63,8 +73,9 @@ library(GenomicRanges)
 gr <- GRanges("chrZ", IRanges(start=c(5,10),end=c(35,45)),
               strand="+", seqlengths=c(chrZ=100L))
 gr
+shift(gr, 10)
 shift(gr, 80)
-trim(shift(gr, 90))
+trim(shift(gr, 80))
 mcols(gr)
 mcols(gr)$value <- c(-1,4)
 gr
@@ -84,6 +95,33 @@ grl
 mcols(grl)
 ```
 
+### findOverlaps and %over%
+
+```{r}
+gr1 <- GRanges("chrZ",IRanges(c(1,11,21,31,41),width=5))
+gr2 <- GRanges("chrZ",IRanges(c(19,33),c(38,35)))
+gr1
+gr2
+fo <- findOverlaps(gr1, gr2)
+fo
+queryHits(fo)
+subjectHits(fo)
+gr1 %over% gr2
+gr1[gr1 %over% gr2]
+```
+
+### Rle and Views
+
+```{r}
+r <- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20)))
+r
+str(r)
+as.numeric(r)
+Views(r, start=c(4,2), end=c(7,6))
+```
+
+
+
 ## ExpressionSet and SummarizedExperiment
 
 ```{r}
@@ -101,15 +139,15 @@ dim(e)
 exprs(e)[1:3,1:3]
 dim(exprs(e))
 
-colData(e)[1:3,1:6]
-dim(colData(e))
-names(colData(e))
-colData(e)$characteristics_ch1
+pData(e)[1:3,1:6]
+dim(pData(e))
+names(pData(e))
+pData(e)$characteristics_ch1
 
-rowData(e)[1:3,1:3]
-dim(rowData(e))
-names(rowData(e))
-head(rowData(e)$"Gene Symbol")
+fData(e)[1:3,1:3]
+dim(fData(e))
+names(fData(e))
+head(fData(e)$"Gene Symbol")
 head(rownames(e))
 
 experimentData(e)

@@ -1,0 +1,7 @@
+# Gene set testing
+
+```{r}
+library(limma)
+# show camera and roast
+# also show permutation method
+```
