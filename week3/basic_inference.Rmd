@@ -1,0 +1,78 @@
+## Gene expression
+We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+
+```{r}
+library(Biobase,quietly=TRUE,verbose=FALSE)
+library(genefilter)
+library(maPooling)
+data(maPooling)
+pd=pData(maPooling)
+pooled=which(rowSums(pd)==12)
+y2=exprs(maPooling[,pooled])
+group2=factor(as.numeric(grepl("b",names(pooled))))
+```
+If we compare the mean expression between groups for each gene we find several showing consistent differences.
+
+```{r, fig.height=3, fig.width=6}
+###look at 2 pre-selected samples for illustration
+i=11425;j=11878
+library(rafalib)
+mypar(1,2)
+stripchart(split(y2[i,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 1",xlab="Group",pch=15)
+stripchart(split(y2[j,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 2",xlab="Group",pch=15)
+```
+Note that if we compute a t-test from these values we obtain highly significant results
+```{r}
+library(genefilter)
+tt2=rowttests(y2,group2)
+tt2$p.value[i]
+tt2$p.value[j]
+```
+But would these results hold up if we selected another 24 mice? Note that the equation for the t-test we presented in the previous section include the population standard deviations. Are these quantities measured here? Note that it is being replicated here is the experimental protocol. We have created four _technical replicates_ for each pooled sample. Gene 1 may be a highly variable gene within straing of mice while  Gene 2 a stable one, but we have no way of seeing this. 
+
+It turns we also have microarray data for each individual mice. For each strain we have 12 _biological replicates_. 
+
+```{r}
+individuals=which(rowSums(pd)==1)
+##remove replicates
+individuals=individuals[-grep("tr",names(individuals))]
+y=exprs(maPooling)[,individuals]
+group=factor(as.numeric(grepl("b",names(individuals))))
+```
+
+We can compute the sample variance for each gene and compare to the standard deviation obtained with the technical replicates.
+```{r}
+technicalsd <- rowSds(y2[,group2==0])
+biologicalsd <- rowSds(y[,group==0])
+LIM=range(c(technicalsd,biologicalsd))
+mypar(1,1)
+boxplot(technicalsd,biologicalsd,names=c("technical","biological"),ylab="standard deviation")
+```
+
+Note the biological variance is much larger than the technical one. And also that the variability of variances is also for biological variance. Here are the two genes we showed above but now for each individual mouse 
+
+```{r, }
+mypar(1,2)
+stripchart(split(y[i,],group),vertical=TRUE,method="jitter",col=c(1,2),xlab="Gene 1",pch=15)
+points(c(1,2),tapply(y[i,],group,mean),pch=4,cex=1.5)
+stripchart(split(y[j,],group),vertical=TRUE,method="jitter",col=c(1,2),xlab="Gene 2",pch=15)
+points(c(1,2),tapply(y[j,],group,mean),pch=4,cex=1.5)
+```
+
+Note the p-value tell a different story
+```{r}
+library(genefilter)
+tt=rowttests(y,group)
+tt$p.value[i]
+tt$p.value[j]
+```
+
+Which of these two genes do we feel more confident reporting as being differentially expressed? If another investigator takes another random sample of mice and tries the same experiment, which one do you think will replicate? Measuring biological vairability is essential if we want our conclusions to be about the strain of mice in general as opposed to the specific mice we have. 
+
+Now which genes do we report as stastitically significant? For somewhat arbitrary reasons, in science p-values of 0.01 and 0.05 are used as cutoff. In this particular example we get 
+
+```{r}
+sum(tt$p.value<0.01)
+sum(tt$p.value<0.05)
+```
+

@@ -1,0 +1,66 @@
+# Expressing experimental designs using R formula
+
+In this module, we will show how to use the two base R functions:
+
+- `formula`
+- `model.matrix`
+
+...in order to produce design matrices for a variety of linear models.
+
+```{r}
+x <- c(1,1,2,2)
+f <- formula(~ x)
+f
+```
+
+```{r}
+model.matrix(f)
+```
+
+```{r}
+x <- factor(c(1,1,2,2))
+f <- formula(~ x)
+model.matrix(f)
+```
+
+```{r}
+x <- factor(c(1,1,2,2,3,3))
+f <- formula(~ x)
+model.matrix(f)
+model.matrix(f,contrasts=list(x="contr.sum"))
+?contr.sum
+```
+
+```{r}
+x <- factor(c(1,1,1,1,2,2,2,2))
+y <- factor(c("a","a","b","b","a","a","b","b"))
+model.matrix(~ x + y)
+```
+
+```{r}
+model.matrix(~ x + y + x:y)
+model.matrix(~ x*y)
+```
+
+```{r}
+x <- factor(c(1,1,2,2))
+model.matrix(~ x)
+x <- relevel(x,"2")
+model.matrix(~ x)
+x <- factor(x, levels=c("1","2"))
+```
+
+```{r}
+z <- 1:4
+model.matrix(~ z)
+model.matrix(~ 0 + z)
+model.matrix(~ z + I(z^2))
+```
+
+```{r}
+x <- 1:4
+model.matrix(~ x)
+model.matrix(~ x, data=data.frame(x=5:8))
+```
+
+
