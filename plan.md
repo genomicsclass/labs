@@ -26,7 +26,9 @@
 
 # week 3
 
-- rafa Monte carlo simulation
+- rafa Monte carlo simulation 
+
+? can you introduce power here using simulation? show how the t-test power depends on alpha, n, sd and mu_x - mu_y?
 
 - mike Basic inference on microarray 
 
