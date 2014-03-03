@@ -1,4 +1,4 @@
-** means done **
+**means done**
 
 # week 1
 
@@ -47,10 +47,6 @@
 # week 6
 
 - rafa Combat, SVA, RUV in R
-
-- rafa Batch effect in NGS
- 
-? i think this should just be diagnostics (PCA), then solutions come in week 8
 
 # week 7
 
