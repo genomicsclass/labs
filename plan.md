@@ -42,7 +42,9 @@
 
 # week 5
 
-- mike Distances, clustering, heatmaps, PCA in R
+- mike Distances, clustering, heatmaps in R
+
+- rafa Principal components analysis
 
 # week 6
 
