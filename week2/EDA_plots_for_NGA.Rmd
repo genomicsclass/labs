@@ -1,0 +1,20 @@
+## EDA for NGS
+
+This is a dataset produced by Bottomly et al., sequencing two strains of mouse with many biological replicates. This dataset and a number of other sequencing datasets have been compiled from raw data into read counts tables by Frazee, Langmead, and Leek as part of the ReCount project. These datasets are made publicly available at the following website:
+
+http://bowtie-bio.sourceforge.net/recount/
+
+Unlike many sequencing studies, Bottomly et al., realizing the such information is important for downstream analysis, provided the experiment number for all samples. Below we can see that the experimental batch explains more variation than the condition of interest: the strain of mouse. 
+
+We can make similar figures for NGS to the ones shown in the previous sections. However, the log transform does not work because RNAseq data contains many 0s. One quick way to get around this is by adding a constant before taking the log. A typical one is 0.5 which gives us a log2 value of -1 for 0s.
+
+```{r}
+download.file("http://bowtie-bio.sourceforge.net/recount/ExpressionSets/bottomly_eset.RData","bottomly_eset.RData")
+load("bottomly_eset.RData")
+library("Biobase")
+Y <- log2(exprs(bottomly.eset) + 0.5)
+mypar(1,1)
+for(i in 1:ncol(Y)){
+  shist(Y[,i],unit=0.25,lineCol=i,plotHist=FALSE,add=i!=1)
+}
+```
