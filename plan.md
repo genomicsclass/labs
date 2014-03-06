@@ -8,15 +8,19 @@
 
 - **mike Installing Bioconductor and finding help**
 
-- rafa Exploratory data analysis
+- **rafa Exploratory data analysis**
 
 # week 2
 
 - rafa Reading microarray raw data
 
-- rafa EDA plots for microarray
+- rafa Microarray EDA
 
 - mike Mapping algorithms and software
+
+- mike NGS EDA
+
+? talk about zeros here
 
 - **mike Basic Bioconductor infrastructure: IRanges**
 
@@ -32,7 +36,7 @@
 
 - mike Basic inference on microarray 
 
-? show row t-tests? then say limma is more powerful, will come in week 7
+? show row t-tests and limma. show why wilcoxon no good for 3 vs 3
 
 - mike Expressing experimental design using R formula
 
