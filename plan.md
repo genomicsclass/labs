@@ -30,6 +30,8 @@
 
 # week 3
 
+- mike github
+
 - rafa Monte carlo simulation 
 
 ? can you introduce power here using simulation? show how the t-test power depends on alpha, n, sd and mu_x - mu_y?
