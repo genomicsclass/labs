@@ -1,4 +1,4 @@
-# Hierarchical modeling / using limma for microarray analysis
+# Using limma for microarray analysis
 
 ```{r}
 biocLite("SpikeInSubset")
