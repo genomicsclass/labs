@@ -12,11 +12,13 @@
 
 # week 2
 
+- mike github
+
 - rafa Reading microarray raw data
 
 - rafa Microarray EDA
 
-- mike Mapping algorithms and software
+- **mike Mapping algorithms and software**
 
 - mike NGS EDA
 
@@ -29,8 +31,6 @@
 - **mike Basic Bioconductor infrastructure: ExpressionSet and SummarizedExperiment**
 
 # week 3
-
-- mike github
 
 - rafa Monte carlo simulation 
 
