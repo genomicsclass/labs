@@ -1,4 +1,3 @@
-
 library(GEOquery)
 gse <- getGEO("GSE5859")
 pd<-pData(gse[[1]])
@@ -26,4 +25,4 @@ eth2[is.na(eth2)]<-"HAN" ##from LA, checked here
 
 pd=data.frame(ethnicity=eth2,date=dates,filename=basename(filenames))
 pData(e)<-pd
-save(e,file="cheung.rda")
+save(e,file="GSE5859.rda")
