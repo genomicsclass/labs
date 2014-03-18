@@ -185,6 +185,38 @@ hist(tt$p.value,main="",ylab="p-value")
 
 ## More on gene correlation
 
+```{r}
+library(rafalib)
+library(matrixStats)
+load("tissuesGeneExpression.rda")
+o<-order(factor(tissue,levels=c("cerebellum" , "hippocampus","colon", "endometrium","placenta","kidney","liver")))
+e<-e[,o]
+tissue<-tissue[o]
+e<-e-rowMeans(e)
+sds<-rowSds(e)
+set.seed(2)
+rind<-sample(nrow(e),5000)
+d <- dist(e[rind,])
+h <- hclust(d)
+clusters<-cutree(h,k=4)
+ind<-splitit(clusters)
+vs<-which(!duplicated(tissue))##where to draw vertical lines dividing tissues
+pos<-vs+diff(c(vs,length(tissue)))/2
+
+##find most different from 0
+mypar(2,2,mar=c(6,2.5,.6,1.1))
+for(i in ind){
+  tmp<-e[rind[i],]
+  matplot(t(tmp),type="l",lty=1,col="grey",ylim=mean(e)+c(-6,6),xaxt="n") 
+   abline(v=vs)
+  axis(side=1,pos,unique(tissue),las=3)
+  lines(colMeans(tmp),lwd=4)
+  abline(h=mean(e),lty=2)
+  }
+```
+
+
+
 
 
 ```{r}
