@@ -1,6 +1,6 @@
 # Exploratory Data Analysis
 
-Biases, systematic errors and unexpected variability are common in genomics data. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines are design to detect these and report an answer. Yet without removing data from failed experiments may result hard to notice downstream errors. In later modules we will cover many other examples. 
+Biases, systematic errors and unexpected variability are common in genomics data. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines are designed to detect these. Yet, these pipelines still give you an answer and the from the final results it may be hard or impossible to notice an error was made. In later modules we will cover many other examples. 
 
 Graphing data is a powerful approach to detecting these problems. We refer to this as _exploratory data analyis_ (EDA). Many important methodological contributions to genomics data analysis were initiated as discovery made via EDA. We will show some useful exploratory plots for gene expression data measured with microarrays and NGS. We start with a general introduction to EDA using height data.
 ## Histograms
@@ -92,19 +92,26 @@ Note that the father is taller than average. He is 1.7 standard deviations talle
 boxplot(split(y,round(x)))
 print(mean(y[ round(x) == 72]))
 ```
-Stratification followed by boxplots lets us see the distribution of each group. The average height of sons with fathers that are 72 is 70.7. We also see that the means of the strata follow a straight line. This line is refereed to the regression line and it's slope related to the correlation. When two variables follow a bivariate normal distribution then for any given value of x we predict the value of y with
+Stratification followed by boxplots lets us see the distribution of each group. The average height of sons with fathers that are 72 is 70.7. We also see that the means of the strata appear to follow a straight line. 
+
+This line is refereed to the regression line and it's slope related to the correlation. When two variables follow a bivariate normal distribution then for any given value of x we predict the value of y with
 $$
 \frac{Y - \mu_Y}{\sigma_Y} = r \frac{X-\mu_X}{\sigma_X}
 $$
 with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. Let's compare the mean of each strata to the identity line and the regression line
 
 ```{r,fig.width=3, fig.height=3}
-means=tapply(y,round(x),mean)
+x=(x-mean(x))/sd(x)
+y=(y-mean(y))/sd(y)
+means=tapply(y,round(x*4)/4,mean)
 fatherheights=as.numeric(names(means))
 plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fatherheights))
-abline(0,1)
-abline(lm(y~x),lty=2)
+abline(0,cor(x,y))
 ```
+
+
+
+
 
 ## Spearman's correlation
 Just like the average and standard deviation are not good summaries when the data is not well approximated by the normal distribution, the correlation is not a good summary when pairs of lists are not approximated by the bivariate normal distribution. Examples include cases in which on variable is related to another by a parabolic function. Another, more common example are caused by outliers or extreme values.
