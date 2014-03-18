@@ -1,0 +1,72 @@
+# Reading in microarray data
+
+## Affymterix CEL files
+
+We start by reading in the sample information table. This is usually created by the person who performed the experiment. 
+
+```{r}
+library(affy)
+basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week2/celfiles"
+tab <- read.delim(file.path(basedir,"sampleinfo.txt"),check.names=FALSE,as.is=TRUE)
+fns <- list.celfiles(basedir)
+fns%in%tab[,1] ##check
+ab <- ReadAffy(filenames=file.path(basedir,tab[,1]),phenoData=tab)
+```
+
+This creates an AffyBatch object which object contains infomration you need.
+
+```{r}
+dim(pm(ab))
+dim(pData(ab))
+annotation(ab)
+```
+
+Note, this object You can then preprocess RMA
+```{r}
+e <- rma(ab)
+```
+
+If you are not interested in probe level data you could can use this function
+```{r}
+e <- justRMA(filenames=file.path(basedir,tab[,1]),phenoData=tab))
+```
+
+##Agilent data
+
+```{r}
+basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week2/agilent"
+targets <- readTargets(file.path(basedir,"TargetBeta7.txt"))
+RG <- read.maimages(targets$FileName, source="genepix",path=basedir)
+MA <- MA.RG(RG,bc.method="none")
+mypar(1,1)
+imageplot(MA$M[,2], RG$printer, zlim=c(-3,3))
+dev.off()
+```
+
+
+
+
+
+## oligo
+We can also use oligo to read affy arrays
+
+```{r}
+detach("package:affy")
+library(oligo)
+basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week2/celfiles"
+tab <- read.delim(file.path(basedir,"sampleinfo.txt"),check.names=FALSE,as.is=TRUE)
+fns <- list.celfiles(basedir,listGzipped=TRUE)
+fns%in%tab[,1] ##check
+pd <- as(tab, "AnnotatedDataFrame")
+efs <- read.celfiles(filenames=file.path(basedir,tab[,1]),phenoData=pd,sampleNames=sampleNames(pd))
+```
+
+```{r}
+e <- rma(efs)
+```
+
+
+
+
+
+
