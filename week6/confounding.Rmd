@@ -53,8 +53,8 @@ Male and easy majors are confounded.
 y=cbind(dat[1:6,5],dat[7:12,5])
 y=sweep(y,2,colSums(y),"/")*100
 x=rowMeans(cbind(dat[1:6,3],dat[7:12,3]))
-matplot(x,y,xlab="percent that gets in the major",ylab="percent that applies to major",col=c("blue","red"))
-legend("topleft",c("Male","Female"),col=c("blue","red"),pch=c("1","2"))
+matplot(x,y,xlab="percent that gets in the major",ylab="percent that applies to major",col=c("blue","red"),cex=1.5)
+legend("topleft",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0)
 ```
 
 ```{r}
@@ -97,7 +97,8 @@ abline(v=45)
 So if we condition or stratify by major this goes away. 
 ```{r}
 y=cbind(dat[1:6,3],dat[7:12,3])
-matplot(1:6,y,xaxt="n",xlab="major",ylab="percent",col=c("blue","red"))
+matplot(1:6,y,xaxt="n",xlab="major",ylab="percent",col=c("blue","red"),cex=1.5)
+legend("topright",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0,cex=0.75)
 ```
 
 The average difference by Major is 3.5\% higher for women.
@@ -111,9 +112,10 @@ $$
   &1995&1996&Combined\\
   Derek Jeter &  12/48 	.250& 	183/582 	.314 &	195/630 	.310\\
   David Justice &	104/411 	.253 &	45/140 	.321 &	149/551 	.270\\
+  \end{tablar}
 $$
 
-## Confounding in genomice
+## Confounding in genomics
 
 Here are the p-values from comparing caucasians to asians
 ```{r}
