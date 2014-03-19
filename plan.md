@@ -1,4 +1,4 @@
-**means done**
+B1;2c**means done**
 
 # week 1
 
@@ -12,17 +12,15 @@
 
 # week 2
 
-- mike github
+- **mike github**
 
-- rafa Reading microarray raw data
+- **rafa Reading microarray raw data**
 
-- rafa Microarray EDA
+- **rafa Microarray EDA**
 
 - **mike Mapping algorithms and software**
 
-- mike NGS EDA
-
-? talk about zeros here
+- **mike NGS EDA**
 
 - **mike Basic Bioconductor infrastructure: IRanges**
 
