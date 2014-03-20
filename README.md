@@ -1,2 +1,3 @@
-genomicsclass
-=============
+Data Analysis for Genomics
+==========================
+
