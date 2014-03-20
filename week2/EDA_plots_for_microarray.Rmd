@@ -3,8 +3,8 @@ Here we are analyzing microarray data from eight samples: two groups of four. A 
 
 ```{r,fig.width=6, fig.height=3}
 library(devtools)
-install_github("dagEDA","mikelove")
-library(dagEDA)
+install_github("dagdata","genomicsclass")
+library(dagdata)
 data(SpikeInEDA)
 par(mfrow=c(1,2))
 hist(int[,1])
