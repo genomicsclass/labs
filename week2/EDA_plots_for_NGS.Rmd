@@ -1,4 +1,4 @@
-## EDA for NGS
+# EDA for NGS
 
 This is a dataset produced by Bottomly et al., sequencing two strains of mouse with many biological replicates. This dataset and a number of other sequencing datasets have been compiled from raw data into read counts tables by Frazee, Langmead, and Leek as part of the ReCount project. These datasets are made publicly available at the following website:
 
@@ -12,9 +12,48 @@ We can make similar figures for NGS to the ones shown in the previous sections. 
 download.file("http://bowtie-bio.sourceforge.net/recount/ExpressionSets/bottomly_eset.RData","bottomly_eset.RData")
 load("bottomly_eset.RData")
 library("Biobase")
+exprs(bottomly.eset)[1,]
+pData(bottomly.eset)
+```
+
+```{r}
 Y <- log2(exprs(bottomly.eset) + 0.5)
+library(devtools)
+install_github("rafalib","ririzarr")
+library("rafalib")
 mypar(1,1)
 for(i in 1:ncol(Y)){
-  shist(Y[,i],unit=0.25,lineCol=i,plotHist=FALSE,add=i!=1)
+  shist(Y[,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
 }
 ```
+
+If we get rid of the zeros (i.e., those with log2 value of -1), we can more easily see that shape of the distribution for the expressed genes:
+
+```{r}
+mypar(1,1)
+for(i in 1:ncol(Y)){
+  idx <- Y[,i] > -1
+  shist(Y[idx,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
+}
+```
+
+Plotting two samples against each other shows the spreading of points at the low end of expression from the log transformation. This can also be seen with randomly generated Poisson data.
+
+```{r}
+mypar(1,2)
+idx <- rowSums(Y[,1:2]) > 0
+plot(Y[idx,1], Y[idx,2], cex=.1)
+rm <- rowMeans(2^Y[idx,1:2])
+simulated1 <- rpois(length(idx), rm)
+simulated2 <- rpois(length(idx), rm)
+plot(log2(simulated1 + .5), log2(simulated2 + .5), cex=.1)
+```
+
+The MA plot is again easier to look at, in that we don't have to rotate our heads sideways by 45 degrees to see deviations from the diagonal.
+
+```{r}
+mypar(1,1)
+maplot(Y[idx,1],Y[idx,2])
+```
+
+
