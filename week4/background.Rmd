@@ -132,7 +132,7 @@ M=log2(y2[ind]/y1[ind])
 A=((log2(y1[ind])+log2(y2[ind]))/2) 
 plot(A,M,xlim=XLIM,ylim=YLIM,xlab="log (base 2) concentraion",main="PM-MM")
 abline(h=0,col=2)
-plot(log2(alpha[ind]),A,xlim=XLIM,ylim=XLIM,main="PM");abline(0,1,col=2)
+plot(log2(alpha[ind]),A,xlim=XLIM,ylim=XLIM,main="PM-MM");abline(0,1,col=2)
 ```
 
 ## Model based adjustment
