@@ -1,11 +1,11 @@
 # Basic inference for microarray data
 
-We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
 
 ```{r}
 library(Biobase)
 library(genefilter)
-library(devtools)
+# library(devtools)
 # install_github("dagdata","genomicsclass")
 library(dagdata)
 data(maPooling)
@@ -31,10 +31,11 @@ es$group <- factor(as.numeric(grepl("b",colnames(es))))
 es$group
 ```
 
-Look at plots of gene expression across group:
+## Plots of gene expression across group
+
+Let's look at 2 pre-selected samples for illustration, which are the same genes from the lecture.
 
 ```{r, fig.height=3, fig.width=6}
-###look at 2 pre-selected samples for illustration
 i=11425
 j=11878
 # install_github("rafalib","ririzarr")
@@ -44,9 +45,10 @@ stripchart(split(exprs(es)[i,], es$group), vertical=TRUE, method="jitter", col=c
 stripchart(split(exprs(es)[j,], es$group), vertical=TRUE, method="jitter", col=c(1,2), main="Gene 2", xlab="Group", pch=15)
 ```
 
-compute a t-test
+## Compute a t-test for each gene (row)
 
 ```{r}
+# biocLite("genefilter")
 library(genefilter)
 tt <- rowttests(exprs(es), es$group)
 head(tt,1)
@@ -62,8 +64,28 @@ with(tt, plot(dm, -log10(p.value),
               main="'Volcano' plot"))
 ```
 
+## Compare with non-parametric tests
 
 ```{r}
+es2 <- es[,c(1,2,3,13,14,15)]
+stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="Expression", pch=15)
+t.test(exprs(es2)[1,] ~ es2$group)
+wilcox.test(exprs(es2)[1,] ~ es2$group)
+y <- 1:6
+x <- es2$group
+stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="Expression", pch=15)
+t.test(y ~ x)
+wilcox.test(y ~ x)
+y <- c(1:3,11:13)
+stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="Expression", pch=15)
+t.test(y ~ x)
+wilcox.test(y ~ x)
+```
+
+## Using lmFit from limma package
+
+```{r}
+# biocLite("limma")
 library(limma)
 ?lmFit
 design <- model.matrix(~ es$group)
