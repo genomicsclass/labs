@@ -4,7 +4,6 @@ We have data for two strains of mice which we will refer to as strain 0 and 1. W
 
 ```{r}
 library(Biobase)
-library(genefilter)
 # library(devtools)
 # install_github("dagdata","genomicsclass")
 library(dagdata)
@@ -12,13 +11,21 @@ data(maPooling)
 e <- maPooling
 head(pData(e))
 
-hflipt <- function(m) t(m[nrow(m):1,])
+# install_github("rafalib","ririzarr")
+library(rafalib)
+mypar()
+flipt <- function(m) t(m[nrow(m):1,])
 myimage <- function(m,...) {
-  image(hflipt(m),xaxt="n",yaxt="n",...)
+  image(flipt(m),xaxt="n",yaxt="n",...)
   }
 
-myimage(as.matrix(pData(e)),col=c("white","black"))
+myimage(as.matrix(pData(e)),col=c("white","black"),
+        xlab="experiments",
+        ylab="individuals",
+        main="phenoData")
+
 individuals <- which(rowSums(pData(e)) == 1)
+individuals
 
 ## remove replicates
 names(individuals)
@@ -38,8 +45,6 @@ Let's look at 2 pre-selected samples for illustration, which are the same genes 
 ```{r, fig.height=3, fig.width=6}
 i=11425
 j=11878
-# install_github("rafalib","ririzarr")
-library(rafalib)
 mypar(1,2)
 stripchart(split(exprs(es)[i,], es$group), vertical=TRUE, method="jitter", col=c(1,2), main="Gene 1", xlab="Group", pch=15)
 stripchart(split(exprs(es)[j,], es$group), vertical=TRUE, method="jitter", col=c(1,2), main="Gene 2", xlab="Group", pch=15)
@@ -51,38 +56,46 @@ stripchart(split(exprs(es)[j,], es$group), vertical=TRUE, method="jitter", col=c
 # biocLite("genefilter")
 library(genefilter)
 tt <- rowttests(exprs(es), es$group)
+head(tt)
 head(tt,1)
+
 mean(exprs(es)[1,es$group == 0]) - mean(exprs(es)[1,es$group == 1]) 
-diff(tapply(exprs(es)[1,], es$group, mean))
+
 simple.t <- t.test(exprs(es)[1,] ~ es$group, var.equal=TRUE)
 simple.t$p.value
+
 tt$p.value[i]
 tt$p.value[j]
+
 mypar(1,1)
 with(tt, plot(dm, -log10(p.value), 
               xlab="difference in means",
               main="'Volcano' plot"))
+tt[with(tt, identify(dm, -log10(p.value))),]
 ```
 
 ## Compare with non-parametric tests
 
 ```{r}
 es2 <- es[,c(1,2,3,13,14,15)]
-stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="Expression", pch=15)
+mypar(1,1)
+stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
 t.test(exprs(es2)[1,] ~ es2$group)
 wilcox.test(exprs(es2)[1,] ~ es2$group)
+
 y <- 1:6
 x <- es2$group
-stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="Expression", pch=15)
+stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
 t.test(y ~ x)
 wilcox.test(y ~ x)
+
 y <- c(1:3,11:13)
-stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="Expression", pch=15)
+stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
 t.test(y ~ x)
 wilcox.test(y ~ x)
 ```
 
-## Using lmFit from limma package
+## Basic inference on microarray using lmFit from limma package
 
 ```{r}
 # biocLite("limma")
@@ -93,17 +106,18 @@ design
 fit <- lmFit(es, design)
 names(fit)
 head(coef(fit))
+tt[1,]
 # we will introduce the eBayes() function
 # in a later module called 'hierarchical modeling'
 # but we call it now as it is standard in microarray analysis
 fit <- eBayes(fit)
 names(fit)
-tt[1,]
 fit$p.value[1,]
 fit$t[1,]
+tt[1,]
 plot(-1 * tt$statistic, fit$t[,2],
      xlab="rowttests", 
      ylab="eBayes t")
 abline(0,1,col="red",lwd=3)
-topTable(fit, coef=2, sort.by="p")
+head(topTable(fit, coef=2, sort.by="p"),3)
 ```
