@@ -19,15 +19,13 @@ model.matrix(f)
 
 ```{r}
 x <- factor(c(1,1,2,2))
-f <- formula(~ x)
-model.matrix(f)
+model.matrix(~ x)
 ```
 
 ```{r}
 x <- factor(c(1,1,2,2,3,3))
-f <- formula(~ x)
-model.matrix(f)
-model.matrix(f,contrasts=list(x="contr.sum"))
+model.matrix(~ x)
+model.matrix(~ x,contrasts=list(x="contr.sum"))
 ?contr.sum
 ```
 

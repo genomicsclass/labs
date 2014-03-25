@@ -34,11 +34,9 @@ B1;2c**means done**
 
 ? can you introduce power here using simulation? show how the t-test power depends on alpha, n, sd and mu_x - mu_y?
 
-- mike Basic inference on microarray 
-
-? show row t-tests and limma. show why wilcoxon no good for 3 vs 3
-
 - mike Expressing experimental design using R formula
+
+- mike Basic inference on microarray 
 
 # week 4
 
