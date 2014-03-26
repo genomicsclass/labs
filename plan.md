@@ -36,6 +36,10 @@ B1;2c**means done**
 
 - mike Expressing experimental design using R formula
 
+add links to more help on formula
+the UCR manual?
+http://www.math.montana.edu/Rweb/Rnotes/node77.html
+
 - mike Basic inference on microarray 
 
 # week 4
