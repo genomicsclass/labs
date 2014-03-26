@@ -40,7 +40,7 @@ es$group
 
 ## Plots of gene expression across group
 
-Let's look at 2 pre-selected samples for illustration, which are the same genes from the lecture.
+Let's look at 2 pre-selected genes for illustration, which are the same genes from the lecture.
 
 ```{r, fig.height=3, fig.width=6}
 i=11425
