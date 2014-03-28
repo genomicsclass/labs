@@ -1,4 +1,4 @@
-B1;2c**means done**
+**means done**
 
 # week 1
 
@@ -34,15 +34,13 @@ B1;2c**means done**
 
 ? can you introduce power here using simulation? show how the t-test power depends on alpha, n, sd and mu_x - mu_y?
 
-- mike ** Expressing experimental design using R formula **
+- mike **Expressing experimental design using R formula**
 
-add links to more help on formula
-the UCR manual?
-http://www.math.montana.edu/Rweb/Rnotes/node77.html
+add links to more help on formula the UCR manual & http://www.math.montana.edu/Rweb/Rnotes/node77.html
 
-- mike ** Basic inference on microarray part I **
+- mike **Basic inference on microarray part I**
 
-- mike ** Basic inference on microarray part II **
+- mike **Basic inference on microarray part II**
 
 # week 4
 
