@@ -30,17 +30,15 @@
 
 # week 3
 
-- rafa Monte carlo simulation 
+- **rafa Monte carlo simulation**
 
-? can you introduce power here using simulation? show how the t-test power depends on alpha, n, sd and mu_x - mu_y?
+- **rafa Permutation tests**
 
-- mike **Expressing experimental design using R formula**
+- **mike Expressing experimental design using R formula** ( add links to more help on formula the UCR manual & http://www.math.montana.edu/Rweb/Rnotes/node77.html )
 
-add links to more help on formula the UCR manual & http://www.math.montana.edu/Rweb/Rnotes/node77.html
+- **mike Basic inference on microarray part I**
 
-- mike **Basic inference on microarray part I**
-
-- mike **Basic inference on microarray part II**
+- **mike Basic inference on microarray part II**
 
 # week 4
 
@@ -50,9 +48,7 @@ add links to more help on formula the UCR manual & http://www.math.montana.edu/R
 
 # week 5
 
-- mike Distances, clustering, heatmaps in R
-
-- rafa Principal components analysis
+- mike Distances, clustering, PCA, heatmaps in R
 
 # week 6
 
@@ -62,11 +58,9 @@ add links to more help on formula the UCR manual & http://www.math.montana.edu/R
 
 - mike Using the limma package
 
-- rafa Permutations in R
-
 - mike Mapping features to genes
 
-- mike Gene set testing in R
+- mike Gene set testing
 
 # week 8
 
@@ -88,7 +82,7 @@ add links to more help on formula the UCR manual & http://www.math.montana.edu/R
 
 - rafa DNA methylation: arrays
 
-- rafa DNA methllation: NGS
+- rafa DNA methylation: NGS
 
 - mike ChIP-Seq
 
