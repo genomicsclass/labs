@@ -1,2 +1,43 @@
 # Distances and Clustering
 
+```{r}
+load("tissuesGeneExpression.rda")
+library(Biobase)
+rownames(tab) <- tab$filename
+t <- ExpressionSet(e, AnnotatedDataFrame(tab))
+t$Tissue <- factor(t$Tissue)
+boxplot(exprs(t))
+```
+
+```{r}
+x <- t(exprs(t))
+d <- dist(x)
+class(d)
+as.matrix(d)[1,2]
+sqrt(sum((x[1,] - x[2,])^2))
+```
+
+```{r}
+hc <- hclust(d)
+hc
+plot(hc)
+library(rafalib)
+mypar()
+plot(hc, labels=t$Tissue)
+myplclust(hc, labels=t$Tissue, lab.col=as.fumeric(t$Tissue))
+abline(h=120)
+prediction <- cutree(hc, h=120)
+table(true=t$Tissue, prediction)
+```
+
+```{r}
+plot(x[,1], x[,2])
+km <- kmeans(x[,1:2], centers=3)
+names(km)
+plot(x[,1], x[,2], col=km$cluster, pch=16)
+km <- kmeans(x, centers=3)
+names(km)
+plot(x[,1], x[,2], col=km$cluster, pch=16)
+km <- kmeans(x, centers=7)
+table(true=t$Tissue, prediction=km$cluster)
+```
