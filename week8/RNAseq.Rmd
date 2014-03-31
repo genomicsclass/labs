@@ -1,0 +1,47 @@
+# RNA-Seq analysis 
+
+## Aligning reads
+
+## Novel transcripts
+
+## Assigning reads to genes or transcripts
+
+## Visualizing sample-sample distances
+
+```{r}
+link <- "http://bowtie-bio.sourceforge.net/recount/ExpressionSets/hammer_eset.RData"
+download.file(link, "hammer_eset.RData")
+load("hammer_eset.RData")
+library(Biobase)
+library(GenomicRanges)
+se <- SummarizedExperiment(exprs(hammer.eset))
+colData(se) <- DataFrame(pData(hammer.eset))
+```
+
+```{r}
+library(DESeq2)
+dds <- DESeqDataSet( se, design = ~ protocol + Time )
+dds <- estimateSizeFactors(dds)
+```
+
+```{r}
+logcounts <- log2( counts(dds, normalized=TRUE) + 1 )
+pc <- prcomp( t( logcounts ) )
+plot(pc$x[,1], pc$x[,2])
+plot(hclust(dist(t(logcounts))), labels=colData(se)$protocol)
+plot(logcounts[,1], logcounts[,2], cex=.1)
+```
+
+```{r}
+rld <- rlog( dds )
+pc2 <- prcomp( t( assay(rld) ) )
+plot(pc2$x[,1], pc2$x[,2])
+plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$protocol)
+plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
+```
+
+## Differential gene expression
+
+## Differential exon or isoform usage
+
+
