@@ -1,0 +1,49 @@
+# PCA and Heatmaps
+
+## Principal components analysis (PCA)
+## Singular value decomposition (SVD)
+
+```{r}
+library(devtools)
+install_github("dagdata","genomicsclass")
+library(dagdata)
+data(maPooling)
+e <- maPooling
+library(Biobase)
+es <- e[,rowSums(pData(e)) == 1]
+
+x <- t(exprs(es))
+pc <- prcomp(x)
+?prcomp
+plot(pc$x[,1], pc$x[,2])
+plot(pc$x[,1], pc$x[,2], type="n")
+text(pc$x[,1], pc$x[,2], colnames(es))
+
+sv <- svd(x)
+plot(sv$u[,1], sv$u[,2])
+
+cx <- scale(x, center=TRUE, scale=FALSE)
+sv <- svd(cx)
+plot(sv$u[,1], sv$u[,2])
+```
+
+## Heatmaps
+
+```{r}
+# install.packages("RColorBrewer")
+library(RColorBrewer)
+hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
+
+library(genefilter)
+rv <- rowVars(exprs(es))
+idx <- order(-rv)[1:40]
+top <- exprs(es)[idx,]
+heatmap(top, col=hmcol)
+heatmap(scale(top, center=TRUE, scale=FALSE), col=hmcol)
+
+# install.packages("gplots")
+library(gplots)
+cols <- ifelse(grepl("a",colnames(es)), "orange","purple")
+cbind(colnames(es),cols)
+heatmap.2(top, trace="none", ColSideColors=cols, col=hmcol)
+```
