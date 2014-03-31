@@ -6,18 +6,24 @@
 ```{r}
 library(devtools)
 install_github("dagdata","genomicsclass")
-library(dagdata)
-data(maPooling)
-e <- maPooling
-library(Biobase)
-es <- e[,rowSums(pData(e)) == 1]
 
-x <- t(exprs(es))
+load("tissuesGeneExpression.rda")
+library(Biobase)
+rownames(tab) <- tab$filename
+t <- ExpressionSet(e, AnnotatedDataFrame(tab))
+t$Tissue <- factor(t$Tissue)
+colnames(t) <- paste0(t$Tissue, seq_len(ncol(t)))
+
+
+x <- t(exprs(t))
 pc <- prcomp(x)
 ?prcomp
 plot(pc$x[,1], pc$x[,2])
 plot(pc$x[,1], pc$x[,2], type="n")
-text(pc$x[,1], pc$x[,2], colnames(es))
+text(pc$x[,1], pc$x[,2], colnames(t))
+library(rafalib)
+mypar()
+text(pc$x[,1], pc$x[,2], colnames(t), col=as.fumeric(t$Tissue))
 
 sv <- svd(x)
 plot(sv$u[,1], sv$u[,2])
@@ -35,15 +41,14 @@ library(RColorBrewer)
 hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
 
 library(genefilter)
-rv <- rowVars(exprs(es))
+rv <- rowVars(exprs(t))
 idx <- order(-rv)[1:40]
-top <- exprs(es)[idx,]
+top <- exprs(t)[idx,]
 heatmap(top, col=hmcol)
-heatmap(scale(top, center=TRUE, scale=FALSE), col=hmcol)
 
 # install.packages("gplots")
 library(gplots)
-cols <- ifelse(grepl("a",colnames(es)), "orange","purple")
-cbind(colnames(es),cols)
+cols <- palette(brewer.pal(8, "Dark2"))[t$Tissue]
+cbind(colnames(t),cols)
 heatmap.2(top, trace="none", ColSideColors=cols, col=hmcol)
 ```
