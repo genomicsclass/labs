@@ -7,7 +7,8 @@ $$
 
 Here are some data
 ```{r}
-load("tissuesGeneExpression.rda")
+library(dagdata)
+data(tissuesGeneExpression)
 ##show matrix
 mat=e[870:880,14:19]
 colnames(mat)<-tissue[14:19]
@@ -188,7 +189,8 @@ hist(tt$p.value,main="",ylab="p-value")
 ```{r}
 library(rafalib)
 library(matrixStats)
-load("tissuesGeneExpression.rda")
+library(dagdata)
+data(tissuesGeneExpression)
 o<-order(factor(tissue,levels=c("cerebellum" , "hippocampus","colon", "endometrium","placenta","kidney","liver")))
 e<-e[,o]
 tissue<-tissue[o]

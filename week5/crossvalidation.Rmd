@@ -1,2 +1,48 @@
 # Cross-validation
 
+
+```{r}
+# library(devtools)
+# install_github("dagdata","genomicsclass")
+library(dagdata)
+data(tissuesGeneExpression)
+library(Biobase)
+rownames(tab) <- tab$filename
+t <- ExpressionSet(e, AnnotatedDataFrame(tab))
+t$Tissue <- factor(t$Tissue)
+colnames(t) <- paste0(t$Tissue, seq_len(ncol(t)))
+
+library(class)
+table(t$Tissue)
+t <- t[,t$Tissue != "placenta"]
+t$Tissue <- droplevels(t$Tissue)
+table(t$Tissue)
+x <- t(exprs(t))
+
+# install.packages("caret")
+library(caret)
+set.seed(1)
+idx <- createFolds(t$Tissue, k=5)
+
+sapply(idx, function(i) table(t$Tissue[i]))
+
+pred <- knn(train = x[ -idx[[1]], ], test = x[ idx[[1]], ], cl=t$Tissue[ -idx[[1]] ], k=1)
+table(true=t$Tissue[ idx[[1]] ], pred)
+
+xsmall <- prcomp(x)$x[,1:2]
+
+set.seed(1)
+ks <- 1:12
+res <- sapply(ks, function(k) {
+  res.k <- sapply(seq_along(idx), function(i) {
+    pred <- knn(train = xsmall[ -idx[[i]], ],
+                test = xsmall[ idx[[i]], ],
+                cl = t$Tissue[ -idx[[i]] ], k = k)
+    mean(t$Tissue[ idx[[i]] ] != pred)
+  })
+  mean(res.k)
+})
+plot(ks, res, type="o")
+
+
+```

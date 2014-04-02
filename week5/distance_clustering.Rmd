@@ -1,7 +1,10 @@
 # Distances and Clustering
 
 ```{r}
-load("tissuesGeneExpression.rda")
+# library(devtools)
+# install_github("dagdata","genomicsclass")
+library(dagdata)
+data(tissuesGeneExpression)
 library(Biobase)
 rownames(tab) <- tab$filename
 t <- ExpressionSet(e, AnnotatedDataFrame(tab))

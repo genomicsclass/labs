@@ -48,7 +48,11 @@
 
 # week 5
 
-- mike Distances, clustering, PCA, heatmaps in R
+- mike Distances, clustering
+
+- mike PCA, heatmaps
+
+- mike cross-validation
 
 # week 6
 

@@ -4,10 +4,10 @@
 ## Singular value decomposition (SVD)
 
 ```{r}
-library(devtools)
-install_github("dagdata","genomicsclass")
-
-load("tissuesGeneExpression.rda")
+# library(devtools)
+# install_github("dagdata","genomicsclass")
+library(dagdata)
+data(tissuesGeneExpression)
 library(Biobase)
 rownames(tab) <- tab$filename
 t <- ExpressionSet(e, AnnotatedDataFrame(tab))
