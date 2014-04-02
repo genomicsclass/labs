@@ -1,7 +1,8 @@
-# PCA and Heatmaps
+# Dimension reduction and Heatmaps
 
-## Principal components analysis (PCA)
-## Singular value decomposition (SVD)
+## Dimension reduction
+
+We start loading the tissue gene expression dataset:
 
 ```{r}
 # library(devtools)
@@ -13,24 +14,25 @@ rownames(tab) <- tab$filename
 t <- ExpressionSet(e, AnnotatedDataFrame(tab))
 t$Tissue <- factor(t$Tissue)
 colnames(t) <- paste0(t$Tissue, seq_len(ncol(t)))
+```
+
+As we noticed in the end of the clustering section, we weren't able to
+"see" why the k-means algorithm defined a certain set of clusters
+using only the first two genes.
+TODO add text
 
 
+```{r}
 x <- t(exprs(t))
-pc <- prcomp(x)
-?prcomp
+# TODO check
+pc <- cmdscale(x)
+# TODO fix
 plot(pc$x[,1], pc$x[,2])
 plot(pc$x[,1], pc$x[,2], type="n")
 text(pc$x[,1], pc$x[,2], colnames(t))
 library(rafalib)
 mypar()
 text(pc$x[,1], pc$x[,2], colnames(t), col=as.fumeric(t$Tissue))
-
-sv <- svd(x)
-plot(sv$u[,1], sv$u[,2])
-
-cx <- scale(x, center=TRUE, scale=FALSE)
-sv <- svd(cx)
-plot(sv$u[,1], sv$u[,2])
 ```
 
 ## Heatmaps
@@ -39,13 +41,14 @@ plot(sv$u[,1], sv$u[,2])
 # install.packages("RColorBrewer")
 library(RColorBrewer)
 hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
-
 library(genefilter)
 rv <- rowVars(exprs(t))
 idx <- order(-rv)[1:40]
 top <- exprs(t)[idx,]
 heatmap(top, col=hmcol)
+```
 
+```{r}
 # install.packages("gplots")
 library(gplots)
 cols <- palette(brewer.pal(8, "Dark2"))[t$Tissue]
