@@ -1,0 +1,19 @@
+```{r}
+pc <- prcomp(x)
+plot(pc$x[,1], pc$x[,2])
+plot(pc$x[,1], pc$x[,2], type="n")
+text(pc$x[,1], pc$x[,2], colnames(t))
+library(rafalib)
+mypar()
+text(pc$x[,1], pc$x[,2], colnames(t),
+     col=as.fumeric(t$Tissue))
+```
+
+```{r}
+sv <- svd(x)
+plot(sv$u[,1], sv$u[,2])
+cx <- scale(x, center=TRUE, scale=FALSE)
+sv <- svd(cx)
+plot(sv$u[,1], sv$u[,2])
+```
+
