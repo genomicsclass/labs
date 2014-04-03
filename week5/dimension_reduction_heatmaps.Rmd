@@ -19,39 +19,77 @@ colnames(t) <- paste0(t$Tissue, seq_len(ncol(t)))
 As we noticed in the end of the clustering section, we weren't able to
 "see" why the k-means algorithm defined a certain set of clusters
 using only the first two genes.
-TODO add text
-
 
 ```{r}
 x <- t(exprs(t))
-# TODO check
-pc <- cmdscale(x)
-# TODO fix
-plot(pc$x[,1], pc$x[,2])
-plot(pc$x[,1], pc$x[,2], type="n")
-text(pc$x[,1], pc$x[,2], colnames(t))
+km <- kmeans(x, centers=3)
 library(rafalib)
 mypar()
-text(pc$x[,1], pc$x[,2], colnames(t), col=as.fumeric(t$Tissue))
+plot(x[,1], x[,2], col=km$cluster, pch=16)
+```
+
+Instead of the first two genes, let's use the "multi-dimensional
+scaling" algorithm which Rafa introduced in the lectures. This is a
+projection from the space of all genes to a two dimensional space,
+which mostly preserves the inter-sample distances. The `cmdscale`
+function in R takes a distance object and returns a matrix which has
+two dimensions (columns) for each sample.
+
+```{r}
+mds <- cmdscale(dist(x))
+plot(mds, col=km$cluster, pch=16)
+```
+
+We can also plot the names of the tissues with the color of the cluster.
+
+```{r}
+plot(mds, type="n")
+text(mds, colnames(t), col=km$cluster)
+```
+
+...or the names of the tissues with the color of the tissue.
+
+```{r}
+plot(mds, type="n")
+text(mds, colnames(t), col=as.fumeric(t$Tissue))
 ```
 
 ## Heatmaps
+
+Heatmaps are useful plots for visualizing the expression values for a
+subset of genes over all the samples. The "dendrogram" on top and on
+the side is a hierarchical clustering as we saw before. First we will
+use the `heatmap` available in base R. First define a color palette.
 
 ```{r}
 # install.packages("RColorBrewer")
 library(RColorBrewer)
 hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
+```
+
+Now, pick the genes with the top variance over all samples:
+
+```{r}
 library(genefilter)
 rv <- rowVars(exprs(t))
 idx <- order(-rv)[1:40]
-top <- exprs(t)[idx,]
-heatmap(top, col=hmcol)
 ```
+
+Now we can plot a heatmap of these genes:
+
+```{r}
+heatmap(exprs(t)[idx,], col=hmcol)
+```
+
+The `heatmap.2` function in the `gplots` package on CRAN is a bit more
+customizable, and stretches to fill the window. Here we add colors to
+indicate the tissue on the top:
 
 ```{r}
 # install.packages("gplots")
 library(gplots)
 cols <- palette(brewer.pal(8, "Dark2"))[t$Tissue]
 cbind(colnames(t),cols)
-heatmap.2(top, trace="none", ColSideColors=cols, col=hmcol)
+heatmap.2(exprs(t)[idx,], trace="none", ColSideColors=cols, col=hmcol)
 ```
+
