@@ -11,7 +11,7 @@ library(Biobase)
 rownames(tab) <- tab$filename
 t <- ExpressionSet(e, AnnotatedDataFrame(tab))
 t$Tissue <- factor(t$Tissue)
-boxplot(exprs(t))
+boxplot(exprs(t), range=1)
 ```
 
 We will take the transpose of the vector, as the `dist` function will
@@ -50,8 +50,8 @@ If we use the line above to cut the tree into clusters, we can examine
 how the clusters overlap with the actual tissues:
 
 ```{r}
-prediction <- cutree(hc, h=120)
-table(true=t$Tissue, prediction)
+hclusters <- cutree(hc, h=120)
+table(true=t$Tissue, cluster=hclusters)
 ```
 
 We can also call the `kmeans` function to perform k-means clustering
@@ -69,7 +69,7 @@ plot(x[,1], x[,2], col=km$cluster, pch=16)
 Note that if we perform k-means clustering using all of the genes, the
 results are not the same as before. Looking at the first two genes
 doesn't explain why the clusters we see were generated. So we need to
-use a different method to "see" these inter-samples distances.
+use a different method to *see* these inter-samples distances.
 
 ```{r}
 km <- kmeans(x, centers=3)
@@ -80,5 +80,5 @@ Let's try one last time with larger 'k':
 
 ```{r}
 km <- kmeans(x, centers=7)
-table(true=t$Tissue, prediction=km$cluster)
+table(true=t$Tissue, cluster=km$cluster)
 ```
