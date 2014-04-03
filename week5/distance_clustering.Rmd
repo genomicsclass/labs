@@ -11,7 +11,7 @@ library(Biobase)
 rownames(tab) <- tab$filename
 t <- ExpressionSet(e, AnnotatedDataFrame(tab))
 t$Tissue <- factor(t$Tissue)
-boxplot(exprs(t), range=1)
+boxplot(exprs(t), range=0)
 ```
 
 We will take the transpose of the vector, as the `dist` function will

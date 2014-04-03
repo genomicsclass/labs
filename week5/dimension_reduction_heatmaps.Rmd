@@ -1,4 +1,4 @@
-# Dimension reduction and Heatmaps
+# Dimension reduction and heatmaps
 
 ## Dimension reduction
 

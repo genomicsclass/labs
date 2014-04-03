@@ -50,7 +50,7 @@ table(t$Tissue)
 x <- t(exprs(t))
 ```
 
-We will use the `createForlds` function from the `caret` 
+We will use the `createFolds` function from the `caret` 
 package to make 5 folds of the data, which are
 balanced over the tissues. Don't be confused that the 
 `createFolds` function uses the same letter 'k' as the k in 
