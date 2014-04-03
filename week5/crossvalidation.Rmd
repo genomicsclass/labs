@@ -2,7 +2,7 @@
 
 In this lab, we will explore a method for picking parameters in a
 prediction / machine learning task, which is called
-"cross-validation".
+*cross-validation*.
 
 Suppose we have a prediction algorithm which is going to predict the
 class of some observations using a number of features. For example, we
@@ -12,18 +12,18 @@ tissues gene expression dataset.
 If this algorithm has a parameter which controls the behavior, we
 might pick the value of this parameter which minimizes the
 classification error. However, trying to classify the same
-observations as we use to "train" the model can be misleading.
+observations as we use to *train* the model can be misleading.
 In lecture, we saw that for K-nearest neighbors, using k=1 will always
 give 0 classification error in the training set (because we use the
 single observation to classify itself). Instead, it's better to pick
 the parameter using the algorithms performance on a set of
-observations which the algorithm has never seen, a "test" set.
+observations which the algorithm has never seen, a *test* set.
 
 Cross-validation is simply a method which splits the data into a
-number of "folds". If we have N folds, then the algorithm typically
+number of *folds*. If we have N folds, then the algorithm typically
 trains on (N-1) of the folds, and test the algorithms performance on
 the left-out single fold. This is then repeated N times until each
-fold has been used as a "test" set.
+fold has been used as a *test* set.
 
 Let's load in the tissue gene expression dataset:
 
@@ -50,11 +50,12 @@ table(t$Tissue)
 x <- t(exprs(t))
 ```
 
-We will use the caret package to make 5 folds of the data, which are
-balanced over the tissues.
-Don't be confused that the caret package uses the same letter 'k' as
-the k in K-nearest neighbors. These k's are unrelated. The caret
-function `createFolds` is
+We will use the `createForlds` function from the `caret` 
+package to make 5 folds of the data, which are
+balanced over the tissues. Don't be confused that the 
+`createFolds` function uses the same letter 'k' as the k in 
+K-nearest neighbors. These 'k' are unrelated. 
+The caret function `createFolds` is
 asking for how many folds to create, the 'N' from above. The `knn`
 function is asking how many closest observations to use to classify
 the test observations.
@@ -76,12 +77,11 @@ table(true=t$Tissue[ idx[[1]] ], pred)
 
 As the prediction is looking too good in the space of all the genes,
 let's make it more difficult for the K-nearest neighbors algorithm.
-TODO say what...
-
+We will use a reduced dimension representation of the dataset, using
+the *multi-dimensional scaling* algorithm used in the previous section.
 
 ```{r}
-xsmall <- cmdscale(x)
-# TODO check thisx
+xsmall <- cmdscale(dist(x))
 ```
 
 Now we will create a loop, which tries out each value of k from 1 to

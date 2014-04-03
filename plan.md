@@ -50,11 +50,13 @@
 
 - mike Distances, clustering
 
-- mike PCA, heatmaps
+- mike MDS, heatmaps
 
 - mike cross-validation
 
 # week 6
+
+- rafa PCA and SVD
 
 - rafa Combat, SVA, RUV in R
 
