@@ -48,11 +48,11 @@
 
 # week 5
 
-- mike Distances, clustering
+- **mike Distances, clustering**
 
-- mike MDS, heatmaps
+- **mike MDS, heatmaps**
 
-- mike cross-validation
+- **mike cross-validation**
 
 # week 6
 
@@ -78,17 +78,11 @@
 
 - rafa Assigning probe locations to genes
 
-- mike SNPs
-
-- mike CNV
-
-- mike Variant callers
+- mike SNPs and CNVs 
 
 - mike RNA-Seq
 
-- rafa DNA methylation: arrays
-
-- rafa DNA methylation: NGS
+- rafa DNA methylation: arrays and NGS
 
 - mike ChIP-Seq
 
