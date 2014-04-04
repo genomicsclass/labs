@@ -1,7 +1,38 @@
 # Gene set testing
 
 ```{r}
-library(limma)
-# show camera and roast
-# also show permutation method
+library(GEOquery)
+g <- getGEO("GSE34313")
+e <- g[[1]]
 ```
+
+```{r}
+e$condition <- e$characteristics_ch1.2
+levels(e$condition) <- c("dex24","dex4","control")
+table(e$condition)
+boxplot(exprs(e), range=0)
+names(fData(e))
+lvls <- c("control", "dex4")
+es <- e[,e$condition %in% lvls]
+es$condition <- factor(es$condition, levels=lvls)
+```
+
+```{r}
+library(limma)
+design <- model.matrix(~ es$condition)
+fit <- lmFit(es, design)
+fit <- eBayes(fit)
+tt <- topTable(fit, coef=2, genelist=fData(es)$GENE_SYMBOL)
+tt
+```
+
+```{r}
+idx <- grep("GO:0006955", fData(es)$GO_ID)
+length(idx)
+res <- roast(es, idx, design)
+res
+```
+
+
+
+
