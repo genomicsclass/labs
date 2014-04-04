@@ -1,5 +1,58 @@
 # Mapping features to genes
 
 ```{r}
+library(dagdata)
+data(maPooling)
+e <- maPooling
+head(rownames(e))
+annotation(e)
+```
+
+```{r}
+# biocLite(paste0(annotation(e),".db"))
+library(rae230a.db)
+# biocLite("AnnotationDbi")
+library(AnnotationDbi)
+columns(rae230a.db)
+keytypes(rae230a.db)
+head(keys(rae230a.db, keytype="PROBEID"))
+head(rownames(e))
+```
+
+```{r}
+res <- select(rae230a.db, keys=rownames(e),
+              columns=c("ENTREZID","ENSEMBL","SYMBOL"), 
+              keytype="PROBEID")
+head(res)
+idx <- match(rownames(e), res$PROBEID)
+```
+
+```{r}
+head(rownames(e))
+head(res$PROBEID,7)
+head(idx)
+```
+
+```{r}
+fData(e) <- res[idx,]
+head(fData(e),10)
+all.equal(fData(e)$PROBEID, rownames(e))
+```
+
+```{r}
+# biocLite("biomaRt")
 library(biomaRt)
+m <- useMart("ensembl", dataset = "rnorvegicus_gene_ensembl")
+map <- getBM(mart = m,
+             attributes = c("ensembl_gene_id", "entrezgene"), 
+             filters = "ensembl_gene_id", 
+             values = fData(e)$ENSEMBL)
+head(map)
+```
+
+```{r}
+idx <- match(fData(e)$ENSEMBL, map$ensembl_gene_id)
+fData(e)$NEW_ENTREZID <- map$entrezgene[idx]
+head(fData(e))
+mean(fData(e)$ENTREZID == fData(e)$NEW_ENTREZID, na.rm=TRUE)
 ```
