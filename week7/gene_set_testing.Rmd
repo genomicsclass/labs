@@ -27,12 +27,69 @@ tt
 ```
 
 ```{r}
+# Immune response
 idx <- grep("GO:0006955", fData(es)$GO_ID)
 length(idx)
-res <- roast(es, idx, design)
-res
+r1 <- roast(es, idx, design)
+r1
 ```
 
+```{r}
+# biocLite("org.Hs.eg.db")
+library(org.Hs.eg.db)
+org.Hs.egGO2EG
+go2eg <- as.list(org.Hs.egGO2EG)
+govector <- unlist(go2eg)
+golengths <- sapply(go2eg, length)
+head(fData(es)$GENE)
+idxvector <- match(govector, fData(es)$GENE)
+table(is.na(idxvector))
+idx <- split(idxvector, rep(names(go2eg), golengths))
+go2eg[[1]]
+fData(es)$GENE[idx[[1]]]
+```
+
+```{r}
+idxclean <- lapply(idx, function(x) x[!is.na(x)])
+idxlengths <- sapply(idxclean, length)
+idxsub <- idxclean[idxlengths > 10]
+length(idxsub)
+```
+
+```{r}
+# takes ~ 3 mins
+system.time({ r2 <- mroast(es, idxsub, design) })
+head(r2)
+r2 <- r2[order(r2$PValue.Mixed),]
+```
+
+```{r}
+# biocLite("GO.db")
+library(GO.db)
+columns(GO.db)
+keytypes(GO.db)
+GOTERM[[rownames(r2)[1]]]
+r2tab <- select(GO.db, keys=rownames(r2)[1:10],
+                columns=c("GOID","TERM","DEFINITION"), 
+                keytype="GOID")
+r2tab[,1:2]
+```
+
+```{r}
+r2 <- r2[order(r2$PValue),]
+r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Up"][1:5],
+                columns=c("GOID","TERM","DEFINITION"), 
+                keytype="GOID")
+r2tab[,1:2]
+# let's check 'glucocorticoid insulin secretion'
+```
+
+```{r}
+r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Down"][1:5],
+                columns=c("GOID","TERM","DEFINITION"), 
+                keytype="GOID")
+r2tab[,1:2]
+```
 
 
 
