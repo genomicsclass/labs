@@ -1,24 +1,28 @@
 # Normalization
 
-Here we show data from five technical replicates.
-```{r}
+Normalization is one of the most important procedures in genomics data analays. A typical dataset contains more than one sample and we are almost always interested in making comparisons between these. Unfortunately, technical and biological sources of unwanted variation can cloud downstream results. Here we demonstrate with real data, how this can happen and the describe several existing solutions. The examples are based on microarray data but can be applied to other datasets.
+
+Our first example a Dilution dataset that is not publically available. To obtain the dataset you need to request it here: http://www.genelogic.com/support/scientific-studies
+
+This Dilution dataset has six sets of five technical replicats. The six sets differ in the concentration of RNA. The RNA was diluted 5 times so that 1/2 as much RNA was hybridized in each set. We start by showing  data from five technical replicates. We show boxplots and densities
+```{r,fig.width=7}
 library(rafalib)
 library(affy)
-setwd("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/Dilution")
+setwd("/Users/ririzarr/myDocuments/teaching/HarvardX/labs/week4/Dilution")
 pd=read.table("pdata.txt",header=TRUE,check.names=FALSE,as.is=TRUE)
 pd<-pd[which(pd[,3]==0),] ##only liver
-dat<-read.celfiles(filenames=paste0(pd[,1],".cel"),verbose=FALSE)
+dat<-ReadAffy(filenames=paste0(pd[,1],".cel"),verbose=FALSE,phenoData=pd)
 pms=pm(dat)
-mypar()
+mypar(1,2)
 boxplot(log2(pms[,1:5]),range=0,names=1:5,las=3,main="Five technical replicates",col=1:5)
 shist(log2(pms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
 for(i in 1:5)
   shist(log2(pms[,i]),unit=0.1,col=i,add=TRUE,lwd=2,lty=i)
 ```
 
+Notice that although being technical replicates we see different distributions. The shifts in median are quite dramatic with changes of almost 2 fold. To see that simply changing the location by, for example, subtracting the median is not enough we show an MA plot between two of these samples
 
-Here we show densities
-```{r}
+```{r,fig.width=7}
 mypar(1,2)
 i=1;j=2
 x=log2(pms[,i])
@@ -29,9 +33,9 @@ shist(y,unit=0.1,xlab="log (base) intenisty",col=1,main="smooth histogram")
 shist(x,unit=0.1,xlab="log (base) intenisty",add=TRUE,col=2)
 ```
 
-The MA-plot shows non-linear bias
+The MA-plot shows non-linear bias. Median normalization would simple move the plot up so that the median difference is 0. But this will not correct the non-linear bias as demonstrated here
 
-```{r}
+```{r,fig.width=7}
 mypar(1,2)
 i=1;j=2
 M=median(c(x,y))
@@ -41,16 +45,19 @@ maplot(x,y,ylim=c(-1.5,1.5))
 abline(h=0,col=1,lty=2,lwd=2)
 shist(y,unit=0.1,xlab="log (base) intenisty",col=1,main="smooth histogram")
 shist(x,unit=0.1,xlab="log (base) intenisty",add=TRUE,col=2)
-
 ```
 
-
-With the spike-in we show the downstream consequences: 
-```{r}
+To undersand the downstrea consequences of not normalizing we will use the spike-in experiment used in previous units.
+```{r,fig.width=7}
 library(SpikeIn)
 data(SpikeIn95)
 spms<-pm(SpikeIn95)
 spd=pData(SpikeIn95)
+mypar(1,2)
+shist(log2(spms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
+for(i in 1:10) ##show the first 10
+  shist(log2(spms[,i]),unit=0.1,col=i,add=TRUE,lwd=2,lty=i)
+##Pick 9 and 10 and make an MA plot
 i=10;j=9 ##example with two samples
 siNames<-colnames(spd)
 siNames=siNames[which(spd[i,]/spd[j,]==2)] ##show probes with expected FC=2
@@ -60,13 +67,14 @@ splot(A,M,ylim=c(-1.5,1.5))
 spikeinIndex=which(probeNames(SpikeIn95)%in%siNames)
 points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=1,pch=21)
 ```
+In this plot the green dots are genes spiked in to be different in the two samples. The rest of the points (black dots) should be at 0 because other than the spiked-in genes these are technical replicates. Notice that without normalization the black dots on the left side of the plot are as high as most of the green dots. If we were to order by fold change, we would obtain many false positives. In the next units we will introduce three normalization procedures that have proven to work well in practice.
 
 
-## Loess
+## Loess normalization
 
+In the MA-plot above we see a non-linear bias in the M that changes as function of A. The general idea behind loess normalization is to estimate this bias and remove it. Because the bias a curve of no obvious parametric form (it is not a line or parabola or a sine function, etc..) We want to fit a curve to the data. Local weighted regression [CITE] (loess) provides one way to do this. Loess is inspired by Taylor's theorem that in practice means that at any given point, if one looks at a small enough region around that point, the curve looks like a parabolla. If you look even closer it looks like a straight line (note that gardeners can make a curved edge with a straight shovel). 
 
-Loess works by fitting a line to windows around a point. Here is a movie demonstrating it
-
+Loess takes advantage of this mathematical property of functions. For each point in your data set a region is defined considered to be small enough to assume the curve approximated by a line in that region and a line is fit with weighted least squares. The weights depend on the distance from the point of interest. The robuse version of loess also down weighs points considered to be outliers. The following code makes an annimation that shows loess at work:
 ```{r}
 o<-order(A)
 a<-A[o];m<-M[o]
@@ -92,20 +100,34 @@ saveGIF({
   }
   }
 },'loess.gif', interval = .15)
-
+##Final version
 plot(a,m,ylim=c(-1.5,1.5))
 lines(centers,smooth,col=2,lwd=2)
 ```
 
-
-Loess in action. Show how we correct bias
+Now let's use loess to normalize the arrays showing a bias.
 
 ```{r}
 o<-order(A)
 a<-A[o];m<-M[o]
 ind<-round(seq(1,length(a),len=5000))
 a<-a[ind];m<-m[ind]
-fit<-loess(m~a)
+fit<-loess(m~a) 
+bias <- predict(fit,newdata=data.frame(a=A))
+nM<-M-bias
+mypar(1,1)
+splot(A,M,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],M[spikeinIndex],ylim=c(-4,4),bg=1,pch=21)
+lines(a,fit$fitted,col=2,lwd=2)
+splot(A,nM,ylim=c(-1.5,1.5))
+points(A[spikeinIndex],nM[spikeinIndex],ylim=c(-4,4),bg=1,pch=21)
+abline(h=0,col=2,lwd=2)
+```
+
+Note that the bias is removed and now the highest fold changes are almost all spike-ins. Also note that the we can control the size of the intervals in which lines are fit. The smaller we make these intervals the more flexobility we get. This is controlled with span argument of the loess function. A span of 0.75 means that the closest points are considered untile 3/4 are used. Finally, we are fitting parabalas, but for some datasets these can result in over fitting. For example, a few points can force a parabola to "shoot up" very fast. For this reason using lines (the argument is degree=1) is safer.
+
+```{r}
+fit<-loess(m~a,degree=1,span=1/2)
 bias <- predict(fit,newdata=data.frame(a=A))
 nM<-M-bias
 mypar(1,1)
@@ -118,11 +140,24 @@ abline(h=0,col=2,lwd=2)
 ```
 
 
+Homework: try different values of span of 0.75 and change the degree. Decide which you believe to be the best and defend the choice.
 
-## Quantile
 
-Explain quantile. Before an after. Grab pic from power point
 
+
+## Quantile normalization
+
+One limitation of loess normalization is that it depeneds on pairings of samples. We have this for two color arrays, but for other platforms, such as Affymetrix, we do not have such pairings. Quantile normalization [CITE] offers a solution that is more generally applicable.
+
+The smooth histogram plots demonstrate that different samples have different distributions, not just median shifts. This happens even when we look at data from replicated RNA. Qunatile normalization forces all these distributions the same: it makes each quantile (not just the median) the same across samples. The algorithm, as implemeted in Biocondcutor, does the following for a matrix with rows representing genes and columns representing samples
+
+1 - Order the value in each column
+2 - Replace the values of each row with the average of that row
+3- Re-order back to the original order
+
+[Put FIgure from POWER point here]
+
+Here we demonstrate how to use quantile normalization in practice and how it corrects the bias. 
 ```{r}
 library(preprocessCore)
 nspms<-normalize.quantiles(spms)
@@ -138,8 +173,7 @@ splot(A,M,ylim=c(-1.5,1.5))
 points(A[spikeinIndex],M[spikeinIndex],bg=1,pch=21)
 ```
 
-Densities are now identical
-
+Note that the densities are now identical as expected since we forced this to be the case.
 ```{r}
 mypar(1,1)
 shist(log2(pms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
@@ -152,10 +186,16 @@ for(i in 1:5)
 
 ```
 
-## SVN
+Note how quantile normalization also fixes the bias but keeps the spiked-in genes different.
 
-Simulation of data with SVN model
+## VSN
 
+In the background unit we learned that the background noise appears to be additive. However, shifts we see that explain some of the need for normalization appear to be multiplicative terms. Also we have observed a strong mean and variance relationship that is in agreement with multiplicative error. Varianze stabilizing normalization (vsn) motivates the need for normalization with an additive backgroun multiplicative noise model:
+
+$$
+Y_{ij}= \beta_i + \varepsilon_{ij} + A_i \theta_{j} \eta_{ij}
+$$
+The expression level we are interested in estimating is $\theta_j$ which we assume changes across genes $j$ is the same across array $i$. Here, $\beta_i$ is an array specific background level that changes from probe to probe due to additive noise $\varepsilon_{ij}. We refer to $A_i$ and the gain and note that it changes from array to array.  Here is a monte carlo simulation demonstrating that by changing $\beta$ and $A$ we can generate non-linear biases as we see in practice.
 ```{r}
 library(rafalib)
 N=10000
@@ -169,7 +209,7 @@ mypar(1,1)
 maplot(log2(y1),log2(y2),ylim=c(-1,1),curve.add=FALSE)
 ```
 
-Showing variance mean relationship with simulated data
+For this type of data, the variance depends on the mean. We seek a transfromation that stabilizies the variance of the estimates of $\theta$ after we subctract the additive backgroun estimate and divide by the estimate of gain.
 
 ```{r}
 ny1=(y1-b1)/A1
@@ -179,10 +219,20 @@ maplot(ny1,ny2,curve.add=FALE,ylim=c(-500,500))
 maplot(log2(ny1),log2(ny2),ylim=c(-2,2),xlim=c(0,15))
 ```
 
+If we know how the variance depends on the mean, we can compute a variance stabilizing transform:
+$$
+Y \mbox{ with } \mbox{E}(Y)=\mu \mbox{ and } \mbox{var}(Y) = v(\mu)
+\mbox{var}\{f(Y)\} \mbox{ does not depend on } \mu
+$$
+In the case of the model above we can derive the following transformation 
 
-VSN at work: normalizng spike- in data
+$$
+\mbox{arsinh}(y) = \log\left\{y + \sqrt{y^2+1} \right\}
+$$
 
+The vsn library implements this apprach. It estimates $\beta$ and $A$ by assuming that most genes don't change, i.e. the $\theta$ does not depend on $i$.
 ```{r}
+
 library(vsn)
 nspms<-exprs(vsn2(spms))
 i=10;j=9
@@ -197,6 +247,7 @@ splot(A,M,ylim=c(-1.5,1.5))
 points(A[spikeinIndex],M[spikeinIndex],bg=1,pch=21)
 ```
 
+We notice that it corrects the bias in a similar way to loess and quantile normalization 
 ## RNA-seq
 
 ```{r}
