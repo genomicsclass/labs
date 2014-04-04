@@ -82,9 +82,7 @@
 
 - mike RNA-Seq
 
-- rafa DNA methylation: arrays
-
-- rafa DNA methylation: NGS
+- rafa DNA methylation: arrays and NGS
 
 - mike ChIP-Seq
 
