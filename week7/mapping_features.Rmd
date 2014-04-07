@@ -1,5 +1,9 @@
 # Mapping features to genes
 
+## Using Bioconductor annotation packages
+
+This unit will focus on mapping features to genes, i.e., getting annotation information from one format to another. We start by loading in the `maPooling` dataset from previous lectures.
+
 ```{r}
 library(dagdata)
 data(maPooling)
@@ -8,16 +12,27 @@ head(rownames(e))
 annotation(e)
 ```
 
+The annotation for this ExpressionSet is *rae230a*. Many platforms will have database annotation packages already existing on Bioconductor. We can access these, first by installing, and then loading the library. We will use the `AnnotationDbi` package to query the information in the library.
+
+While in this unit we will use a microarray annotation package as an example, the same commands can be used for an organism package, such as the homo sapiens annotation package `org.Hs.eg.db`, which let's one query from one kind of gene annotation to another.
+
 ```{r}
 # biocLite(paste0(annotation(e),".db"))
 library(rae230a.db)
 # biocLite("AnnotationDbi")
 library(AnnotationDbi)
+```
+
+Annotation packages have *columns*, some of which may be *keys*. You can query the database using a *key*, and ask for one or more *columns* in return. We will use the rownames of the ExpressionSet as keys.
+
+```{r}
 columns(rae230a.db)
 keytypes(rae230a.db)
 head(keys(rae230a.db, keytype="PROBEID"))
 head(rownames(e))
 ```
+
+The following `select` call will return the Entrez ID, ENSEMBL ID, and gene symbol for each Probe ID, which are the rownames of the ExpressionSet.
 
 ```{r}
 res <- select(rae230a.db, keys=rownames(e),
@@ -27,11 +42,15 @@ head(res)
 idx <- match(rownames(e), res$PROBEID)
 ```
 
+We need to align the `res` object so that we pull out, in order, one row for each row of the ExpressionSet.
+
 ```{r}
 head(rownames(e))
 head(res$PROBEID,7)
 head(idx)
 ```
+
+Here we add the new information to the `fData` of `e`. If there were already information in `fData`, we would have used `cbind` to add the new columns. Note here that, since we have a one-to-many mapping, the `match` function gave us the first match that it found. You could also collapse all possible matches of the Probe ID to the Genes using `split` and `paste` with the `collapse` argument. However, here we keep it simple and just take the first match in the `res` object.
 
 ```{r}
 fData(e) <- res[idx,]
@@ -39,10 +58,15 @@ head(fData(e),10)
 all.equal(fData(e)$PROBEID, rownames(e))
 ```
 
+## Using Biomart
+
+An alternate way to map from one annotation to another is using the `biomaRt` package. For more information on which Biomarts are available and how to access them, see the `biomaRt` vignette.
+
 ```{r}
 # biocLite("biomaRt")
 library(biomaRt)
-m <- useMart("ensembl", dataset = "rnorvegicus_gene_ensembl")
+vignette("biomaRt")
+m <- useMart( "ensembl", dataset = "rnorvegicus_gene_ensembl")
 map <- getBM(mart = m,
              attributes = c("ensembl_gene_id", "entrezgene"), 
              filters = "ensembl_gene_id", 
@@ -50,9 +74,13 @@ map <- getBM(mart = m,
 head(map)
 ```
 
+Finally, we need to align the new information with the old information using the `match` function as before, again picking the first match from a one-to-many mapping. We see that for the most part the new and the old Entrez IDs are the same, though some differences occur when we pick one from the one-to-many mappings that exist.
+
+
 ```{r}
 idx <- match(fData(e)$ENSEMBL, map$ensembl_gene_id)
 fData(e)$NEW_ENTREZID <- map$entrezgene[idx]
 head(fData(e))
 mean(fData(e)$ENTREZID == fData(e)$NEW_ENTREZID, na.rm=TRUE)
 ```
+
