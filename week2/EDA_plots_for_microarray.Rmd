@@ -47,6 +47,7 @@ Now the problem is obvious. It turns out this samples comes from an array for wh
 ```{r, fig.width=6, fig.height=3}
 ##we are doing this for two arrays 1 and 4
 library(matrixStats) ##need rowMedians
+library(RColorBrewer)
 for(i in c(1,4)){
   r=log2(int[,i])-rowMedians(log2(int)) 
   ## r are residuals from median array
