@@ -62,6 +62,9 @@ r1 <- roast(es, idx, design)
 r1
 ```
 
+
+## Testing multiple gene sets
+
 We can also use the `mroast` function to perform multiple roast tests. First we need to create a list, which contains the indices of genes in the ExpressionSet for each of a number of gene sets. We will use the `org.Hs.eg.db` package to gather the gene set information.
 
 ```{r}
