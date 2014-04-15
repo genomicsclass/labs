@@ -11,7 +11,7 @@ We can think of any given dataset as a list of numbers. Suppose you have measure
 library(UsingR)
 x=father.son$fheight
 ```
-One approach is to simply list out all the numbers for the alien to see. Here are 100 randomly selected heights of 1,078.
+One approach is to simply list out all the numbers for the alien to see. Here are 20 randomly selected heights of 1,078.
 
 ```{r}
 round(sample(x,20),1)
@@ -55,8 +55,8 @@ abline(0,1) ##identity line
 ```
 Note how close these values are. Also note that we can do same with less code
 ```{r}
-qqnorm(y)
-qqline(y)
+qqnorm(x)
+qqline(x)
 ```
 
 ## Box-plot
