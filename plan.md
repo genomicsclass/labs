@@ -42,9 +42,9 @@
 
 # week 4
 
-- rafa Motivating normalization with EDA
+- **rafa Motivating normalization with EDA**
 
-- rafa Normalizing microarrays: Affymetrix, Agilent, Illumina
+- **rafa Normalizing microarrays**
 
 # week 5
 
@@ -56,27 +56,27 @@
 
 # week 6
 
-- rafa PCA and SVD
+- **rafa Combat, SVA in R**
 
-- rafa Combat, SVA, RUV in R
+- **mike PCA and SVD in R**
 
 # week 7
 
-- mike Using the limma package
+- **mike Using the limma package**
 
-- mike Mapping features to genes
+- **mike Mapping features to genes**
 
-- mike Gene set testing
+- **mike Gene set testing**
 
 # week 8
 
 - rafa Systematic errors in NGS
 
+- rafa Assigning probe locations to genes
+
 - mike Visualizing NGS with Bioconductor, UCSC, IGV
 
 - mike Making NGS read count table in Bioconductor
-
-- rafa Assigning probe locations to genes
 
 - mike SNPs and CNVs 
 
