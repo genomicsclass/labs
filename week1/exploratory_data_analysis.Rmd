@@ -33,7 +33,7 @@ plot(xs,ecdf(x)(xs),type="l",xlab="x=Height",ylab="F(x)")
 If instead of the total numbers we report the proportions, then the histogram is a probability distribution. The probability distribution we see above approximates one that is very common in a nature: the bell curve or normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval
 
 $$
-\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma}} \exp{\left( \frac{x-\mu}{\sigma} \right)^2} \, dx
+\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} e^{ \frac{-(x-\mu)^2}{2 \sigma^2} } \, dx
 $$
 
 Here $\mu$ and $\sigma$ are refereed to as the mean and standard deviation. If this approximation holds for our list then the population mean and variance of our list can be used in the formula above. To see this with an example remember that above we noted that 70 individuals or 6% of our population were taller than 6 feet. The normal approximation works well:
