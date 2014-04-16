@@ -6,7 +6,7 @@ We start by reading in the sample information table. This is usually created by 
 
 ```{r}
 library(affy)
-basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week2/celfiles"
+basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/labs/week2/celfiles"
 tab <- read.delim(file.path(basedir,"sampleinfo.txt"),check.names=FALSE,as.is=TRUE)
 fns <- list.celfiles(basedir)
 fns%in%tab[,1] ##check
@@ -28,7 +28,7 @@ e <- rma(ab)
 
 If you are not interested in probe level data you could can use this function
 ```{r}
-e <- justRMA(filenames=file.path(basedir,tab[,1]),phenoData=tab))
+e <- justRMA(filenames=tab[,1],celfile.path=basedir,phenoData=tab)
 ```
 
 ##Agilent data
