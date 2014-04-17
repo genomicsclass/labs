@@ -3,7 +3,7 @@ layout: page
 title: Exploratory Data Analysis
 ---
 
-```{r, options}
+```{r, options, echo=FALSE}
 opts_chunk$set(fig.path="figure/exploratory_data_analysis-")
 ```
 
