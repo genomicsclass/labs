@@ -1,4 +1,12 @@
-# Exploratory Data Analysis
+---
+layout: page
+title: Exploratory Data Analysis
+---
+
+```{r, options}
+opts_chunk$set(fig.path="figure/exploratory_data_analysis-")
+```
+
 
 Biases, systematic errors and unexpected variability are common in genomics data. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines are designed to detect these. Yet, these pipelines still give you an answer and the from the final results it may be hard or impossible to notice an error was made. In later modules we will cover many other examples. 
 
@@ -7,7 +15,7 @@ Graphing data is a powerful approach to detecting these problems. We refer to th
 
 We can think of any given dataset as a list of numbers. Suppose you have measured the heights of all men in a population. Imagine you have need to describe these numbers to someone that has no idea what these heights are, say an alien that has never visited earth. 
 
-```{r definingHeights, message=FALSE}
+```{r, definingHeights, message=FALSE}
 library(UsingR)
 x=father.son$fheight
 ```
@@ -18,7 +26,7 @@ round(sample(x,20),1)
 ```
 
 From scanning through these numbers we start getting a rough idea of what the entire list looks like but it certainly inefficient. We can quickly improve on this approach by creating bins, say by rounding each value to its nearest integer, and reporting the number of individuals in each bin. A plot of these heights is called a histogram
-```{r histogram, fig.width=4, fig.height=4}
+```{r, histogram, fig.width=4, fig.height=4}
 hist(x,breaks=seq(floor(min(x)),ceiling(max(x))),main="",xlab="Height")
 ```
 Showing this plot to the alien is much more informative than showing the numbers. Note that with this simple plot we can approximate the number of individuals in any given interval. For example, there are about 70 individuals over six feet (72 inches) tall. 
@@ -33,7 +41,7 @@ plot(xs,ecdf(x)(xs),type="l",xlab="x=Height",ylab="F(x)")
 If instead of the total numbers we report the proportions, then the histogram is a probability distribution. The probability distribution we see above approximates one that is very common in a nature: the bell curve or normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval
 
 $$
-\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} e^{ \frac{-(x-\mu)^2}{2 \sigma^2} } \, dx
+\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\left( \frac{-(x-\mu)^2}{2 \sigma^2} \right)} \, dx
 $$
 
 Here $\mu$ and $\sigma$ are refereed to as the mean and standard deviation. If this approximation holds for our list then the population mean and variance of our list can be used in the formula above. To see this with an example remember that above we noted that 70 individuals or 6% of our population were taller than 6 feet. The normal approximation works well:
