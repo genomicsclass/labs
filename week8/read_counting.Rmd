@@ -3,8 +3,8 @@
 The following lab will describe how to count NGS reads which fall into genomic features. We want to end up with a count matrix which has rows corresponding to genomic ranges and columns which correspond to different experiments or samples.
 
 ```{r}
-biocLite(c("pasillaBamSubset",
-           "TxDb.Dmelanogaster.UCSC.dm3.ensGene"))
+#biocLite(c("pasillaBamSubset",
+#           "TxDb.Dmelanogaster.UCSC.dm3.ensGene"))
 library(pasillaBamSubset)
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
 ```
