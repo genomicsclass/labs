@@ -1,7 +1,7 @@
 # For all weeks:
 
 install.packages("devtools")
-biocLite("devtools")
+library(devtools)
 install_github("rafalib","ririzarr")
 install_github("dagdata","genomicsclass")
 
@@ -33,19 +33,17 @@ install.packages("animation")
 # Week 4
 
 biocLite("SpikeInSubset")
-biocLite("BackgroundExperimentYeast")
+library(devtools);install_github("BackgroundExperimentYeast","stephaniehicks")
 biocLite("SpikeIn")
 install.packages("MASS")
 biocLite("parathyroidSE")
 install.packages("matrixStats")
 biocLite("limma")
 biocLite("affy")
-biocLite("SpikeIn")
 install.packages("animation")
 biocLite("preprocessCore")
 biocLite("vsn")
-biocLite("affy")
-biocLite("mycAffyData")
+library(devtools);install_github("mycAffyData","stephaniehicks")
 install.packages("SQN")
 
 # Week 5
@@ -92,8 +90,6 @@ biocLite("Gviz")
 biocLite("ggbio")
 
 # For building data objects
-
-Bioconductor:
 
 biocLite("GEOquery")
 biocLite("affy")
