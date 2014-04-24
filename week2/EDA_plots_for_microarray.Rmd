@@ -25,6 +25,7 @@ signif(cor(int),2)
 The problem is not immediately obviou from a scatter plot.
 ```{r,fig.width=6, fig.height=3}
 ##we don't need to show all the points so we take samples
+library(rafalib)
 splot<-function(x,y,...){
   ind<-sample(length(x),10000)
   x=x[ind];y=y[ind] 
