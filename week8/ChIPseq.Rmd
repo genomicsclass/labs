@@ -63,7 +63,8 @@ condcomb <- factor(paste(ta2$samples[,"Condition"], ta2$samples[,"Tissue"]))
 
 ```{r}
 par(mar=c(15,5,2,2))
-stripchart(log(xord) ~ condcomb, method="jitter", vertical=TRUE, las=2)
+stripchart(log(xord) ~ condcomb, method="jitter", 
+           vertical=TRUE, las=2, ylab="log2 normalized counts")
 means <- tapply(xord, cond, mean)
 log2(means)
 log2(means[1] / means[2])
