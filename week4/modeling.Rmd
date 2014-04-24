@@ -152,7 +152,7 @@ So can we model the distribution of these standard errors? Are they normal? Note
 
 ```{r}
 library(Biobase)
-library(maPooling)
+library(dagdata)
 data(maPooling)
 pd=pData(maPooling)
 strain=factor(as.numeric(grepl("b",rownames(pd))))
