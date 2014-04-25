@@ -1,2 +1,80 @@
 # NGS read counting
 
+The following lab will describe how to count NGS reads which fall into genomic features. We want to end up with a count matrix which has rows corresponding to genomic ranges and columns which correspond to different experiments or samples.
+
+```{r}
+#biocLite(c("pasillaBamSubset",
+#           "TxDb.Dmelanogaster.UCSC.dm3.ensGene"))
+library(pasillaBamSubset)
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+```
+
+```{r}
+txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
+grl <- exonsBy(txdb, by="gene")
+```
+
+```{r}
+fl1 <- untreated1_chr4()
+fl2 <- untreated3_chr4()
+```
+
+```{r}
+library(Rsamtools)
+library(GenomicRanges)
+```
+
+```{r}
+# if you are using Bioconductor version 14, paired with R 3.1, you should load this library
+library(GenomicAlignments)
+```
+
+For larger files, yield size of 1 million reads might make sense.
+
+```{r}
+fls <- BamFileList(c(fl1, fl2), yieldSize=5e4)
+names(fls) <- c("first","second")
+```
+
+```{r}
+so1 <- summarizeOverlaps(features=grl,
+                         reads=fls,
+                         ignore.strand=TRUE)
+```
+
+```{r}
+head(assay(so1))
+colSums(assay(so1))
+```
+
+```{r}
+rowData(so1)
+colData(so1)
+metadata(rowData(so1))
+```
+
+```{r}
+x <- assay(so1)[,1]
+hist(x[x > 0], col="grey")
+hist(x[x > 0 & x < 10000], col="grey")
+plot(assay(so1) + 1, log="xy")
+```
+
+```{r}
+?untreated3_chr4
+?summarizeOverlaps
+fls <- BamFileList(c(fl2, fl2), yieldSize=5e4)
+names(fls) <- c("first","second")
+so2 <- summarizeOverlaps(features=grl,
+                         reads=fls,
+                         ignore.strand=TRUE,
+                         singleEnd=FALSE, 
+                         fragments=TRUE)
+colSums(assay(so2))
+x <- assay(so2)[,1]
+plot(assay(so1)[,2], assay(so2)[,1], xlim=c(0,5000), ylim=c(0,5000),
+     xlab="single end counting", ylab="paired end counting")
+abline(0,1)
+abline(0,.5)
+```
+

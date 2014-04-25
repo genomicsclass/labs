@@ -134,7 +134,7 @@ We have data for two strains of mice which we will refer to as strain 0 and 1. W
 ```{r}
 library(Biobase,quietly=TRUE,verbose=FALSE)
 library(genefilter)
-library(maPooling)
+library(dagdata)
 data(maPooling)
 pd=pData(maPooling)
 pooled=which(rowSums(pd)==12)
