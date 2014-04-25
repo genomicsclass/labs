@@ -1,8 +1,12 @@
 # Batch adjustment
 
-Let's build an example in which we know the null is true for all cases except chromosome X and Y
+To illustrate how we can adjust for batch effects using statistcal methods, we will create a data example in which the outcome of interest is confounded with batch but not completely. We will also select a outcome for which we have an expectation of what genes should be differentially expressed. Namely, we make sex the outcome of interest and expect genes on the Y chromosome to be differentially expressed. Note that we may also see genes from the X chromosome as differentially expressed as some escape X inactivation. 
 
+We start by finding the genes on the Y chromosome.
 ```{r}
+library(rafalib)
+library(dagdata)
+data(GSE5859)
 library(hgfocus.db) ##get the gene chromosome
 chr<-mget(featureNames(e),hgfocusCHRLOC)
 chr <- sapply(chr,function(x){ tmp<-names(x[1]); ifelse(is.null(tmp),NA,paste0("chr",tmp))})
@@ -10,8 +14,10 @@ y<- colMeans(exprs(e)[which(chr=="chrY"),])
 sex <- ifelse(y<4.5,"F","M")
 ```
 
-Create some confounding
+Now we select samples so that sex and month of hybridization are confounded. 
 ```{r}
+batch <- format(pData(e)$date,"%y%m")
+ind<-which(batch%in%c("0506","0510"))
 set.seed(1)
 N <- 12; N1 <-3; M<-12; M1<-9
 ind <- c(sample(which(batch=="0506" & sex=="F"),N1),
@@ -21,11 +27,11 @@ sample(which(batch=="0510" & sex=="M"),M-M1))
 table(batch[ind],sex[ind])
 ```
 
-Pick some genes to create example. We pick Y chromosome, some that correlate with batch, and then some random ones.
+To illustrate the confounding we will pick some genes to show in a heatmap plot. We pick all Y chromosome genes, some genes that we see correlate with batch, and then some randomly selected genes.
 
 ```{r}
 set.seed(1)
-tt<-rowttests(exprs(e)[,ind],factor(batch[ind]))
+tt<-genefilter::rowttests(exprs(e)[,ind],factor(batch[ind]))
 ind1 <- which(chr=="chrY") ##real differences
 ind2 <- setdiff(c(order(tt$dm)[1:25],order(-tt$dm)[1:25]),ind1)
 ind0 <- setdiff(sample(seq(along=tt$dm),50),c(ind2,ind1))
@@ -37,12 +43,18 @@ mypar(1,1)
 image(t(mat),xaxt="n",yaxt="n",col=icolors)
 ```
 
+So what follows is like the analysis we would do in practice. We don't know there is a batch and we are interested in finding genes that are different between males and females. We start by computing t-statistics and p-values comparing males and females. We use histograms to notice the problem introduced by the batch.
+
+The batch effect adjustment methods are best described with the linear models so we start by writing down the linear more for this particular case:
+
+
+
 ```{r}
 dat <- exprs(e)[,ind]
 X <- sex[ind] ## the covariate
 Z <- batch[ind]
-tt<-rowttests(dat,factor(X))
-HLIM<-c(0,1300)
+tt<-genefilter::rowttests(dat,factor(X))
+HLIM<-c(0,1500)
 mypar(1,2)
 hist(tt$p[!chr%in%c("chrX","chrY")],nc=20,xlab="p-value",ylim=HLIM,main="")
 hist(tt$p[chr%in%c("chrY")],nc=20,xlab="p-value",ylim=c(0,9),main="")
@@ -51,12 +63,14 @@ hist(tt$p[chr%in%c("chrY")],nc=20,xlab="p-value",ylim=c(0,9),main="")
 
 ## Combat
 
+Here we show how to implement Combat. 
+
 ```{r}
 library(sva)
 mod<-model.matrix(~X)
 cleandat <- ComBat(dat,Z,mod)
-tt<-rowttests(cleandat,factor(X))
-mypar(1,2)
+tt<-genefilter::rowttests(cleandat,factor(X))
+mypar(1,1)
 hist(tt$p[!chr%in%c("chrX","chrY")],nc=20,xlab="p-value",ylim=HLIM,main="")
 hist(tt$p[chr%in%c("chrY")],nc=20,xlab="p-value",ylim=c(0,9),main="")
 ```
@@ -138,10 +152,11 @@ legend("topleft",c("batch 1","batch 2"),col=1:2,lty=1,box.lwd=0)
 mypar(1,1)
 plot(s$d^2/sum(s$d^2),ylab="% variance explained",xlab="Principal component")
 
-mypar(3,4)
+mypar2(3,4)
 for(i in 1:12)
 boxplot(split(s$v[,i],Z))
 
+times <- (pData(e)$date)
 day<-as.numeric(times[ind]);day<- day-min(day)
 for(i in 1:12)
 boxplot(split(s$v[,i],day))
@@ -157,7 +172,7 @@ hist(tt$p[chr%in%c("chrY")],nc=20,xlab="p-value",ylim=c(0,9),main="")
 
 ```{r}
 library(limma)
-svafit <- sva(dat,mod)#,n.sv=4)
+svafit <- sva(dat,mod)
 svaX<-model.matrix(~X+svafit$sv)
 lmfit <- lmFit(dat,svaX)
 tt<-lmfit$coef[,2]*sqrt(lmfit$df.residual)/(2*lmfit$sigma)
@@ -181,6 +196,10 @@ image(t(Signal),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 image(t(Batch),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 image(t(error),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 ```
+
+
+
+
 
 # TO DO: ADD BLOOD methylation
 
