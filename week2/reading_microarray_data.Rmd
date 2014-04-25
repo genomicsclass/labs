@@ -6,7 +6,7 @@ We start by reading in the sample information table. This is usually created by 
 
 ```{r}
 library(affy)
-basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/labs/week2/celfiles"
+basedir <- "celfiles"
 tab <- read.delim(file.path(basedir,"sampleinfo.txt"),check.names=FALSE,as.is=TRUE)
 fns <- list.celfiles(basedir)
 fns%in%tab[,1] ##check
@@ -34,7 +34,9 @@ e <- justRMA(filenames=tab[,1],celfile.path=basedir,phenoData=tab)
 ##Agilent data
 
 ```{r}
-basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week2/agilent"
+library(limma)
+library(rafalib)
+basedir <- "agilent"
 targets <- readTargets(file.path(basedir,"TargetBeta7.txt"))
 RG <- read.maimages(targets$FileName, source="genepix",path=basedir)
 MA <- MA.RG(RG,bc.method="none")
@@ -53,7 +55,7 @@ We can also use oligo to read affy arrays
 ```{r}
 detach("package:affy")
 library(oligo)
-basedir <- "/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week2/celfiles"
+basedir <- "celfiles"
 tab <- read.delim(file.path(basedir,"sampleinfo.txt"),check.names=FALSE,as.is=TRUE)
 fns <- list.celfiles(basedir,listGzipped=TRUE)
 fns%in%tab[,1] ##check
