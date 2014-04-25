@@ -1,2 +1,71 @@
 # SNP and SNV
 
+```{r}
+# biocLite("VariantAnnotation")
+# biocLite("VariantTools")
+# biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+# biocLite("org.Hs.eg.db")
+# biocLite("LungCancerLines")
+# this package is 900 Mb
+# biocLite("BSgenome.Hsapiens.UCSC.hg19")
+
+library(VariantTools)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(org.Hs.eg.db)
+library(LungCancerLines)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+p53 <- gmapR:::exonsOnTP53Genome("TP53")
+bams <- LungCancerLines::LungCancerBamFiles()
+bam <- bams$H1993
+# this takes some time the first run (15 minutes or so)
+tally.param <- TallyVariantsParam(gmapR::TP53Genome(), 
+                                  high_base_quality = 23L,
+                                  which = range(p53) + 5e4,
+                                  indels = TRUE, read_length = 75L)
+called.variants <- callVariants(bam, tally.param)
+pf.variants <- postFilterVariants(called.variants)
+subsetByOverlaps(called.variants, p53, ignore.strand = TRUE)
+raw.variants <- tallyVariants(bam, tally.param)
+qa.variants <- qaVariants(raw.variants)
+summary(softFilterMatrix(qa.variants))
+called.variants <- callVariants(qa.variants)
+qa.filters <- VariantQAFilters()
+summary(qa.filters, raw.variants)
+qa.variants <- subsetByFilter(raw.variants, qa.filters)
+qa.filters.custom <- VariantQAFilters(fisher.strand.p.value = 1e-4)
+summary(qa.filters.custom, raw.variants)
+fs.original <- eval(qa.filters["fisherStrand"], raw.variants) 
+fs.custom <- eval(qa.filters.custom["fisherStrand"], raw.variants)
+raw.variants[fs.original != fs.custom]
+tally.param@mask <- GRanges("TP53", IRanges(1010000, width=10000))
+raw.variants.masked <- tallyVariants(bam, tally.param)
+calling.filters <- VariantCallingFilters()
+summary(calling.filters, qa.variants)
+post.filters <- VariantPostFilters()
+summary(post.filters, qa.variants)
+post.filters <- VariantPostFilters(whitelist = called.variants)
+summary(post.filters, qa.variants)
+tally.param@bamTallyParam@indels <- FALSE
+somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
+calling.filters <- VariantCallingFilters(read.count = 3L)
+somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param,
+                                      calling.filters = calling.filters,
+                                      power = 0.9, p.value = 0.001)
+sampleNames(called.variants) <- "H1993"
+mcols(called.variants) <- NULL
+vcf <- asVCF(called.variants)
+writeVcf(vcf, "H1993.vcf", index = TRUE)
+```
+
+
+```{r}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+seqlevels(vcf) <- "chr22"
+rd <- rowData(vcf)
+loc <- locateVariants(rd, txdb, CodingVariants())
+head(loc, 3)
+```
+
+
