@@ -55,7 +55,7 @@ Suppose we are asked if new borns from smoking mothers weigh less than those fro
 
 ```{r}
 dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
-daset.seed(0)
+set.seed(0)
 smokers=sample(dat$bwt[dat$smoke==1],10)
 nonsmokers=sample(dat$bwt[dat$smoke==0],10)
 ```
