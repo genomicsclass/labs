@@ -19,15 +19,29 @@ colData(se) <- DataFrame(pData(hammer.eset))
 ```
 
 ```{r}
-library(DESeq2)
-dds <- DESeqDataSet( se, design = ~ protocol + Time )
-dds <- estimateSizeFactors(dds)
+colData(se)
+colData(se)$Time[4] <- "2 months"
+colData(se)$Time <- factor(colData(se)$Time)
+colData(se)$Time
 ```
 
 ```{r}
+library(DESeq2)
+dds <- DESeqDataSet( se, design = ~ Time + protocol )
+colData(dds)$protocol
+# if control was not the "base level", we would do:
+colData(dds)$protocol <- relevel(colData(dds)$protocol, "control")
+```
+
+```{r}
+dds <- estimateSizeFactors( dds )
 logcounts <- log2( counts(dds, normalized=TRUE) + 1 )
 pc <- prcomp( t( logcounts ) )
-plot(pc$x[,1], pc$x[,2])
+library(rafalib)
+mypar()
+plot(pc$x[,1], pc$x[,2], 
+     col=colData(rld)$protocol, 
+     pch=as.numeric(colData(rld)$Time)+15)
 plot(hclust(dist(t(logcounts))), labels=colData(se)$protocol)
 plot(logcounts[,1], logcounts[,2], cex=.1)
 ```
@@ -35,12 +49,52 @@ plot(logcounts[,1], logcounts[,2], cex=.1)
 ```{r}
 rld <- rlog( dds )
 pc2 <- prcomp( t( assay(rld) ) )
-plot(pc2$x[,1], pc2$x[,2])
+plot(pc2$x[,1], pc2$x[,2],
+     col=colData(rld)$protocol, 
+     pch=as.numeric(colData(rld)$Time)+15)
 plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$protocol)
 plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
 ```
 
 ## Differential gene expression
+
+```{r}
+dds <- DESeq(dds)
+res <- results(dds)
+head(res)
+head(results(dds, contrast=c("protocol","control","L5 SNL")))
+head(results(dds, contrast=c("Time","2 months","2 weeks")))
+```
+
+```{r}
+plotMA(res, ylim=c(-5,5))
+# if you are using an older version, you can use:
+plotMA(dds, ylim=c(-5,5))
+resBigFC <- results(dds, lfcThreshold=1, altHypothesis="greaterAbs")
+plotMA(resBigFC, ylim=c(-5,5))
+abline(h=c(-1,1),lwd=2)
+```
+
+```{r}
+resSort <- res[order(res$pvalue),]
+head(resSort)
+k <- counts(dds)[rownames(resSort)[1],]
+cond <- with(colData(se), factor(paste(Time, protocol)))
+par(mar=c(15,5,2,2))
+stripchart(log2(k + 1) ~ cond, method="jitter", vertical=TRUE, las=2)
+```
+
+```{r}
+# biocLite("org.Rn.eg.db")
+library(org.Rn.eg.db)
+columns(org.Rn.eg.db)
+keytypes(org.Rn.eg.db)
+head(rownames(dds))
+geneinfo <- select(org.Rn.eg.db, keys=rownames(resSort)[1:10],
+                   columns=c("ENSEMBL","SYMBOL","GENENAME"), 
+                   keytype="ENSEMBL")
+geneinfo
+```
 
 ## Differential exon or isoform usage
 

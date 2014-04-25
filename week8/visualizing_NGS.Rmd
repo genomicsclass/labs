@@ -1,2 +1,98 @@
 # Visualizing NGS data
 
+```{r}
+#biocLite(c("pasillaBamSubset",
+#           "TxDb.Dmelanogaster.UCSC.dm3.ensGene"))
+library(pasillaBamSubset)
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+fl1 <- untreated1_chr4()
+fl2 <- untreated3_chr4()
+```
+
+We will try four ways to look at NGS coverage.
+
+## IGV
+
+Copy these files from the R library directory to the current working directory.
+
+```{r}
+system(paste("cp",fl1,basename(fl1)))
+system(paste("cp",fl2,basename(fl2)))
+library(Rsamtools)
+indexBam(basename(fl1))
+indexBam(basename(fl2))
+```
+
+Look for gene *lgs*.
+
+## Simple plot
+
+```{r}
+library(GenomicRanges)
+library(GenomicAlignments)
+x <- readGAlignments(fl1)
+xcov <- coverage(x)
+z <- GRanges("chr4",IRanges(456500,466000))
+xnum <- as.numeric(xcov[z][[1]])
+plot(xnum)
+```
+
+```{r}
+y <- readGAlignmentPairs(fl2)
+ycov <- coverage(y)
+ynum <- as.numeric(ycov[z][[1]])
+plot(ynum)
+plot(xnum, type="l", col="blue", lwd=2)
+lines(ynum, col="red", lwd=2)
+plot(xnum, type="l", col="blue", lwd=2, xlim=c(6200,6600))
+lines(ynum, col="red", lwd=2)
+```
+
+```{r}
+# biocLite("biomaRt")
+library(biomaRt)
+m <- useMart("ensembl", dataset = "dmelanogaster_gene_ensembl")
+lf <- listFilters(m)
+lf[grep("name", lf$description, ignore.case=TRUE),]
+map <- getBM(mart = m,
+  attributes = c("ensembl_gene_id", "flybasename_gene"),
+  filters = "flybasename_gene", 
+  values = "lgs")
+grl <- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, by="gene")
+gene <- grl[[map$ensembl_gene_id[1]]]
+rg <- range(gene)
+plot(c(start(rg), end(rg)), c(0,0), type="n")
+arrows(start(gene),rep(0,length(gene)),
+       end(gene),rep(0,length(gene)), code=3,
+       lwd=3, angle=90, length=.1)
+```
+
+## Gviz
+
+```{r}
+# biocLite(c("ggbio","Gviz"))
+library(Gviz)
+gtrack <- GenomeAxisTrack()
+atrack <- AnnotationTrack(gene, name = "Gene Model")
+plotTracks(list(gtrack, atrack))
+```
+
+```{r}
+xgr <- as(xcov, "GRanges")
+ygr <- as(ycov, "GRanges")
+dtrack1 <- DataTrack(xgr[xgr %over% z], name = "sample 1")
+dtrack2 <- DataTrack(ygr[ygr %over% z], name = "sample 2")
+plotTracks(list(gtrack, atrack, dtrack1, dtrack2))
+plotTracks(list(gtrack, atrack, dtrack1, dtrack2), type="polygon")
+```
+
+## ggbio
+
+```{r}
+library(ggbio)
+autoplot(gene)
+autoplot(fl1, which=z)
+autoplot(fl2, which=z)
+```
+
+
