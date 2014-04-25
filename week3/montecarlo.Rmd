@@ -105,39 +105,6 @@ print(mean(abs(avgdiff)> abs(obs)))
 Note that the observed difference is not significant using this approach. Permuations sill have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Here is a quick plot
 ```{r}
 library(rafalib)
@@ -156,7 +123,7 @@ The Central Limit Theorem (or CLT) is one of the most used mathematical results 
 
 This is imply that this ratio:
 $$
-\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} +\frac{\sigma_Y^2}/{N}}
+\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M}+\frac{\sigma_Y^2}{N}}}
 $$
 is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under value. For example, only 5% values of larger than 2 (in absolute value):
 ```{r}

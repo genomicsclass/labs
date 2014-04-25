@@ -60,6 +60,8 @@
 
 - **mike PCA and SVD in R**
 
+- TODO: show how to get date from the celfiles.
+
 # week 7
 
 - **mike Using the limma package**

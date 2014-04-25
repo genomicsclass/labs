@@ -1,0 +1,17 @@
+from GEO, download a ChIP-seq experiment plus an Input experiment in
+the same tissue
+
+"Differential oestrogen receptor binding is associated with clinical outcome in breast cancer"
+
+http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3272464/
+http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE32222
+
+Chromatin IP against ER MCF-7.3
+http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM798425
+ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX%2FSRX371%2FSRX371469/SRR1021789/SRR1021789.sra
+
+Input DNA MCF-7_Input
+http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM798440
+ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX%2FSRX371%2FSRX371484/SRR1021804/SRR1021804.sra
+
+
