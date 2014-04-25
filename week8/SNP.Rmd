@@ -1,5 +1,7 @@
 # SNP and SNV
 
+## Warning: this code is in production / full of errors 
+
 ```{r}
 # biocLite("VariantAnnotation")
 # biocLite("VariantTools")
@@ -26,6 +28,7 @@ tally.param <- TallyVariantsParam(gmapR::TP53Genome(),
 called.variants <- callVariants(bam, tally.param)
 pf.variants <- postFilterVariants(called.variants)
 subsetByOverlaps(called.variants, p53, ignore.strand = TRUE)
+
 raw.variants <- tallyVariants(bam, tally.param)
 qa.variants <- qaVariants(raw.variants)
 summary(softFilterMatrix(qa.variants))
@@ -35,23 +38,13 @@ summary(qa.filters, raw.variants)
 qa.variants <- subsetByFilter(raw.variants, qa.filters)
 qa.filters.custom <- VariantQAFilters(fisher.strand.p.value = 1e-4)
 summary(qa.filters.custom, raw.variants)
-fs.original <- eval(qa.filters["fisherStrand"], raw.variants) 
-fs.custom <- eval(qa.filters.custom["fisherStrand"], raw.variants)
-raw.variants[fs.original != fs.custom]
-tally.param@mask <- GRanges("TP53", IRanges(1010000, width=10000))
-raw.variants.masked <- tallyVariants(bam, tally.param)
-calling.filters <- VariantCallingFilters()
-summary(calling.filters, qa.variants)
-post.filters <- VariantPostFilters()
-summary(post.filters, qa.variants)
-post.filters <- VariantPostFilters(whitelist = called.variants)
-summary(post.filters, qa.variants)
-tally.param@bamTallyParam@indels <- FALSE
+
 somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
 calling.filters <- VariantCallingFilters(read.count = 3L)
 somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param,
                                       calling.filters = calling.filters,
                                       power = 0.9, p.value = 0.001)
+
 sampleNames(called.variants) <- "H1993"
 mcols(called.variants) <- NULL
 vcf <- asVCF(called.variants)
@@ -62,6 +55,7 @@ writeVcf(vcf, "H1993.vcf", index = TRUE)
 ```{r}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+vcf <- readVcf("H1993.vcf.bgz", genome="hg19")
 seqlevels(vcf) <- "chr22"
 rd <- rowData(vcf)
 loc <- locateVariants(rd, txdb, CodingVariants())
