@@ -1,57 +1,79 @@
 # NGS read counting
 
-The following lab will describe how to count NGS reads which fall into genomic features. We want to end up with a count matrix which has rows corresponding to genomic ranges and columns which correspond to different experiments or samples.
+The following lab will describe how to count NGS reads which fall into genomic features. We want to end up with a count matrix which has rows corresponding to genomic ranges and columns which correspond to different experiments or samples. As an example, we will use an RNA-Seq experiment, with files in the `pasillaBamSubset` Bioconductor data package. However, the same functions can be used for DNA-Seq, ChIP-Seq, etc.
 
 ```{r}
-#biocLite(c("pasillaBamSubset",
-#           "TxDb.Dmelanogaster.UCSC.dm3.ensGene"))
+#biocLite("pasillaBamSubset")
+#biocLite("TxDb.Dmelanogaster.UCSC.dm3.ensGene")
 library(pasillaBamSubset)
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
 ```
 
+We load a transcript database object. These are prebuilt in R for various well studied organisms, for example `TxDb.Hsapiens.UCSC.hg19.knownGene`. In addition the `makeTranscriptDbFromGFF` file can be used to import GFF or GTF gene models. We use the `exonsBy` function to get a `GRangesList` object of the exons for each gene.
+
 ```{r}
 txdb <- TxDb.Dmelanogaster.UCSC.dm3.ensGene
 grl <- exonsBy(txdb, by="gene")
+grl[100]
+grl[[100]]
+grl[[100]][1]
 ```
+
+These functions in the `pasillaBamSubset` package just point us to the BAM files.
 
 ```{r}
 fl1 <- untreated1_chr4()
 fl2 <- untreated3_chr4()
+fl1
 ```
+
+We need the following libraries for counting BAM files.
 
 ```{r}
 library(Rsamtools)
 library(GenomicRanges)
 ```
 
+Note: if you are using Bioconductor version 14, paired with R 3.1, you should also load this library. You do not need to load this library, and it will not be available to you, if you are using Bioconductor version 13, paired with R 3.0.x.
+
 ```{r}
-# if you are using Bioconductor version 14, paired with R 3.1, you should load this library
 library(GenomicAlignments)
 ```
 
-For larger files, yield size of 1 million reads might make sense.
+We specify the files using the `BamFileList` function. This allows us to tell the read counting functions how many reads to load at once. For larger files, yield size of 1 million reads might make sense.
 
 ```{r}
 fls <- BamFileList(c(fl1, fl2), yieldSize=5e4)
 names(fls) <- c("first","second")
 ```
 
+The following function counts the overlaps of the reads in the BAM files in the features, which are the genes of Drosophila. We tell the counting function to ignore the strand, i.e., to allow minus strand reads to count in plus strand genes, and vice versa.
+
 ```{r}
 so1 <- summarizeOverlaps(features=grl,
                          reads=fls,
                          ignore.strand=TRUE)
+so1
 ```
+
+We can examine the count matrix, which is stored in the `assay` slot:
 
 ```{r}
 head(assay(so1))
 colSums(assay(so1))
 ```
 
+The other parts of a `SummarizedExperiment`, as described in the lab in Week 2: Basic Bioconductor Infrastructure.
+
 ```{r}
 rowData(so1)
 colData(so1)
+colData(so1)$sample <- c("one","two")
+colData(so1)
 metadata(rowData(so1))
 ```
+
+We can do some basic exploratory data analysis of the counts:
 
 ```{r}
 x <- assay(so1)[,1]
@@ -60,11 +82,12 @@ hist(x[x > 0 & x < 10000], col="grey")
 plot(assay(so1) + 1, log="xy")
 ```
 
+The second file should actually be counted in a special manner, as it contains pairs of reads which come from a single fragment. We do not want to count these twice, so we set `singleEnd = FALSE`. Additionally, we specify `fragments = TRUE` which counts reads if only one of the pair aligns to the features, and the other pair aligns to no feature.
+
 ```{r}
 ?untreated3_chr4
 ?summarizeOverlaps
-fls <- BamFileList(c(fl2, fl2), yieldSize=5e4)
-names(fls) <- c("first","second")
+fls <- BamFileList(fl2, yieldSize=5e4)
 so2 <- summarizeOverlaps(features=grl,
                          reads=fls,
                          ignore.strand=TRUE,
