@@ -94,7 +94,7 @@ so2 <- summarizeOverlaps(features=grl,
                          singleEnd=FALSE, 
                          fragments=TRUE)
 colSums(assay(so2))
-x <- assay(so2)[,1]
+colSums(assay(so1))
 plot(assay(so1)[,2], assay(so2)[,1], xlim=c(0,5000), ylim=c(0,5000),
      xlab="single end counting", ylab="paired end counting")
 abline(0,1)
