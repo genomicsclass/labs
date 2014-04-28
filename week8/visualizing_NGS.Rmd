@@ -55,8 +55,11 @@ We read in the alignments from the file `fl1`. Then we use the `coverage` functi
 x <- readGAlignments(fl1)
 xcov <- coverage(x)
 z <- GRanges("chr4",IRanges(456500,466000))
+# Bioconductor 2.14
 xcov[z]
-xnum <- as.numeric(xcov[z][[1]])
+# Bioconductor 2.13
+xcov$chr4[ranges(z)]
+xnum <- as.numeric(xcov$chr4[ranges(z)])
 xnum
 plot(xnum)
 ```
@@ -66,7 +69,7 @@ We can do the same for another file:
 ```{r}
 y <- readGAlignmentPairs(fl2)
 ycov <- coverage(y)
-ynum <- as.numeric(ycov[z][[1]])
+ynum <- as.numeric(ycov$chr4[ranges(z)])
 plot(xnum, type="l", col="blue", lwd=2)
 lines(ynum, col="red", lwd=2)
 ```
