@@ -76,9 +76,9 @@
 
 - rafa Assigning probe locations to genes
 
-- mike Visualizing NGS with Bioconductor, UCSC, IGV
+- **mike Visualizing NGS with Bioconductor, IGV**
 
-- mike Making NGS read count table in Bioconductor
+- **mike Making NGS read count table in Bioconductor**
 
 - mike SNPs and CNVs 
 
@@ -86,6 +86,6 @@
 
 - rafa DNA methylation: arrays and NGS
 
-- mike ChIP-Seq
+- **mike ChIP-Seq**
 
 
