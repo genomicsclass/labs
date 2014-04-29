@@ -1,0 +1,7 @@
+fastq-dump SRR042499.sra
+
+tophat2 -o tophat_out -p 10 /path/to/Rattus_norvegicus/Ensembl/RGSC3.4/Sequence/Bowtie2Index/genome SRR042499.fastq
+
+cufflinks -o cufflinks -p 10 --GTF-guide /path/to/Rattus_norvegicus/Ensembl/RGSC3.4/Annotation/Genes/genes.gtf \
+tophat_out/accepted_hits.bam
+
