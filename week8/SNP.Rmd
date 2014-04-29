@@ -1,6 +1,6 @@
 # SNP and SNV
 
-## Warning: this code is in production / full of errors 
+We start by loading all the libraries we will need for calling and annotating single nucleotide variants (SNVs).
 
 ```{r}
 # biocLite("VariantAnnotation")
@@ -10,55 +10,126 @@
 # biocLite("LungCancerLines")
 # this package is 900 Mb
 # biocLite("BSgenome.Hsapiens.UCSC.hg19")
-
+# this packages is 220 Mb
+# biocLite("cgdv17")
 library(VariantTools)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db)
 library(LungCancerLines)
 library(BSgenome.Hsapiens.UCSC.hg19)
+```
 
+## Calling variants
+
+The `VariantTools` can be used to find variants using a reference genome and a file with aligned reads (BAM file). The reference genome needs to be a `GmapGenome`, but the `GmapGenome` function is available to convert any FASTA file to a genome for use with `VariantTools`.
+
+Here we will examine RNA-Seq reads mapped to the TP53 gene plus 1 Mb flanking sequence.
+
+```{r}
 p53 <- gmapR:::exonsOnTP53Genome("TP53")
+genome <- gmapR::TP53Genome()
+?LungCancerBamFiles
 bams <- LungCancerLines::LungCancerBamFiles()
+path(bams)
 bam <- bams$H1993
-# this takes some time the first run (15 minutes or so)
-tally.param <- TallyVariantsParam(gmapR::TP53Genome(), 
+```
+
+Again, note that the genome is not hg19.
+
+```{r}
+p53
+# Bioc 2.13
+library(GenomicRanges)
+# Bioc 2.14
+library(GenomicAlignments)
+readGAlignments(bam)
+```
+
+We can write out a FASTA file for use in IGV.
+
+```{r}
+x <- as(genome, "DNAStringSet")
+library(rtracklayer)
+export(x, "genome.fasta")
+path(bam)
+```
+
+The following call will use a binomial likelihood ratio test to call variants. From the help file:
+
+> The test amounts to excluding putative variants with less than ~4% alt frequency. 
+> A variant is also required to be represented by at least 2 alt reads. 
+
+Regarding base quality, the help says 
+
+> we typically use 56 for old Illumina, 23 for Sanger/Illumina1.8.
+
+The `TallyVariantsParam` step takes some time the first time it is run (15 minutes or so).
+
+```{r}
+tally.param <- TallyVariantsParam(genome, 
                                   high_base_quality = 23L,
-                                  which = range(p53) + 5e4,
-                                  indels = TRUE, read_length = 75L)
+                                  which = range(p53) + 5e4                                
 called.variants <- callVariants(bam, tally.param)
-pf.variants <- postFilterVariants(called.variants)
-subsetByOverlaps(called.variants, p53, ignore.strand = TRUE)
+called.variants
+```
 
-raw.variants <- tallyVariants(bam, tally.param)
-qa.variants <- qaVariants(raw.variants)
-summary(softFilterMatrix(qa.variants))
-called.variants <- callVariants(qa.variants)
-qa.filters <- VariantQAFilters()
-summary(qa.filters, raw.variants)
-qa.variants <- subsetByFilter(raw.variants, qa.filters)
-qa.filters.custom <- VariantQAFilters(fisher.strand.p.value = 1e-4)
-summary(qa.filters.custom, raw.variants)
+Now we will call variants for the whole region:
 
-somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
-calling.filters <- VariantCallingFilters(read.count = 3L)
-somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param,
-                                      calling.filters = calling.filters,
-                                      power = 0.9, p.value = 0.001)
+```{r}
+tally.param <- TallyVariantsParam(genome, 
+                                  high_base_quality = 23L)                                
+called.variants <- callVariants(bam, tally.param)
+called.variants
+```
 
+How many non-reference alleles do we see:
+
+```{r}
+hist(mcols(called.variants)$raw.count)
+with(mcols(called.variants), plot(raw.count.total, raw.count, log="xy"))
+(i <- which.max(mcols(called.variants)$raw.count))
+called.variants[i,]
+```
+
+## Writing out VCF files
+
+```{r}
 sampleNames(called.variants) <- "H1993"
 mcols(called.variants) <- NULL
 vcf <- asVCF(called.variants)
 writeVcf(vcf, "H1993.vcf", index = TRUE)
 ```
 
+A few more details:
+
+```{r}
+?postFilterVariants
+?callSampleSpecificVariants
+somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
+```
+
+
+## Reading in VCF and annotating
 
 ```{r}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-vcf <- readVcf("H1993.vcf.bgz", genome="hg19")
-seqlevels(vcf) <- "chr22"
-rd <- rowData(vcf)
-loc <- locateVariants(rd, txdb, CodingVariants())
+```
+
+From the Bioconductor `variants` workflow
+
+http://www.bioconductor.org/help/workflows/variants/
+
+> The VCF file is available in the cgdv17 data package and contains Complete Genomics data for population type CEU.
+
+```{r}
+library(VariantAnnotation)
+library(cgdv17)
+file <- system.file("vcf", "NA06985_17.vcf.gz", package = "cgdv17")
+vcf <- readVcf(file, genome="hg19")
+print(object.size(vcf), format="Mb")
+gr <- rowData(vcf)
+loc <- locateVariants(gr, txdb, CodingVariants())
 head(loc, 3)
 ```
 
