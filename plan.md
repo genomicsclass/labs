@@ -34,7 +34,7 @@
 
 - **rafa Permutation tests**
 
-- **mike Expressing experimental design using R formula** ( add links to more help on formula the UCR manual & http://www.math.montana.edu/Rweb/Rnotes/node77.html )
+- **mike Expressing experimental design using R formula** 
 
 - **mike Basic inference on microarray part I**
 
