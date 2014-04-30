@@ -10,8 +10,6 @@ We start by loading all the libraries we will need for calling and annotating si
 # biocLite("LungCancerLines")
 # this package is 900 Mb
 # biocLite("BSgenome.Hsapiens.UCSC.hg19")
-# this packages is 220 Mb
-# biocLite("cgdv17")
 library(VariantTools)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db)
@@ -68,7 +66,7 @@ The `TallyVariantsParam` step takes some time the first time it is run (15 minut
 ```{r}
 tally.param <- TallyVariantsParam(genome, 
                                   high_base_quality = 23L,
-                                  which = range(p53) + 5e4                                
+                                  which = range(p53) + 5e4)                             
 called.variants <- callVariants(bam, tally.param)
 called.variants
 ```
@@ -111,26 +109,49 @@ somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
 
 ## Reading in VCF and annotating
 
+To annotate the VCF, we start by loading a UCSC transcript database:
+
 ```{r}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 ```
 
-From the Bioconductor `variants` workflow
-
-http://www.bioconductor.org/help/workflows/variants/
-
-> The VCF file is available in the cgdv17 data package and contains Complete Genomics data for population type CEU.
+Now we read in a small subset of a VCF file, over chr22, which is stored in the VariantAnnotation package. Note that the `readVcf` function can be slow if the file is many Mb. This one is less than 1 Mb.
 
 ```{r}
 library(VariantAnnotation)
-library(cgdv17)
-file <- system.file("vcf", "NA06985_17.vcf.gz", package = "cgdv17")
-vcf <- readVcf(file, genome="hg19")
-print(object.size(vcf), format="Mb")
-gr <- rowData(vcf)
-loc <- locateVariants(gr, txdb, CodingVariants())
-head(loc, 3)
+fl <- system.file("extdata", "chr22.vcf.gz", package="VariantAnnotation")
+vcf <- readVcf(fl, genome="hg19")
+rowData(vcf)
+```
+
+Note that we can also restrict the amount we read in, either by specifying a range, or using yieldSize
+
+```{r}
+param <- ScanVcfParam(which=GRanges("22", IRanges(50.5e6, 50.6e6)))
+vcf <- readVcf(fl, genome="hg19", param=param)
+rowData(vcf)
+?readVcf
+```
+
+We can find which variants overlap coding regions with the `locateVariants` function:
+
+```{r}
+# here we hack the chromosome from "22" to "chr22"
+seqlevels(vcf) <- paste0("chr", seqlevels(vcf))
+loc <- locateVariants(vcf, txdb, CodingVariants())
+loc
+```
+
+We can double check that it did what we expected:
+
+```{r}
+loc[1]
+g <- genes(txdb)
+fo <- findOverlaps(loc[1], g)
+fo
+g[subjectHits(fo)]
+loc[1]
 ```
 
 
