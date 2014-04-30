@@ -80,12 +80,12 @@
 
 - **mike Making NGS read count table in Bioconductor**
 
-- mike SNPs and CNVs 
+- **mike SNVs** 
 
-- mike RNA-Seq
+- **mike RNA-seq**
 
 - rafa DNA methylation: arrays and NGS
 
-- **mike ChIP-Seq**
+- **mike ChIP-seq**
 
 
