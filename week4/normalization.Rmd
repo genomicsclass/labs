@@ -47,7 +47,7 @@ shist(y,unit=0.1,xlab="log (base) intenisty",col=1,main="smooth histogram")
 shist(x,unit=0.1,xlab="log (base) intenisty",add=TRUE,col=2)
 ```
 
-To undersand the downstrea consequences of not normalizing we will use the spike-in experiment used in previous units.
+To undersand the downstream consequences of not normalizing we will use the spike-in experiment used in previous units.
 ```{r,fig.width=7}
 library(SpikeIn)
 data(SpikeIn95)
