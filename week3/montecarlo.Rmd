@@ -33,7 +33,7 @@ ttestgenerator <- function(b=1000,n=10){
 }
 ttests <- ttestgenerator(1000,10)
 ```
-With 1,000 simulated ocurrences of this random variable wecan now get a gimplse of it's distribution
+With 1,000 simulated ocurrences of this random variable we can now get a gimplse of it's distribution
 ```{r}
 hist(ttests)
 ```
@@ -79,7 +79,7 @@ and repeat the entire excercise.
 3) Repeat the code above but simulated income for american and canadians. Is the median income the same? is the mean income the same?
 
 ## Permutations
-Suppose we have a situation in which non of the standard statistical tools apply. We have computed a summary statisitic, such as the difference in mean, but do not have a useful approximation such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation can be useful in these scenarios. 
+Suppose we have a situation in which none of the standard statistical tools apply. We have computed a summary statisitic, such as the difference in mean, but do not have a useful approximation such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation can be useful in these scenarios. 
 
 We are back to the scenario were we only have 10 measurements for each group.
 
@@ -156,7 +156,7 @@ shist(dat$Height[dat$Gender==1],plotHist=FALSE,col=1,unit=1,add=TRUE)
 shist(dat$Height[dat$Gender==0],plotHist=FALSE,col=2,unit=1,add=TRUE)
 ```
 
-Homework: is the distribution of dat$Gener approximated by normal, t or neither?
+Homework: is the distribution of dat$Gender approximated by normal, t or neither?
 
 Note that we obtained an estimate but never really reported it. We simply reported the p-value. Although common practice, we do not recommend it. Note that we can obtain statistically significant results that are not scientifically significant. The prefered way to report the estimate is the present both the estimate and its standard deviation: 
 ```{r}
