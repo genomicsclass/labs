@@ -163,4 +163,5 @@ splot(A,M,xlim=c(0,13),ylim=c(-4,4),cex=0.5,main="RMA")
 abline(h=c(-1,1),col=1,lwd=2,lty=2)
 points(A[spikeinIndex],M[spikeinIndex],bg=2,pch=21)
 ```
-Althought the variance is greatly reduced we also note that the size of the signal is also reduced. An improved background model was proposed by [CITE GCRMA]
+Althought the variance is greatly reduced we also note that the size of the signal is also reduced. An improved background model was proposed by Zhijin Wu, "A Model Based Background Adjustment for Oligonucleotide Expression Arrays" ( http://biostats.bepress.com/jhubiostat/paper1/?35 )
+
