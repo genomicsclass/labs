@@ -1,4 +1,11 @@
-# Basic Bioconductor infrastructure for genomics, microarray and NGS
+---
+layout: page
+title: Basic Bioconductor infrastructure
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ## IRanges
 
@@ -9,7 +16,7 @@ ir
 start(ir)
 end(ir)
 width(ir)
-?IRanges
+# ?IRanges
 ```
 
 ```{r}
@@ -19,7 +26,7 @@ ir <- IRanges(5,10)
 ```
 
 ```{r}
-?"intra-range-methods"
+# ?"intra-range-methods"
 shift(ir, -2)
 ```
 
@@ -62,7 +69,7 @@ plotir(ir - 2, 10)
 ```
 
 ```{r}
-?"inter-range-methods"
+# ?"inter-range-methods"
 ir <- IRanges(start=c(3,5,17), end=c(10,8,20))
 range(ir)
 reduce(ir)

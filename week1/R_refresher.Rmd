@@ -1,4 +1,8 @@
-# R refresher
+---
+layout: page
+title: R refresher
+---
+
 
 ## Data summaries: summary, str
 

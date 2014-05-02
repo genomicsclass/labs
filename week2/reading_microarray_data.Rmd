@@ -1,4 +1,11 @@
-# Reading in microarray data
+---
+layout: page
+title: Reading in microarray data
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ## Affymterix CEL files
 
@@ -66,9 +73,3 @@ efs <- read.celfiles(filenames=file.path(basedir,tab[,1]),phenoData=pd,sampleNam
 ```{r}
 e <- rma(efs)
 ```
-
-
-
-
-
-
