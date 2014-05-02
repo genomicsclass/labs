@@ -1,4 +1,7 @@
-# Installing Bioconductor and finding help
+---
+layout: page
+title: Installing Bioconductor and finding help
+---
 
 ## Installing Bioconductor
 
