@@ -3,6 +3,11 @@ layout: page
 title: Installing software from github.com
 ---
 
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
 ```{r}
 #install.packages("devtools")
 library(devtools)
