@@ -1,13 +1,23 @@
+---
+layout: page
+title: Normalization
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Normalization
 
 Normalization is one of the most important procedures in genomics data analays. A typical dataset contains more than one sample and we are almost always interested in making comparisons between these. Unfortunately, technical and biological sources of unwanted variation can cloud downstream results. Here we demonstrate with real data, how this can happen and the describe several existing solutions. The examples are based on microarray data but can be applied to other datasets.
 
 Our first example a Dilution dataset that is not publically available. To obtain the dataset you need to request it here: http://www.genelogic.com/support/scientific-studies
 
-This Dilution dataset has six sets of five technical replicats. The six sets differ in the concentration of RNA. The RNA was diluted 5 times so that 1/2 as much RNA was hybridized in each set. We start by showing  data from five technical replicates. We show boxplots and densities
-```{r,fig.width=7}
+This Dilution dataset has six sets of five technical replicates. The six sets differ in the concentration of RNA. The RNA was diluted 5 times so that 1/2 as much RNA was hybridized in each set. We start by showing  data from five technical replicates. We show boxplots and densities
+```{r,fig.width=7,eval=FALSE}
 library(rafalib)
 library(affy)
+library(affydata)
 setwd("/Users/ririzarr/myDocuments/teaching/HarvardX/labs/week4/Dilution")
 pd=read.table("pdata.txt",header=TRUE,check.names=FALSE,as.is=TRUE)
 pd<-pd[which(pd[,3]==0),] ##only liver
@@ -22,7 +32,7 @@ for(i in 1:5)
 
 Notice that although being technical replicates we see different distributions. The shifts in median are quite dramatic with changes of almost 2 fold. To see that simply changing the location by, for example, subtracting the median is not enough we show an MA plot between two of these samples
 
-```{r,fig.width=7}
+```{r,fig.width=7,eval=FALSE}
 mypar(1,2)
 i=1;j=2
 x=log2(pms[,i])
@@ -35,7 +45,7 @@ shist(x,unit=0.1,xlab="log (base) intenisty",add=TRUE,col=2)
 
 The MA-plot shows non-linear bias. Median normalization would simple move the plot up so that the median difference is 0. But this will not correct the non-linear bias as demonstrated here
 
-```{r,fig.width=7}
+```{r,fig.width=7,eval=FALSE}
 mypar(1,2)
 i=1;j=2
 M=median(c(x,y))
@@ -53,14 +63,17 @@ library(SpikeIn)
 data(SpikeIn95)
 spms<-pm(SpikeIn95)
 spd=pData(SpikeIn95)
+library(rafalib)
 mypar(1,2)
 shist(log2(spms[,2]),unit=0.1,type="n",xlab="log (base 2) intensity",main="Five techical replicates")
-for(i in 1:10) ##show the first 10
+##show the first 10
+for(i in 1:10) 
   shist(log2(spms[,i]),unit=0.1,col=i,add=TRUE,lwd=2,lty=i)
 ##Pick 9 and 10 and make an MA plot
 i=10;j=9 ##example with two samples
 siNames<-colnames(spd)
-siNames=siNames[which(spd[i,]/spd[j,]==2)] ##show probes with expected FC=2
+##show probes with expected FC=2
+siNames=siNames[which(spd[i,]/spd[j,]==2)] 
 M=log2(spms[,i])-log2(spms[,j])
 A=(log2(spms[,i])+log2(spms[,j]))/2
 splot(A,M,ylim=c(-1.5,1.5))
@@ -84,22 +97,22 @@ centers <- seq(min(a),max(a),0.1)
 plot(a,m,ylim=c(-1.5,1.5),col="grey")
 windowSize<-1.5
 smooth<-rep(NA,length(centers))
-library(animation)
-saveGIF({
-  for(i in seq(along=centers)){
-  center<-centers[i]
-  ind=which(a>center-windowSize & a<center+windowSize)
-  fit<-lm(m~a,subset=ind)
-  smooth[i]<-predict(fit,newdata=data.frame(a=center))
-  if(center<12){
-    plot(a,m,ylim=c(-1.5,1.5),col="grey")
-    points(a[ind],m[ind])
-    abline(fit,col=3,lty=2,lwd=2)
-    lines(centers[1:i],smooth[1:i],col=2,lwd=2)
-    points(centers[i],smooth[i],col=2,pch=16)
-  }
-  }
-},'loess.gif', interval = .15)
+#library(animation)
+# saveGIF({
+#   for(i in seq(along=centers)){
+#   center<-centers[i]
+#   ind=which(a>center-windowSize & a<center+windowSize)
+#   fit<-lm(m~a,subset=ind)
+#   smooth[i]<-predict(fit,newdata=data.frame(a=center))
+#   if(center<12){
+#     plot(a,m,ylim=c(-1.5,1.5),col="grey")
+#     points(a[ind],m[ind])
+#     abline(fit,col=3,lty=2,lwd=2)
+#     lines(centers[1:i],smooth[1:i],col=2,lwd=2)
+#     points(centers[i],smooth[i],col=2,pch=16)
+#   }
+#   }
+# },'loess.gif', interval = .15)
 ##Final version
 plot(a,m,ylim=c(-1.5,1.5))
 lines(centers,smooth,col=2,lwd=2)
@@ -227,7 +240,7 @@ $$
 In the case of the model above we can derive the following transformation 
 
 $$
-\mbox{arsinh}(y) = \log\left\{y + \sqrt{y^2+1} \right\}
+\mbox{arsinh}(y) = \log\left(y + \sqrt{y^2+1} \right)
 $$
 
 The vsn library implements this apprach. It estimates $\beta$ and $A$ by assuming that most genes don't change, i.e. the $\theta$ does not depend on $i$.
@@ -251,7 +264,8 @@ We notice that it corrects the bias in a similar way to loess and quantile norma
 ## RNA-seq
 
 ```{r}
-load("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/bottomly_sumexp.RData")
+library(dagdata)
+data(bottomly)
 library(GenomicRanges)
 f <- assay(bottomly)
 pd <- colData(bottomly)
@@ -296,7 +310,8 @@ for(i in 1:20)
 
 
 ```{r}
-load("/Users/ririzarr/myDocuments/teaching/HarvardX/genomicsclass/week4/pickrell_sumexp.RData")
+library(dagdata)
+data(pickrell)
 library(GenomicRanges)
 library(rafalib)
 f <- assay(pickrell)
