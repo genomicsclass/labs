@@ -1,3 +1,12 @@
+---
+layout: page
+title: Modeling
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Modeling
 
 "All models are wrong, but some are useful" -George E. P. Box
@@ -56,6 +65,7 @@ lambdas=2^seq(1,16,len=N) ##these are the true abundances of genes
 y=rpois(N,lambdas)##note that the null hypothesis is true for all genes
 x=rpois(N,lambdas) 
 ind=which(y>0 & x>0)##make sure no 0s due to ratio and log
+library(rafalib)
 splot(log2(lambdas),log2(y/x),subset=ind)
 ```
 Note that for lower values of lambda there is much more variability and that if we were to report anything with a fold change of 2 or more the number of false positives would be quite high for low.
@@ -120,7 +130,7 @@ $$
 $$
 The MLE is the value of lambda that maximizes the _likeihlood_. 
 $$
-L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right\}
+L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left(\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right)
 $$
 In practice it is more convinient to maximize the log-likeilhood
 ```{r}
