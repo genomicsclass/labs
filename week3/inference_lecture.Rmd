@@ -1,3 +1,12 @@
+---
+layout: page
+title: Statistical inference
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Statistical Inference
 
 In biology journals we see many figures such as *Figure*-page 3. Today we will learn what the litte star means. In most genome wide association studies we see Manhattan plots (*Figure* page 4). We will leanr what _P_ means. 
@@ -81,7 +90,7 @@ Under the null hypothese that there is no difference between the population aver
 
 This is imply that this ratio, 
 $$
-\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} +\frac{\sigma_Y^2}/{N}}
+\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} + \frac{\sigma_Y^2}{N}}}
 $$
 is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under any value. For example, only 5% values of larger than 2 (in absolute value):
 ```{r}

@@ -1,3 +1,12 @@
+---
+layout: page
+title: Monte Carlo methods
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Monte Carlo Simulations
 
 Computers can be used to generate pseudo-random numbers. For most practicaly purposes these pseudo-random numbers can be used to immitate real random variables. This permits us to examine properties of random variables using a computer instead of theoretical or analytical derivations. One very useful aspect of this concept is that we can create _simulated_ data to test out ideas or competing methods without actually having to perform laboratory experiments.
@@ -105,8 +114,11 @@ print(mean(abs(avgdiff)> abs(obs)))
 Note that the observed difference is not significant using this approach. Permuations sill have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
 
 
-Here is a quick plot
+
 ```{r}
+dat = read.csv("http://www.biostat.jhsph.edu/bstcourse/bio751/data/USheights_subsample.csv")
+men = dat$Height[dat$Gender==1]
+women = dat$Height[dat$Gender==0]
 library(rafalib)
 mypar()
 stripchart(list(women,men),vertical=TRUE,method="jitter",col=c(1,2),pch=15,group.names=c("women","men"))
@@ -176,7 +188,7 @@ We have data for two strains of mice which we will refer to as strain 0 and 1. W
 ```{r}
 library(Biobase,quietly=TRUE,verbose=FALSE)
 library(genefilter)
-library(maPooling)
+library(dagdata)
 data(maPooling)
 pd=pData(maPooling)
 pooled=which(rowSums(pd)==12)

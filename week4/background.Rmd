@@ -1,3 +1,12 @@
+---
+layout: page
+title: Background
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Background noise
 
 If for every gene on a microarray we compute the log ratio from replicates, we obtain a Figure like this:
@@ -33,6 +42,8 @@ Note that distinguishing these 16 genes from the highly variabe (noisy) data see
 Microarray data is known to contain what is called _background noise_. Even in cases were a target is not present, a probe will return an intensity. We have experimental data to confirm this.
 
 ```{r}
+# library(devtools)
+# install_github("BackgroundExperimentYeast","stephaniehicks")
 library(BackgroundExperimentYeast)
 data(backgroundData)
 pms=log2(pm(backgroundData))
@@ -139,7 +150,7 @@ plot(log2(alpha[ind]),A,xlim=XLIM,ylim=XLIM,main="PM-MM");abline(0,1,col=2)
 Model based approaches have been suggested for correcting for background while controling variance inflation. The most widely used approach assumes that that signal follows an exponential distirubtion with rate $\lambda$ and the background a normal distribution with mean $\mu$ and standard deviation $\sigma$. The parameters are estimated from the signal and then these are plugged into to the posterior mean of the signal given the observed values
 
 $$
-\mbox{E}[ \mbox{signal} | PM ]=PM-\mu-\lambda \sigma^2+\sigma\left[ \frac{1}{\sqrt{2\pi}} \exp\left\{-\frac{(PM/\sigma)^2}{ 2\Phi(PM/\sigma) } \right\}\right]
+\mbox{E}[ \mbox{signal} | PM ] = PM - \mu - \lambda \sigma^2 + \sigma \left[ \frac{1}{\sqrt{2\pi}} \exp\left( -\frac{ (PM/\sigma)^2 }{ 2 \Phi(PM/\sigma) } \right) \right] 
 $$
 
 This parametric model does not fit the data well, but does provide a usable background correction approach. It is implemented in the widely used Robust Multi-array Average (RMA). 
