@@ -1,5 +1,11 @@
-# Distance
+---
+layout: page
+title: Distance lecture
+---
 
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 $$
 d(h,i) = \sqrt{ \sum_{j=1}^{N} (X_{h,j}-X_{i,j})^2 }
@@ -78,16 +84,25 @@ $$
 with $r$ the correlation.
 
 Difference in the average can drive the different. For this particular demonstration let's assume that $s_X=s_Y=1$. 
+
 $$
-\begin{eqnarray}
-\frac{1}{M}\sum_{i=1}^M (X_i - Y_i)^2 &=& \frac{1}{M}\sum_{i=1}^M \left\{ (X_i - \bar{X}) - (Y_i-\bar{Y}) - (\bar{X}-\bar{Y})\right\}^2 \\
-&=&\frac{1}{M}\sum_{i=1}^M \left\{ (X_i - \bar{X}) - (Y_i-\bar{Y})\right\}^2 - 2(\bar{X}-\bar{Y}) \frac{1}{M}\sum_{i=1}^M \left\{ (X_i - \bar{X}) - (Y_i-\bar{Y})\right\} + \frac{1}{M}\sum_{i=1}^M (\bar{X}-\bar{Y}) ^2\\
-&=& 2(1-r) + \frac{1}{M}\sum_{i=1}^M (\bar{X}-\bar{Y}) ^2\\
-&=& 2(1-r) + (\bar{X}-\bar{Y}) ^2
-\end{eqnarray}
+\frac{1}{M}\sum_{i=1}^M (X_i - Y_i)^2 = \frac{1}{M}\sum_{i=1}^M \left( (X_i - \bar{X}) - (Y_i-\bar{Y}) - (\bar{X}-\bar{Y})\right)^2 
+$$
+
+$$
+= \frac{1}{M}\sum_{i=1}^M \left( (X_i - \bar{X}) - (Y_i-\bar{Y})\right)^2 - 2(\bar{X}-\bar{Y}) \frac{1}{M}\sum_{i=1}^M \left( (X_i - \bar{X}) - (Y_i-\bar{Y})\right) + \frac{1}{M}\sum_{i=1}^M (\bar{X}-\bar{Y}) ^2
+$$
+
+$$
+= 2(1-r) + \frac{1}{M}\sum_{i=1}^M (\bar{X}-\bar{Y}) ^2 
+$$
+
+$$
+= 2(1-r) + (\bar{X}-\bar{Y}) ^2
 $$
 
 ## K-means algorithm
+
 The idea behind this agorithm is simple. You pick the number of clusters $K$ that you think are present. Then $K$ points are selected at random and defined as group centers. In a next step each point is assigned to a group based on the shortest distance. After this step the centers are recalculated based on means for each dimension (these are called centroids). The process is repated untile the mean cetners don't move anymore. 
 
 ```{r}
