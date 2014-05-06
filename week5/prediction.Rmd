@@ -1,4 +1,17 @@
-# Scatter plots and correlation
+---
+layout: page
+title: Prediction
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+The following lecture closely follows an example from the book, The Elements of Statistical Learning: Data Mining, Inference, and Prediction, by Trevor Hastie, Robert Tibshirani and Jerome Friedman. A free PDF of this book can be found at the following URL:
+
+<http://statweb.stanford.edu/~tibs/ElemStatLearn/>
+
+## Scatter plots and correlation
 
 Predict sons height from fathers:
 
