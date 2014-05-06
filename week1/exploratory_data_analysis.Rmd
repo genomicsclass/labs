@@ -1,4 +1,12 @@
-# Exploratory Data Analysis
+---
+layout: page
+title: Exploratory Data Analysis
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 
 Biases, systematic errors and unexpected variability are common in genomics data. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines are designed to detect these. Yet, these pipelines still give you an answer and the from the final results it may be hard or impossible to notice an error was made. In later modules we will cover many other examples. 
 
@@ -33,7 +41,7 @@ plot(xs,ecdf(x)(xs),type="l",xlab="x=Height",ylab="F(x)")
 If instead of the total numbers we report the proportions, then the histogram is a probability distribution. The probability distribution we see above approximates one that is very common in a nature: the bell curve or normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval
 
 $$
-\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma}} \exp{\left( \frac{x-\mu}{\sigma} \right)^2} \, dx
+\mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\left( \frac{-(x-\mu)^2}{2 \sigma^2} \right)} \, dx
 $$
 
 Here $\mu$ and $\sigma$ are refereed to as the mean and standard deviation. If this approximation holds for our list then the population mean and variance of our list can be used in the formula above. To see this with an example remember that above we noted that 70 individuals or 6% of our population were taller than 6 feet. The normal approximation works well:
@@ -62,21 +70,21 @@ qqline(x)
 ## Box-plot
 Data is not always normally distributed. Income 
 In these cases the average and standard deviation are not necessarily informative. The properties described above are specific to the normal. For example, the normal distribution does not seem to be a good approximation for the direct compensation for 199 United States CEOs in the year 2000
-```{r, fig.width=4, fig.height=4}
+```{r fig.width=4, fig.height=4}
 hist(exec.pay)
 qqnorm(exec.pay)
 qqline(exec.pay)
 ```
 A practical summary is to compute 3 percentiles: 25-th, 50-th (the median) and the 75-th. A boxplots shows these 3 values along with a range calculated as median $\pm$ 1.5 75-th percentiles - 25th-percentile. Values outside this range are shown as points.
 
-```{r,fig.width=4, fig.height=4}
+```{r fig.width=4, fig.height=4}
 boxplot(exec.pay,ylab="10,000s of dollars",ylim=c(0,400))
 ```
 
 ## Scatter plots and correlation
 In the biomedical sciences it is common to be interested in the relationship between two or more variables. A classic examples is the father/son height data used by Galton to understand the heredity. Were we to summarize these data we could use the two average and two standard deviation as both are well approximated by the normal distribution. This summary however fails to describe an important characteristic of the data.
 
-```{r,fig.width=4, fig.height=4}
+```{r fig.width=4, fig.height=4}
 data("father.son")
 x=father.son$fheight
 y=father.son$sheight
@@ -88,7 +96,7 @@ The scatter plot shows a general trend: the taller the father the taller to son.
 Suppose we are asked to guess the height of randomly select height from the sons. The average height, 68.7 inches, is the value with the highest proportion (see histogram) and would be our prediction. But what if we are told that the father is 72 inches tall, do we sill guess 68.7?
 
 Note that the father is taller than average. He is 1.7 standard deviations taller than the average father. So should we predict that the son is also 1.75 standard deviations taller? Turns out this is an overestimate. To see this we look at all the sons with fathers who are about 72 inches. We do this by _stratifying_ the son heights.
-```{r,fig.width=6, fig.height=3}
+```{r fig.width=6, fig.height=3}
 boxplot(split(y,round(x)))
 print(mean(y[ round(x) == 72]))
 ```
@@ -100,7 +108,7 @@ $$
 $$
 with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. Let's compare the mean of each strata to the identity line and the regression line
 
-```{r,fig.width=3, fig.height=3}
+```{r fig.width=3, fig.height=3}
 x=(x-mean(x))/sd(x)
 y=(y-mean(y))/sd(y)
 means=tapply(y,round(x*4)/4,mean)
@@ -116,7 +124,7 @@ abline(0,cor(x,y))
 ## Spearman's correlation
 Just like the average and standard deviation are not good summaries when the data is not well approximated by the normal distribution, the correlation is not a good summary when pairs of lists are not approximated by the bivariate normal distribution. Examples include cases in which on variable is related to another by a parabolic function. Another, more common example are caused by outliers or extreme values.
 
-```{r,fig.width=3, fig.height=3}
+```{r fig.width=3, fig.height=3}
 a=rnorm(100);a[1]=10
 b=rnorm(100);b[1]=11
 plot(a,b,main=paste("correlation =",signif(cor(a,b),2)))

@@ -1,9 +1,17 @@
+---
+layout: page
+title: Statistical inference
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Statistical Inference
 
 In biology journals we see many figures such as *Figure*-page 3. Today we will learn what the litte star means. In most genome wide association studies we see Manhattan plots (*Figure* page 4). We will leanr what _P_ means. 
 
-In science it is common to ask if two things are different
-Are men taller than women? Is the risk of cancer different in smokers and non-smokers? Is the probability of getting type II different for different genetic backgrounds? Is this gene differentially expressed in cancer? When we make two measurements and compare, we almost always see some difference. But will wee see it again if we measure again? If someone else measures? Statistical inference can help us answer this question.
+In science it is common to ask if two things are different. Is the risk of cancer different in smokers and non-smokers? Is the probability of getting type II different for different genetic backgrounds? Is this gene differentially expressed in cancer? When we make two measurements and compare, we almost always see some difference. But will wee see it again if we measure again? If someone else measures? Statistical inference can help us answer this question.
 
 ## Association tests
 
@@ -56,7 +64,7 @@ Suppose we are asked if new borns from smoking mothers weigh less than those fro
 
 ```{r}
 dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
-daset.seed(0)
+set.seed(0)
 smokers=sample(dat$bwt[dat$smoke==1],10)
 nonsmokers=sample(dat$bwt[dat$smoke==0],10)
 ```
@@ -82,7 +90,7 @@ Under the null hypothese that there is no difference between the population aver
 
 This is imply that this ratio, 
 $$
-\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} +\frac{\sigma_Y^2}/{N}}
+\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} + \frac{\sigma_Y^2}{N}}}
 $$
 is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under any value. For example, only 5% values of larger than 2 (in absolute value):
 ```{r}
@@ -135,7 +143,7 @@ We have data for two strains of mice which we will refer to as strain 0 and 1. W
 ```{r}
 library(Biobase,quietly=TRUE,verbose=FALSE)
 library(genefilter)
-library(maPooling)
+library(dagdata)
 data(maPooling)
 pd=pData(maPooling)
 pooled=which(rowSums(pd)==12)

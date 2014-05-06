@@ -34,7 +34,7 @@
 
 - **rafa Permutation tests**
 
-- **mike Expressing experimental design using R formula** ( add links to more help on formula the UCR manual & http://www.math.montana.edu/Rweb/Rnotes/node77.html )
+- **mike Expressing experimental design using R formula** 
 
 - **mike Basic inference on microarray part I**
 
@@ -60,6 +60,8 @@
 
 - **mike PCA and SVD in R**
 
+- TODO: show how to get date from the celfiles.
+
 # week 7
 
 - **mike Using the limma package**
@@ -74,16 +76,16 @@
 
 - rafa Assigning probe locations to genes
 
-- mike Visualizing NGS with Bioconductor, UCSC, IGV
+- **mike Visualizing NGS with Bioconductor, IGV**
 
-- mike Making NGS read count table in Bioconductor
+- **mike Making NGS read count table in Bioconductor**
 
-- mike SNPs and CNVs 
+- **mike SNVs** 
 
-- mike RNA-Seq
+- **mike RNA-seq**
 
 - rafa DNA methylation: arrays and NGS
 
-- mike ChIP-Seq
+- **mike ChIP-seq**
 
 

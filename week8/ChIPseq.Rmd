@@ -1,2 +1,121 @@
 # ChIP-Seq
 
+## Reading peak files into R
+
+The following lab will go over the functionality of the `DiffBind` package, mostly using code from the vignette. This package is useful for manipulating ChIP-Seq signal in R, for comparing signal across files and for performing tests of diffential binding.
+
+```{r}
+#biocLite("DiffBind")
+library(DiffBind)
+setwd(system.file("extra", package="DiffBind"))
+```
+
+We check the files in the `DiffBind` folder, and in the `peaks` subdirectory:
+
+```{r}
+list.files()
+read.csv("tamoxifen.csv")
+list.files("peaks")
+```
+
+The `dba` function creates the basic object for an analysis of *Differential Binding Affinity*. The sample sheet specifies a data frame of file with certain required columns. Note that columns have restricted names, including *Tissue*, *Factor*, *Condition*, etc., which will be referred to later in analysis.
+
+This function will automatically create a correlation plot showing the overlap of the peaks for all the samples.
+
+```{r}
+ta <- dba(sampleSheet="tamoxifen.csv")
+ta
+```
+
+From the `DiffBind` vignette, we have:
+
+> This shows how many peaks are in each peakset, as well as (in the first line) 
+> total number of unique peaks *after merging overlapping ones* (3557) and the 
+> default binding matrix of 11 samples by the 2602 sites that *overlap in at 
+> least two of the samples*."
+
+We can access the peaks for each file:
+
+```{r}
+names(ta)
+class(ta$peaks)
+head(ta$peaks[[1]])
+```
+
+## Differential binding
+
+The following code chunk will count the reads from the BAM files specified in the `samples` slot:
+
+
+```{r}
+ta$samples
+# this call does not actually work, because the BAM files are not included in the package
+ta <- dba.count(ta, minOverlap=3)
+# instead we load the counts:
+data(tamoxifen_counts)
+ta2 <- tamoxifen
+plot(ta2)
+```
+
+We can perform a test by specifying to contrast over the levels of condition. This will call edgeR (the default) or DESeq software in order to normalize samples for sequencing depth and perform essentially the same analysis as a differential expression analysis for RNA-Seq counts. Here we could also include the tissue as a blocking factor, by providing `DBA_TISSUE` to the `block` argument of `dba.contrast`.
+
+The plot produced then looks at correlation only for those peaks which showed evidence of differential binding.
+
+```{r}
+ta2 <- dba.contrast(ta2, categories=DBA_CONDITION)
+ta2 <- dba.analyze(ta2)
+ta2
+```
+
+From the `DiffBind` vignette, we have:
+
+> By default, dba.analyze plots a correlation heatmap if it finds any 
+> significantly differentially bound sites, shown in Figure 3. Using only 
+> the differentially bound sites, we now see that the four tamoxifen 
+> resistant samples (representing two cell lines) cluster together, 
+> although the tamoxifen-responsive MCF7 replicates cluster closer to them 
+> than to the other tamoxifen responsive samples."
+
+Finally, we can generate the results table, which is attached as metadata columns to the peaks as genomic ranges. By specifying `bCounts = TRUE`, we also obtain the normalized counts for each sample.
+
+```{r}
+tadb <- dba.report(ta2)
+tadb
+counts <- dba.report(ta2, bCounts=TRUE)
+```
+
+## Reproducing the log fold changes
+
+The following code is used only to see if we can reproduce the log fold change obtained by the `dba.contrast` function. We extract the counts for the top peak, and put these in the order of the samples table:
+
+```{r}
+x <- mcols(counts)[1,-c(1:6)]
+x <- unlist(x)
+(xord <- x[match(ta2$samples$SampleID, names(x))])
+ta2$samples$SampleID
+```
+
+We create a vector of the conditions, and conditions combined with tissue:
+
+```{r}
+cond <- factor(ta2$samples[,"Condition"])
+condcomb <- factor(paste(ta2$samples[,"Condition"], ta2$samples[,"Tissue"]))
+```
+
+A stripchart of the counts over the conditions:
+
+```{r}
+par(mar=c(15,5,2,2))
+stripchart(log(xord) ~ condcomb, method="jitter", 
+           vertical=TRUE, las=2, ylab="log2 normalized counts")
+```
+
+Finally, we show that the log2 fold change of the means is the same as reported by the `DiffBind` functions:
+
+```{r}
+means <- tapply(xord, cond, mean)
+log2(means)
+log2(means[1] / means[2])
+mcols(tadb)[1,]
+```
+
