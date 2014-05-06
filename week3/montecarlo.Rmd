@@ -111,6 +111,23 @@ hist(avgdiff)
 abline(v=obs)
 print(mean(abs(avgdiff)> abs(obs)))
 ```
+Try 10 . 
+```{r}
+set.seed(0)
+N=10
+smokers = sample(dat$bwt[dat$smoke == 1],N)
+nonsmokers = sample(dat$bwt[dat$smoke==0],N)
+obs=mean(smokers)-mean(nonsmokers)
+avgdiff<-sapply(1:1000,function(i){
+  all = sample(c(smokers,nonsmokers))
+  smokersstar = all[1:N]
+  nonsmokersstar = all[-(1:N)]
+  return(mean(smokersstar)-mean(nonsmokersstar))
+  })
+hist(avgdiff)
+abline(v=obs)
+print(mean(abs(avgdiff)> abs(obs)))
+```
 Note that the observed difference is not significant using this approach. Permuations sill have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
 
 
@@ -289,7 +306,7 @@ plot(smallsett$dm,-log10(smallsett$p.value),xlab="Effect size",ylab="log -10 (p-
 abline(h=-log10(0.01),lty=2)
 abline(v=c(-1,1)*log2(1.5),lty=2)
 ```
-
+ddd
 In a later module we will leanr statistical techniques from improving the standard deviation estimates.
 
 
