@@ -9,6 +9,12 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Affymterix CEL files
 
+First we save the initial working directory, so we can return to it.
+
+```{r}
+wd <- getwd()
+```
+
 We start by reading in the sample information table. This is usually created by the person who performed the experiment. 
 
 ```{r}
@@ -17,10 +23,14 @@ basedir <- "celfiles"
 setwd(basedir)
 tab <- read.delim("sampleinfo.txt",check.names=FALSE,as.is=TRUE)
 rownames(tab) <- tab$filenames
+tab
+fns <- list.celfiles()
+fns
+fns %in% tab[,1] ##check
 ab <- ReadAffy(phenoData=tab)
 ```
 
-This creates an AffyBatch object which object contains infomration you need.
+This creates an AffyBatch object which object contains the information you need.
 
 ```{r}
 dim(pm(ab))
@@ -33,10 +43,20 @@ Note, this object You can then preprocess RMA
 e <- rma(ab)
 ```
 
-If you are not interested in probe level data you could can use this function
+Now we go back to the previous working directory.
+
 ```{r}
-e <- justRMA(filenames=tab[,1],celfile.path=basedir,phenoData=tab)
+setwd(wd)
 ```
+
+If you are not interested in probe level data you could can use this function
+
+```{r}
+setwd(basedir)
+ejust <- justRMA(filenames=tab[,1],phenoData=tab)
+dim(ejust)
+```
+
 
 ##Agilent data
 
@@ -44,8 +64,9 @@ e <- justRMA(filenames=tab[,1],celfile.path=basedir,phenoData=tab)
 library(limma)
 library(rafalib)
 basedir <- "agilent"
-targets <- readTargets(file.path(basedir,"TargetBeta7.txt"))
-RG <- read.maimages(targets$FileName, source="genepix",path=basedir)
+setwd(basedir)
+targets <- readTargets("TargetBeta7.txt")
+RG <- read.maimages(targets$FileName, source="genepix")
 MA <- MA.RG(RG,bc.method="none")
 mypar(1,1)
 imageplot(MA$M[,2], RG$printer, zlim=c(-3,3))
@@ -53,6 +74,11 @@ dev.off()
 ```
 
 
+Now we go back to the previous working directory.
+
+```{r}
+setwd(wd)
+```
 
 
 
@@ -63,11 +89,12 @@ We can also use oligo to read affy arrays
 detach("package:affy")
 library(oligo)
 basedir <- "celfiles"
-tab <- read.delim(file.path(basedir,"sampleinfo.txt"),check.names=FALSE,as.is=TRUE)
-fns <- list.celfiles(basedir,listGzipped=TRUE)
-fns%in%tab[,1] ##check
+setwd(basedir)
+tab <- read.delim("sampleinfo.txt",check.names=FALSE,as.is=TRUE)
+fns <- list.celfiles(listGzipped=TRUE)
+fns %in% tab[,1] ##check
 pd <- as(tab, "AnnotatedDataFrame")
-efs <- read.celfiles(filenames=file.path(basedir,tab[,1]),phenoData=pd,sampleNames=sampleNames(pd))
+efs <- read.celfiles(filenames=tab[,1],phenoData=pd,sampleNames=sampleNames(pd))
 ```
 
 ```{r}
