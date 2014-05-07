@@ -4,7 +4,7 @@ title: Exploratory Data Analysis
 ---
 
 ```{r options, echo=FALSE}
-opts_chunk$set(fig.path="figure/exploratory_data_analysis-")
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
 

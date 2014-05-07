@@ -1,4 +1,7 @@
-# Installing Bioconductor and finding help
+---
+layout: page
+title: Installing Bioconductor and finding help
+---
 
 ## Installing Bioconductor
 
@@ -61,8 +64,11 @@ methods(class="lm")
 
 A quick way to look up functions in a given package is to write out the package name, two ":" symbols and then trying tab-completion to get a list of functions, exported or not.
 
-```{r, eval=FALSE, tidy=FALSE}
+```{r}
 library(geneplotter)
+```
+
+```{r, eval=FALSE, tidy=FALSE}
 geneplotter::
 ```
 

@@ -1,2 +1,157 @@
 # SNP and SNV
 
+We start by loading all the libraries we will need for calling and annotating single nucleotide variants (SNVs).
+
+```{r}
+# biocLite("VariantAnnotation")
+# biocLite("VariantTools")
+# biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+# biocLite("org.Hs.eg.db")
+# biocLite("LungCancerLines")
+# this package is 900 Mb
+# biocLite("BSgenome.Hsapiens.UCSC.hg19")
+library(VariantTools)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(org.Hs.eg.db)
+library(LungCancerLines)
+library(BSgenome.Hsapiens.UCSC.hg19)
+```
+
+## Calling variants
+
+The `VariantTools` can be used to find variants using a reference genome and a file with aligned reads (BAM file). The reference genome needs to be a `GmapGenome`, but the `GmapGenome` function is available to convert any FASTA file to a genome for use with `VariantTools`.
+
+Here we will examine RNA-Seq reads mapped to the TP53 gene plus 1 Mb flanking sequence.
+
+```{r}
+p53 <- gmapR:::exonsOnTP53Genome("TP53")
+genome <- gmapR::TP53Genome()
+?LungCancerBamFiles
+bams <- LungCancerLines::LungCancerBamFiles()
+path(bams)
+bam <- bams$H1993
+```
+
+Again, note that the genome is not hg19.
+
+```{r}
+p53
+# Bioc 2.13
+library(GenomicRanges)
+# Bioc 2.14
+library(GenomicAlignments)
+readGAlignments(bam)
+```
+
+We can write out a FASTA file for use in IGV.
+
+```{r}
+x <- as(genome, "DNAStringSet")
+library(rtracklayer)
+export(x, "genome.fasta")
+path(bam)
+```
+
+The following call will use a binomial likelihood ratio test to call variants. From the help file:
+
+> The test amounts to excluding putative variants with less than ~4% alt frequency. 
+> A variant is also required to be represented by at least 2 alt reads. 
+
+Regarding base quality, the help says 
+
+> we typically use 56 for old Illumina, 23 for Sanger/Illumina1.8.
+
+The `TallyVariantsParam` step takes some time the first time it is run (15 minutes or so).
+
+```{r}
+tally.param <- TallyVariantsParam(genome, 
+                                  high_base_quality = 23L,
+                                  which = range(p53) + 5e4)                             
+called.variants <- callVariants(bam, tally.param)
+called.variants
+```
+
+Now we will call variants for the whole region:
+
+```{r}
+tally.param <- TallyVariantsParam(genome, 
+                                  high_base_quality = 23L)                                
+called.variants <- callVariants(bam, tally.param)
+called.variants
+```
+
+How many non-reference alleles do we see:
+
+```{r}
+hist(mcols(called.variants)$raw.count)
+with(mcols(called.variants), plot(raw.count.total, raw.count, log="xy"))
+(i <- which.max(mcols(called.variants)$raw.count))
+called.variants[i,]
+```
+
+## Writing out VCF files
+
+```{r}
+sampleNames(called.variants) <- "H1993"
+mcols(called.variants) <- NULL
+vcf <- asVCF(called.variants)
+writeVcf(vcf, "H1993.vcf", index = TRUE)
+```
+
+A few more details:
+
+```{r}
+?postFilterVariants
+?callSampleSpecificVariants
+somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
+```
+
+
+## Reading in VCF and annotating
+
+To annotate the VCF, we start by loading a UCSC transcript database:
+
+```{r}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+```
+
+Now we read in a small subset of a VCF file, over chr22, which is stored in the VariantAnnotation package. Note that the `readVcf` function can be slow if the file is many Mb. This one is less than 1 Mb.
+
+```{r}
+library(VariantAnnotation)
+fl <- system.file("extdata", "chr22.vcf.gz", package="VariantAnnotation")
+vcf <- readVcf(fl, genome="hg19")
+rowData(vcf)
+```
+
+Note that we can also restrict the amount we read in, either by specifying a range, or using yieldSize
+
+```{r}
+param <- ScanVcfParam(which=GRanges("22", IRanges(50.5e6, 50.6e6)))
+vcf <- readVcf(fl, genome="hg19", param=param)
+rowData(vcf)
+?readVcf
+```
+
+We can find which variants overlap coding regions with the `locateVariants` function:
+
+```{r}
+# here we hack the chromosome from "22" to "chr22"
+seqlevels(vcf) <- paste0("chr", seqlevels(vcf))
+loc <- locateVariants(vcf, txdb, CodingVariants())
+loc
+```
+
+We can double check that it did what we expected:
+
+```{r}
+loc[1]
+g <- genes(txdb)
+fo <- findOverlaps(loc[1], g)
+fo
+g[subjectHits(fo)]
+loc[1]
+```
+
+

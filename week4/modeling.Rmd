@@ -1,3 +1,12 @@
+---
+layout: page
+title: Modeling
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Modeling
 
 "All models are wrong, but some are useful" -George E. P. Box
@@ -13,7 +22,7 @@ qqnorm(nonsmokers)
 qqline(nonsmokers)
 ```
 
-But this doesn not imply that every dataset we collect will follow a normal distribtion. Example are: coin tosses, the numner of people who win the lottery, and US incomes.The normal is not the only parametric distribution that is available from modeling. Here we show we describe some useful parametric distribution and their use in genomics. For many more please consult these books [CITE books]
+But this does not imply that every dataset we collect will follow a normal distribtion. Example are: coin tosses, the number of people who win the lottery, and US incomes.The normal is not the only parametric distribution that is available from modeling. Here we show we describe some useful parametric distribution and their use in genomics. For many more please consult these books [CITE books]
 
 ## The Binomial distribution
 
@@ -46,7 +55,7 @@ $$
 The Poisson distribution is commonly used in RNAseq analyses. Note that because we are sampling thousands moleculues and for some genes represent are a very small proportion of the totality of molecules, the Poisson distribution seems appropriate. 
 
 Homework
-1- Do you expect a Poisson distribution with $\lambda=100$ to be approximately nomral? Why or why not? 
+1- Do you expect a Poisson distribution with $\lambda=100$ to be approximately normal? Why or why not? 
 
 
 So how does this help us? One way is that it informs us of the statistical properties of important summaries. For example, say we only have one sample from each of a case and control RNAseq experiment and we want to report the genes with larges fold-chages. Note that under the null, that there are no differences, the statistical variability of this quantity depends on the total abundance of the gene. We can show this mathematically but here is a quick simulation to demonstrate the point:
@@ -56,6 +65,7 @@ lambdas=2^seq(1,16,len=N) ##these are the true abundances of genes
 y=rpois(N,lambdas)##note that the null hypothesis is true for all genes
 x=rpois(N,lambdas) 
 ind=which(y>0 & x>0)##make sure no 0s due to ratio and log
+library(rafalib)
 splot(log2(lambdas),log2(y/x),subset=ind)
 ```
 Note that for lower values of lambda there is much more variability and that if we were to report anything with a fold change of 2 or more the number of false positives would be quite high for low.
@@ -120,7 +130,7 @@ $$
 $$
 The MLE is the value of lambda that maximizes the _likeihlood_. 
 $$
-L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left\{\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right\}
+L(\lambda; X_1=k_1,\dots,X_n=k_1)=\exp\left(\sum_{i=1}^n \log \Pr(X_i=k_i;\lambda)\right)
 $$
 In practice it is more convinient to maximize the log-likeilhood
 ```{r}

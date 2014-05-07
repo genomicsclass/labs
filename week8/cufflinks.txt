@@ -1,0 +1,34 @@
+We will work with the Hammer et al dataset, as prepared by the ReCount
+website.
+
+http://bowtie-bio.sourceforge.net/recount/
+
+The Hammer et al paper:
+
+http://www.ncbi.nlm.nih.gov/pubmed?term=20452967
+
+The GEO page:
+
+http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE20895
+
+The sample I will align:
+
+http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM539553
+
+which points to the SRA:
+
+ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX%2FSRX020%2FSRX020088/SRR042499/
+
+fastq-dump SRR042499.sra
+
+tophat2 -o tophat_out -p 10 /path/to/Rattus_norvegicus/Ensembl/RGSC3.4/Sequence/Bowtie2Index/genome SRR042499.fastq
+
+cufflinks -o cufflinks -p 10 --GTF-guide /path/to/Rattus_norvegicus/Ensembl/RGSC3.4/Annotation/Genes/genes.gtf \
+tophat_out/accepted_hits.bam
+
+grep -v 'FPKM "0.0000000000"' transcripts.gtf | less
+
+For visualizing:
+
+ftp://ftp.ensembl.org/pub/release-69/fasta/rattus_norvegicus/dna/Rattus_norvegicus.RGSC3.4.69.dna.chromosome.1.fa.gz
+ftp://ftp.ensembl.org/pub/release-69/gtf/rattus_norvegicus/Rattus_norvegicus.RGSC3.4.69.gtf.gz

@@ -1,3 +1,12 @@
+---
+layout: page
+title: Rank tests
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 ## Wilcoxon signed-rank test
 
 The normal apporximatiion is often useful when analyzing 
@@ -95,7 +104,7 @@ We use the same data as in previous module. We have data for two strains of mice
 ```{r}
 library(Biobase,quietly=TRUE,verbose=FALSE)
 library(genefilter)
-library(maPooling)
+library(dagdata)
 data(maPooling)
 pd=pData(maPooling)
 individuals=which(rowSums(pd)==1)
@@ -117,7 +126,8 @@ ind<-which(ttest$p.val<0.05 & wilcox[2,]>0.05)
 mypar(3,3)
 for(i in ind)
   stripchart(split(y[i,],group),vertical=TRUE,jitter=0.2)
-ind```
+ind
+```
 
 Note the biological variance is much larger than the technical one. And also that the variability of variances is also for biological variance. Here are the two genes we showed above but now for each individual mouse 
 

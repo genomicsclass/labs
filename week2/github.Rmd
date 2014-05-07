@@ -1,9 +1,17 @@
-# Installing software from github.com
+---
+layout: page
+title: Installing software from github.com
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 
 ```{r}
-install.packages("devtools")
+#install.packages("devtools")
 library(devtools)
-install_github("rafalib","ririzarr")
+#install_github("rafalib","ririzarr")
 library(rafalib)
 mypar
 shist(rnorm(100))
