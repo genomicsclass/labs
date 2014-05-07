@@ -1,3 +1,12 @@
+---
+layout: page
+title: Basic inference for microarray data
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Basic inference for microarray data
 
 We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
@@ -100,7 +109,7 @@ wilcox.test(y ~ x)
 ```{r}
 # biocLite("limma")
 library(limma)
-?lmFit
+# ?lmFit
 design <- model.matrix(~ es$group)
 design
 fit <- lmFit(es, design)

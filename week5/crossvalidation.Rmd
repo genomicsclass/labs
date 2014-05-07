@@ -1,4 +1,11 @@
-# Cross-validation
+---
+layout: page
+title: Cross-validation
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 In this lab, we will explore a method for picking parameters in a
 prediction / machine learning task, which is called

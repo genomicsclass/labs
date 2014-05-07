@@ -1,5 +1,4 @@
-from GEO, download a ChIP-seq experiment plus an Input experiment in
-the same tissue
+from GEO, download a ChIP-seq experiment plus an Input experiment in the same tissue
 
 "Differential oestrogen receptor binding is associated with clinical outcome in breast cancer"
 
@@ -13,5 +12,21 @@ ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX%2FSRX371%2F
 Input DNA MCF-7_Input
 http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM798440
 ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX%2FSRX371%2FSRX371484/SRR1021804/SRR1021804.sra
+
+
+Extracting FASTQ from SRA using sratoolkit.2.3.3-4:
+
+fastq-dump SRR1021789.sra  
+fastq-dump SRR1021804.sra
+
+Aligning FASTQ using bowtie2-2.1.0:
+
+bowtie2 -p 10 -x /path/to/Homo_sapiens/Ensembl/GRCh37/Sequence/Bowtie2Index/genome SRR1021789.fastq -S SRR1021789.sam
+bowtie2 -p 10 -x /path/to/Homo_sapiens/Ensembl/GRCh37/Sequence/Bowtie2Index/genome SRR1021804.fastq -S SRR1021804.sam
+
+Running MACS usign MACS-2.0.10.20130306:
+
+macs2 callpeak -t SRR1021789.sam -c SRR1021804.sam -f SAM -g hs -n estrogen
+
 
 
