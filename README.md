@@ -1,12 +1,18 @@
-Data Analysis for Genomics
-==========================
+# Data Analysis for Genomics
 
-NEWS:
+## NEWS:
+
+May 7, 2014: in order to clean up and trim down the memory size of
+this repo, we've moved out non-code objects
+out of this repo. The celfiles and agilent folder of week2 has been
+moved to the `rawdata` repo.
 
 May 5, 2014 : we are adding rendered content here: <http://genomicsclass.github.io/book/>
 
 March 30, 2014 :  we are still adding R markdown files to this repository. Expect
 fully finished files for all weeks by second week of May 2014.
+
+## Labs and lectures:
 
 Week 1: Introduction
 
