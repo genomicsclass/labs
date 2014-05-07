@@ -1,4 +1,11 @@
-# Distances and Clustering
+---
+layout: page
+title: Distance and clustering lab
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 Let's load the tissue gene expression data which Rafa discussed in the lecture:
 

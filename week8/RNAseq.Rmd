@@ -1,22 +1,36 @@
-# RNA-Seq analysis 
-
-## Aligning reads
-
-## Novel transcripts
-
-## Assigning reads to genes or transcripts
+# RNA-seq analysis
 
 ## Visualizing sample-sample distances
 
+We will work with the Hammer et al dataset, as prepared by the ReCount website.
+
+http://bowtie-bio.sourceforge.net/recount/
+
+The Hammer et al paper:
+
+http://www.ncbi.nlm.nih.gov/pubmed?term=20452967
+
+> ReCount is an online resource consisting of RNA-seq gene count datasets built 
+> using the raw data from 18 different studies. The raw sequencing data (.fastq files) 
+> were processed with Myrna to obtain tables of counts for each gene.
+
+This is really helpful for us, so we don't have to download all the FASTQ files and map them ourselves. If you use this resource, you should cite:
+
+> Frazee AC, Langmead B, Leek JT. ReCount: a multi-experiment resource of analysis-ready RNA-seq gene count datasets. BMC Bioinformatics 12:449
+
+Here we read in the `Eset` hosted by ReCount, and turn it into a SummarizedExperiment.
+
 ```{r}
 link <- "http://bowtie-bio.sourceforge.net/recount/ExpressionSets/hammer_eset.RData"
-download.file(link, "hammer_eset.RData")
+if (!file.exists("hammer_eset.RData")) download.file(link, "hammer_eset.RData")
 load("hammer_eset.RData")
 library(Biobase)
 library(GenomicRanges)
 se <- SummarizedExperiment(exprs(hammer.eset))
 colData(se) <- DataFrame(pData(hammer.eset))
 ```
+
+We need to fix a typo in the Time column:
 
 ```{r}
 colData(se)
@@ -25,55 +39,114 @@ colData(se)$Time <- factor(colData(se)$Time)
 colData(se)$Time
 ```
 
+We will use the DESeq2 package to normalize the sample for sequencing depth. For now, don't worry about the `design` argument.
+
 ```{r}
+# biocLite("DESeq2")
 library(DESeq2)
-dds <- DESeqDataSet( se, design = ~ Time + protocol )
-colData(dds)$protocol
-# if control was not the "base level", we would do:
-colData(dds)$protocol <- relevel(colData(dds)$protocol, "control")
+dds <- DESeqDataSet( se, design = ~ 1 )
+
 ```
+
+The following estimates size factors to account for differences in sequencing depth.
 
 ```{r}
 dds <- estimateSizeFactors( dds )
+sizeFactors(dds)
+colSums(counts(dds))
+plot(sizeFactors(dds), colSums(counts(dds)))
+abline(lm(colSums(counts(dds)) ~ sizeFactors(dds) + 0))
+```
+
+Now we can divide the columns by the size factor and take the log2 of these normalized counts plus a pseudocount of 1. We transpose in order to run PCA.
+
+```{r}
 logcounts <- log2( counts(dds, normalized=TRUE) + 1 )
 pc <- prcomp( t( logcounts ) )
+```
+
+A couple EDA plots:
+
+```{r}
 library(rafalib)
 mypar()
 plot(pc$x[,1], pc$x[,2], 
-     col=colData(rld)$protocol, 
-     pch=as.numeric(colData(rld)$Time)+15)
-plot(hclust(dist(t(logcounts))), labels=colData(se)$protocol)
+     col=colData(dds)$protocol, 
+     pch=as.numeric(colData(dds)$Time)+15)
+plot(hclust(dist(t(logcounts))), labels=colData(dds)$protocol)
+plot(hclust(dist(t(logcounts))), labels=colData(dds)$Time)
 plot(logcounts[,1], logcounts[,2], cex=.1)
 ```
 
+Now we will use a normalization method, which is similar to the variance stablizing normalization method mentioned in Week 5. It uses the variance model to shrink together the sample values for lowly expressed genes with high variance. 
+
+The data is in the `assay` slot, and needs to be transposed as before to run PCA.
+
 ```{r}
+# this takes ~15 seconds
 rld <- rlog( dds )
 pc2 <- prcomp( t( assay(rld) ) )
+```
+
+We can look at the same plots now using this transformed data.
+
+```{r}
 plot(pc2$x[,1], pc2$x[,2],
      col=colData(rld)$protocol, 
      pch=as.numeric(colData(rld)$Time)+15)
 plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$protocol)
+plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$Time)
 plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
 ```
 
 ## Differential gene expression
 
+We will use `DESeq2` to perform differential gene expression on the counts. This uses a Negative Binomial distribution to model the counts. It performs a similar step to `limma`, in using the variance of all the genes to improve the variance estimate for each individual gene. In addition, it shrinks the high variance fold changes, which will be seen in the resulting MA-plot.
+
+First, we setup the `design` of the experiment, so that differences will be considered across time and protocol variables. The last variable is used for the default results tables and plots, and we make sure the "control" level is the first level, such that log fold changes will be treatment over control, and not control over treatment.
+
 ```{r}
-dds <- DESeq(dds)
-res <- results(dds)
+colData(dds)$protocol
+# if control was not already the "base level", we would do:
+colData(dds)$protocol <- relevel(colData(dds)$protocol, "control")
+levels(colData(dds)$protocol)
+design(dds) <- ~ Time + protocol
+```
+
+The following line runs the model, and then we can extract a results table for all genes:
+
+```{r}
+# this takes ~20 seconds
+dds <- DESeq( dds )
+res <- results( dds )
 head(res)
+```
+
+We can also make other results tables, such as control over SNL, or for comparing the time variable.
+
+```{r}
 head(results(dds, contrast=c("protocol","control","L5 SNL")))
 head(results(dds, contrast=c("Time","2 months","2 weeks")))
 ```
 
+We can now contruct an MA-plot of the fold change over the average expression level of all samples.
+
 ```{r}
-plotMA(res, ylim=c(-5,5))
-# if you are using an older version, you can use:
+# Bioc 2.13
 plotMA(dds, ylim=c(-5,5))
+# Bioc 2.14
+plotMA(res, ylim=c(-5,5))
+```
+
+Suppose we are not interested in small log2 fold changes. We can also test for log2 fold changes larger than 1 in absolute value.
+
+```{r}
 resBigFC <- results(dds, lfcThreshold=1, altHypothesis="greaterAbs")
 plotMA(resBigFC, ylim=c(-5,5))
-abline(h=c(-1,1),lwd=2)
+abline(h=c(-1,1),lwd=5)
 ```
+
+Let's examine the top gene, sorting by p-value:
 
 ```{r}
 resSort <- res[order(res$pvalue),]
@@ -84,18 +157,16 @@ par(mar=c(15,5,2,2))
 stripchart(log2(k + 1) ~ cond, method="jitter", vertical=TRUE, las=2)
 ```
 
+We can then check the annotation of these highly significant genes:
+
 ```{r}
 # biocLite("org.Rn.eg.db")
 library(org.Rn.eg.db)
-columns(org.Rn.eg.db)
 keytypes(org.Rn.eg.db)
 head(rownames(dds))
-geneinfo <- select(org.Rn.eg.db, keys=rownames(resSort)[1:10],
+geneinfo <- select(org.Rn.eg.db, keys=rownames(resSort)[1:20],
                    columns=c("ENSEMBL","SYMBOL","GENENAME"), 
                    keytype="ENSEMBL")
 geneinfo
 ```
-
-## Differential exon or isoform usage
-
 
