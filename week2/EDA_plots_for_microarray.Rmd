@@ -1,9 +1,18 @@
+---
+layout: page
+title: Exploratory Data Analysis for microarray
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # EDA for Microarray data
 Here we are analyzing microarray data from eight samples: two groups of four. A first step in any analysis of genomics data is to learn its general properties and search for problematic samples. By viewing the data from the first sample we immediately notice that over 90% of data is below 1,000 and the remaining 10% spans values up to 40,000. By taking the log we get a better picture of the distribution. We use base 2 because memorizing the powers of 2 is easy. It gives us a friendly range: 4-16. 
 
 ```{r,fig.width=6, fig.height=3}
-library(devtools)
-install_github("dagdata","genomicsclass")
+# library(devtools)
+# install_github("dagdata","genomicsclass")
 library(dagdata)
 data(SpikeInEDA)
 par(mfrow=c(1,2))

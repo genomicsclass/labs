@@ -1,4 +1,11 @@
-# Basic Bioconductor infrastructure for genomics, microarray and NGS
+---
+layout: page
+title: Basic Bioconductor infrastructure
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ## IRanges
 
@@ -9,7 +16,7 @@ ir
 start(ir)
 end(ir)
 width(ir)
-?IRanges
+# ?IRanges
 ```
 
 ```{r}
@@ -19,7 +26,7 @@ ir <- IRanges(5,10)
 ```
 
 ```{r}
-?"intra-range-methods"
+# ?"intra-range-methods"
 shift(ir, -2)
 ```
 
@@ -32,13 +39,16 @@ narrow(ir, end=5)
 flank(ir, width=3, start=TRUE, both=FALSE)
 flank(ir, width=3, start=FALSE, both=FALSE)
 flank(ir, width=3, start=TRUE, both=TRUE)
+ir * 2
+ir + 2
+ir - 2
 ```
 
 
 ```{r}
 # set up a plotting window so we can look at range operations
 plotir <- function(ir,i) { arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3) }
-plot(0,0,xlim=c(0,15),ylim=c(0,8),type="n",xlab="",ylab="",xaxt="n")
+plot(0,0,xlim=c(0,15),ylim=c(0,11),type="n",xlab="",ylab="",xaxt="n")
 axis(1,0:15)
 abline(v=0:30 + .5,col=rgb(0,0,0,.5))
 
@@ -46,17 +56,20 @@ abline(v=0:30 + .5,col=rgb(0,0,0,.5))
 plotir(ir,1)
 
 # draw a red shadow for the original IRange
-polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5,end(ir)+.5),c(-1,9,9,-1),col=rgb(1,0,0,.2),border=NA)
+polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5,end(ir)+.5),c(-1,12,12,-1),col=rgb(1,0,0,.2),border=NA)
 plotir(shift(ir,-2), 2)
 plotir(narrow(ir, start=2), 3)
 plotir(narrow(ir, end=5), 4)
 plotir(flank(ir, width=3, start=TRUE, both=FALSE), 5)
 plotir(flank(ir, width=3, start=FALSE, both=FALSE), 6)
 plotir(flank(ir, width=3, start=TRUE, both=TRUE), 7)
+plotir(ir * 2, 8)
+plotir(ir + 2, 9)
+plotir(ir - 2, 10)
 ```
 
 ```{r}
-?"inter-range-methods"
+# ?"inter-range-methods"
 ir <- IRanges(start=c(3,5,17), end=c(10,8,20))
 range(ir)
 reduce(ir)

@@ -1,3 +1,12 @@
+---
+layout: page
+title: Expressing design formula in R
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Expressing experimental designs using R formula
 
 In this module, we will show how to use the two base R functions:
@@ -26,7 +35,7 @@ model.matrix(~ x)
 x <- factor(c(1,1,2,2,3,3))
 model.matrix(~ x)
 model.matrix(~ x,contrasts=list(x="contr.sum"))
-?contr.sum
+# ?contr.sum
 ```
 
 ```{r}
