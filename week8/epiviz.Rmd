@@ -5,7 +5,7 @@ genomics data visualization app. To plot your data there we use the `epivizr` pa
 you can make sure you get the latest version by installing as follows:
 
 ```{r}
-#install_github("epivizr-release", "epiviz")
+install_github("epivizr-release", "epiviz")
 library(epivizr)
 ```
 
