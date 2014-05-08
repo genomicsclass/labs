@@ -30,7 +30,6 @@ cancerlIndex <- which(pd$Status=="cancer")
 Let's start by taking a quick look at the distribution of methylation measurements for the normal samples
 
 ```{r}
-library(rafalib)
 i=normalIndex[1]
 plot(density(meth[,i],from=0,to=1),main="",ylim=c(0,3),type="n")
 for(i in normalIndex){
@@ -54,6 +53,7 @@ eb <- ebayes(fit)
 A volcano plot reveals many differences
 
 ```{r}
+library(rafalib)
 splot(fit$coef[,2],-log10(eb$p.value[,2]),xlab="Effect size",ylab="-log10 p-value")
 ```
 
