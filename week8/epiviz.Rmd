@@ -1,0 +1,134 @@
+# Interactive visualization of DNA methylation data analysis
+
+Here we show how to visualize the results of your methylation data analysis in the [epiviz](http://epiviz.cbcb.umd.edu) interactive
+genomics data visualization app. To plot your data there we use the `epivizr` package. Although the package is already part of `Bioconductor`
+you can make sure you get the latest version by installing as follows:
+
+```{r}
+install_github("epivizr-release", "epiviz")
+library(epivizr)
+```
+
+We assume you already ran the `methylation` lab and have in your environment the following objects:
+
+```{r}
+# the result of using limma and eBayes at the single CpG level
+head(fit$coef)
+head(eb$t)
+
+# the result of running bumphunter
+head(res$fitted)
+head(res$table)
+
+# the CpG location object
+show(gr)
+```
+
+`epivizr` uses `GRanges` objects to visualize data, so we'll create a new `GRanges` object containing CpG level
+estimates we want to visualize
+
+```{r}
+cpgGR <- gr
+cpgGR$fitted <- round(res$fitted,digits=3)
+```
+
+and make another `GRanges` object containing the `bumphunter` result
+
+```{r}
+dmrGR <- with(res$table,GRanges(chr,IRanges(start,end),area=area,value=value))
+
+# let's add an annotation for "hypo-" or "hyper-" methylation (as long as the difference is large enough)
+dmrGR$type <- ifelse(abs(dmrGR$value)<0.2, "neither", ifelse(dmrGR$value<0,"hypo","hyper"))
+table(dmrGR$type)
+```
+
+Now, we are ready to visualize this data on `epiviz`. First start an epiviz session:
+
+```{r,eval=FALSE,echo=TRUE}
+mgr <- startEpiviz(workspace="mi9NojjqT1l")
+```
+
+```{r,eval=TRUE,echo=FALSE}
+# this is here so that the Rmd can be knitted without connecting to browser
+# use the command above to actually do this
+mgr <- startEpiviz(debug=TRUE, openBrowser=FALSE, nonInteractive=TRUE, tryPorts=TRUE)
+mgr$startServer()
+```
+
+----
+
+*Windows users* You need to call the `mgr$service()` method to allow the `epiviz` app to connect to your R session:
+
+```{r}
+mgr$service()
+```
+
+Non-Windows users don't need to do this.
+
+----
+
+Now, let's add tracks for hypo and hyper methylated regions:
+
+```{r}
+hypoTrack <- mgr$addDevice(subset(dmrGR,dmrGR$type=="hypo"), "Hypo-methylated")
+hyperTrack <- mgr$addDevice(subset(dmrGR,dmrGR$type=="hyper"), "Hyper-methylated")
+```
+
+We can also add the estimated methylation difference as another track:
+
+```{r}
+diffTrack <- mgr$addDevice(cpgGR,"Meth difference",type="bp",columns="fitted")
+```
+
+Go to your browser and navigate around, search for your favorite gene and take a look at gene expression
+looks like around these regions according to the [gene expression barcode](http://www.ncbi.nlm.nih.gov/pubmed/21177656),
+which we preloaded when we started `epiviz`. Here's some interesting ones: "MMP10", "TIMP2", "MAGEA12".
+
+----
+
+*Windows users* Remember to call `mgr$service()` before going to the browser
+
+----
+
+Here's other useful analyses you can do with `epivizr`. Let's make a `SummarizedExperiment` containing CpG-level data we can use for an MA plot
+
+```{r}
+colData <- DataFrame(name=c("M","A"))
+rownames(colData) <- colData$name
+
+rowData <- gr
+rowData$cpg <- names(gr)
+
+cpgSE <- SummarizedExperiment(rowData=rowData,
+      assays=SimpleList(ma=cbind(fit$coef[,2],fit$Amean)),
+      colData=colData)
+```
+
+and add the MA plot:
+
+```{r}
+maPlot <- mgr$addDevice(cpgSE,columns=c("A","M"),"cpg MA")
+```
+
+Let's now browse the genome in order through the top 10 found regions in order (by area):
+
+```{r}
+slideshowRegions <- dmrGR[1:10,] + 10000
+mgr$slideshow(slideshowRegions)
+```
+
+Last thing to do is disconnect the `epiviz` app:
+
+```{r}
+mgr$stopServer()
+```
+
+There's a lot more you can do with `epiviz`. It's a fairly flexible visualization tool. You can find out more about it in the [epiviz documentation site](http://epiviz.github.io).
+
+Also, `epivizr` has a vignette that's worth checking out:
+
+```{r}
+browseVignettes("epivizr")
+```
+
+
