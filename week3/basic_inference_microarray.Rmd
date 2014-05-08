@@ -23,6 +23,7 @@ head(pData(e))
 # install_github("rafalib","ririzarr")
 library(rafalib)
 mypar()
+#flip the image and rotate
 flipt <- function(m) t(m[nrow(m):1,])
 myimage <- function(m,...) {
   image(flipt(m),xaxt="n",yaxt="n",...)
@@ -33,16 +34,19 @@ myimage(as.matrix(pData(e)),col=c("white","black"),
         ylab="individuals",
         main="phenoData")
 
+#locate rows that have single black block
 individuals <- which(rowSums(pData(e)) == 1)
 individuals
 
 ## remove replicates
 names(individuals)
+#remove technical replicates (which have tr in their names)
+
 individuals <- individuals[-grep("tr",names(individuals))]
 
 es <- e[,individuals]
 myimage(as.matrix(pData(es)),col=c("white","black"))
-
+#turn column names 'a', 'b' into 0, 1
 es$group <- factor(as.numeric(grepl("b",colnames(es))))
 es$group
 ```
@@ -69,17 +73,19 @@ head(tt)
 head(tt,1)
 
 mean(exprs(es)[1,es$group == 0]) - mean(exprs(es)[1,es$group == 1]) 
-
+# Alternatively, splited<-split(exprs(es)[1,],es$group); mean(splited$'0')-mean(splited$'1')
 simple.t <- t.test(exprs(es)[1,] ~ es$group, var.equal=TRUE)
 simple.t$p.value
-
+#Not as fast as rowttests
 tt$p.value[i]
 tt$p.value[j]
 
 mypar(1,1)
+#Vocano plot
 with(tt, plot(dm, -log10(p.value), 
               xlab="difference in means",
               main="'Volcano' plot"))
+#identify points
 tt[with(tt, identify(dm, -log10(p.value))),]
 ```
 
