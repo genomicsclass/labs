@@ -1,0 +1,66 @@
+# Reading 450K idat files with the minfi package
+
+In this unit we will demonstrate how to read idat files from the illumina 450K DNA methylation array. We make use the the Bioconductor minfi package [cite 24478339]
+
+```{r}
+source("http://www.bioconductor.org/biocLite.R")
+biocLite("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19")
+library(minfi)
+```
+
+The first step is to determine the basename of the idat files. Note that for each sample we have two files: one for red and green channels respectively.
+
+```{r}
+path <- "/Users/ririzarr/myDocuments/teaching/HarvardX/rawdata/idats"
+setwd(path)
+list.files()
+```
+
+Let's start by reading in the csv file which contains clinical information. This has one row for each sample and one of the columns includes the "basenames" for the files
+```{r}
+targets<-read.csv("targets.csv",as.is=TRUE)
+names(targets)
+targets$Basename
+```
+
+To make this script work in any working directory  we can edit that column to contain the absolute paths. The we are ready to read in the raw data with read.450k
+```{r}
+targets$Basename <- file.path(path,targets$Basename)
+rgset<- read.450k(targets$Basename,verbose=TRUE)
+pData(rgset)<-targets
+```
+
+We now have the raw data, red an green intensities which we have access too
+```{r}
+dim(getRed(rgset))
+dim(getGreen(rgset))
+```
+
+If you are not interested in developing preprocessing algorithms then you can use the built in preprocessing algorithmg and go straight to object that give you access to methylation esimatates 
+
+```{r}
+mset <- preprocessIllumina(rgset)
+```
+
+This performs the default preprocessing algorithm developed by Illumina. However, for this to be useful we want to have the locations of each CpG and to do that we need map the CpGs to genome. Minfi keeps this information modular so that when the genome annotation gets updated one can easilty change the mapping. 
+```{r}
+mset <- mapToGenome(mset)
+```
+
+Now we are ready to obtain the methylation values and CpG locations.
+ 
+```{r}
+dim(getBeta(mset,type="Illumina")) ##the argument type="Illumina" gives us default procedure
+head(granges(mset))
+```
+
+We can also use functions such as getSex and getQC on the mset object
+```{r}
+sex<-getSex(mset)
+plotSex(sex)
+plot(as.matrix(getQC(mset)))
+```
+
+
+
+
