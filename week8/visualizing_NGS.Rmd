@@ -1,4 +1,11 @@
-# Visualizing NGS data
+---
+layout: page
+title: Visualizing NGS data
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 We will use the following libraries to demonstrate visualization of NGS data.
 

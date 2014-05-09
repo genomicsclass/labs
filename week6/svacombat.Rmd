@@ -1,4 +1,11 @@
-# Batch adjustment
+---
+layout: page
+title: Batch adjustment
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 To illustrate how we can adjust for batch effects using statistcal methods, we will create a data example in which the outcome of interest is confounded with batch but not completely. We will also select a outcome for which we have an expectation of what genes should be differentially expressed. Namely, we make sex the outcome of interest and expect genes on the Y chromosome to be differentially expressed. Note that we may also see genes from the X chromosome as differentially expressed as some escape X inactivation. 
 
@@ -6,6 +13,8 @@ We start by finding the genes on the Y chromosome.
 ```{r}
 library(rafalib)
 library(dagdata)
+library(Biobase)
+library(genefilter)
 data(GSE5859)
 library(hgfocus.db) ##get the gene chromosome
 chr<-mget(featureNames(e),hgfocusCHRLOC)
@@ -95,18 +104,18 @@ Assume the gene in row $i$ is affected by batch. Then
 $$
 (Y_{i1}, \dots, Y_{in}) (v_1,\dots,v_n) = \sum_{i=1}^n v_i Y_{in}'
 $$
-with each $v_i$ either $1/(n/2)$ or $-1/(n/2)$ will give us the average difference between each batch for gene $i$, call it $\m_i$. Because we think the batch effect many genes then we want to find the vector $v=(v_1\dots,v_n)$ that maximizes the variace of $m_1,\dots,m_n$.
+with each $v_i$ either $1/(n/2)$ or $-1/(n/2)$ will give us the average difference between each batch for gene $i$, call it $m_i$. Because we think the batch effect many genes then we want to find the vector $v=(v_1\dots,v_n)$ that maximizes the variace of $m_1,\dots,m_n$.
 
 There is actually a nice mathematical result that can help us find this vector. In fact, if we let $v$ be any vector with standard deviation 1, then the $v$ that maximizes the variance of $Y_i v$ is called the first _principal component_ directions or eigen vector. The vectors of "differences" $Y_i v$, $i=1,\dots,n$ is the first principal component and below we will refer to it as $v_1$ 
 
-Now, suppose we think there is more unwanted variability affecting several genes. We can subtract the first principal component from $Y_{m\time n}$, $r_{m\times n}=Y_{m \times n} - Y_{m \times n} v_1 v_1'$ we can then find the vector $v_2$ that results in the most variable vector  $r_{m\times n} v_2$. We continue this way until to obtain $n$ eigen vectors $V_{n\times n} = (v_1,\dots v_n)$. 
+Now, suppose we think there is more unwanted variability affecting several genes. We can subtract the first principal component from $Y_{m \times n}$, $r_{m\times n}=Y_{m \times n} - Y_{m \times n} v_1 v_1'$ we can then find the vector $v_2$ that results in the most variable vector  $r_{m\times n} v_2$. We continue this way until to obtain $n$ eigen vectors $V_{n\times n} = (v_1,\dots v_n)$. 
 
 ## Singular value decomposition (SVD)
 
 The SVD is a very powerful mathematical result that gives us an algorithm to write a matrix in the following way:
 
 $
-Y_{m\times n} = U_{m\ times n} D_{n \times n} V’_{n \times n}
+Y_{m \times n} = U_{m\ times n} D_{n \times n} V’_{n \times n}
 $
 
 With the columns of $V$ the matrix with columns the eigen vectors defined above. The matrices $U$ and $V$ are _orthogonal_ meaning that 
@@ -196,13 +205,4 @@ image(t(Signal),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 image(t(Batch),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 image(t(error),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 ```
-
-
-
-
-
-# TO DO: ADD BLOOD methylation
-
-# RUV 
-
 

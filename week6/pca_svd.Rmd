@@ -1,4 +1,11 @@
-# PCA and SVD in R
+---
+layout: page
+title: Running PCA and SVD in R
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 In this unit, we will show how to perform principal component analysis (PCA) and singular value decomposition (SVD) in R, and how the two are related to each other. We will use the tissue gene expression dataset from the week 5 lectures and labs.
 
@@ -15,10 +22,9 @@ group <- as.fumeric(tab$Tissue)
 First, the typical principal component analysis on the samples would be to transpose the data such that the samples are rows of the data matrix. The `prcomp` function can be used to return the principal components and other variables.
 
 ```{r}
-mypar(2,1)
 x <- t(e)
 pc <- prcomp(x)
-?prcomp
+# ?prcomp
 names(pc)
 plot(pc$x[,1], pc$x[,2], col=group, main="PCA", xlab="PC1", ylab="PC2")
 ```

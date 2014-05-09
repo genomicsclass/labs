@@ -1,4 +1,11 @@
-# SNP and SNV
+---
+layout: page
+title: Variant calling and annotation
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 We start by loading all the libraries we will need for calling and annotating single nucleotide variants (SNVs).
 

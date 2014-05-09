@@ -1,4 +1,11 @@
-# Surragate variables and batch effects 
+---
+layout: page
+title: Surragate variables and batch effects 
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ## Confounding
 
@@ -38,11 +45,12 @@ y
 
 Homework: run the chisq test in each major.
 
-<<totals>>=
+```{r}
 y=cbind(dat[1:6,c(1,2)],dat[7:12,2])
 colnames(y)[2:3]=c("Male","Female")
 y
-@ 
+```
+
 What's going? 
 
 This is called _Simpson's paradox_ 
@@ -101,19 +109,18 @@ matplot(1:6,y,xaxt="n",xlab="major",ylab="percent",col=c("blue","red"),cex=1.5)
 legend("topright",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0,cex=0.75)
 ```
 
-The average difference by Major is 3.5\% higher for women.
-<<lm>>=
+The average difference by Major is 3.5% higher for women.
+
+```{r}
 mean(y[,1]-y[,2])
-@ 
+```
 
 We see this in Baseball often:
-$$
-\begin{tabular}{lccc}
-  &1995&1996&Combined\\
-  Derek Jeter &  12/48 	.250& 	183/582 	.314 &	195/630 	.310\\
-  David Justice &	104/411 	.253 &	45/140 	.321 &	149/551 	.270\\
-  \end{tablar}
-$$
+
+|               | 1995           | 1996           | Combined        |
+| ------------- | -------------- | -------------- | --------------- |
+| Derek Jeter   | 12/48 (.250)   | 183/582 (.314) | 195/630 (.310)  |
+| David Justice | 104/411 (.253) | 45/140 (.321)  | 149/551 (.270)  |
 
 ## Confounding in genomics
 
@@ -121,7 +128,8 @@ Here are the p-values from comparing caucasians to asians
 ```{r}
 library(Biobase)
 library(genefilter)
-load("GSE5859.rda")
+library(dagdata)
+data(GSE5859)
 eth<-factor(pData(e)$ethnicity=="CEU")
 tt<-rowttests(exprs(e),eth)
 HLIM<-c(0,6500)

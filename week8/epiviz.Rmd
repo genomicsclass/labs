@@ -1,13 +1,24 @@
-# Interactive visualization of DNA methylation data analysis
+---
+layout: page
+title: Interactive visualization of DNA methylation data analysis
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ## contributed by Héctor Corrada Bravo
+
+## Note: this script will crash in RStudio, but will work in Terminal
+## tested on Mac OS X Snow Leopard May 9, 2014
 
 Here we show how to visualize the results of your methylation data analysis in the [epiviz](http://epiviz.cbcb.umd.edu) interactive
 genomics data visualization app. To plot your data there we use the `epivizr` package. Although the package is already part of `Bioconductor`
 you can make sure you get the latest version by installing as follows:
 
 ```{r}
-install_github("epivizr-release", "epiviz")
+# biocLite(c("antiProfilesData","hgu133plus2.db"))
+# install_github("epivizr-release", "epiviz")
 library(epivizr)
 ```
 
@@ -62,7 +73,7 @@ mgr$startServer()
 *Windows users* You need to call the `mgr$service()` method to allow the `epiviz` app to connect to your R session:
 
 ```{r}
-mgr$service()
+# mgr$service()
 ```
 
 Non-Windows users don't need to do this.
