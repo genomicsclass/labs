@@ -1,8 +1,0 @@
-SpotType	Name	ID	col	cex
-Probe	*	*	black	0.2
-Empty	Empty|EMPTY	Empty|EMPTY	yellow	1
-Buffer	Buffer*	Buffer	orange	1
-Negative	Randomized negative control	H2NC*	magenta	1
-Arabidopsis	*A. thaliana*	AT00*	green	1
-SPC	*Stratagene Positive Control	AT00*	blue	1
-BetaActin	"ACTB - Actin, beta"	H2*	red	1
