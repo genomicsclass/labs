@@ -83,5 +83,3 @@
 - **rafa DNA methylation: arrays and NGS**
 
 - **mike ChIP-seq**
-
-
