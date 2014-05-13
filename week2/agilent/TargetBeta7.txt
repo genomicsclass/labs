@@ -1,0 +1,7 @@
+FileNames	Subject ID	Cy3	Cy5	Hyb buffer	Hyb Temp (deg C)	Hyb Time (h)	Date of Blood Draw	Amplification	Slide Type	Date of Scan
+6Hs.195.1.gpr	001	b7 -	b7 +	Ambion Hyb Slide	55	40	2002.10.11	R2 aRNA 	Aminosilane	2003.07.25
+6Hs.168.gpr	003	b7 +	b7 -	Ambion Hyb Slide	55	40	2003.01.16	R2 aRNA 	Aminosilane	2003.08.07
+6Hs.166.gpr	004	b7 +	b7 -	Ambion Hyb Slide	55	40	2003.01.16	R2 aRNA 	Aminosilane	2003.08.07
+6Hs.187.1.gpr	006	b7 -	b7 +	Ambion Hyb Slide	55	40	2002.09.16	R2 aRNA 	Aminosilane	2003.07.18
+6Hs.194.gpr	008	b7 -	b7 +	Ambion Hyb Slide	55	40	2002.09.18	R2 aRNA 	Aminosilane	2003.07.25
+6Hs.243.1.gpr	011	b7 +	b7 -	Ambion Hyb Slide	55	40	2003.01.13	R2 aRNA 	Aminosilane	2003.08.06
