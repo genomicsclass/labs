@@ -63,6 +63,9 @@ heatmap(e[ind,],scale="none",col=brewer.pal(9,"Blues"),ColSideColors=palette()[a
 
 
 ## MDS
+
+[Multidimensional scaling](#foot) is another technique for reducing the dimensionality of the data, in a way that tries to preserve the inter-sample distances.
+
 ```{r}
 mds <- cmdscale(d)
 cols<-as.factor(tissue)
@@ -260,7 +263,14 @@ for(i in ind){
 
 ##Home work: genotype SNPs using k-means
 
+## Footnotes
+<a name="foot"></a>
 
+### MDS references
+
+- Cox, T. F. and Cox, M. A. A. (2001) Multidimensional Scaling. Second edition. Chapman and Hall.
+- Gower, J. C. (1966) Some distance properties of latent root and vector methods used in multivariate analysis. Biometrika 53, 325–328.
+- Torgerson, W. S. (1958). Theory and Methods of Scaling. New York: Wiley.
 
 
 
