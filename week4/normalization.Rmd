@@ -85,7 +85,7 @@ In this plot the green dots are genes spiked in to be different in the two sampl
 
 ## Loess normalization
 
-In the MA-plot above we see a non-linear bias in the M that changes as function of A. The general idea behind loess normalization is to estimate this bias and remove it. Because the bias a curve of no obvious parametric form (it is not a line or parabola or a sine function, etc..) We want to fit a curve to the data. Local weighted regression [CITE] (loess) provides one way to do this. Loess is inspired by Taylor's theorem that in practice means that at any given point, if one looks at a small enough region around that point, the curve looks like a parabolla. If you look even closer it looks like a straight line (note that gardeners can make a curved edge with a straight shovel). 
+In the MA-plot above we see a non-linear bias in the M that changes as function of A. The general idea behind loess normalization is to estimate this bias and remove it. Because the bias a curve of no obvious parametric form (it is not a line or parabola or a sine function, etc..) We want to fit a curve to the data. Local weighted regression ([loess](#foot)) provides one way to do this. Loess is inspired by Taylor's theorem that in practice means that at any given point, if one looks at a small enough region around that point, the curve looks like a parabolla. If you look even closer it looks like a straight line (note that gardeners can make a curved edge with a straight shovel). 
 
 Loess takes advantage of this mathematical property of functions. For each point in your data set a region is defined considered to be small enough to assume the curve approximated by a line in that region and a line is fit with weighted least squares. The weights depend on the distance from the point of interest. The robuse version of loess also down weighs points considered to be outliers. The following code makes an annimation that shows loess at work:
 ```{r}
@@ -160,7 +160,7 @@ Homework: try different values of span of 0.75 and change the degree. Decide whi
 
 ## Quantile normalization
 
-One limitation of loess normalization is that it depeneds on pairings of samples. We have this for two color arrays, but for other platforms, such as Affymetrix, we do not have such pairings. Quantile normalization [CITE] offers a solution that is more generally applicable.
+One limitation of loess normalization is that it depeneds on pairings of samples. We have this for two color arrays, but for other platforms, such as Affymetrix, we do not have such pairings. [Quantile normalization](#foot) offers a solution that is more generally applicable.
 
 The smooth histogram plots demonstrate that different samples have different distributions, not just median shifts. This happens even when we look at data from replicated RNA. Qunatile normalization forces all these distributions the same: it makes each quantile (not just the median) the same across samples. The algorithm, as implemeted in Biocondcutor, does the following for a matrix with rows representing genes and columns representing samples
 
@@ -203,12 +203,12 @@ Note how quantile normalization also fixes the bias but keeps the spiked-in gene
 
 ## VSN
 
-In the background unit we learned that the background noise appears to be additive. However, shifts we see that explain some of the need for normalization appear to be multiplicative terms. Also we have observed a strong mean and variance relationship that is in agreement with multiplicative error. Varianze stabilizing normalization (vsn) motivates the need for normalization with an additive backgroun multiplicative noise model:
+In the background unit we learned that the background noise appears to be additive. However, shifts we see that explain some of the need for normalization appear to be multiplicative terms. Also we have observed a strong mean and variance relationship that is in agreement with multiplicative error. [Varianze stabilizing normalization](#foot) (vsn) motivates the need for normalization with an additive backgroun multiplicative noise model:
 
 $$
 Y_{ij}= \beta_i + \varepsilon_{ij} + A_i \theta_{j} \eta_{ij}
 $$
-The expression level we are interested in estimating is $\theta_j$ which we assume changes across genes $j$ is the same across array $i$. Here, $\beta_i$ is an array specific background level that changes from probe to probe due to additive noise $\varepsilon_{ij}. We refer to $A_i$ and the gain and note that it changes from array to array.  Here is a monte carlo simulation demonstrating that by changing $\beta$ and $A$ we can generate non-linear biases as we see in practice.
+The expression level we are interested in estimating is $\theta_j$ which we assume changes across genes $j$ is the same across array $i$. Here, $\beta_i$ is an array specific background level that changes from probe to probe due to additive noise $\varepsilon_{ij}$. We refer to $A_i$ and the gain and note that it changes from array to array.  Here is a monte carlo simulation demonstrating that by changing $\beta$ and $A$ we can generate non-linear biases as we see in practice.
 ```{r}
 library(rafalib)
 N=10000
@@ -228,7 +228,7 @@ For this type of data, the variance depends on the mean. We seek a transfromatio
 ny1=(y1-b1)/A1
 ny2=(y2-b2)/A2
 mypar(1,2)
-maplot(ny1,ny2,curve.add=FALE,ylim=c(-500,500))
+maplot(ny1,ny2,curve.add=FALSE,ylim=c(-500,500))
 maplot(log2(ny1),log2(ny2),ylim=c(-2,2),xlim=c(0,15))
 ```
 
@@ -485,10 +485,31 @@ abline(h=0)
 
 ```
 
+## Footnotes
+<a name="foot"></a>
 
+### loess
 
+W. S. Cleveland, E. Grosse and W. M. Shyu (1992) Local regression models. Chapter 8 of Statistical Models in S eds J.M. Chambers and T.J. Hastie, Wadsworth & Brooks/Cole.
 
+### Quantile normalization
 
+Bolstad BM, Irizarry RA, Astrand M, Speed TP. "A comparison of normalization methods for high density oligonucleotide array data based on variance and bias." Bioinformatics. 2003. <http://www.ncbi.nlm.nih.gov/pubmed/12538238>
 
+### Variance stabilization
 
+For microarray:
 
+Wolfgang Huber, Anja von Heydebreck, Holger Sültmann, Annemarie Poustka and Martin Vingron, "Variance stabilization applied to microarray data calibration and to the quantification of differential expression" Bioinformatics, 2002. <http://bioinformatics.oxfordjournals.org/content/18/suppl_1/S96.short>
+
+B.P. Durbin, J.S. Hardin, D.M. Hawkins and D.M. Rocke, "A variance-stabilizing transformation for gene-expression microarray data", Bioinformatics. 2002. <http://bioinformatics.oxfordjournals.org/content/18/suppl_1/S105>
+
+Wolfgang Huber, Anja von Heydebreck, Holger Sueltmann, Annemarie Poustka, Martin Vingron, "Parameter estimation for the calibration and variance stabilization of microarray data" Stat Appl Mol Biol Genet, 2003. <http://dx.doi.org/10.2202/1544-6115.1008>
+
+For NGS read counts:
+
+Simon Anders and Wolfgang Huber, "Differential expression analysis for sequence count data", Genome Biology, 2010. <http://genomebiology.com/2010/11/10/r106>
+
+General discussion of variance stabilization:
+
+Robert Tibshirani, "Variance Stabilization and the Bootstrap" Biometrika, 1988. <http://www.jstor.org/discover/10.2307/2336593>
