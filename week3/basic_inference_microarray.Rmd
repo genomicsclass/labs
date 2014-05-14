@@ -92,9 +92,13 @@ tt[with(tt, identify(dm, -log10(p.value))),]
 ## Compare with non-parametric tests
 
 ```{r}
+#take 3 from a and 3 from b
 es2 <- es[,c(1,2,3,13,14,15)]
 mypar(1,1)
 stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
+#ANother way 
+# stripchart(split(exprs(es2)[1,],es2$group),vertical=T, method="jitter",col=c(1,2),main="Three samples per group", xlab="Group",ylab="",pch=15)
+
 t.test(exprs(es2)[1,] ~ es2$group)
 wilcox.test(exprs(es2)[1,] ~ es2$group)
 
@@ -108,6 +112,9 @@ y <- c(1:3,11:13)
 stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
 t.test(y ~ x)
 wilcox.test(y ~ x)
+# Because the ranks are identical, wilcox is not sensitive 
+# rank(1:6)
+# rank(c(1:3,11:13))
 ```
 
 ## Basic inference on microarray using lmFit from limma package
