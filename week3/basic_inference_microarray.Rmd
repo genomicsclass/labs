@@ -124,7 +124,9 @@ wilcox.test(y ~ x)
 library(limma)
 # ?lmFit
 design <- model.matrix(~ es$group)
+#group 1 vs. group 0, group 0 as the intercept
 design
+#fit a linear model for each row
 fit <- lmFit(es, design)
 names(fit)
 head(coef(fit))
@@ -141,5 +143,6 @@ plot(-1 * tt$statistic, fit$t[,2],
      xlab="rowttests", 
      ylab="eBayes t")
 abline(0,1,col="red",lwd=3)
+#list the top ranked genes 
 head(topTable(fit, coef=2, sort.by="p"),3)
 ```
