@@ -245,10 +245,12 @@ abline(h=-log10(0.01),lty=2)
 abline(v=c(-1,1)*log2(1.5),lty=2)
 ```
 
-In a later module we will leanr statistical techniques from improving the standard deviation estimates.
+In the Hierarchical Modeling lecture we will learn a statistical technique, described in [Smyth 2004](#foot) for improving the standard deviation estimates.
 
 ## Footnotes
 <a name="foot"></a>
 
 C. Kendziorski, R. A. Irizarry, K.-S. Chen, J. D. Haag, and M. N. Gould, "On the utility of pooling biological samples in microarray experiments", PNAS, 2005. <http://www.pnas.org/content/102/12/4252.long>
+
+Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>
 

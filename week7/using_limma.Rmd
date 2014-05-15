@@ -9,7 +9,9 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## First, simple t-tests
 
-In this unit, we will show the difference between using the simple t-test and doing differential expression with the `limma` hierarchical model. We also show the basic steps for performing a `limma` analysis. Note that the `limma` package is very powerful, and has hundreds of pages of documentation which we cannot cover in this course, however we recommend that users wanting to explore further should check out this guide.
+In this unit, we will show the difference between using the simple t-test and doing differential expression with the `limma` hierarchical model. The reference is [Smyth 2004](#foot), listed in the footnotes.
+
+Here we also show the basic steps for performing a `limma` analysis. Note that the `limma` package is very powerful, and has hundreds of pages of documentation which we cannot cover in this course, however we recommend that users wanting to explore further should check out this guide.
 
 We start by loading the spike-in data which was introduced in lecture, which has already been normalized.
 
@@ -70,9 +72,9 @@ tt
 `topTable` will return the top genes ranked by whichever value you define. You can also ask topTable to return all the values, sorted by `"none"`. Note that a column automatically is included which gives the *adjusted p-values* for each gene. By default the method of Benjamini-Hochberg is used, by calling the `p.adjust` function.
 
 ```{r}
-?topTable
+# ?topTable
 dim(topTable(fit, coef=2, number=Inf, sort.by="none"))
-?p.adjust
+# ?p.adjust
 ```
 
 Here we will compare the previous volcano plot with the `limma` results. Note that the red points are now all under the line where `-log10(p.value)` is equal to 2. Also, the blue points which represent real differences have p-values which are even higher than before.
@@ -109,3 +111,7 @@ segments((rtt$s^2)[idx],rep(.1,n),
 
 
 
+## Footnotes
+<a name="foot"></a>
+
+Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>

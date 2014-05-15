@@ -19,9 +19,9 @@ g <- getGEO("GSE34313")
 e <- g[[1]]
 ```
 
-This dataset is described at the following link:
+This dataset is hosted by GEO at the following link: <http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE34313>
 
-http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE34313
+The experiment is described in the paper by [Masuno 2011](#foot).
 
 Briefly, the investigators applied a glucocorticoid hormone to cultured human airway smooth muscle. The glucocorticoid hormone is used to treat asthma, as it reduces the inflammation response, however it has many other effects throughout the different tissues of the body.
 
@@ -56,7 +56,8 @@ tt <- topTable(fit, coef=2, genelist=fData(es)$GENE_SYMBOL)
 tt
 ```
 
-We can test a single gene set by looking up the genes which contain a certain GO ID, and providing this to the `roast` function. We will show how to get such lists of genes associated with a GO ID in the next chunk.
+
+We will use the [ROAST method](#foot) for gene set testing. We can test a single gene set by looking up the genes which contain a certain GO ID, and providing this to the `roast` function. We will show how to get such lists of genes associated with a GO ID in the next chunk.
 
 The roast function performs an advanced statistical technique, *rotation of residuals*, in order to generate a sense of the null distribution for the test statistic. The test statistics in this case is the summary of the scores from each gene. The tests are *self-contained* because only the summary for a single set is used, whereas other gene set tests might compare a set to all the other genes in the dataset, e.g., a *competitive* gene set test.
 
@@ -67,7 +68,7 @@ The result here tells us that the *immune response* genes are significantly down
 idx <- grep("GO:0006955", fData(es)$GO_ID)
 length(idx)
 r1 <- roast(es, idx, design)
-?roast
+# ?roast
 r1
 ```
 
@@ -147,5 +148,16 @@ r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Down"][1:5],
 r2tab[,1:2]
 ```
 
+
+## Footnotes
+<a name="foot"></a>
+
+Masuno K, Haldar SM, Jeyaraj D, Mailloux CM, Huang X, Panettieri RA Jr, Jain MK, Gerber AN., "Expression profiling identifies Klf15 as a glucocorticoid target that regulates airway hyperresponsiveness". Am J Respir Cell Mol Biol. 2011.
+<http://www.ncbi.nlm.nih.gov/pubmed/21257922>
+
+**The ROAST method**
+
+Wu D, Lim E, Vaillant F, Asselin-Labat ML, Visvader JE, Smyth GK. "ROAST: rotation gene set tests for complex microarray experiments". Bioinformatics. 2010.
+<http://www.ncbi.nlm.nih.gov/pubmed/20610611>
 
 

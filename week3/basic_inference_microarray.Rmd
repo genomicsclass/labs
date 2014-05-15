@@ -106,6 +106,8 @@ wilcox.test(y ~ x)
 
 ## Basic inference on microarray using lmFit from limma package
 
+We will discuss the limma package in the lecture on Hierarchical Modeling. The reference is [Smyth 2004](#foot).
+
 ```{r}
 # biocLite("limma")
 library(limma)
@@ -130,3 +132,8 @@ plot(-1 * tt$statistic, fit$t[,2],
 abline(0,1,col="red",lwd=3)
 head(topTable(fit, coef=2, sort.by="p"),3)
 ```
+
+## Footnotes
+<a name="foot"></a>
+
+Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>

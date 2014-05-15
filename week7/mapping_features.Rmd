@@ -12,7 +12,10 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 This unit will focus on mapping features to genes, i.e., getting annotation information from one format to another. We start by loading in the `maPooling` dataset from previous lectures.
 
 ```{r}
+# library(devtools)
+# install_github("dagdata","genomicsclass")
 library(dagdata)
+library(Biobase)
 data(maPooling)
 e <- maPooling
 head(rownames(e))
@@ -72,7 +75,7 @@ An alternate way to map from one annotation to another is using the `biomaRt` pa
 ```{r}
 # biocLite("biomaRt")
 library(biomaRt)
-vignette("biomaRt")
+# vignette("biomaRt")
 m <- useMart( "ensembl", dataset = "rnorvegicus_gene_ensembl")
 map <- getBM(mart = m,
              attributes = c("ensembl_gene_id", "entrezgene"), 
