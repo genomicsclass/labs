@@ -196,3 +196,18 @@ metadata(rowData(se))
 exptData(se)$MIAME
 abstract(exptData(se)$MIAME)
 ```
+
+## Footnotes
+
+For more information about the `GenomicRanges` package, check out the PLOS Comp Bio paper, which the authors of GenomicRanges published:
+
+<http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118>
+
+Also the software vignettes have a lot of details about the functionality. Check out "An Introduction to Genomic Ranges Classes":
+
+<http://www.bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.pdf>
+
+All of the vignette PDFs are available here:
+
+<http://www.bioconductor.org/packages/release/bioc/html/GenomicRanges.html>
+
