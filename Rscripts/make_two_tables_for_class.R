@@ -1,5 +1,5 @@
 library(minfi)
-datadir="/datadir"
+datadir="/home/bst/other/hcorrada/methyl/exps/tcga/raw_data/colon"
 
 clinicalDir=file.path(datadir,"Clinical/Biotab")
 sample_tab=read.delim(file.path(clinicalDir,"biospecimen_sample_coad.txt"),sep="\t",stringsAsFactors=FALSE)
@@ -15,8 +15,6 @@ normal_sample_id=sample_tab$bcr_sample_uuid[sample_tab$sample_type=="Solid Tissu
 tumor_tab=read.delim(file.path(clinicalDir,"biospecimen_tumor_sample_coad.txt"),sep="\t",stringsAsFactors=FALSE)
 
 ###make it slightly harder by changing a name
-
-names(tumor_tab)[names(tumor_tab)=="bcr_sample_uuid"] <- "sample_id"
 write.csv(tumor_tab,file="tumor_tab.csv")
 write.csv(sample_tab,file="sample_tab.csv")
 
