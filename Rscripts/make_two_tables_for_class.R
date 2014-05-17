@@ -15,8 +15,8 @@ normal_sample_id=sample_tab$bcr_sample_uuid[sample_tab$sample_type=="Solid Tissu
 tumor_tab=read.delim(file.path(clinicalDir,"biospecimen_tumor_sample_coad.txt"),sep="\t",stringsAsFactors=FALSE)
 
 ###make it slightly harder by changing a name
-write.csv(tumor_tab,file="tumor_tab.csv")
-write.csv(sample_tab,file="sample_tab.csv")
+write.csv(tumor_tab,file="tumor_tab.csv",row.names=FALSE)
+write.csv(sample_tab,file="sample_tab.csv",row.names=FALSE)
 
 
 
