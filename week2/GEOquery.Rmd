@@ -1,4 +1,15 @@
-# Example of how to download CEL files from GEO (contributed by Stephanie Hicks)
+---
+layout: page
+title: Downloading data from GEO using GEOquery
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+## Example of how to download CEL files from GEO
+
+## contributed by Stephanie Hicks
 
 If the `GEOquery` R/Biocondcutor package is not installed, use `biocLite()` to install the package:  
 ```{r, eval=FALSE}
