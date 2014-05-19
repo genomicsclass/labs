@@ -151,10 +151,40 @@ r2tab[,1:2]
 
 ## Footnotes <a name="foot"></a>
 
-Masuno K, Haldar SM, Jeyaraj D, Mailloux CM, Huang X, Panettieri RA Jr, Jain MK, Gerber AN., "Expression profiling identifies Klf15 as a glucocorticoid target that regulates airway hyperresponsiveness". Am J Respir Cell Mol Biol. 2011.
-<http://www.ncbi.nlm.nih.gov/pubmed/21257922>
-
-**The ROAST method**
+The ROAST method
 
 Wu D, Lim E, Vaillant F, Asselin-Labat ML, Visvader JE, Smyth GK. "ROAST: rotation gene set tests for complex microarray experiments". Bioinformatics. 2010.
 <http://www.ncbi.nlm.nih.gov/pubmed/20610611>
+
+Another method within the limma package is Camera:
+
+Di Wu and Gordon K. Smyth, "Camera: a competitive gene set test accounting for inter-gene correlation" Nucleic Acids Research, 2012.
+<http://nar.oxfordjournals.org/content/40/17/e133>
+
+### Correlation within gene sets
+
+The GSEA paper:
+
+Subramanian A1, Tamayo P, Mootha VK, Mukherjee S, Ebert BL, Gillette MA, Paulovich A, Pomeroy SL, Golub TR, Lander ES, Mesirov JP, "Gene set enrichment analysis: a knowledge-based approach for interpreting genome-wide expression profiles" Proc Natl Acad Sci U S A. 2005.
+<http://www.ncbi.nlm.nih.gov/pubmed/16199517>
+
+William T. Barry, Andrew B. Nobel, and Fred A. Wright, "A statistical framework for testing functional categories in microarray data" Ann. Appl. Stat, 2008.
+<http://projecteuclid.org/euclid.aoas/1206367822>
+
+William Barry has a package `safe` in Bioconductor for gene set testing with resampling.
+<http://www.bioconductor.org/packages/release/bioc/html/safe.html>
+
+Daniel M Gatti, William T Barry, Andrew B Nobel, Ivan Rusyn and Fred A Wright, "Heading Down the Wrong Pathway: on the Influence of Correlation within Gene Sets", BMC Genomics, 2010.
+<http://www.biomedcentral.com/1471-2164/11/574#B24>
+
+### Gene sets and power
+
+The following article points out an issue with gene set testing: the power to detect differential expression for an individual gene depends on the number of NGS reads which align to that gene, which depends on the transcript length among other factors.
+
+Alicia Oshlack* and Matthew J Wakefield, "Transcript length bias in RNA-seq data confounds systems biology", Biology Direct, 2009.
+<http://www.biologydirect.com/content/4/1/14>
+
+### The dataset used in this lab
+
+Masuno K, Haldar SM, Jeyaraj D, Mailloux CM, Huang X, Panettieri RA Jr, Jain MK, Gerber AN., "Expression profiling identifies Klf15 as a glucocorticoid target that regulates airway hyperresponsiveness". Am J Respir Cell Mol Biol. 2011.
+<http://www.ncbi.nlm.nih.gov/pubmed/21257922>
