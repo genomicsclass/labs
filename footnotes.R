@@ -4,6 +4,7 @@ out <- c("---", "layout: page",
 dirs <- list.files(".","week*")
 for (dir in dirs) {
   files <- list.files(dir, "*.Rmd")
+  out <- c(out, paste0("# Week ", sub("week(.*)","\\1",dir)), "")
   for (file in files) {
     lines <- readLines(paste0(dir,"/",file))
     if (sum(grepl("## Footnotes",lines)) == 0) next 
@@ -12,7 +13,7 @@ for (dir in dirs) {
     footidx <- grep("## Footnotes", lines)
     footnotes <- lines[(footidx+1):length(lines)]
     footnotes <- footnotes[footnotes != ""]
-    out <- c(out, paste0("# ",title), footnotes,"")
+    out <- c(out, paste0("## ",title), footnotes,"","----","")
   }
 }
 writeLines(out, con="footnotes.md")
