@@ -245,7 +245,6 @@ lines(sds,dd*k,type="l",col=2,lwd=2)
 ```
 Apart for one outlier, this is not a bad fit at all. This approximation will come in very handy when we learn about emprical Bayes.
 
-## Footnotes
-<a name="foot"></a>
+## Footnotes <a name="foot"></a>
 
 Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>

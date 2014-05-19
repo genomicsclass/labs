@@ -485,8 +485,7 @@ abline(h=0)
 
 ```
 
-## Footnotes
-<a name="foot"></a>
+## Footnotes <a name="foot"></a>
 
 ### loess
 

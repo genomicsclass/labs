@@ -133,7 +133,6 @@ abline(0,1,col="red",lwd=3)
 head(topTable(fit, coef=2, sort.by="p"),3)
 ```
 
-## Footnotes
-<a name="foot"></a>
+## Footnotes <a name="foot"></a>
 
 Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>
