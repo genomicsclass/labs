@@ -13,7 +13,9 @@ for (dir in dirs) {
     footidx <- grep("## Footnotes", lines)
     footnotes <- lines[(footidx+1):length(lines)]
     footnotes <- footnotes[footnotes != ""]
-    out <- c(out, paste0("## ",title), footnotes,"","----","")
+    footnotes.spaced <- character(2*length(footnotes))
+    footnotes.spaced[2 * seq_along(footnotes) - 1] <- footnotes
+    out <- c(out, paste0("## ",title), footnotes.spaced,"","----","")
   }
 }
 writeLines(out, con="footnotes.md")
