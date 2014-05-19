@@ -206,3 +206,10 @@ image(t(Batch),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 image(t(error),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
 ```
 
+## Footnotes
+
+### Principal Components Analysis (PCA)
+
+Jolliffe, Ian. Principal component analysis. John Wiley & Sons, Ltd, 2005.
+
+Dunteman, George H. Principal components analysis. No. 69. Sage, 1989.

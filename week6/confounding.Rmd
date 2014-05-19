@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Surragate variables and batch effects 
+title: Surrogate variables and batch effects 
 ---
 
 ```{r options, echo=FALSE}
@@ -9,7 +9,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Confounding
 
-Admission data from Berkeley (Yaer?) showed more men were being admitted than women: 44\% men admitted compared to 30\% women!
+Admission data from Berkeley 1973 showed more men were being admitted than women: 44\% men admitted compared to 30\% women!
 
 ```{r}
 datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
