@@ -212,21 +212,22 @@ In a later module we will learn about empirical bayes approaches to improve esti
 $$
 s^2 \sim s_0^2 F_{d,d_0}
 $$
-with $d$, the degrees of freedom involved in computing $s^2$; for example in a case comparing 3 versus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data:
+with $d$, the degrees of freedom involved in computing $s^2$; for example in a case comparing 3 versus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d_0$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data:
 ```{r}
 library(rafalib)
 mypar(3,3)
 sds=seq(0,2,len=100)
-for(d in c(1,5,10)){
+for(d0 in c(1,5,10)){
   for(s0 in c(0.1, 0.2, 0.3)){
-    tmp=hist(biosds,main=paste("s_0 =",s0,"d =",d),xlab="sd",ylab="density",freq=FALSE,nc=100,xlim=c(0,1))
-    dd=df(sds^2/s0^2,11,d)
+    tmp=hist(biosds,main=bquote(paste(s[0] == .(s0), " ; ", d[0] == .(d0))),
+             xlab="sd",ylab="density",freq=FALSE,nc=100,xlim=c(0,1))
+    dd=df(sds^2/s0^2,11,d0)
     k=sum(tmp$density)/sum(dd) ##this is a normalizing constant to assure same are on plot
     lines(sds,dd*k,type="l",col=2,lwd=2)
     }
   }
 ```
-Now which $s_0$ and $d$ fit our data best? This is a rather advanced topic as the MLE does not perform well for this particular distribution (we refer to the statistical method described in [Smyth (2004)](#foot)). The Bioconductor limma package provides a function to estimate these parameters.
+Now which $s_0$ and $d_0$ fit our data best? This is a rather advanced topic as the MLE does not perform well for this particular distribution (we refer to the statistical method described in [Smyth (2004)](#foot)). The Bioconductor limma package provides a function to estimate these parameters.
 
 ```{r}
 library(limma)
@@ -238,7 +239,8 @@ observed <- biosds
 mypar(1,2)
 qqplot(theoretical,observed)
 abline(0,1)
-tmp=hist(biosds,main=paste("s_0 =",signif(estimates[[1]],2),"d =",signif(estimates[[2]],2)),xlab="sd",ylab="density",freq=FALSE,nc=100,xlim=c(0,1),ylim=c(0,9))
+tmp=hist(biosds,main=bquote(paste(s[0] == .(signif(estimates[[1]],2)), " ; ", d[0] == .(signif(estimates[[2]],2)))),
+         xlab="sd",ylab="density",freq=FALSE,nc=100,xlim=c(0,1),ylim=c(0,9))
 dd=df(sds^2/estimates$scale,11,estimates$df2)
 k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
 lines(sds,dd*k,type="l",col=2,lwd=2)
