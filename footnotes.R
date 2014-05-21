@@ -1,5 +1,5 @@
 out <- c("---", "layout: page",
-         "title: Collated footnotes for Data Analysis for Genomics",
+         "title: Footnotes for Data Analysis for Genomics",
          "---","")
 dirs <- list.files(".","week*")
 for (dir in dirs) {
