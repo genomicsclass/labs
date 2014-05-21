@@ -78,9 +78,9 @@ for(i in 1:14){
 
 These figures motivate a statistical model for the PM (perfect match) intensities.
 $$
-Y_j =\beta_j + \phi_j \theta + \varepsilon_j
+Y_{ij} =\beta_j + \theta_i \phi_j + \varepsilon_{ij}
 $$
-with $Y_j$ the observed intensity for probe $j$, $\beta_j$ a background level, $\phi_j$ a multiplicative affinity affect and $\theta$, a value proportional to $\varepsilon_j$ which denotes the measurement error. 
+with $Y_{ij}$ the observed intensity for gene $i$ and probe $j$, $\beta_j$ a background level, $\phi_j$ a multiplicative affinity affect and $\theta_i$, a value proportional to $\varepsilon_{ij}$, which denotes the measurement error. 
 
 Here is an example of how this model fits the data for one of the genes:
 ```{r}
@@ -98,7 +98,7 @@ for(i in c(5,7)){
 ```
 
 
-From the figures it appears that the values of $\beta_j$ range from 16 to 1024 across genes. One adverse effect of this is that fold changes will be extremely attenuated for small values of $\theta$. Note for example that if we are comparing true expression values that are $2$ and $1$, with a background of $32$, we will observe a fold change of $(32 + 2)/(32 + 1) \approx 1$. For larger values, this is not a problem, as $(32+20000)/(32+10000)\approx 2$. 
+From the figures it appears that the values of $\beta_j$ range from 16 to 1024 across genes. One adverse effect of this is that fold changes will be extremely attenuated for small values of $\theta_i$. Note for example that if we are comparing true expression values that are $2$ and $1$, with a background of $32$, we will observe a fold change of $(32 + 2)/(32 + 1) \approx 1$. For larger values, this is not a problem, as $(32+20000)/(32+10000)\approx 2$. 
 
 One difficult challenge is that, even within the same gene, each probe has a different background level. The solution proposed by the manufacturer was to design background probes for each probe. These pairs were named the _perfect match_ (PM) and _mismatch_ (MM) probes respectively. The assumption was that the MM would measure only the background part of the intensity and $PM-MM$ would serve a corrected measure. This actually explains the high levels of variability observed in our first plot. We illustrate this with a simple statistical model.
 
