@@ -43,7 +43,8 @@ colnames(y)[2:3]=c("Male","Female")
 y
 ```
 
-Homework: run the chisq test in each major.
+#### *Homework*
+1. Run the `chisq.test` in each major.
 
 ```{r}
 y=cbind(dat[1:6,c(1,2)],dat[7:12,2])

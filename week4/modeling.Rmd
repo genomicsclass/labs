@@ -54,8 +54,8 @@ $$
 
 The Poisson distribution is commonly used in RNAseq analyses. Note that because we are sampling thousands of molecules and some genes represent a very small proportion of the totality of molecules, the Poisson distribution seems appropriate. 
 
-Homework
-1- Do you expect a Poisson distribution with $\lambda=100$ to be approximately normal? Why or why not? 
+#### *Homework*
+1. Do you expect a Poisson distribution with $\lambda=100$ to be approximately normal? Why or why not? 
 
 
 So how does this help us? One way is that it informs us of the statistical properties of important summaries. For example, say we only have one sample from each of a case and control RNAseq experiment and we want to report the genes with larges fold-chages. Note that under the null, that there are no differences, the statistical variability of this quantity depends on the total abundance of the gene. We can show this mathematically, but here is a quick simulation to demonstrate the point:

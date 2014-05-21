@@ -154,7 +154,8 @@ abline(h=0,col=2,lwd=2)
 ```
 
 
-Homework: Try various values of span different from 0.75 and change the degree. Decide which you believe to be the best and defend the choice.
+#### *Homework*
+1. Try various values of span different from 0.75 and change the degree. Decide which you believe to be the best and defend the choice.
 
 
 

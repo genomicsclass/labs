@@ -123,7 +123,8 @@ As expected the p-value using the t-distribution is larger than the one obtained
 mean(dat$bwt[dat$smoke==1])-mean(dat$bwt[dat$smoke==0])
 ```
 
-Homework: is the distribution of dat$bwt approximated by normal, t or neither?
+#### *Homework*
+1. Is the distribution of `dat$bwt` approximated by normal, t or neither?
 
 ### Confidence interevals
 
