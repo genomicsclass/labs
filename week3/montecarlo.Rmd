@@ -83,7 +83,7 @@ nonsmokerweights=rnorm(25000,123,17)
 and repeat the entire excercise.
 
 #### *Homework*
-1. How different are the normal(0,1) and t-distribution when degrees of freedom are 18? How about 4?
+1. How different are the $\text{normal}(0,1)$ and t-distribution when degrees of freedom are 18? How about 4?
 2. For the case with 10 samples, what is the distribution of the sample median weight for smokers? How does the mean, median of the distribution compare to the population median? 
 3. Repeat the code above but simulated income for american and canadians. Is the median income the same? is the mean income the same?
 
