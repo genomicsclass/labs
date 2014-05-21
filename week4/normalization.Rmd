@@ -11,6 +11,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Normalization is one of the most important procedures in genomics data analysis. A typical dataset contains more than one sample and we are almost always interested in making comparisons between these. Unfortunately, technical and biological sources of unwanted variation can cloud downstream results. Here we demonstrate with real data, how this can happen and then describe several existing solutions. The examples are based on microarray data but can be applied to other datasets.
 
+<a name="dilution"></a>
 Our first example is a Dilution dataset that is not publically available. To obtain the dataset you need to request it here: http://www.genelogic.com/support/scientific-studies
 
 This Dilution dataset has six sets of five technical replicates. The six sets differ in the concentration of RNA. The RNA was diluted 5 times so that 1/2 as much RNA was hybridized in each set. We start by showing  data from five technical replicates. We show boxplots and densities:
@@ -340,7 +341,7 @@ plot(colMeans(fpkm==0),ylab="proportion of 0s",xlab="proportion index",pch=16)
 
 ## When not to use normalization
 
-Boxplots of all Dilution data. Obviously we don't want to normalize.
+Boxplots of all Dilution data (see [above](#dilution)). Obviously we don't want to normalize.
 
 ```{r,eval=FALSE}
 library(rafalib)
