@@ -7,23 +7,31 @@ title: RNA-seq analysis
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
+## Introduction
+
+RNA-Seq is a valuable experiment for quantifying both the types and the amount of RNA molecules in a sample. We've covered the basic idea of the protocol in lectures, but some additional references for RNA-Seq include [Mortazavi (2008)](#foot) and [Marioni (2008)](#foot).
+
+In the file, `cufflinks.txt`, we show some example calls for aligning RNA-Seq reads to the reference genome, and an example call for running Cufflinks, which estimates both the expression levels and the different RNA isoforms which are present in the sample. The main paper describing the Cufflinks method is [Trapnell (2010)](#foot) and the website for the Cufflinks software is:
+
+<http://cufflinks.cbcb.umd.edu/>
+
+In this lab, we will focus on comparing the expression levels of different samples, by counting the number of reads which overlap the exons of genes defined by a known annotation. As described in the lecture, this analysis sets aside the task of estimating the different kinds of RNA molecules.
+
+## Counting reads in genes
+
+We will work with a count matrix, which has genes along the rows and samples along the columns. The elements in the matrix give the number of reads which could be uniquely aligned to a given gene for a given sample. We will use count matrices already prepared, as otherwise, students would have to download very large BAM files containing the aligned reads. However, in [another lab](read_counting.html) we show the steps necessary to produce such a count matrix.
+
 ## Visualizing sample-sample distances
 
-We will work with the Hammer et al dataset, as prepared by the ReCount website.
+We will work with the [Hammer et al](#foot) dataset, as prepared by the ReCount website:
 
-http://bowtie-bio.sourceforge.net/recount/
-
-The Hammer et al paper:
-
-http://www.ncbi.nlm.nih.gov/pubmed?term=20452967
+<http://bowtie-bio.sourceforge.net/recount/>
 
 > ReCount is an online resource consisting of RNA-seq gene count datasets built 
 > using the raw data from 18 different studies. The raw sequencing data (.fastq files) 
 > were processed with Myrna to obtain tables of counts for each gene.
 
-This is really helpful for us, so we don't have to download all the FASTQ files and map them ourselves. If you use this resource, you should cite:
-
-> Frazee AC, Langmead B, Leek JT. ReCount: a multi-experiment resource of analysis-ready RNA-seq gene count datasets. BMC Bioinformatics 12:449
+This is really helpful for us, so we don't have to download all the FASTQ files and map them ourselves. If you use this resource, you should cite [Frazee (2011)](#foot), and cite the appropriate paper for the experimental data that you download.
 
 Here we read in the `Eset` hosted by ReCount, and turn it into a SummarizedExperiment.
 
@@ -46,7 +54,9 @@ colData(se)$Time <- factor(colData(se)$Time)
 colData(se)$Time
 ```
 
-We will use the DESeq2 package to normalize the sample for sequencing depth. For now, don't worry about the `design` argument.
+### Normalization
+
+We will use the `DESeq2` package to normalize the sample for sequencing depth. For now, don't worry about the `design` argument.
 
 ```{r}
 # biocLite("DESeq2")
@@ -176,4 +186,28 @@ geneinfo <- select(org.Rn.eg.db, keys=rownames(resSort)[1:20],
                    keytype="ENSEMBL")
 geneinfo
 ```
+
+## Footnotes <a name="foot"></a>
+
+### Introduction
+
+Mortazavi A, Williams BA, McCue K, Schaeffer L, Wold B., "Mapping and quantifying mammalian transcriptomes by RNA-Seq", Nat Methods. 2008.
+<http://www.nature.com/nmeth/journal/v5/n7/full/nmeth.1226.html>
+
+John C. Marioni, Christopher E. Mason, Shrikant M. Mane, Matthew Stephens, and Yoav Gilad, "RNA-seq: An assessment of technical reproducibility and comparison with gene expression arrays" Genome Res. 2008.
+<http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2527709/>
+
+Trapnell C, Williams BA, Pertea G, Mortazavi AM, Kwan G, van Baren MJ, Salzberg SL, Wold B, Pachter L.,  "Transcript assembly and quantification by RNA-Seq reveals unannotated transcripts and isoform switching during cell differentiation", Nature Biotechnology, 2010.
+<http://www.nature.com/nbt/journal/v28/n5/full/nbt.1621.html>
+<http://cufflinks.cbcb.umd.edu/>
+
+### Hammer et al
+
+Hammer P, Banck MS, Amberg R, Wang C, Petznick G, Luo S, Khrebtukova I, Schroth GP, Beyerlein P, Beutler AS. "mRNA-seq with agnostic splice site discovery for nervous system transcriptomics tested in chronic pain." Genome Res. 2010
+<http://www.ncbi.nlm.nih.gov/pubmed?term=20452967>
+
+### ReCount
+
+Frazee AC, Langmead B, Leek JT. "ReCount: a multi-experiment resource of analysis-ready RNA-seq gene count datasets". BMC Bioinformatics 12:449 <http://www.ncbi.nlm.nih.gov/pubmed/22087737>
+
 
