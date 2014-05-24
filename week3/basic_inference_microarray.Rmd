@@ -26,8 +26,8 @@ mypar()
 #flip the image and rotate
 flipt <- function(m) t(m[nrow(m):1,])
 myimage <- function(m,...) {
-  image(flipt(m),xaxt="n",yaxt="n",...)
-  }
+    image(flipt(m),xaxt="n",yaxt="n",...)
+    }
 
 myimage(as.matrix(pData(e)),col=c("white","black"),
         xlab="experiments",
