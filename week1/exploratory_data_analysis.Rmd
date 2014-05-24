@@ -2,28 +2,30 @@
 layout: page
 title: Exploratory Data Analysis
 ---
+
 use purl to extract the code
 setwd("C:\\Users\\Xiaodong\\Documents\\GitHub\\labs\\week1")
 use TAB to find the file in working directory
 library(knitr)
 purl("exploratory_data_analysis.Rmd")
 
+
 ```{r options, echo=FALSE}
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
-
-
-Biases, systematic errors and unexpected variability are common in genomics data. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines are designed to detect these. Yet, these pipelines still give you an answer and the from the final results it may be hard or impossible to notice an error was made. In later modules we will cover many other examples. 
+Biases, systematic errors and unexpected variability are common in genomics data. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines are designed to detect these. Yet, these pipelines still give you an answer and the from the final results it may be hard or impossible to notice an error was made. In later modules we will cover many other examples.
 
 Graphing data is a powerful approach to detecting these problems. We refer to this as _exploratory data analyis_ (EDA). Many important methodological contributions to genomics data analysis were initiated as discovery made via EDA. We will show some useful exploratory plots for gene expression data measured with microarrays and NGS. We start with a general introduction to EDA using height data.
 ## Histograms
 
-We can think of any given dataset as a list of numbers. Suppose you have measured the heights of all men in a population. Imagine you have need to describe these numbers to someone that has no idea what these heights are, say an alien that has never visited earth. 
+We can think of any given dataset as a list of numbers. Suppose you have measured the heights of all men in a population. Imagine you have need to describe these numbers to someone that has no idea what these heights are, say an alien that has never visited earth.
+
 
 ```{r definingHeights, message=FALSE}
 library(UsingR)
 x=father.son$fheight
 length(x)
+
 ```
 One approach is to simply list out all the numbers for the alien to see. Here are 20 randomly selected heights of 1,078.
 
@@ -36,8 +38,8 @@ From scanning through these numbers we start getting a rough idea of what the en
 hist(x,breaks=seq(floor(min(x)),ceiling(max(x))),main="",xlab="Height")
 ```
 Showing this plot to the alien is much more informative than showing the numbers. Note that with this simple plot we can approximate the number of individuals in any given interval. For example, there are about 70 individuals over six feet (72 inches) tall. 
-ecdf(x) gives an empirical CDF, showing the distribution of height 
 
+ecdf(x) gives an empirical CDF, showing the distribution of height 
 
 ```{r}
 xs<-seq(floor(min(x)),ceiling(max(x)),0.1)
@@ -86,7 +88,9 @@ qqline(x)
 ## Box-plot
 Data is not always normally distributed. Income 
 In these cases the average and standard deviation are not necessarily informative. The properties described above are specific to the normal. For example, the normal distribution does not seem to be a good approximation for the direct compensation for 199 United States CEOs in the year 2000
+
 Note the flat right tail of QQ plot
+
 ```{r fig.width=4, fig.height=4}
 hist(exec.pay)
 qqnorm(exec.pay)
@@ -110,7 +114,6 @@ plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=pas
 The scatter plot shows a general trend: the taller the father the taller to son. A summary of this trend is the correlation coefficient which in this cases is 0.5. We motivate this statistic by trying to predict son's height using the father's.
 
 
-
 ## Stratification
 Suppose we are asked to guess the height of randomly select height from the sons. The average height, 68.7 inches, is the value with the highest proportion (see histogram) and would be our prediction. But what if we are told that the father is 72 inches tall, do we sill guess 68.7?
 
@@ -118,7 +121,9 @@ Note that the father is taller than average. He is 1.7 standard deviations talle
 ```{r fig.width=6, fig.height=3}
 boxplot(split(y,round(x)))
 print(mean(y[ round(x) == 72]))
+
 sapply(split(y,round(x)),mean)
+
 ```
 Stratification followed by boxplots lets us see the distribution of each group. The average height of sons with fathers that are 72 is 70.7. We also see that the means of the strata appear to follow a straight line. 
 
@@ -136,11 +141,9 @@ fatherheights=as.numeric(names(means))
 plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fatherheights))
 abline(0,cor(x,y))
 ```
+
 One interpretation of the correlation: slope of the line for normalized bivariate normal distribution
 two means, two sd's, corr are good summary of bivariate normal
-
-
-
 
 ## Spearman's correlation
 Just like the average and standard deviation are not good summaries when the data is not well approximated by the normal distribution, the correlation is not a good summary when pairs of lists are not approximated by the bivariate normal distribution. Examples include cases in which on variable is related to another by a parabolic function. Another, more common example are caused by outliers or extreme values.
@@ -171,8 +174,9 @@ median(abs(x-median(x))) where x is a vector of data points. Multiply this by 1.
 ```{r}
 x<-rnorm(100)
 x[sample(1:100,1)]<-100
-boxplot(x,main=paste("Mean ",signif(mean(x),1),", SD ",signif(sd(x),1),"\n",
-                     "Median ",signif(median(x),1),"MAD ", signif(mad(x),1)))
+boxplot(x,main=paste("Mean ",signif(mean(x),1),", SD ",signif(sd(x),1),
+                     "\n","Median ",signif(median(x),1),"MAD ", 
+                     signif(mad(x),1)))
 ```
 Spearman correlation: use ranks and calculate the correlations. 
 ```{r}
@@ -206,6 +210,9 @@ text(x,y,fractions(y),pos=3)
 ```
 
 
+
+
+In the example above the data are not associated but for one pair both values are very large. The correlation here is about 0.5. This is driven by just that one point as taking it out lowers to correlation to about 0. An alternative summary for cases with outliers or extreme values is Spearman's correlation which is based on ranks instead of the values themselves. 
 
 
 

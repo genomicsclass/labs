@@ -16,7 +16,11 @@ week6md := $(week6rmd:.Rmd=.md)
 week7md := $(week7rmd:.Rmd=.md)
 week8md := $(week8rmd:.Rmd=.md)
 
+<<<<<<< HEAD
 all: week1 week2 week3 week4 week5 week6 week7 week8
+=======
+all: week1 week2 week3 week4 week5 week6 week7 week8 foot
+>>>>>>> upstream/master
 
 week1: $(week1md)
 week2: $(week2md)
@@ -29,3 +33,10 @@ week8: $(week8md)
 
 %.md: %.Rmd
 	cd $(dir $^); Rscript -e 'knit("$(notdir $^)")'
+<<<<<<< HEAD
+=======
+
+foot:
+	Rscript footnotes.R
+
+>>>>>>> upstream/master

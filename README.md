@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Data Analysis for Genomics
 ==========================
 
@@ -7,6 +8,23 @@ May 5, 2014 : we are adding rendered content here: <http://genomicsclass.github.
 
 March 30, 2014 :  we are still adding R markdown files to this repository. Expect
 fully finished files for all weeks by second week of May 2014.
+=======
+# Data Analysis for Genomics
+
+## NEWS:
+
+May 7, 2014: in order to clean up and trim down the memory size of
+this repo, we've moved out non-code objects
+out of this repo. Therefore, before submitting a pull request,
+please first clone a clean copy of the repository.
+The celfiles and agilent folder of week2 has been
+moved to the `rawdata` repo, and the reading microarray lab has
+been updated to reflect this.
+
+May 5, 2014 : we are adding rendered content here: <http://genomicsclass.github.io/book/>
+
+## Labs and lectures:
+>>>>>>> upstream/master
 
 Week 1: Introduction
 

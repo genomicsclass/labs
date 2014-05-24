@@ -72,10 +72,13 @@
 
 # week 8
 
+<<<<<<< HEAD
 - rafa Systematic errors in NGS
 
 - rafa Assigning probe locations to genes
 
+=======
+>>>>>>> upstream/master
 - **mike Visualizing NGS with Bioconductor, IGV**
 
 - **mike Making NGS read count table in Bioconductor**
@@ -84,8 +87,14 @@
 
 - **mike RNA-seq**
 
+<<<<<<< HEAD
 - rafa DNA methylation: arrays and NGS
 
 - **mike ChIP-seq**
 
 
+=======
+- **rafa DNA methylation: arrays and NGS**
+
+- **mike ChIP-seq**
+>>>>>>> upstream/master

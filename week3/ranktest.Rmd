@@ -99,7 +99,11 @@ abline(0,1)
 
 ## Rank tests
 
+<<<<<<< HEAD
 We use the same data as in previous module. We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+=======
+We use the same data as in previous module. We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomly selected mice from each strain [(Kendziorski 2005)](#foot). In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+>>>>>>> upstream/master
 
 ```{r}
 library(Biobase,quietly=TRUE,verbose=FALSE)
@@ -129,6 +133,7 @@ for(i in ind)
 ind
 ```
 
+<<<<<<< HEAD
 Note the biological variance is much larger than the technical one. And also that the variability of variances is also for biological variance. Here are the two genes we showed above but now for each individual mouse 
 
 ```{r, }
@@ -218,4 +223,9 @@ In a later module we will leanr statistical techniques from improving the standa
 
 
 
+=======
+## Footnotes <a name="foot"></a>
+
+C. Kendziorski, R. A. Irizarry, K.-S. Chen, J. D. Haag, and M. N. Gould, "On the utility of pooling biological samples in microarray experiments", PNAS, 2005. <http://www.pnas.org/content/102/12/4252.long>
+>>>>>>> upstream/master
 

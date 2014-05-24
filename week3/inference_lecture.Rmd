@@ -60,7 +60,11 @@ chisq.test(tab)$p.value
 ```
 
 ## The t-test
+<<<<<<< HEAD
 Suppose we are asked if new borns from smoking mothers weigh less than those from non-smoker mothers in a population of 1,236 babies. Suppose we are charged $1000 for each measurement and are given a $50,000 prize if we answer correclty, how many babies do we weigh? Let's start with 10
+=======
+Suppose we are asked if new borns from smoking mothers weigh less than those from non-smoker mothers in a population of 1,236 babies. Suppose we are charged \$1000 for each measurement and are given a \$50,000 prize if we answer correclty, how many babies do we weigh? Let's start with 10
+>>>>>>> upstream/master
 
 ```{r}
 dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
@@ -123,7 +127,12 @@ As expected the p-value using the t-distribution is larger than the one obtained
 mean(dat$bwt[dat$smoke==1])-mean(dat$bwt[dat$smoke==0])
 ```
 
+<<<<<<< HEAD
 Homework: is the distribution of dat$bwt approximated by normal, t or neither?
+=======
+#### *Homework*
+1. Is the distribution of `dat$bwt` approximated by normal, t or neither?
+>>>>>>> upstream/master
 
 ### Confidence interevals
 
@@ -138,7 +147,11 @@ cat(mean(smokers)-mean(nonsmokers)+c(-2,2)*sqrt(var(smokers)+var(nonsmokers))/sq
 Note that the true difference is in fact included in the sample above
 
 ## Gene expression
+<<<<<<< HEAD
 We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+=======
+We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  RNA was extracted from 12 randomly selected mice from each strain [(Kendziorski 2005)](#foot). In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+>>>>>>> upstream/master
 
 ```{r}
 library(Biobase,quietly=TRUE,verbose=FALSE)
@@ -245,6 +258,7 @@ abline(h=-log10(0.01),lty=2)
 abline(v=c(-1,1)*log2(1.5),lty=2)
 ```
 
+<<<<<<< HEAD
 In a later module we will leanr statistical techniques from improving the standard deviation estimates.
 
 
@@ -277,4 +291,13 @@ In a later module we will leanr statistical techniques from improving the standa
 
 
 
+=======
+In the Hierarchical Modeling lecture we will learn a statistical technique, described in [Smyth 2004](#foot) for improving the standard deviation estimates.
+
+## Footnotes <a name="foot"></a>
+
+C. Kendziorski, R. A. Irizarry, K.-S. Chen, J. D. Haag, and M. N. Gould, "On the utility of pooling biological samples in microarray experiments", PNAS, 2005. <http://www.pnas.org/content/102/12/4252.long>
+
+Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>
+>>>>>>> upstream/master
 
