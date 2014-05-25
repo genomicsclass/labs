@@ -25,12 +25,15 @@ Next we look at all eight histograms simultaneously. To facilitate this we intro
 ```{r,fig.width=3, fig.height=3}
 par(mfrow=c(1,1))
 for(i in 1:ncol(int))
-  if(i==1) plot(density(log2(int[,i])),col=(i==4)+1) else lines(density(log2(int[,i])),col=(i==4)+1)
+  if(i==1) plot(density(log2(int[,i])),col=(i==4)+1) else 
+      lines(density(log2(int[,i])),col=(i==4)+1)
 ```
 Note that one histogram (we higlighted it by making it red) looks different: it has a different shape from the rest. So is this sample different from the rest in any significant way? If we compute the correlation between this sample and the rest it is not very different and all very high.
+
 ```{r}
 signif(cor(int),2)
 ```
+
 The problem is not immediately obviou from a scatter plot.
 ```{r,fig.width=6, fig.height=3}
 ##we don't need to show all the points so we take samples
@@ -42,7 +45,7 @@ splot<-function(x,y,...){
 }  
 mypar(1,2)
 splot(log2(int[,1]),log2(int[,2])) 
-splot(log2(int[,1]),log2(int[,4]))
+splot(log2(int[,1]),log2(int[,4]))#This shows that the difference between x and y changes somehow
 ```
 Note that samples 1 through 4 are replicates and should produce the same values up to measurement error. Scatterplots and correlation are not the best tools to detect problems. Note for example that  1,2,3,4 and 100,200,300,400 two lists with very different values have perfect correlation. A better measure is the differences between the values and therefore a better plot is a rotation of the scatter plot containg the differences (log ratios) on the y-axis and the averages (in the log scale) on the x-axis. This plot is a refered to as an MA-plot. 
 ```{r,fig.width=6, fig.height=3}

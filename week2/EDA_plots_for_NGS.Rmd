@@ -19,8 +19,12 @@ We can make similar figures for NGS to the ones shown in the previous sections. 
 if (!file.exists("bottomly_eset.RData")) download.file("http://bowtie-bio.sourceforge.net/recount/ExpressionSets/bottomly_eset.RData","bottomly_eset.RData")
 load("bottomly_eset.RData")
 library("Biobase")
+#Count of reads aligned to the first gene for each sample
 exprs(bottomly.eset)[1,]
 pData(bottomly.eset)
+#many 0 values 
+summary(exprs(bottomly.eset[,1]))
+
 ```
 
 ```{r}
@@ -30,8 +34,8 @@ Y <- log2(exprs(bottomly.eset) + 0.5)
 library("rafalib")
 mypar(1,1)
 for(i in 1:ncol(Y)){
-  shist(Y[,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
-}
+    shist(Y[,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
+    }
 ```
 
 If we get rid of the zeros (i.e., those with log2 value of -1), we can more easily see that shape of the distribution for the expressed genes:
@@ -39,9 +43,18 @@ If we get rid of the zeros (i.e., those with log2 value of -1), we can more easi
 ```{r}
 mypar(1,1)
 for(i in 1:ncol(Y)){
-  idx <- Y[,i] > -1
-  shist(Y[idx,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
-}
+    idx <- Y[,i] > -1
+    shist(Y[idx,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
+    }
+#Explore the sequencing depth issue
+totalcount<-order(apply(exprs(bottomly.eset),2,sum))
+for(i in order(totalcount)){
+    idx <- Y[,i] > -1
+    shist(Y[idx,i],unit=0.25,col=i,plotHist=FALSE,
+          add=i!=3)
+    readline()
+    }
+
 ```
 
 Plotting two samples against each other shows the spreading of points at the low end of expression from the log transformation. This can also be seen with randomly generated Poisson data.

@@ -8,10 +8,9 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 ## Affymterix CEL files
-
+Affymterix one color arrays
 We start by reading in the sample information table. This is usually created by the person who performed the experiment. 
 
-<<<<<<< HEAD
 ```{r}
 library(affy)
 basedir <- "celfiles"
@@ -55,11 +54,14 @@ This creates an AffyBatch object which object contains the information you need.
 >>>>>>> upstream/master
 
 ```{r}
-dim(pm(ab))
+dim(pm(ab))#perfect match probe signal levels for each sample
 dim(pData(ab))
+#columns of probe level matrix match the rows of pData
+rownames(pData(ab))
+colnames(pm(ab))
 annotation(ab)
 ```
-
+Turn the probe level data into gene level data
 Note, this object You can then preprocess RMA
 ```{r}
 e <- rma(ab)
@@ -89,7 +91,7 @@ dim(ejust)
 
 >>>>>>> upstream/master
 ##Agilent data
-
+Two color arrays
 ```{r}
 library(limma)
 library(rafalib)
@@ -97,15 +99,21 @@ library(rafalib)
 basedir <- "agilent"
 targets <- readTargets(file.path(basedir,"TargetBeta7.txt"))
 RG <- read.maimages(targets$FileName, source="genepix",path=basedir)
-=======
-basedir <- paste0(datadir, "/agilent")
-setwd(basedir)
-targets <- readTargets("TargetBeta7.txt")
-RG <- read.maimages(targets$FileName, source="genepix")
->>>>>>> upstream/master
+#signals from red and green channel 
+dim(RG$R)
+dim(RG$G)
+
+#instead of storing red and green information, use M-A tramsformation
 MA <- MA.RG(RG,bc.method="none")
+dim(MA$M)
+dim(MA$A)
+#quick check. MA plot for the first sample.
+plot(MA$A[,1],MA$M[,1])
+#check the real images for artifacts
+
 mypar(1,1)
 imageplot(MA$M[,2], RG$printer, zlim=c(-3,3))
+#there are artificial patterns in the image
 dev.off()
 ```
 
