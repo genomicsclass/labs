@@ -10,30 +10,31 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 In this unit we will demonstrate how to read idat files from the illumina 450K DNA methylation array. We make use the the Bioconductor minfi package [cite 24478339]
 
 ```{r}
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19")
+# source("http://www.bioconductor.org/biocLite.R")
+# biocLite(c("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19"))
 library(minfi)
 ```
 
-The first step is to determine the basename of the idat files. Note that for each sample we have two files: one for red and green channels respectively.
+The first step is to determine the basename of the idat files. Note that for each sample we have two files: one for red and green channels respectively. These files are found here: <https://github.com/genomicsclass/rawdata/tree/master/idats>
 
 ```{r}
-path <- "/Users/ririzarr/myDocuments/teaching/HarvardX/rawdata/idats"
-setwd(path)
-list.files()
+path <- "idats"
+list.files(path)
 ```
 
 Let's start by reading in the csv file which contains clinical information. This has one row for each sample and one of the columns includes the "basenames" for the files
+
 ```{r}
-targets<-read.csv("targets.csv",as.is=TRUE)
+targets<-read.csv("idats/targets.csv",as.is=TRUE)
 names(targets)
 targets$Basename
 ```
 
 To make this script work in any working directory  we can edit that column to contain the absolute paths. The we are ready to read in the raw data with read.450k
+
 ```{r}
 targets$Basename <- file.path(path,targets$Basename)
-rgset<- read.450k(targets$Basename,verbose=TRUE)
+rgset <- read.450k(targets$Basename,verbose=TRUE)
 pData(rgset)<-targets
 ```
 
@@ -67,7 +68,3 @@ sex<-getSex(mset)
 plotSex(sex)
 plot(as.matrix(getQC(mset)))
 ```
-
-
-
-

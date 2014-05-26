@@ -18,7 +18,23 @@ genomics data visualization app. To plot your data there we use the Bioconductor
 library(epivizr)
 ```
 
-We assume you already ran the `methylation` lab and have in your environment the following objects:
+We assume you already ran the `methylation` lab. The following code is used to populate the environment with the necessary objects. Please see the methylation lab for description of what these functions are doing.
+
+```{r}
+library(coloncancermeth)
+data(coloncancermeth)
+library(limma)
+X<-model.matrix(~pd$Status)
+fit<-lmFit(meth,X)
+eb <- ebayes(fit)
+library(bumphunter)
+chr=as.factor(seqnames(gr))
+pos=start(gr)
+cl=clusterMaker(chr,pos,maxGap=500)
+res<-bumphunter(meth,X,chr=chr,pos=pos,cluster=cl,cutoff=0.1,B=0)
+```
+
+You should therefore have in your environment the following objects:
 
 ```{r}
 # the result of using limma and eBayes at the single CpG level
