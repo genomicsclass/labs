@@ -1,4 +1,11 @@
-# Reading 450K idat files with the minfi package
+---
+layout: page
+title: Reading 450K idat files with the minfi package
+---
+
+```{r options, echo=FALSE}
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 In this unit we will demonstrate how to read idat files from the illumina 450K DNA methylation array. We make use the the Bioconductor minfi package [cite 24478339]
 

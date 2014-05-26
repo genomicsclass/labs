@@ -67,7 +67,6 @@ xcov[z]
 # Bioconductor 2.13
 xcov$chr4[ranges(z)]
 xnum <- as.numeric(xcov$chr4[ranges(z)])
-xnum
 plot(xnum)
 ```
 

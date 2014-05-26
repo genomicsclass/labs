@@ -7,10 +7,7 @@ title: Interactive visualization of DNA methylation data analysis
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## contributed by Héctor Corrada Bravo
-
-## Note: this script will crash in RStudio, but will work in Terminal
-## tested on Mac OS X Snow Leopard May 9, 2014
+### contributed by Héctor Corrada Bravo
 
 Here we show how to visualize the results of your methylation data analysis in the [epiviz](http://epiviz.cbcb.umd.edu) interactive
 genomics data visualization app. To plot your data there we use the `epivizr` package. Although the package is already part of `Bioconductor`

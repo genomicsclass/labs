@@ -33,7 +33,7 @@ Here we will examine RNA-Seq reads mapped to the TP53 gene plus 1 Mb flanking se
 ```{r}
 p53 <- gmapR:::exonsOnTP53Genome("TP53")
 genome <- gmapR::TP53Genome()
-?LungCancerBamFiles
+# ?LungCancerBamFiles
 bams <- LungCancerLines::LungCancerBamFiles()
 path(bams)
 bam <- bams$H1993
@@ -108,8 +108,8 @@ writeVcf(vcf, "H1993.vcf", index = TRUE)
 A few more details:
 
 ```{r}
-?postFilterVariants
-?callSampleSpecificVariants
+# ?postFilterVariants
+# ?callSampleSpecificVariants
 somatic <- callSampleSpecificVariants(bams$H1993, bams$H2073, tally.param)
 ```
 
@@ -138,7 +138,7 @@ Note that we can also restrict the amount we read in, either by specifying a ran
 param <- ScanVcfParam(which=GRanges("22", IRanges(50.5e6, 50.6e6)))
 vcf <- readVcf(fl, genome="hg19", param=param)
 rowData(vcf)
-?readVcf
+# ?readVcf
 ```
 
 We can find which variants overlap coding regions with the `locateVariants` function:

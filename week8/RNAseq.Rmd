@@ -41,7 +41,8 @@ if (!file.exists("hammer_eset.RData")) download.file(link, "hammer_eset.RData")
 load("hammer_eset.RData")
 library(Biobase)
 library(GenomicRanges)
-se <- SummarizedExperiment(exprs(hammer.eset))
+# the SimpleList() part below is only necessary for Bioc <= 2.13
+se <- SummarizedExperiment(SimpleList(counts=exprs(hammer.eset)))
 colData(se) <- DataFrame(pData(hammer.eset))
 ```
 

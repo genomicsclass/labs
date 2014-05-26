@@ -7,9 +7,25 @@ title: ChIP-seq analysis
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## Reading peak files into R
+## Introduction
 
-The following lab will go over the functionality of the `DiffBind` package, mostly using code from the vignette. This package is useful for manipulating ChIP-Seq signal in R, for comparing signal across files and for performing tests of diffential binding.
+ChIP-seq is a protocol for inferring the locations of proteins bound or associated with DNA. The raw data looks quite different than DNA- or RNA-seq, in that the NGS reads form tall "peaks" at the locations where the proteins were tightly bound to DNA in the cells which were used to create the sample. More specifically, ChIP-seq results in two peaks of reads of different strands (plus/minus also referred to as Watson/Crick), as shown in [Figure 1](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2592715/figure/F1/) of the MACS manuscript: [Zhang 2008](#foot)
+
+## Peak calling
+
+In the first lab, we use the MACS software to call peaks. There are many different algorithms for calling peaks, which have varying performance on different kinds of experiments. As mentioned in the lecture, for ChIP of proteins with broad peaks (such as modified histones), algorithms other than those for detecting sharp peaks might perform better.
+
+## After peak calling
+
+A number of analyses might be of interest following peak calling. In this lab we will focus on differential binding across samples, by focusing on the peak regions and counting the number of ChIP-seq reads which fall into the peaks for each sample.
+
+Motif-finding is common ChIP-seq analysis which is not explored in this course, as we do not cover the basics of analysis of sequences. Motif-finding refers to the task of looking for common strings of DNA letters contained within peaks. These are biologically meaningful, as a number of proteins which are bound to DNA have conformations which make certain strings of DNA letters more preferable for binding. For more references, see the [Footnotes](#foot).
+
+## Differential binding across samples
+
+The following lab will go over the functionality of the `DiffBind` package, mostly using code from the vignette. This package is useful for manipulating ChIP-seq signal in R, for comparing signal across files and for performing tests of diffential binding.
+
+## Reading peak files into R
 
 ```{r}
 #biocLite("DiffBind")
@@ -125,4 +141,28 @@ log2(means)
 log2(means[1] / means[2])
 mcols(tadb)[1,]
 ```
+
+## Footnotes <a name="foot"></a>
+
+### Model-based Analysis for ChIP-Seq (MACS)
+
+Zhang Y, Liu T, Meyer CA, Eeckhoute J, Johnson DS, Bernstein BE, Nusbaum C, Myers RM, Brown M, Li W, Liu XS. "Model-based Analysis of ChIP-Seq (MACS)". Genome Biol. 2008.
+<http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2592715/>
+
+Software: 
+
+<http://liulab.dfci.harvard.edu/MACS/>
+
+### Motif finding
+
+Wikipedia's article on DNA sequence motifs: <http://en.wikipedia.org/wiki/Sequence_motif>
+
+A non-comprehensive list of software for motif finding:
+
+- [MEME/DREME](http://meme.nbcr.net/meme/)
+- [RSAT peak-motifs](http://rsat.ulb.ac.be/peak-motifs_form.cgi)
+- [motifRG (Bioconductor)](http://www.bioconductor.org/packages/release/bioc/html/motifRG.html)
+- [rGADEM (Bioconductor)](http://www.bioconductor.org/packages/release/bioc/html/rGADEM.html)
+
+A survey of motif finding algorithms: <http://www.biomedcentral.com/1471-2105/8/S7/S21/>
 

@@ -92,8 +92,8 @@ plot(assay(so1) + 1, log="xy")
 The second file should actually be counted in a special manner, as it contains pairs of reads which come from a single fragment. We do not want to count these twice, so we set `singleEnd = FALSE`. Additionally, we specify `fragments = TRUE` which counts reads if only one of the pair aligns to the features, and the other pair aligns to no feature.
 
 ```{r}
-?untreated3_chr4
-?summarizeOverlaps
+# ?untreated3_chr4
+# ?summarizeOverlaps
 fls <- BamFileList(fl2, yieldSize=5e4)
 so2 <- summarizeOverlaps(features=grl,
                          reads=fls,
