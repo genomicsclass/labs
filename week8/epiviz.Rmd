@@ -9,16 +9,12 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## contributed by Héctor Corrada Bravo
 
-## Note: this script will crash in RStudio, but will work in Terminal
-## tested on Mac OS X Snow Leopard May 9, 2014
-
 Here we show how to visualize the results of your methylation data analysis in the [epiviz](http://epiviz.cbcb.umd.edu) interactive
-genomics data visualization app. To plot your data there we use the `epivizr` package. Although the package is already part of `Bioconductor`
-you can make sure you get the latest version by installing as follows:
+genomics data visualization app. To plot your data there we use the Bioconductor `epivizr` package. 
+
 
 ```{r}
-# biocLite(c("antiProfilesData","hgu133plus2.db"))
-# install_github("epivizr-release", "epiviz")
+# biocLite("epivizr")
 library(epivizr)
 ```
 
@@ -123,11 +119,11 @@ and add the MA plot:
 maPlot <- mgr$addDevice(cpgSE,columns=c("A","M"),"cpg MA")
 ```
 
-Let's now browse the genome in order through the top 10 found regions in order (by area):
+Let's now browse the genome in order through the top 5 found regions in order (by area):
 
 ```{r}
 slideshowRegions <- dmrGR[1:10,] + 10000
-mgr$slideshow(slideshowRegions)
+mgr$slideshow(slideshowRegions, n=5)
 ```
 
 Last thing to do is disconnect the `epiviz` app:
