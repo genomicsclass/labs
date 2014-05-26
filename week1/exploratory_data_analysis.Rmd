@@ -141,6 +141,8 @@ fatherheights=as.numeric(names(means))
 plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fatherheights))
 abline(0,cor(x,y))
 ```
+From Bootcamp 1
+Correlation is a summary of population quantity
 
 One interpretation of the correlation: slope of the line for normalized bivariate normal distribution
 two means, two sd's, corr are good summary of bivariate normal

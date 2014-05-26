@@ -19,51 +19,44 @@ library(dagdata)
 data(maPooling)
 e <- maPooling
 head(pData(e))
+#pData(e) has rows for microarrays and columns for experiments. Various combinations of pooling
 
 # install_github("rafalib","ririzarr")
 library(rafalib)
 mypar()
-<<<<<<< HEAD
+
 #flip the image and rotate
 flipt <- function(m) t(m[nrow(m):1,])
+#Keep the orientation of the original matrix, with 1 plotted as a black square
 myimage <- function(m,...) {
     image(flipt(m),xaxt="n",yaxt="n",...)
     }
-=======
-flipt <- function(m) t(m[nrow(m):1,])
-myimage <- function(m,...) {
-  image(flipt(m),xaxt="n",yaxt="n",...)
-  }
->>>>>>> upstream/master
+
 
 myimage(as.matrix(pData(e)),col=c("white","black"),
         xlab="experiments",
         ylab="individuals",
         main="phenoData")
 
-<<<<<<< HEAD
+
 #locate rows that have single black block
-=======
->>>>>>> upstream/master
-individuals <- which(rowSums(pData(e)) == 1)
+
+individuals <- which(rowSums(pData(e)) == 1) 
+#not pooled
 individuals
 
 ## remove replicates
 names(individuals)
-<<<<<<< HEAD
+
 #remove technical replicates (which have tr in their names)
 
-=======
->>>>>>> upstream/master
 individuals <- individuals[-grep("tr",names(individuals))]
 
-es <- e[,individuals]
+es <- e[,individuals]#a smaller matrix with less black blocks
 myimage(as.matrix(pData(es)),col=c("white","black"))
-<<<<<<< HEAD
-#turn column names 'a', 'b' into 0, 1
-=======
 
->>>>>>> upstream/master
+#turn column names 'a', 'b' into 0, 1
+#add an attribute to S4 class?
 es$group <- factor(as.numeric(grepl("b",colnames(es))))
 es$group
 ```
@@ -71,6 +64,7 @@ es$group
 ## Plots of gene expression across group
 
 Let's look at 2 pre-selected genes for illustration, which are the same genes from the lecture.
+The exprs data have been normalized
 
 ```{r, fig.height=3, fig.width=6}
 i=11425
@@ -85,44 +79,48 @@ stripchart(split(exprs(es)[j,], es$group), vertical=TRUE, method="jitter", col=c
 ```{r}
 # biocLite("genefilter")
 library(genefilter)
-tt <- rowttests(exprs(es), es$group)
+tt <- rowttests(exprs(es), es$group)#faster way to compute t-statistics along the row
 head(tt)
 head(tt,1)
 
 mean(exprs(es)[1,es$group == 0]) - mean(exprs(es)[1,es$group == 1]) 
-<<<<<<< HEAD
+
 # Alternatively, splited<-split(exprs(es)[1,],es$group); mean(splited$'0')-mean(splited$'1')
 simple.t <- t.test(exprs(es)[1,] ~ es$group, var.equal=TRUE)
 simple.t$p.value
 #Not as fast as rowttests
-=======
+#Try a slow way
+tests<-apply(exprs(es)[1:10,],1,function(x) {
+    samples<-split(x,es$group)
+    test<-t.test(samples[[1]],samples[[2]])
+    c(test$statistic,test$p.value)}
+    )
 
 simple.t <- t.test(exprs(es)[1,] ~ es$group, var.equal=TRUE)
 simple.t$p.value
 
->>>>>>> upstream/master
 tt$p.value[i]
 tt$p.value[j]
 
 mypar(1,1)
-<<<<<<< HEAD
+
 #Vocano plot
 with(tt, plot(dm, -log10(p.value), 
               xlab="difference in means",
               main="'Volcano' plot"))
 #identify points
-=======
+
 with(tt, plot(dm, -log10(p.value), 
               xlab="difference in means",
               main="'Volcano' plot"))
->>>>>>> upstream/master
+
 tt[with(tt, identify(dm, -log10(p.value))),]
 ```
 
 ## Compare with non-parametric tests
 
 ```{r}
-<<<<<<< HEAD
+
 #take 3 from a and 3 from b
 es2 <- es[,c(1,2,3,13,14,15)]
 mypar(1,1)
@@ -130,14 +128,15 @@ stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2
 #ANother way 
 # stripchart(split(exprs(es2)[1,],es2$group),vertical=T, method="jitter",col=c(1,2),main="Three samples per group", xlab="Group",ylab="",pch=15)
 
-=======
+
 es2 <- es[,c(1,2,3,13,14,15)]
 mypar(1,1)
 stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
->>>>>>> upstream/master
-t.test(exprs(es2)[1,] ~ es2$group)
-wilcox.test(exprs(es2)[1,] ~ es2$group)
 
+t.test(exprs(es2)[1,] ~ es2$group)
+
+wilcox.test(exprs(es2)[1,] ~ es2$group)
+#give artifical expression levels
 y <- 1:6
 x <- es2$group
 stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
@@ -148,37 +147,34 @@ y <- c(1:3,11:13)
 stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
 t.test(y ~ x)
 wilcox.test(y ~ x)
-<<<<<<< HEAD
+
 # Because the ranks are identical, wilcox is not sensitive 
 # rank(1:6)
 # rank(c(1:3,11:13))
-=======
->>>>>>> upstream/master
+
 ```
+Non-parametric methods are robust against outliers, but have disadvantage when the sample size is small
 
 ## Basic inference on microarray using lmFit from limma package
 
-<<<<<<< HEAD
-=======
+
 We will discuss the limma package in the lecture on Hierarchical Modeling. The reference is [Smyth 2004](#foot).
 
->>>>>>> upstream/master
+
 ```{r}
 # biocLite("limma")
 library(limma)
 # ?lmFit
 design <- model.matrix(~ es$group)
-<<<<<<< HEAD
+
 #group 1 vs. group 0, group 0 as the intercept
 design
 #fit a linear model for each row
-=======
-design
->>>>>>> upstream/master
 fit <- lmFit(es, design)
+class(fit)#a MArrayLM class
 names(fit)
 head(coef(fit))
-tt[1,]
+tt[1,]#difference of mean is the same as the coeff for es$group1
 # we will introduce the eBayes() function
 # in a later module called 'hierarchical modeling'
 # but we call it now as it is standard in microarray analysis
@@ -187,19 +183,16 @@ names(fit)
 fit$p.value[1,]
 fit$t[1,]
 tt[1,]
+#eBayes does not give the same t test values as those given by lmfit
 plot(-1 * tt$statistic, fit$t[,2],
      xlab="rowttests", 
      ylab="eBayes t")
 abline(0,1,col="red",lwd=3)
-<<<<<<< HEAD
+
 #list the top ranked genes 
 head(topTable(fit, coef=2, sort.by="p"),3)
 ```
-=======
-head(topTable(fit, coef=2, sort.by="p"),3)
-```
-
 ## Footnotes <a name="foot"></a>
 
 Smyth GK, "Linear models and empirical bayes methods for assessing differential expression in microarray experiments". Stat Appl Genet Mol Biol. 2004 <http://www.ncbi.nlm.nih.gov/pubmed/16646809>
->>>>>>> upstream/master
+

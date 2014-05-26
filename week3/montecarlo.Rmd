@@ -32,6 +32,7 @@ for(i in 1:10){
 ```
 The sample means are _random variables_: they are different everytime we take a new random sample. We want to know the statistical properties of these random variables.
 Note that in practice we can afford to measure so many samples, but on a computer it is as easy as writing a loop. Let's take 1,000 random samples and re-computing the t-statistic:
+Both samples are taken from the non-smokers
 ```{r}
 ttestgenerator <- function(b=1000,n=10){
   sapply(1:b,function(i){
@@ -85,8 +86,33 @@ and repeat the entire excercise.
 <<<<<<< HEAD
 *Homework*:
 1) How different are the normal(0,1) and t-distribution when degrees of freedom are 18? How about 4?
+```{r}
+x<-rt(1000,df=18)
+qqnorm(x)
+qqline(x)
+x<-rt(1000,df=4)
+qqnorm(x)
+qqline(x)
+
+
 2) For the case with 10 samples, what is the distribution of the sample median weight for smokers? How does the mean, median of the distribution compare to the population median? 
+```{r}
+N<-100000
+clean_dat<-dat[dat$weight!=999,]
+medians<-vector(length=N)
+for(i in 1:N){
+    medians[i]<-median(sample(clean_dat$weight[clean_dat$smoke==1],
+                              10))
+}
+plot(density(medians))
+qqnorm(medians)
+qqline(medians)
+summary(medians)
+median(clean_dat$weight)
+```
 3) Repeat the code above but simulated income for american and canadians. Is the median income the same? is the mean income the same?
+
+
 =======
 #### *Homework*
 1. How different are the $\text{normal}(0,1)$ and t-distribution when degrees of freedom are 18? How about 4?
@@ -106,6 +132,17 @@ smokers=sample(dat$bwt[dat$smoke==1],N)
 nonsmokers=sample(dat$bwt[dat$smoke==0],N)
 obs=mean(smokers)-mean(nonsmokers)
 ```
+Try bootstrapping here
+```{r}
+diff_generator <- function(b=1000,n=50){
+  sapply(1:b,function(i){
+    smokers_s=sample(smokers,n,replace=TRUE)
+    nonsmokers_s=sample(nonsmokers,n,replace=TRUE)
+    return(mean(smokers_s)-mean(nonsmokers_s))
+    })
+}
+
+```
 Is the observed difference significant? Remember we are pretending that we can't use the CLT or the t-distribution approximations. How can we determine the distribution of this difference under the null that there is no difference? Permutations tests take advantege of the fact that if there is no difference the shuffling the data should not matter. So we shuffle the men and women labels, say, 1,000 and see how much the results matter.
 ```{r}
 avgdiff <- sapply(1:1000,function(i){
@@ -115,7 +152,7 @@ avgdiff <- sapply(1:1000,function(i){
   return(mean(smokersstar)-mean(nonsmokersstar))
 })  
 hist(avgdiff)
-abline(v=obs)
+abline(v=obs)  
 print(mean(abs(avgdiff)> abs(obs)))
 ```
 <<<<<<< HEAD

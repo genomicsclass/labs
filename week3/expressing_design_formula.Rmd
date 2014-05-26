@@ -15,6 +15,11 @@ In this module, we will show how to use the two base R functions:
 - `model.matrix`
 
 ...in order to produce design matrices for a variety of linear models.
+symbols are not in their usual meanings. 
++ include this variable
+- delete this variable
+: include the interaction between these variables
+* include these variables and interactions between them
 
 ```{r}
 x <- c(1,1,2,2)
@@ -46,13 +51,13 @@ model.matrix(~ x + y)
 
 ```{r}
 model.matrix(~ x + y + x:y)
-model.matrix(~ x*y)
+model.matrix(~ x*y)# same as the one above
 ```
 
 ```{r}
 x <- factor(c(1,1,2,2))
 model.matrix(~ x)
-x <- relevel(x,"2")
+x <- relevel(x,"2")# make 2 the first level
 model.matrix(~ x)
 x <- factor(x, levels=c("1","2"))
 ```
@@ -60,8 +65,8 @@ x <- factor(x, levels=c("1","2"))
 ```{r}
 z <- 1:4
 model.matrix(~ z)
-model.matrix(~ 0 + z)
-model.matrix(~ z + I(z^2))
+model.matrix(~ 0 + z)#drop the intercept
+model.matrix(~ z + I(z^2))#include z^2
 ```
 
 ```{r}

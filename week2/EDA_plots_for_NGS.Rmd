@@ -47,7 +47,7 @@ for(i in 1:ncol(Y)){
     shist(Y[idx,i],unit=0.25,col=i,plotHist=FALSE,add=i!=1)
     }
 #Explore the sequencing depth issue
-totalcount<-order(apply(exprs(bottomly.eset),2,sum))
+totalcount<-apply(exprs(bottomly.eset),2,sum)
 for(i in order(totalcount)){
     idx <- Y[,i] > -1
     shist(Y[idx,i],unit=0.25,col=i,plotHist=FALSE,

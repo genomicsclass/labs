@@ -32,6 +32,11 @@ mus <- Xsm %*% beta
 segments(1 + 0:1*100,mus,
          1:2*100,mus,lwd=5)
 ```
+From t-test to two group linear model
+x={0,1}
+group1 Ya_bar=beta0+epsilon
+group2 Tb_bar=beta0+beta1*x1+epsilon
+
 
 Three group model
 

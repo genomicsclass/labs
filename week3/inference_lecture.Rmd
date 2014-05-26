@@ -60,11 +60,27 @@ chisq.test(tab)$p.value
 ```
 
 ## The t-test
-<<<<<<< HEAD
-Suppose we are asked if new borns from smoking mothers weigh less than those from non-smoker mothers in a population of 1,236 babies. Suppose we are charged $1000 for each measurement and are given a $50,000 prize if we answer correclty, how many babies do we weigh? Let's start with 10
-=======
+Height difference:
+```{r}
+dat<-read.csv("http://www.biostat.jhsph.edu/bstcourse/bio751/data/USheights_subsample.csv")
+dat_by_gender<-split(dat,as.factor(dat$Gender))
+men<-dat_by_gender[[1]][sample(1:nrow(dat_by_gender[[1]]),10),"Height"]
+women<-dat_by_gender[[2]][sample(1:nrow(dat_by_gender[[2]]),10),"Height"]
+stripchart(list(men,women),vertical=TRUE,method="jitter",col=c(1,2), pch=15,group.names=c("men","women"))
+```
+```{r}
+men_height<-dat_by_gender[[2]]$Height
+sample_means<-NULL
+#Kind of animation
+for(i in 1:100){
+    sample_means<-c(sample_means,mean(sample(men_height,10)))
+    breaks=seq(from=62,to=77,by=0.2)
+    hist(sample_means,breaks=breaks,ylim=c(0,200))
+    readline()
+    dev.off()
+}
+```
 Suppose we are asked if new borns from smoking mothers weigh less than those from non-smoker mothers in a population of 1,236 babies. Suppose we are charged \$1000 for each measurement and are given a \$50,000 prize if we answer correclty, how many babies do we weigh? Let's start with 10
->>>>>>> upstream/master
 
 ```{r}
 dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
@@ -246,6 +262,11 @@ mypar(1,2)
 hist(tt$p.value,xlab="p-values",main="p-values from experiment",freq=FALSE,ylim=c(0,4),col=3)
 hist(nullt$p.value,xlab="p-values",main="p-values from shuffled data",freq=FALSE,ylim=c(0,4),col=3)
 ```
+
+Volcano plot:
+X axis
+Effect-size: enumerator of t statistics i.e. log ratio of average gene expression
+Y axis: -log10(p-value)
 
 ## Power
 In practice it is quite common to have only three samples. When this is the case. the estimates of the standard deviation is quite variable. Note that we can get very small standard deviation estimates by chance, which turns the t-test large for cases with a very small difference. When performing many tests, as we do in genomcis, these are quite common. So if we focus on the p-value to prioritize genes we may end up cases with very small differences:
