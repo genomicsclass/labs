@@ -109,6 +109,8 @@ Go to your browser and navigate around, search for your favorite gene and take a
 looks like around these regions according to the [gene expression barcode](http://www.ncbi.nlm.nih.gov/pubmed/21177656),
 which we preloaded when we started `epiviz`. Here's some interesting ones: "MMP10", "TIMP2", "MAGEA12".
 
+<a href="figure/epiviz.png"><img src="figure/epiviz.png" width=600 /></a>
+
 ----
 
 *Windows users* Remember to call `mgr$service()` before going to the browser
@@ -134,6 +136,8 @@ and add the MA plot:
 ```{r}
 maPlot <- mgr$addDevice(cpgSE,columns=c("A","M"),"cpg MA")
 ```
+
+<a href="figure/epivizma.png"><img src="figure/epivizma.png" width=600 /></a>
 
 Let's now browse the genome in order through the top 5 found regions in order (by area):
 
