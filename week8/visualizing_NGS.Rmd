@@ -25,8 +25,8 @@ We will try four ways to look at NGS coverage: using the standalone Java program
 Copy these files from the R library directory to the current working directory. First set the working directory to the source file location. We need to use the `Rsamtools` library to index the BAM files for using IGV.
 
 ```{r}
-system(paste("cp",fl1,basename(fl1)))
-system(paste("cp",fl2,basename(fl2)))
+file.copy(from=fl1,to=basename(fl1))
+file.copy(from=fl2,to=basename(fl2))
 library(Rsamtools)
 indexBam(basename(fl1))
 indexBam(basename(fl2))
