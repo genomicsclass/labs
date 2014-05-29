@@ -165,7 +165,16 @@ autoplot(fl1, which=z)
 autoplot(fl2, which=z)
 ```
 
-## Other visualizations
+## Footnotes
+
+- IGV 
+<https://www.broadinstitute.org/igv/home>
+
+- Gviz
+<http://www.bioconductor.org/packages/release/bioc/html/Gviz.html>
+
+- ggbio
+<http://www.bioconductor.org/packages/release/bioc/html/ggbio.html>
 
 - UCSC Genome Browser: zooms and scrolls over chromosomes, showing the work of annotators worldwide
 <http://genome.ucsc.edu/>
