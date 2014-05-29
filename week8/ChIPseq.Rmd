@@ -13,7 +13,9 @@ ChIP-seq is a protocol for inferring the locations of proteins bound or associat
 
 ## Peak calling
 
-In the first lab, we use the MACS software to call peaks. There are many different algorithms for calling peaks, which have varying performance on different kinds of experiments. As mentioned in the lecture, for ChIP of proteins with broad peaks (such as modified histones), algorithms other than those for detecting sharp peaks might perform better.
+In the first lab, we use the MACS software to call peaks. The code for this is in the [MACS.txt](https://github.com/genomicsclass/labs/blob/master/week8/MACS.txt) file.
+
+There are many different algorithms for calling peaks, which have varying performance on different kinds of experiments. As mentioned in the lecture, for ChIP of proteins with broad peaks (such as modified histones), algorithms other than those for detecting sharp peaks might perform better.
 
 ## After peak calling
 
@@ -27,15 +29,12 @@ The following lab will go over the functionality of the `DiffBind` package, most
 
 ## Reading peak files into R
 
+We check the files in the `DiffBind` folder, and in the `peaks` subdirectory:
+
 ```{r}
 #biocLite("DiffBind")
 library(DiffBind)
 setwd(system.file("extra", package="DiffBind"))
-```
-
-We check the files in the `DiffBind` folder, and in the `peaks` subdirectory:
-
-```{r}
 list.files()
 read.csv("tamoxifen.csv")
 list.files("peaks")
@@ -46,6 +45,7 @@ The `dba` function creates the basic object for an analysis of *Differential Bin
 This function will automatically create a correlation plot showing the overlap of the peaks for all the samples.
 
 ```{r}
+setwd(system.file("extra", package="DiffBind"))
 ta <- dba(sampleSheet="tamoxifen.csv")
 ta
 ```
