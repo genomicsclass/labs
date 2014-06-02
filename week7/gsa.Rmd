@@ -64,12 +64,14 @@ Note that all we really need for this unit is score for each gene and a candidat
 
 Let's begin by constructing a list of candidate genes with an FDR of 25%. This gives us a list of 23 genes. What biology can we learn? Given that we know that genes work together, it makes sense to study groups of genes instead of individual ones. In general, this is the idea behind _gene set analysis_. 
 
-There are various resources on the web that provide gene sets. Most of these have been curated and are composed of genes with something in common. A typical way of grouping them is by pathways (CITE KEGG)
-or biological function (GO). A great resource with many curated gene sets can be found here: http://www.broadinstitute.org/gsea/msigdb/index.jsp
+There are various resources on the web that provide gene sets. Most of these have been curated and are composed of genes with something in common. A typical way of grouping them is by pathways (e.g. [KEGG](http://www.genome.jp/kegg/))
+or biological function (e.g. [Gene Ontology](http://www.geneontology.org/)). A great resource with many curated gene sets can be found here: 
+
+<http://www.broadinstitute.org/gsea/msigdb/index.jsp>
  
 In this example we will use a gene set grouping genes by sections of the chromosome. The first step is to download the database. You can download the file from here (you have to register)
 
-http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?filePath=/resources/msigdb/4.0/c1.all.v4.0.entrez.gmt
+<http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?filePath=/resources/msigdb/4.0/c1.all.v4.0.entrez.gmt>
 
 Once you download the file, you can read it in with the following command
 ```{r}
@@ -147,7 +149,7 @@ rug(tt[ind],col=2)
 
 Note that the gene set distribution shifts a bit to the left providing evidence that the distribution of the t-statistics in this gene set is different from the distribution for all genes. So how do we quantify this observation? How do we assess uncertainty.
 
-The first published approach to performing gene set analysis [CITE http://www.ncbi.nlm.nih.gov/pubmed/?term=11158605] used the Wilcox Mann-Whitney tests discussed in a previous unit. The basic idea was to test if the difference between cases and controls was generally bigger in a given gene set compared to the rest of the genes. The Wilcox compares the ranks in the gene sets are generally above the 
+The first published approach to performing gene set analysis [Virtaneva 2001](#foot) used the Wilcox Mann-Whitney tests discussed in a previous unit. The basic idea was to test if the difference between cases and controls was generally bigger in a given gene set compared to the rest of the genes. The Wilcox compares the ranks in the gene sets are generally above the 
 median. 
 
 Here we compute the Wilcoxon test for each gene set. We then standardize the Wilcoxon statistic to have mean 0 and standard deviation 1. Note that the central limit theorem tell us that if the gene sets are large enough and the effect size for each gene are independent of each other then these statistics will follow a normal distribution. 
@@ -225,7 +227,7 @@ Note that in the case that genes in a gene set have correlation $\rho$ the varia
 
 $$
 \begin{eqnarray}
-Vat(\bat{t}) &=& \frac{1}{N^2} \mbox{var}((1 \dots 1]) (t_1 \dots t_N)' (1 \dots 1)')
+Var(\bat{t}) &=& \frac{1}{N^2} \mbox{var}((1 \dots 1]) (t_1 \dots t_N)' (1 \dots 1)')
 ) 
 &=& \frac{1}{N^2}(1 \dots 1) 
 \begin{pmatrix}
@@ -317,6 +319,9 @@ One limitation of the permutation test approach is that to estimate very small p
 
 Another limitation is that in more complicated designed, for example an experiment with many factor and continuous covariates, deciphering how to permute is not straight forward.
 
+## Footnotes <a name="foot"></a>
 
+Virtaneva K, "Expression profiling reveals fundamental biological differences in acute myeloid leukemia with isolated trisomy 8 and normal cytogenetics." PNAS 2001
+<http://www.ncbi.nlm.nih.gov/pubmed/?term=11158605>
 
 
