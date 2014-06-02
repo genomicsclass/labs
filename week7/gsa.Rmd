@@ -73,7 +73,7 @@ http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?filePath=/resources/
 
 Once you download the file, you can read it in with the following command
 ```{r}
-gsets <- getGmt("/Users/ririzarr/myDocuments/teaching/HarvardX/oldgenomicsclass/week7/c1.all.v4.0.entrez.gmt") ##must provide correct path to file
+gsets <- getGmt("c1.all.v4.0.entrez.gmt") ##must provide correct path to file
 ```
 
 This object has 326 gene sets. Each gene set contains the ENTREZ IDs for the genes in each gene set
