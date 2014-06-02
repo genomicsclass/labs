@@ -13,8 +13,9 @@ Computers can be used to generate pseudo-random numbers. For most practicaly pur
 
 Simulations can also be used to check theoretical or analytical results. Also, many of the theoretical results we use in statistics are based on asymptotics: they hold when the number of samples as, for example, the sample size goes to infinity. In practice we never have an infinite number of samples so we may want to know how well the theory works with our actual sample size. Sometimes we can answer this question analytically, but not always. Simulations are extremely useful in these cases.
 
-We illustrate this with a simple example related to the central limit theorem. In the inference module we used a sample size of 10 to predict the, on average and in the population in question, men are taller than women. We used the central limit theorem to approximate the distribution of the t-statistic as normal with mean 0 and standard deviation 1. But is 10 large enough to use this approximantion? Let's use a monte carlo simulation to corroborate. Below is the code we used to obtain random sample and then the difference of 3.30
+We illustrate this with a simple example related to the central limit theorem. In the inference module we used a sample size of 10 to explore a data set containing babie weights and several covariants, one of which is whether the mother smokes. Babies of smoking mothers tend to weigh slightly less. We used the central limit theorem to approximate the distribution of the t-statistic as normal with mean 0 and standard deviation 1. But is 10 large enough to use this approximantion? Let's use a monte carlo simulation to corroborate.
 
+Below is the code we used to obtain random sample and then the difference of -2.3.
 ```{r}
 dat=read.table("http://www.biostat.jhsph.edu/bstcourse/bio751/data/babies.data",header=TRUE)
 set.seed(1)
@@ -31,7 +32,7 @@ for(i in 1:10){
 }
 ```
 The sample means are _random variables_: they are different everytime we take a new random sample. We want to know the statistical properties of these random variables.
-Note that in practice we can afford to measure so many samples, but on a computer it is as easy as writing a loop. Let's take 1,000 random samples and re-computing the t-statistic:
+Note that in practice we can afford to measure so many samples, but on a computer it is as easy as writing a loop. Let's take 1,000 random samples under the null and re-computing the t-statistic:
 ```{r}
 ttestgenerator <- function(b=1000,n=10){
   sapply(1:b,function(i){
@@ -100,6 +101,8 @@ nonsmokers=sample(dat$bwt[dat$smoke==0],N)
 obs=mean(smokers)-mean(nonsmokers)
 ```
 Is the observed difference significant? Remember we are pretending that we can't use the CLT or the t-distribution approximations. How can we determine the distribution of this difference under the null that there is no difference? Permutations tests take advantege of the fact that if there is no difference the shuffling the data should not matter. So we shuffle the men and women labels, say, 1,000 and see how much the results matter.
+
+Generate a null distribution by shuffling the data
 ```{r}
 avgdiff <- sapply(1:1000,function(i){
     all=sample(c(smokers,nonsmokers))
@@ -109,8 +112,12 @@ avgdiff <- sapply(1:1000,function(i){
 })  
 hist(avgdiff)
 abline(v=obs)
+```
+How many of the null means are bigger than the observed value?
+That proportion would be the p-value for the null.
+```{r}
 print(mean(abs(avgdiff)> abs(obs)))
 ```
-Note that the observed difference is not significant using this approach. Permuations sill have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
+Note that if we repeat for N=10, the observed difference is not significant using this approach. Permutations still have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is s a real differences, some of the permutations will be unblanced and will contain signal.
 
 
