@@ -103,6 +103,8 @@ The data is in the `assay` slot, and needs to be transposed as before to run PCA
 ```{r}
 # this takes ~15 seconds
 rld <- rlog( dds )
+# if using Bioc 2.13:
+# rld <- rlogTransformation( dds )
 pc2 <- prcomp( t( assay(rld) ) )
 ```
 
