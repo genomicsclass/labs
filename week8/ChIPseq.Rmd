@@ -115,6 +115,8 @@ The following code is used only to see if we can reproduce the log fold change o
 x <- mcols(counts)[1,-c(1:6)]
 x <- unlist(x)
 (xord <- x[match(ta2$samples$SampleID, names(x))])
+# Bioc 2.13 can use this line:
+# (xord <- x[order(c(which(ta2$samples$Condition == "Resistant"),which(ta2$samples$Condition == "Responsive")))])
 ta2$samples$SampleID
 ```
 
