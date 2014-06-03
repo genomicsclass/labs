@@ -230,19 +230,15 @@ Note that in the case that genes in a gene set have correlation $\rho$ the varia
 $$
 \begin{eqnarray}
 Var(\bar{t}) &=& \frac{1}{N^2} \mbox{var}((1 \dots 1]) (t_1 \dots
-t_N)' (1 \dots 1)')) \\
-
+t_N)' (1 \dots 1)')) \\\\
 &=& \frac{1}{N^2}(1 \dots 1)
-
 \begin{pmatrix}
-1 & \rho & \dots & \rho & \rho\\
-\rho & 1 & \rho & \dots  & \rho \\
-\dots & \dots & \dots & \dots & \dots \\
-\rho &  \rho & \dots & \rho & 1
+1 & \rho & \dots & \rho & \rho \\\\
+\rho & 1 & \rho & \dots  & \rho \\\\
+\dots & \dots & \dots & \dots & \dots \\\\
+\rho &  \rho & \dots & \rho & 1 \\\\
 \end{pmatrix}
-
-(1 \dots 1) ' \\
-
+(1 \dots 1) ' \\\\
 &=& \frac{1}{N}\{1 + (N-1) \rho N\}
 \end{eqnarray}
 $$
