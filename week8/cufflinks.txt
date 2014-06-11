@@ -21,6 +21,12 @@ ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByExp/sra/SRX%2FSRX020%2F
 
 fastq-dump SRR042499.sra
 
+The genome was downloaded from Illumina iGenomes
+
+http://cufflinks.cbcb.umd.edu/igenomes.html
+
+The tophat call to align the reads:
+
 tophat2 -o tophat_out -p 10 /path/to/Rattus_norvegicus/Ensembl/RGSC3.4/Sequence/Bowtie2Index/genome SRR042499.fastq
 
 cufflinks -o cufflinks -p 10 --GTF-guide /path/to/Rattus_norvegicus/Ensembl/RGSC3.4/Annotation/Genes/genes.gtf \
