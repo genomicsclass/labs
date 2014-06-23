@@ -74,7 +74,7 @@ geneplotter::
 
 ## Source code
 
-You can find the source code for many functions by typing out the name of the function with () and pressing enter.
+You can find the source code for many functions by typing out the name of the function without () and pressing enter.
 
 ```{r}
 mad
