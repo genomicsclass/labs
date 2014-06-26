@@ -94,7 +94,7 @@ The second file should actually be counted in a special manner, as it contains p
 ```{r}
 # ?untreated3_chr4
 # ?summarizeOverlaps
-fls <- BamFileList(fl2, yieldSize=5e4)
+fls <- BamFileList(fl2)
 so2 <- summarizeOverlaps(features=grl,
                          reads=fls,
                          ignore.strand=TRUE,
