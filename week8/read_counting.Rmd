@@ -47,10 +47,10 @@ Note: if you are using Bioconductor version 14, paired with R 3.1, you should al
 library(GenomicAlignments)
 ```
 
-We specify the files using the `BamFileList` function. This allows us to tell the read counting functions how many reads to load at once. For larger files, yield size of 1 million reads might make sense.
+We specify the files using the `BamFileList` function. For more fine grain control, you can tell the read counting functions how many reads to load at once with the `yieldSize` argument.
 
 ```{r}
-fls <- BamFileList(c(fl1, fl2), yieldSize=5e4)
+fls <- BamFileList(c(fl1, fl2))
 names(fls) <- c("first","second")
 ```
 
