@@ -68,6 +68,7 @@ splot(fit$coef[,2],-log10(eb$p.value[,2]),xlab="Effect size",ylab="-log10 p-valu
 If we have reason to believe for DNA methylation to have an effect on gene expression a region of the genome needs to be affected, not just a single CpG, we should look beyond. Here is plot of the region surrounding the top hit
 
 ```{r}
+library(GenomicRanges)
 i <- which.min(eb$p.value[,2])
 middle <- gr[i,]
 Index<-gr%over%(middle+10000)

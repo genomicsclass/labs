@@ -107,6 +107,7 @@ map
 Now we extract the exons for each gene, and then the exons for the gene *lgs*.
 
 ```{r}
+library(GenomicFeatures)
 grl <- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, by="gene")
 gene <- grl[[map$ensembl_gene_id[1]]]
 gene
