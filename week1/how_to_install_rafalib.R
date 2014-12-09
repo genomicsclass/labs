@@ -1,6 +1,6 @@
 install.packages("devtools")
 library(devtools)
-install_github("rafalib","ririzarr")
+install_github("ririzarr/rafalib")
 library(rafalib)
 mypar
 shist(rnorm(100))
