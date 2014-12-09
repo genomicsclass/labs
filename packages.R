@@ -2,8 +2,8 @@
 
 install.packages("devtools")
 library(devtools)
-install_github("rafalib","ririzarr")
-install_github("dagdata","genomicsclass")
+install_github("ririzarr/rafalib")
+install_github("genomicsclass/dagdata")
 
 source("http://bioconductor.org/biocLite.R")
 biocLite()
