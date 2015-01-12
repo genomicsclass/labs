@@ -1,10 +1,10 @@
 out <- c("---", "layout: page",
          "title: Footnotes for Data Analysis for Genomics",
          "---","")
-dirs <- list.files(".","week*")
+dirs <- list.files(".","course*")
 for (dir in dirs) {
   files <- list.files(dir, "*.Rmd")
-  out <- c(out, paste0("# Week ", sub("week(.*)","\\1",dir)), "")
+  out <- c(out, paste0("# Course ", sub("course(.*)","\\1",dir)), "")
   for (file in files) {
     lines <- readLines(paste0(dir,"/",file))
     if (sum(grepl("## Footnotes",lines)) == 0) next 

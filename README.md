@@ -2,64 +2,22 @@
 
 ## NEWS:
 
-May 7, 2014: in order to clean up and trim down the memory size of
-this repo, we've moved out non-code objects
-out of this repo. Therefore, before submitting a pull request,
-please first clone a clean copy of the repository.
-The celfiles and agilent folder of week2 has been
-moved to the `rawdata` repo, and the reading microarray lab has
-been updated to reflect this.
+January 12, 2015 : we are reogranizing the labs here and the book:
 
-May 5, 2014 : we are adding rendered content here: <http://genomicsclass.github.io/book/>
+http://genomicsclass.github.io/book/
 
-## Labs and lectures:
+The content will be split into 8 courses. The first course starts
+January 19, 2015:
 
-Week 1: Introduction
+https://www.edx.org/course/statistics-r-life-sciences-harvardx-ph525-1x
 
-- What we measure and why
-- R programming skills
-- Probability distributions
-- Exploratory data analysis
+## Courses:
 
-Week 2: Measurement technology
-
-- Microarray technology
-- Next generation sequencing technology
-- Working with data in R
-
-Week 3: Inference
-
-- Inference
-- Linear models
-
-Week 4: Background correction and normalization
-
-- Modeling
-- Background
-- Normalization
- 
-Week 5: Distance, clustering, and prediction
-
-- Distance and clustering
-- Prediction
-
-Week 6: Batch effects
-
-- Statistical solutions to batch effects
-- Applying batch effects solutions
-
-Week 7: Advanced differential expression
-
-- Hierarchical modeling
-- Multiple comparisons
-- Gene set testing
-- Gene and technology annotations
-
-Week 8: Advanced topics
-
-- Manipulating NGS data using Bioconductor
-- Genome variation
-- RNA sequencing
-- DNA methylation
-- ChIP sequencing
-
+- 1: Statistics and R for the Life Sciences
+- 2: Introduction to Linear Models and Matrix Algebra
+- 3: Advanced Statistics for the Life Sciences
+- 4: Introduction to Bioconductor
+- 5: Case study: RNA-seq data analysis
+- 6: Case study: Variant Discovery and Genotyping
+- 7: Case study: ChIP-seq data analysis
+- 8: Case study: DNA methylation data analysis
