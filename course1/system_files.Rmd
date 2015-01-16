@@ -9,3 +9,10 @@ filename <- file.path(dir,"extdata/miceweights.csv")
 dat <- read.csv(filename)
 ```
 
+
+## Using download
+
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
+filename <- tempfile()
+download.file(url,destfile=filename,method="curl")
+dat <- read.csv(filename)
