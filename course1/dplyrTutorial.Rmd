@@ -5,7 +5,8 @@ title: dplyr
 ### What is dplyr?
 
 dplyr is a powerful R-package to transform and summarize tabular data with
-rows and columns. 
+rows and columns. For another explanation of dplyr see the dplyr package vignette: 
+[Introduction to dplyr](http://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
 
 ### Why is it useful?
 
@@ -45,10 +46,12 @@ The msleep (mammals sleep) data set contains the sleeptimes and weights for
 a set of mammals and is available in the dagdata repository on github. 
 This data set contains 83 rows and 11 variables.  
 
-To load the msleep data set
+Download the msleep data set in CSV format from 
+[here](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv), 
+and then load into R:
 
 ```{r}
-msleep <- read.csv("dagdata/inst/extdata/msleep_ggplot2.csv")
+msleep <- read.csv("msleep_ggplot2.csv")
 head(msleep)
 ```
 
