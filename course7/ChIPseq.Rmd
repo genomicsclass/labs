@@ -13,7 +13,7 @@ ChIP-seq is a protocol for inferring the locations of proteins bound or associat
 
 ## Peak calling
 
-In the first lab, we use the MACS software to call peaks. The code for this is in the [MACS.txt](https://github.com/genomicsclass/labs/blob/master/week8/MACS.txt) file.
+In the first lab, we use the MACS software to call peaks. The code for this is in the [MACS.txt](https://github.com/genomicsclass/labs/blob/master/course7/MACS.txt) file.
 
 There are many different algorithms for calling peaks, which have varying performance on different kinds of experiments. As mentioned in the lecture, for ChIP of proteins with broad peaks (such as modified histones), algorithms other than those for detecting sharp peaks might perform better.
 
