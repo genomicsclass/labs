@@ -73,12 +73,12 @@ bodywt | body weight in kilograms
 
 dplyr verbs | Description
 --- | ---
-select() | select columns 
-filter() | filter rows
-arrange() | re-order or arrange rows
-mutate() | create new columns
-summarise() | summarise values
-group\_by() | allows for group operations in the "split-apply-combine" concept
+`select()` | select columns 
+`filter()` | filter rows
+`arrange()` | re-order or arrange rows
+`mutate()` | create new columns
+`summarise()` | summarise values
+`group_by()` | allows for group operations in the "split-apply-combine" concept
 
 
 # dplyr verbs in action
@@ -167,7 +167,9 @@ select two columns (name and sleep\_total) and
 then pipe the new data frame to the function `head()` which will return the 
 head of the new data frame. 
 ```{r}
-msleep %>% select(name, sleep_total) %>% head
+msleep %>% 
+    select(name, sleep_total) %>% 
+    head
 ```
 
 You will soon see how useful the pipe operator is when we start to combine many
@@ -183,7 +185,7 @@ rest of this tutorial.
 ### Arrange or re-order rows using `arrange()`
 
 To arrange (or re-order) rows by a particular column such as the taxonomic
-order
+order, list the name of the column you want to arrange the rows by
 
 ```{r}
 msleep %>% arrange(order) %>% head
@@ -223,7 +225,70 @@ msleep %>%
 
 ### Create new columns using `mutate()`
 
+The `mutate()` function will add new columns to the data frame. Create a new
+column called rem_proportion which is the ratio of rem sleep to total amount of 
+sleep. 
+
+
+```{r}
+msleep %>% 
+    mutate(rem_proportion = sleep_rem / sleep_total) %>%
+    head
+```
+
+You can many new columns using mutate (separated by commas). Here we add a
+second column called bodywt_grams which is the bodywt column in grams. 
+
+```{r}
+msleep %>% 
+    mutate(rem_proportion = sleep_rem / sleep_total, 
+           bodywt_grams = bodywt * 1000) %>%
+    head
+```
+
 ### Create summaries of the data frame using `summarise()`
 
+The `summarise()` function will create summary statistics for a given column 
+in the data frame such as finding the mean. For example, to compute the 
+average number of hours of sleep, apply the `mean()` function to the 
+column sleep\_total and call the summary value avg\_sleep. 
+
+```{r}
+msleep %>% 
+    summarise(avg_sleep = mean(sleep_total))
+```
+
+There are many other summary statistics you could consider such `sd()`, 
+`min()`, `max()`, `median()`, `sum()`, `n()` (returns the length of vector), 
+`first()` (returns first value in vector), `last()` (returns last value in 
+vector) and `n_distinct()` (number of distinct values in vector). 
+
+```{r}
+msleep %>% 
+    summarise(avg_sleep = mean(sleep_total), 
+              min_sleep = min(sleep_total),
+              max_sleep = max(sleep_total),
+              total = n())
+```
+
+    
 ### Group operations using `group_by()`
+
+The `group_by()` verb is an important function in dplyr. As we mentioned 
+before it's related to concept of "split-apply-combine". We literally want to 
+split the data frame by some variable (e.g. taxonomic order), apply a 
+function to the individual data frames and then combine the output.   
+
+Let's do that: split the msleep data frame by the taxonomic order, then ask 
+for the same summary statistics as above. We expect a set of summary
+statistics for each taxonomic order. 
+
+```{r}
+msleep %>% 
+    group_by(order) %>%
+    summarise(avg_sleep = mean(sleep_total), 
+              min_sleep = min(sleep_total), 
+              max_sleep = max(sleep_total),
+              total = n())
+```
 
