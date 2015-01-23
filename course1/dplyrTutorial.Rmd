@@ -10,12 +10,12 @@ rows and columns. For another explanation of dplyr see the dplyr package vignett
 
 ### Why is it useful?
 
-The package contains a set of functions (or "verbs") to perform common data 
+The package contains a set of functions (or "verbs") that perform common data 
 manipulation operations such as filtering for rows, selecting specific 
 columns, re-ordering rows, adding new columns and summarizing data. 
 
 In addition, dplyr contains a useful function to perform another common task 
-which is the is the "split-apply-combine" concept.  We will discuss that in a
+which is the "split-apply-combine" concept.  We will discuss that in a
 little bit. 
 
 ### How does it compare to using base functions R?
@@ -127,15 +127,15 @@ Some additional options to select columns based on a specific criteria include
 
 
 
-### Selecting columns using `filter()`
+### Selecting rows using `filter()`
 
-Filter the rows for mammals that sleep a total of more than 10 hours. 
+Filter the rows for mammals that sleep a total of more than 16 hours. 
 
 ```{r}
 filter(msleep, sleep_total >= 16)
 ```
 
-Filter the rows for mammals that sleep a toal of more than 10 hours *and* have
+Filter the rows for mammals that sleep a total of more than 16 hours *and* have
 a body weight of greater than 1 kilogram.
 
 ```{r}
@@ -157,7 +157,7 @@ logical tests.
 Before we go any futher, let's introduce the pipe operator: %>%. dplyr imports
 this operator from another package (magrittr).  This operator
 allows you to pipe the output from one function to the input of another
-function.  Instead of nesting functions (reading from the inside to the 
+function. Instead of nesting functions (reading from the inside to the 
 outside), the idea of of piping is to read the functions from left to right. 
 
 Here's an example you have seen: 
