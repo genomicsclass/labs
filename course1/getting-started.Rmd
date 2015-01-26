@@ -44,7 +44,7 @@ library(swirl)
 swirl()
 ```
 
-If you have never programmed in R, we recommend going through the entire  R Programming tutorial.
+If you have never programmed in R, we recommend going through the entire R Programming tutorial.
 
 ## Importing data into R
 The first step when getting ready to analyze data is to read in the data into R. In the life sciences, small datasets such as the one used as an example in the next sections are stored as Excel file. In general you want to avoid the Excel (xls) format and save files as comma delimited (csv) or tab delinted (txt) files. The first step is to find the file containing your data and know it's *path*. 
