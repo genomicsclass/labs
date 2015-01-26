@@ -2,6 +2,7 @@
 layout: page
 title: Introduction to random variables
 ---
+<a name="introduction"></a>
 
 ## Introduction 
 
@@ -58,6 +59,7 @@ So the hf diet mice are about 10% heavier. Are we done? Why do we need p-values 
 Note that we repeat the experiment, we will obtain 24 new mice from Jackson Laboratories and when we randomly assign them to each diet we will get a different mean. Every time we repeat this experiment we get a different value. We call this type quantity a *random variable*. 
 
 <a name="random_variable"></a>
+
 ## Random variables
 
 Let's see this what a random variabel is. We actually have the weight of all control female mice and can load them up to R. In Statistics we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we use it here to illustrate concepts. 
@@ -86,9 +88,10 @@ mean(control)
 Note how the average varies. We can continue to do this over and over again and start learning something about 
 
 <a name="null_distribution"></a>
+
 ## Null distribution
 
-Now let's go back to our average difference of 2.23. A scientists we need to be skeptics. How do we know that this 2.23 is due to the diet. What happens if we give all 24 the same diet, can we see a difference this big? Statisticians refereed to this scenario as the *null hypothesis*. The name null is used to remind us that we are acting as skeptics: there is no difference. 
+Now let's go back to our average difference of `diff`. A scientists we need to be skeptics. How do we know that this `diff` is due to the diet. What happens if we give all 24 the same diet, can we see a difference this big? Statisticians refereed to this scenario as the *null hypothesis*. The name null is used to remind us that we are acting as skeptics: there is no difference. 
 
 Because we have access to the population, we can actually observe as many values of the difference of the averages when the diet has no effect. We can do this by sampling 24 control mice, giving them the same diet, and then recording the difference in mean between to randomly split groups. Here is the code:
 
@@ -114,12 +117,12 @@ for(i in 1:n){
 
 The values in 'null' form what we call the *null distribution*. We will define this more formally below.
 
-So what percent are bigger than 2.23?
+So what percent are bigger than `diff`?
 ```{r}
 mean(null>=diff)
 ```
 
-Only 1.5%. So what do we conclude as skeptics. When there is no diet effect, we see value as big as 2.23 only 1.5% of the time. Note that this is what is known as a p-value which we will also define more formally later
+Only 1.5%. So what do we conclude as skeptics. When there is no diet effect, we see value as big as `diff` only 1.5% of the time. Note that this is what is known as a p-value which we will also define more formally later
 
 ##Illustration of the null distribution
 Let's repeat the loop above but this time let's add a point to the figure every time we re-run the experiment
@@ -140,6 +143,7 @@ for(i in 1:n){
 ```
 
 <a name="distributions"></a>
+
 ## Distributions
 
 We have explained what we mean by *null* in the context of null hypothesis but what exactly is a distribution?
