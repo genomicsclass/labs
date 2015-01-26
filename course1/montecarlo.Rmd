@@ -9,16 +9,18 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Monte Carlo Simulation
 
-Computers can be used to generate pseudo-random numbers. For most practicaly purposes these pseudo-random numbers can be used to immitate real random variables. This permits us to examine properties of random variables using a computer instead of theoretical or analytical derivations. One very useful aspect of this concept is that we can create _simulated_ data to test out ideas or competing methods without actually having to perform laboratory experiments.
+Computers can be used to generate pseudo-random numbers. For most practicaly purposes these pseudo-random numbers can be used to immitate real random variables. This permits us to examine properties of random variables using a computer instead of theoretical or analytical derivations. One very useful aspect of this concept is that we can create *simulated* data to test out ideas or competing methods without actually having to perform laboratory experiments.
 
 Simulations can also be used to check theoretical or analytical results. Also, many of the theoretical results we use in statistics are based on asymptotics: they hold when the number of samples as, for example, the sample size goes to infinity. In practice we never have an infinite number of samples so we may want to know how well the theory works with our actual sample size. Sometimes we can answer this question analytically, but not always. Simulations are extremely useful in these cases.
 
-We illustrate this with a simple example related to the central limit theorem. In the inference module we used a sample size of 10 to explore a data set containing babie weights and several covariants, one of which is whether the mother smokes. Babies of smoking mothers tend to weigh slightly less. We used the central limit theorem to approximate the distribution of the t-statistic as normal with mean 0 and standard deviation 1. But is 10 large enough to use this approximantion? Let's use a monte carlo simulation to corroborate.
+We illustrate this with a simple example related to the central limit theorem. In the inference module we used a sample size of 10 to explore a data set containing baby weights and several covariants, one of which is whether the mother smokes. Babies of smoking mothers tend to weigh slightly less. We used the central limit theorem to approximate the distribution of the t-statistic as normal with mean 0 and standard deviation 1. But is 10 large enough to use this approximantion? Let's use a monte carlo simulation to corroborate.
+
+Note that this simulation looks similar to the simulation used to introduce the *null distribution*, however here we will return a standardized difference, whereas in the null distribution example, we simply returned the difference. This will be made clear below.
 
 Below is the code we used to obtain random sample and then the difference of -2.3.
 
 ```{r}
-# download babies.txt
+# download babies.txt from:
 # https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/babies.txt
 dat <- read.table("babies.txt",header=TRUE)
 set.seed(1)
@@ -46,7 +48,7 @@ ttestgenerator <- function(n) {
   # sample from the nonsmokers. this is because we are modeling the *null*
   smokers = sample(dat$bwt[dat$smoke==0], n)
   nonsmokers = sample(dat$bwt[dat$smoke==0], n)
-  return((mean(smokers)-mean(nonsmokers))/sqrt((var(smokers))/n + var(nonsmokers)/n))
+  return((mean(smokers)-mean(nonsmokers))/sqrt(var(smokers)/n + var(nonsmokers)/n))
   }
 ttests <- replicate(1000, ttestgenerator(10))
 ```
