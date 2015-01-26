@@ -18,7 +18,7 @@ dat <- read.csv(filename)
 ```
 
 ```{r}
-haed(dat)
+head(dat)
 ```
 
 Start by selecting only female mice
