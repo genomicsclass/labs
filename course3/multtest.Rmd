@@ -6,6 +6,7 @@ title: Multiple testing
 The following code reproduces the images in the Multiple testing lecture.
 
 ```{r options, echo=FALSE}
+library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
