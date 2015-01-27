@@ -49,7 +49,7 @@ We are interesting determine if following a given diet makes mice heavier after 
 dat
 ```
 
-So are the hf mice heavier? Note that mouse 21 is 20.73 grams is one the lightest mice while 14 at 34.02 is one of the heaviest. Both are on the hf diet. Just from looking the data we see there is *variability*. Claims such as the one above usually refer to the averages. So let's look at the average of each group
+So are the hf mice heavier? Note that mouse 24 is 20.73 grams is one the lightest mice while 21 at 34.02 is one of the heaviest. Both are on the hf diet. Just from looking the data we see there is *variability*. Claims such as the one above usually refer to the averages. So let's look at the average of each group
 
 ```{r}
 control <- dat[1:12,2]
@@ -74,7 +74,7 @@ Read in the data, either from your home directory or from dagdata:
 ```{r}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename <- tempfile()
-download.file(url,destfile=filename,method="curl")
+download.file(url,destfile=filename,method="wget")
 population <- read.csv(filename)
 ```
 
