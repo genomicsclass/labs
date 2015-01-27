@@ -4,6 +4,7 @@ title: Introduction to random variables
 ---
 
 ```{r options, echo=FALSE}
+library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
@@ -73,7 +74,7 @@ Read in the data, either from your home directory or from dagdata:
 ```{r}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename <- tempfile()
-download.file(url,destfile=filename,method="wget")
+download.file(url,destfile=filename,method="curl")
 population <- read.csv(filename)
 ```
 
