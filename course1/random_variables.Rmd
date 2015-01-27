@@ -14,7 +14,8 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```{r,results=FALSE,echo=FALSE}
 set.seed(1) ##so that we get same results
 ```
-This course introduces the statistical concepts necessary to understand p-value and confidence intervals. These terms are ubiquitous in the life science literature. Let's look at [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full]) as an example. 
+
+This course introduces the statistical concepts necessary to understand p-values and confidence intervals. These terms are ubiquitous in the life science literature. Let's look at [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full]) as an example. 
 
 Note that the abstract has this statements: 
 
