@@ -18,7 +18,7 @@ set.seed(1) ##so that we get same results
 
 This course introduces the statistical concepts necessary to understand p-values and confidence intervals. These terms are ubiquitous in the life science literature. Let's look at [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full]) as an example. 
 
-Note that the abstract has this statements: 
+Note that the abstract has this statement: 
 
 > "Body weight was higher in mice fed the high-fat diet already after the first week, due to higher dietary intake in combination with lower metabolic efficiency". 
 
@@ -28,7 +28,7 @@ To back this up they provide this in the results section:
 
 What does P < 0.001 mean? What are $\pm$ included? In this class we will learn what this mean and learn to compute these values in R. The first step is to understand what is a random variable. To understand this, we will use data from a mouse database (provided by Karen Svenson via Gary Churchill and Dan Gatti and Partially funded by P50 GM070683.) We will import the data with R and explain random variables and null distributions using R programming.
 
-If you have the file in your working directory you can read it just one line.
+If you have the file in your working directory you can read it with just one line.
 ```{r,eval=FALSE}
 dat=read.csv("femaleMiceWeights.csv")
 ```
@@ -44,13 +44,13 @@ dat <- read.csv(filename)
 
 ## Our first look at data
 
-We are interesting determine if following a given diet makes mice heavier after several. This data was produced by ordering 24 mice from Jackson Lab, randomly assigning either chow or high fat (hf) diet. Then after several weeks we weighed each mice and obtained this data:
+We are interested in determining if following a given diet makes mice heavier after several weeks. This data was produced by ordering 24 mice from Jackson Lab, randomly assigning either chow or high fat (hf) diet. Then after several weeks we weighed each mice and obtained this data:
 
 ```{r}
 dat
 ```
 
-So are the hf mice heavier? Note that mouse 24 is 20.73 grams is one the lightest mice while 21 at 34.02 is one of the heaviest. Both are on the hf diet. Just from looking the data we see there is *variability*. Claims such as the one above usually refer to the averages. So let's look at the average of each group
+So are the hf mice heavier? Note that mouse 24 at 20.73 grams is one the lightest mice while 21 at 34.02 is one of the heaviest. Both are on the hf diet. Just from looking at the data we see there is *variability*. Claims such as the one above usually refer to the averages. So let's look at the average of each group:
 
 ```{r}
 control <- dat[1:12,2]
@@ -69,7 +69,7 @@ Note that we repeat the experiment, we will obtain 24 new mice from Jackson Labo
 
 ## Random variables
 
-Let's see this what a random variabel is. We actually have the weight of all control female mice and can load them up to R. In Statistics we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we use it here to illustrate concepts. 
+Let's see  what a random variable is. Imagine we actually have the weight of all control female mice and can load them up to R. In Statistics we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we're using here to illustrate concepts. 
 
 Read in the data, either from your home directory or from dagdata:
 ```{r}
@@ -92,15 +92,15 @@ control <- sample(population[,1],12)
 mean(control)
 ```
 
-Note how the average varies. We can continue to do this over and over again and start learning something about 
+Note how the average varies. We can continue to do this over and over again and start learning something about the...
 
 <a name="null_distribution"></a>
 
 ## Null distribution
 
-Now let's go back to our average difference of `diff`. A scientists we need to be skeptics. How do we know that this `diff` is due to the diet. What happens if we give all 24 the same diet, can we see a difference this big? Statisticians refereed to this scenario as the *null hypothesis*. The name null is used to remind us that we are acting as skeptics: there is no difference. 
+Now let's go back to our average difference of `diff`. As scientists we need to be skeptics. How do we know that this `diff` is due to the diet. What happens if we give all 24 the same diet, can we see a difference this big? Statisticians refereed to this scenario as the *null hypothesis*. The name null is used to remind us that we are acting as skeptics: we give credence to the possibility that there is no difference. 
 
-Because we have access to the population, we can actually observe as many values of the difference of the averages when the diet has no effect. We can do this by sampling 24 control mice, giving them the same diet, and then recording the difference in mean between to randomly split groups. Here is the code:
+Because we have access to the population, we can actually observe as many values as we want to of the difference of the averages when the diet has no effect. We can do this by sampling 24 control mice, giving them the same diet, and then recording the difference in mean between to randomly split groups. Here is the code:
 
 ```{r}
 ###12 control mice
@@ -110,7 +110,7 @@ treatment <- sample(population[,1],12)
 print(mean(treatment) - mean(control))
 ```
 
-Now let's do it 10,000 times. We will use a for-loop, an operation that let's us automatize this
+Now let's do it 10,000 times. We will use a for-loop, an operation that lets us automatize this
 
 ```{r}
 n <- 10000
@@ -122,14 +122,14 @@ for(i in 1:n){
 }
 ```
 
-The values in 'null' form what we call the *null distribution*. We will define this more formally below.
+The values in `null` form what we call the *null distribution*. We will define this more formally below.
 
 So what percent are bigger than `diff`?
 ```{r}
 mean(null>=diff)
 ```
 
-Only 1.5%. So what do we conclude as skeptics. When there is no diet effect, we see value as big as `diff` only 1.5% of the time. Note that this is what is known as a p-value which we will also define more formally later
+Only 1.5%. So what do we conclude as skeptics. When there is no diet effect, we see value a `diff` as big as the one we observed only 1.5% of the time. Note that this is what is known as a p-value which we will also define more formally later
 
 ##Illustration of the null distribution
 Let's repeat the loop above but this time let's add a point to the figure every time we re-run the experiment
@@ -158,7 +158,7 @@ The simplest way to think of a *distribution* is as a compact description of man
 
 $$ F(a) \equiv \mbox{Pr}(x \leq a) $$
 
-This is called the empirical commutative distribution function. We can plot $F(a)$ versus $a$ like this
+This is called the empirical cumulative distribution function. We can plot $F(a)$ versus $a$ like this
 
 ```{r}
 values <- seq(min(null),max(null),len=300)
