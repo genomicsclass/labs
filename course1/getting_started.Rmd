@@ -27,7 +27,7 @@ install.packages("devtools")
 
 In RStudio you can go click on "Tools" and then "Install Packages"
 
-Note to Windows users: To use devtools` you will have to also install `Rtools`. In general you will need to install packages as administrator. One way to do this is to start R as administrator. If you do not have permission to do this, then it is a bit [more complicated](http://www.magesblog.com/2012/04/installing-r-packages-without-admin.html). 
+Note to Windows users: To use devtools you will have to also install `Rtools`. In general you will need to install packages as administrator. One way to do this is to start R as administrator. If you do not have permission to do this, then it is a bit [more complicated](http://www.magesblog.com/2012/04/installing-r-packages-without-admin.html). 
 
 The reason we installed this package is that we can also install packages from github. These packages are not vetted but many experimental packages are on github because they are not yet ready for CRAN. An example, is the `dagdata` package that we use extensively here. We will load the library and use one of its functions.
 
@@ -58,6 +58,13 @@ The first step when getting ready to analyze data is to read in the data into R.
 
 In the life sciences, small datasets such as the one used as an example in the next sections are stored as Excel file. In general you want to avoid the Excel (xls) format and save files as comma delimited (csv) or tab delinted (txt) files. The first step is to find the file containing your data and know it's *path*. 
 
+The three files we start with in the class are these:
+
+* [female mouse weights](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv)
+* [female control population](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv)
+* [entire population dataset](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv)
+
+You can navigate to these file by visiting the data directory of dagadat on [github](https://github.com/genomicsclass/dagdata/tree/master/inst/extdata)
 ### The working directory
 
 When you are working in R it is useful to know your _working directory_. This is the directory or folder in which R will save or look for files by default. You can see your working directory by typing:

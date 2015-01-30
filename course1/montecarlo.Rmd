@@ -4,6 +4,7 @@ title: Monte Carlo methods
 ---
 
 ```{r options, echo=FALSE}
+library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
@@ -140,13 +141,11 @@ hist(avgdiff)
 abline(v=obs)
 ```
 
-How many of the null means are bigger than the observed value? That proportion would be the p-value for the null. One convention is to add 1 to the numberator (the number of times that the permutations were larger in absolute value than the observed one).
+How many of the null means are bigger than the observed value? That proportion would be the p-value for the null.
 
 ```{r}
 # the proportion of permutations with larger difference
 mean(abs(avgdiff) > abs(obs))
-# the proportion ... plus 1
-(sum(abs(avgdiff) > abs(obs)) + 1) / length(avgdiff)
 ```
 
 Note that if we repeat for N=10, the observed difference is not significant using this approach. Permutations still have assumptions: samples are assumed to independent. If we have few samples we can't do permutations. Permutations result in conservative p-values since, if there is a real differences, some of the permutations will be unblanced and will contain signal.
