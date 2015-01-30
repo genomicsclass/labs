@@ -3,6 +3,11 @@ layout: page
 title: Central Limit Theorem in practice
 ---
 
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 # Introduction
 
 ```{r,results=FALSE,echo=FALSE}
@@ -43,7 +48,7 @@ sd_hf <- mean((hfPopulation-mu_hf)^2)
 sd_chow <- mean((chowPopulation-mu_chow)^2)
 ```
 
-These are values we do not get to see. We want to estiate them.
+These are values we do not get to see. We want to estimate them.
 The central limit tells us that if we take a sample
 ```{r}
 N <- 12
