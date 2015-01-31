@@ -1,0 +1,123 @@
+---
+layout: page
+title: t-tests
+---
+
+# Introduction
+
+```{r,results=FALSE,echo=FALSE}
+set.seed(1) ##so that we get same results
+```
+
+## Start by reading in the data
+```{r}
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- tempfile()
+download.file(url,destfile=filename,method="curl")
+dat <- read.csv(filename)
+```
+
+
+```{r}
+dat
+```
+
+We now have experimental data. This is no longer an illustration. This is what you will have in a typical data analysis
+
+```{r}
+control <- dat[1:12,2]
+treatment <- dat[13:24,2]
+print(mean(treatment))
+print(mean(control))
+diff <- mean(treatment)-mean(control)
+print(diff)
+```
+
+We are asked to report a p-value. What do we do?
+We learned that diff is a random variable. Under the null hypothesis what is the distribution of this random variable? Let's use what we learned.
+
+Under the null, the mean of the distribution of `diff` is 0. What about the standard deviation? 
+
+To simplify, let's start with `mean(control)`. This is also a random variabe. We want to know the standard error of the distribution of this random variable, which from now on we will call a standard error (SE). In statistics we call the standard deviation of the distribution of a random variable, the standard error of the random variable. Statistical theory tells us that the standard error of this random variable is the population standard deviation divided by the sqrt of the square root of the sample size. 
+
+The formula we showed was
+$$ SE(\bar{X}) = \sigma / sqrt{N}$$
+
+A problem is that we do not know the population standard deviation. So we use the sample standard deviation as an estimate. In R we simply type
+
+```{r}
+sd(control)
+```
+
+And the SE is simply
+
+```{r}
+sd(control)/length(control)
+```
+
+Now we actually want the SE of `diff`. Statistical theory tells us that the variance of the difference of two random variables is the sum of it's variances. This may seem counterintuitive but we think of it as this sum `sum(treatmetn) + -sum(control)` we are adding two random variables that are independent of each other so the sum to be even more variable. Because the standard devition is the square root of variance we have that the SE we are looking for is 
+
+```{r}
+se <- sqrt( sd(treatment)^2/length(treatment) + sd(control)^2/length(control))
+```
+
+Statistical theory tells us that is we divide a random variable by it's SE, we get a new random variable with SD 1.
+
+```{r}
+tstat <- diff/se 
+```
+
+This ratio is what we call the t-statistics.It's the ratio of two random variables thus a random variable. To compute a p-value we need it's distribution. So what is it?
+
+The central limit theorem tells us that for large sample sizes both `mean(treatment)` and `mean(control)` are normal. Statistical theory tells us that the difference of two normals is again normal. So CLT tells us `tstat` is  approximately normal with mean 0 (the null hypothesis) and SD 1 (we divided by it's SE). 
+
+So now to calculate a pvalue all we do is ask, how ofter in a normally distributed random variable exceed `diff`. It's that simple
+
+```{r}
+1-pnorm(tstat)
+```
+
+Now, because we would have reported this finding if it was negative just the same, we should ask for the probability of a normally distributed random variable being more extreme than `diff` so it's then
+
+```{r}
+1-pnorm(tstat) + pnorm(-tstat)
+```
+or 
+```{r}
+2*(1-pnorm(abs(tstat)))
+```
+
+So the p-value is 0.04 and we would call it significant.
+
+No there is a problem here. CLT works for large samples, but is 12 large enough? A rule of thumb for CLT is that 30 is a large enough sample size (but this is just a rule of thumb). 
+
+## The t-distribution
+Now it turns out that statistical theory offers another useful result. If the distribution of the population is normal then we can work out the exact distribution of the t-statistic without the need for the CLT. Now note that this is a big "if" given with small samples it i hard to check. But for somethign like weight we suspect that the population distribution is likely well approximated by normal and use this result. The result tells us that the distribution of the random variable `tstat` follows a t-distribution. This is a much more complicated distribution than the normal that depends on another parameter called degrees of freedom. R has a nice function that actually computes everything for us.
+
+```{r}
+t.test(treatment,control)
+```
+
+Note that the p-value is slightly bigger now. This is to be expected because the CLT approxiamtion considers the denominator of t-stat practically fixed while the t-distribution approximation, takes into account that it is random variable and that the smaller the sample size the more it varies.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

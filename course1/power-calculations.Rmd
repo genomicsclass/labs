@@ -1,0 +1,163 @@
+---
+layout: page
+title: Power calculations
+---
+
+# Introduction
+
+We have seen throughout the vidoes and labs examples comparing mice in two diets. Because we have access to the population we know that the difference in mean is in fact different. Let's review
+
+```{r,results=FALSE,echo=FALSE}
+set.seed(1) ##so that we get same results
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
+filename <- tempfile()
+download.file(url,destfile=filename,method="curl")
+dat <- read.csv(filename)
+
+hfPopulation <- dat[dat$Sex=="F" & dat$Diet=="hf",3]
+chowPopulation <- dat[dat$Sex=="F" & dat$Diet=="chow",3]
+
+mu_hf <- mean(hfPopulation)
+mu_chow <- mean(chowPopulation)
+print(mu_hf - mu_chow)
+```
+
+We have also seen that in some cases, when we take a sample and perform a t-test we don't always get a p-value smaller than 0.05. For example, here is a case were we take sample of 5 mice and we don't achive statistical significance at the 0.05 level:
+
+```{r}
+N <- 5
+hf <- sample(hfPopulation,N)
+chow <- sample(chowPopulation,N)
+t.test(hf,chow)
+```
+
+Did we make a mistake? By not rejecting the null hypothesis are we saying the diet has no effect? The answer to this question is actually no. All we can say is that we did not reject the null. But this does not make the null true. The problem is in this particular instance is that we don't have enought _power_. We are now going to define this. If you are doing scientific research it s very likly that you will have to do a power calculation. Here we explain what this means.
+
+
+## Types of error
+
+Note that whenever we perform a statistical test we are well aware that we may make a mistake. This is why our p-values are not 0. Under the null, there is always a positive, perhaps super small, but a chance that we will reject the null when the it is true. If the p-value is 0.05 it will happen 1 out of 20 times. This _error_ is called type I error by statisticians. It's when we reject the null when we should not, sometimes called a false positive. So why do we use 0.05 then? Should we use 0.000001 to be really sure? The reason is that if we do this, we might make another kind of mistake: not reject the null when we should. This is called a type II error or a false negative. The calculations above show an example of a false negative: we did not reject the hypothesis that the diet has no effect. Had we used a p-value of 0.15 then we would not have made this mistake. However are we comfortable with a type I error rate of 15% ? Usually we are not. 
+
+Note that there is nothing magical abobut 0.05 and 0.01. Unfortunately, in science we use it somewhat mindlesly but that's topic for complicated debate.
+
+
+
+## Power calculation
+
+Power is the probability of rejecting the null when the null is false. Now, "when the null is false" is complicated statement because it can be false in many ways. `mu_hf - mu_chow` could be anything. So power actuall depends on this parameter. It also depends on the SE of your estimates which depend on sample size and the population standard deviation. In practice we don't know these, and we usually reportpower for several plausible values. Statistical theory gives us formula to calculat power but here we will demonstrate witha  simulation.
+
+
+Suppose our sample size is 
+
+```{r}
+N <- 12
+```
+
+and we will reject the null hypothesis at
+
+```{r}
+alpha <- 0.05
+```
+
+What is my power wit this particular data? Let's see how often we reject in 
+
+```{r}
+B <- 10000
+```
+
+simulations.
+
+```{r}
+rejections <- sapply(1:B,function(i){
+    hf <- sample(hfPopulation,N)
+    chow <- sample(chowPopulation,N)
+    ifelse(t.test(hf,chow)$p.value < alpha,1,0)
+})
+```
+
+Our power is just 
+```{r}
+mean(rejections)
+```
+
+Let's see how power improves with N.
+```{r}
+Ns <- seq(5,50,5)
+power <- sapply(Ns,function(N){
+  rejections <- sapply(1:B,function(i){
+    hf <- sample(hfPopulation,N)
+    chow <- sample(chowPopulation,N)
+    ifelse(t.test(hf,chow)$p.value < alpha,1,0)
+    })
+  mean(rejections)
+})
+```
+
+Not surprisingly power increases with N:
+
+```{r}
+plot(Ns,power)
+```
+
+Similarly if I change the level at which I reject, power changes. The smaller I want the chance of type I error to be, the less power I will have. Homework: write the above simualtion to see how power decreases with alpha for N of, say, 30
+
+Answer
+```{r}
+N<-30
+alphas <- c(0.1,0.05,0.01,0.001,0.0001)
+power <- sapply(alphas,function(alpha){
+  rejections <- sapply(1:B,function(i){
+    hf <- sample(hfPopulation,N)
+    chow <- sample(chowPopulation,N)
+    ifelse(t.test(hf,chow)$p.value < alpha,1,0)
+    })
+  mean(rejections)
+})
+plot(alphas,power,log="x")
+```
+
+Note: there is no "right"" power or "right" alpha level. But it is important that you understand what each means.
+
+
+
+
+
+Compute the population standard deviations as well
+
+```{r}
+sd_hf <- mean((hfPopulation-mu_hf)^2)
+sd_chow <- mean((chowPopulation-mu_chow)^2)
+```
+
+These are values we do not get to see. We want to estiate them.
+The central limit tells us that if we take a sample
+he average of each of these is approximately normal with average population mean and standard error population variance divided by $N$. In practice how large must $N$ be? Here we can study that because we actually have all the populations.
+
+```{r}
+Ns <- c(3,12,25,50)
+B <- 10000 #number of simulations
+res <- sapply(Ns,function(n){
+  sapply(1:B,function(j){
+    mean(sample(hfPopulation,n))-mean(sample(chowPopulation,n))
+  })
+})
+```
+
+```{r}
+library(rafalib)
+mypar2(2,2)
+for(i in seq(along=Ns)){
+  title <- paste("Avg=",signif(mean(res[,i]),3),"SD=",signif(sd(res[,i]),3))
+  qqnorm(res[,i],main=title)
+  qqline(res[,i])
+}
+```
+
+```{r}
+mypar2(1,1)
+boxplot(res,names=Ns)
+```
+
+
+
+
