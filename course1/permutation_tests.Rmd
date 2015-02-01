@@ -1,0 +1,55 @@
+---
+layout: page
+title: Permutation tests
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r,include=FALSE}
+set.seed(1)
+```
+
+
+
+Suppose we have a situation in which none of the standard statistical tools apply. We have computed a summary statisitic, such as the difference in mean, but do not have a useful approximation such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation can be useful in these scenarios. 
+
+We are back to the scenario were we only have 10 measurements for each group.
+
+```{r}
+set.seed(0)
+N <- 50
+smokers <- sample(dat$bwt[dat$smoke==1],N)
+nonsmokers <- sample(dat$bwt[dat$smoke==0],N)
+obs <- mean(smokers)-mean(nonsmokers)
+```
+
+Is the observed difference significant? Remember we are pretending that we can't use the CLT or the t-distribution approximations. How can we determine the distribution of this difference under the null that there is no difference? Permutations tests take advantege of the fact that if there is no difference the shuffling the data should not matter. So we shuffle the men and women labels, say, 1,000 and see how much the results matter.
+
+Generate a null distribution by shuffling the data
+
+```{r}
+avgdiff <- replicate(1000, {
+    all <- sample(c(smokers,nonsmokers))
+    smokersstar <- all[1:N]
+    nonsmokersstar <- all[(N+1):(2*N)]
+  return(mean(smokersstar) - mean(nonsmokersstar))
+})
+hist(avgdiff)
+abline(v=obs)
+```
+
+How many of the null means are bigger than the observed value? That proportion would be the p-value for the null.
+
+```{r}
+# the proportion of permutations with larger difference
+mean(abs(avgdiff) > abs(obs))
+```
+
+Note that if we repeat for N=10, the observed difference is not significant using this approach. It is important to keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. Note for example that if there is a real differences, some of the permutations will be unblanced and will contain signal. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative p-values. For this reason when  we have few samples we can't do permutations. 
+
+Note also that permutations tests still have assumptions: samples are assumed to be independent. If there is hidden structure in your data, then permutation tests can actually end up with null distributions that underestimate the details because the permutations amy destroy the existing structure in the original data.
+
+
