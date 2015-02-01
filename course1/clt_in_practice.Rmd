@@ -105,4 +105,12 @@ for(i in seq(along=Ns)){
 }
 ```
 
-Now we see that for $N=3$ the CLT does not provide a usable approximation and that for $N=12$ their is a slight deviation at the higher values. For 25 and 50 the appoximation is spot on.
+Now we see that for $N=3$ the CLT does not provide a usable approximation. For $N=12$ their is a slight deviation at the higher values, although the approximation appears useful. For 25 and 50 the appoximation is spot on. 
+
+Note that this simulation is not meant as proof that $N=12$ is large enough, in general. It only applies to this dataset and, as mentioned above, we will not be able to perform this simulation in most situation. We only use the simulation to illustrate the conecepts behind the CLT. In future sections we will describe approaches we actually use in practice.
+
+
+
+
+
+

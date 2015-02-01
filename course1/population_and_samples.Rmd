@@ -96,6 +96,39 @@ $$
 
 The CLT tells us that when $N$ and $M$ are large (rule of thumb is 30) this random variable is normally distributed with mean 0 and SD 1. Thus we can compute p-values using the function `pnorm`.
 
+## The t-distribution
+When the CLT does not apply, there another option that does not rely on large samples (what we call asymptotic results). When a the original population from which a random variable, say $Y$, is sampled is normally distributed with mean 0 then we can calculate the distribution of 
+
+$$
+\sqrt{N} \frac{\bar{Y}}{s_Y}
+$$
+
+Note that this is the ratio of two random variables so it is not necessarily normal. The fact that the denominator can be small by chance increases the probability of observing large values. [William Sealy Gosset](http://en.wikipedia.org/wiki/William_Sealy_Gosset), an employ of Guinness, deciphered the distribution of this random variable and published a paper under the pseudonym "student". This the distribution is called the Student's t-distribution. Later we will learn more about how this result is used.
+
+It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$ not the random variable $\bar{Y}$. Although we do not get to do this in practice, in this illustrative example we get to see this distribution for both controls and high fat diet mice:
+
+```{r, fig.height=3.5}
+library(rafalib)
+mypar2(1,2)
+hist(hfPopulation)
+hist(controlPopulation)
+```
+
+We can use qq-plots to confirm that the distribution are relatively close to being normally distributed.
+```{r,fig.height=3.5}
+mypar2(1,2)
+qqnorm(hfPopulation);qqline(hfPopulation)
+qqnorm(controlPopulation);qqline(controlPopulation)
+```
+
+The larger the sample, the more forgiving the result is to the weakness of this approximation. We will later see that for this particular dataset the t-distribution works well even for  sample sizes as small as 3.
+
+
+
+
+
+
+
 
 
 
