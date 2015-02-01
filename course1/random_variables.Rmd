@@ -73,9 +73,10 @@ Let's see  what a random variable is. Imagine we actually have the weight of all
 
 Read in the data, either from your home directory or from dagdata:
 ```{r}
+library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename <- tempfile()
-download.file(url,destfile=filename,method="curl")
+downloader(url,destfile=filename)
 population <- read.csv(filename)
 ```
 
