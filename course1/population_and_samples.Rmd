@@ -1,0 +1,116 @@
+---
+title: "Population, Samples, and Estimates"
+output: pdf_document
+layout: page
+---
+
+# Introduction
+
+Now that we have introduced the idea of a random variable, a null distribution, and a p-value, we are ready to describe the mathematical theory that permits us to compute p-values in practice. We will aslo learn about confidence intervals and power calculations. 
+
+# Population parameters
+
+A first step in statistical inference is to understand what population you are interested. In the mouse weight example, we have two populations female mice on control diet, and female mice on high fat diet and the outcome of interest was weight. We consider this population to be fixed, and the radomness comes from the sampling. One reason we have been using this dataset as an example is because we happen to have the weights of all the mice of this type. Here we donwload and read in this dataset:
+
+```{r}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
+filename <- tempfile()
+download(url,destfile=filename)
+dat <- read.csv(filename)
+```
+
+We can then access the population values and determine, for example, how many we have. For example here is the control population:
+
+```{r}
+controlPopulation <- dat[dat$Sex=="F" & dat$Diet=="chow",3]
+length(controlPopulation)
+```
+
+We usually denote these values as $x_1,\dots,x_m$. In this case $m=225$. Now we can do the same with the high fat died population
+
+```{r}
+hfPopulation <- dat[dat$Sex=="F" & dat$Diet=="hf",3]
+length(hfPopulation)
+```
+
+and denote with $y_1,\dots,y_n, n=200$. 
+
+
+We can then define summaries of interest for these population such as the mean and variance. 
+
+$$\mu_X = \frac{1}{m}\sum_{i=1}^m x_i \mbox{ and } \mu_Y = \frac{1}{n} \sum_{i=1}^n y_i$$
+
+as well as the variance:
+
+$$\sigma_X^2 = \frac{1}{m}\sum_{i=1}^m (x_i-\mu_x)^2 \mbox{ and } \sigma_Y^2 = \frac{1}{n} \sum_{i=1}^n (y_i-\mu_y)^2$$
+
+with the standard deviations being the square root of these.
+
+The question we started out asking can now me written mathematically: $\mu_Y - \mu_X = 0$ ? An importnat point is that although here we can easily check if this is true, since we actually have the values, in practice we do not. So instead we take a sample and try to answer the questions with the sample. This is the essence of statistical inference. 
+
+Previously we obtained a sample of 12 mice from each. We represent these with capital letters to indicate that they are random. This is common practice in statistics although it is not always followed. So the samples are $X_1,\dots,X_M$ and $Y_1,\dots,Y_N$ and in this case $N=M=12$. Since we want to know what $\mu_Y - \mu_X$ is we consider the sample version: $\bar{Y}-\bar{X}$  with 
+
+$$\bar{X}=\frac{1}{M} \sum_{i=1}^M X_i \mbox{ and }\bar{Y}=\frac{1}{N} \sum_{i=1}^N Y_i$$
+
+which is a random variable. Previously we learned about the behavior of this random variable with exercise that involved sampling over and over from the original disribution. We noted that this is not a exercise that we can execute in practice. In this particualy case it would involve buying mice over and over. Here we described the mathmatical theory that mathematically relates $\bar{X}$ to $\mu_X$ and $\bar{Y}$ to $\mu_Y$ which will in turn help us understand the relationship between $\bar{Y}-\bar{X}$  and $\mu_Y - \mu_X$.
+
+# Central Limit Theorem 
+
+The Central Limit Theorem (or CLT) is one of the most used mathematical results in science. It tells us that when the sample size is large the average $\bar{Y}$ of a random sample follows a normal distribution centered at the population average $\mu_Y$  and with standard deviation equal to the population standard deviation $\sigma_Y$, divided by the square root of the sample size $N$. 
+
+Two important mathematical results you need to know are that if we subtract a constant from a random variable, the mean of the new random variable shifts by that constant. Mathematically, if $X$ is a random variable with mean $\mu$ and $a$ is a constant, the mean of $X - a$ is $\mu-a$. A similarly intuitive result holds for the standard deviation if $X$ is a random variable with mean $\mu$ and SD $\sigma$, and $a$ is a constant, then the mean and SD of $aX$ are $a\mu$ and $|a| \sigma$ respectively. To see how intuitive this is, imagine we subtract 10 grams from each of the mice weights, the averge should also drop by that much. Similarly, we we change the units from grams to miligrams by multiplying by 1000 then the spread of the numbers becomes larger.
+
+This implies that if we take many samples of size $N$ then the quantity 
+$$
+\frac{\hat{Y} - \mu}{\sigma_Y/\sqrt{N}}
+$$
+is approximated with a nomral distribution centered at 0 and with standard deviation 1.
+
+Now we are interested in the difference of two sample averages. Here again a mathematical resul helps. If we have two random variables $X$ and $Y$ with means $\mu_X$ and $\mu_X$ and variance $\sigma_X$ and $\sigma_Y$ respectively, then we have the following results. The mean of the sum $Y$+$X$ is the sum of the means $\mu_Y$ + $\mu_X$. Using one of the facts we mentioned earlies, this implies that the mean of $Y$ - $X$ = $Y$ + $aX$ with $a=-1$ which means the mean of $Y-X$ is $\mu_Y$-\mu_X$.This is intuitive. However, the next result is perhaps not as intuitive.  If $X$ and $Y$ are independent of each other, as they are in our mouse example, then the variance (SD squared) of $Y$+$X$ is the sum of the variances $\sigma_Y^2+\sigma_X^2$. This implies that variance of the difference $Y-X$ is the variance of $Y - aX$ with a=-1 which is $\sigma^2_Y + a^2 sigma_X^2$ = 
+$\sigma^2_Y + sigma_X^2$. So the variance of the difference is also the sum of the variances. If this seems like a counterintuitive result, think that if $X$ and $Y$ are independent of each other, the sign does not really matter, it can be considered random: if $X$ is normal with certain variance, for example, so is $-X$.  Finally, anotehr useful result is that the sum of normal variables is again normal.
+
+All this math is very useful for the purposes of our study becase we have two sample averages and are interested in the difference. Becasue both are normal the difference is normal as well, and the variance (the standard deviation squared) is the sum of the two variance.
+Under the null hypothese that there is no difference between the population averages, the difference between the sample averages $\hat{Y}-\hat{X}$, with $\hat{X}$ and $\hat{Y}$ the sample average for the two diets respectiveley, is approximated by a normal distribution centered at 0 (there is no difference) and with standard deviation $\sqrt{\sigma_X^2 +\sigma_Y^2}/\sqrt{N}$. 
+
+This is imply that this ratio, 
+$$
+\frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} + \frac{\sigma_Y^2}{N}}}
+$$
+is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation make computing p-values simple because we know the proportion of the distribtuion under any value. For example, only 5% values of larger than 2 (in absolute value):
+```{r}
+1-pnorm(2)+pnorm(-2)
+```
+We don't need to buy more mouse,  12 and 12 suffices.
+
+However, we can't claim victory just yet because  we don't know the population standard deviations: $\sigma_X$ and $\sigma_Y$. These are population parameters. But we can get around this by using the sample standard deviations, call then $s_X$ and $s_Y$. These are defined as 
+
+$$ s_X^2 = \frac{1}{N_1} \sum_{i=1}^M (Y_i - \bar{Y})^2  \mbox{ and } s_X^2 = \frac{1}{M_1} \sum_{i=1}^M (X_i - \bar{X})^2$$
+
+Note that we are dividinb by $N-1$ and $M-1$. There is a theoretical reson for doing this which we won't explain now. But to get an intuition think of the case when you just have 2 numbers. The average distance to the mean is basically the 1/2 the difference between the two numbers. So you really just have information from one number. This is somewhat of a minor point, the main point is that $s_X$ and $s_Y$ serve as estimates of $\sigma_X$ and $\sigma_Y$
+
+So we can redefine our ratio as 
+$$
+\sqrt{N} \frac{\bar{Y}-\bar{X}}{\sqrt{s_X^2 +s_Y^2}}
+$$
+
+The CLT tells us that when $N$ and $M$ are large (rule of thumb is 30) this random variable is normally distributed with mean 0 and SD 1. Thus we can compute p-values using the function `pnorm`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
