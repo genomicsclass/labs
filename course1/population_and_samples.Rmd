@@ -45,7 +45,7 @@ as well as the variance:
 
 $$\sigma_X^2 = \frac{1}{m}\sum_{i=1}^m (x_i-\mu_x)^2 \mbox{ and } \sigma_Y^2 = \frac{1}{n} \sum_{i=1}^n (y_i-\mu_y)^2$$
 
-with the standard deviations being the square root of these.
+with the standard deviations being the square root of these. We refer to quantities such as these, that can be obtained from the population, as _population parameters_.
 
 The question we started out asking can now me written mathematically: $\mu_Y - \mu_X = 0$ ? An important point is that although here we can easily check if this is true, since we actually have the values, in practice we do not. So instead we take a sample and try to answer the questions with the sample. This is the essence of statistical inference. 
 
