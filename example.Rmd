@@ -1,0 +1,27 @@
+---
+title: "This is the title"
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# First section
+
+An introduction
+
+<!-- this is a comment -->
+
+<!-- this next line is an anchor -->
+<a name="randomnormal"></a>
+
+# Random normals
+
+Here are 10 random normals:
+
+```{r}
+rnorm(10)
+```
+
