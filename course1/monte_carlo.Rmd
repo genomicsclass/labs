@@ -28,7 +28,7 @@ Below is the code we used to obtain random sample and then the difference:
 library(downloader)
 url<-"https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/babies.txt"
 filename <- tempfile()
-download(url,destfile=filename)
+download(url,destfile="babies.txt")
 dat <- read.table("babies.txt",header=TRUE)
 smokers <- sample(dat$bwt[dat$smoke==1],10)
 nonsmokers <- sample(dat$bwt[dat$smoke==0],10)
