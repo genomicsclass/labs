@@ -47,7 +47,7 @@ $$ SE(\bar{X}) = \sigma / \sqrt{N}$$
 A problem is that we do not know the population standard deviation. So we use the sample standard deviation as an estimate. In R we simply use the `sd` function and the SE is simply
 
 ```{r}
-sd(control)/length(control)
+sd(control)/sqrt(length(control))
 ```
 
 This is the SE of the sample average but we actually want the SE of `diff`. We saw how statistical theory tells us that the variance of the difference of two random variables is the sum of it's variances, so we compute the variance and take the square root:
