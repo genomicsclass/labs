@@ -79,6 +79,8 @@ In this case the p-value is 0.04 and we would call it significant.
 
 No there is a problem here. CLT works for large samples, but is 12 large enough? A rule of thumb for CLT is that 30 is a large enough sample size (but this is just a rule of thumb).  However, there is another option than using CLT.
 
+<a name="smallsample"></a>
+
 ## The t-distribution in practice
 
 As described earlier, it turns out that statistical theory offers another useful result. If the distribution of the population is normal then we can work out the exact distribution of the t-statistic without the need for the CLT. Now note that this is a big "if" given with small samples it i hard to check if the population is normal. But for something like weight we suspect that the population distribution is likely well approximated by normal and use this result. Furthermore, we can look at qq-plot for the sample and this show that the approximation is at least close:
@@ -112,21 +114,4 @@ control <- dat[controlIndex,2]
 treatment <- dat[treatmentIndex,2]
 t.test(treatment,control)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

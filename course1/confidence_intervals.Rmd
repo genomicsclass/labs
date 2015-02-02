@@ -1,6 +1,5 @@
 ---
 title: "Confidence Intervals"
-output: pdf_document
 layout: page
 ---
 
@@ -57,6 +56,10 @@ se <- sd(hf)/sqrt(N)
 print(se)
 ```
 
+<a name="interval"></a>
+
+## Defining the interval
+
 A 95% confidence interval (we can use percentages other than 95%) is an random intervals with probability 95% of falling on the parameter we are estimating. To construct it we note that CLT tells us that $\sqrt{N} (\bar{X}-\mu_X)/s_X$ follows a normal distribution with mean 0 and SD 1. This implies that the probability that the probability of this event:
 
 $$-2 \leq \sqrt{N} (\bar{X}-\mu_X)/s_X \leq 2$$  
@@ -101,6 +104,10 @@ for(i in 1:B){
 ```
 
 You can run this over and over again to see what happens. You will see that about 5% we fail to cover $\mu_X$.
+
+<a name="smallsample"></a>
+
+## Small sample size and the CLT
 
 For $N=30$ the CLT works very well. However what if $N=5$, do these confidence interval work as well? We used the CLT to create our intervals, and with $N=5$ it may not be a useful approximation. We can confirm this with a simulation
 
