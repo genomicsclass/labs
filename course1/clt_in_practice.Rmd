@@ -1,6 +1,5 @@
 ---
 title: "Central Limit Theorem in practice"
-output: pdf_document
 layout: page
 ---
 
