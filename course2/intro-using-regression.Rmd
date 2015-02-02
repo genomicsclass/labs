@@ -1,9 +1,16 @@
 ---
-title: "intro-using-regression.Rmd"
+title: "Introduction to Linear Models"
 author: "Rafa"
 date: "January 31, 2015"
 output: pdf_document
 ---
+
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 
 # Introduciton
 
@@ -12,7 +19,7 @@ library(rafalib)
 mypar2()
 ```
 
-We are going to describe to examples from the life sciences. One from physics and another related to genetics. They are very different yet we end up using the same statistical technique: fitting linear models. Linear models typically taught and described in the language of matrix algebra. We will teach you both 
+We are going to describe three examples from the life sciences. One from physics, one related to genetics, and one from an mouse experiment. They are very different yet we end up using the same statistical technique: fitting linear models. Linear models typically taught and described in the language of matrix algebra. We will teach you both 
 
 ## Objects falling
 ```{r simulate drop data}
@@ -94,23 +101,26 @@ It turns out that the least squares estimate of $\beta_1$ can be written in term
 
 ## Random samples from multiple populations
 
+Here we read-in mouse body weight data from mice that were fed two different diets, high fat and control (chow). We have a random sample of 12 mice for each. We are interested in determining if the diet has an effect on weight. Here is the data
+
 
 ```{r}
 dir <- system.file(package="dagdata")
 filename <- file.path(dir,"extdata/femaleMiceWeights.csv")
 dat <- read.csv(filename)
-mypar(1,1)
+mypar2(1,1)
 stripchart(Bodyweight~Diet,data=dat,vertical=TRUE,method="jitter",pch=1,main="Mice weights")
 ```
 
+We want to estimate the difference in average weight between populations. We showed how we can use t-tests and condifence intervals based on the difference in sample averages to do this. Although linear algebrea does not actually simply the calculations here, it is worth noting that we can in fact also accomdate this data with a linear model:
 
 $$ Y_i = \beta_0 + \beta_1 x_{i} + \varepsilon_i$$
 
-* $\beta_0$ is chow diet average weight
-* $\beta_1$ is difference between averages
-* $x_i = 1$ if high fat (hf) diet
-* $x_i = 0$ if chow diet
-* $\varepsilon_i$ explaines differences between mice of same population
+with $\beta_0$ the chow diet average weight,
+$\beta_1$ the difference between averages,
+$x_i = 1$ the high fat (hf) diet,
+ $x_i = 0$ the chow diet, and 
+ $\varepsilon_i$ explains the differences between mice of same population.
 
 ## General linear model
 
@@ -133,14 +143,14 @@ The main point of this entire exercise is to show how we can write the models ab
 
 ## Motivation
 
-Linear algebra was created by mathematicians to solve systmes of linear equations such as this:
+Linear algebra was created by mathematicians to solve systems of linear equations such as this:
 
 $$
-\begin{eqnarray}
-a + b + c &=& 6\\
-3a - 2b + c &=& 2\\
-2a + b  - c &=& 1
-\end{eqnarray}
+\begin{aligned}
+a + b + c &= 6\\
+3a - 2b + c &= 2\\
+2a + b  - c &= 1
+\end{aligned}
 $$
 
 It provides very useful machinery to solve these problems generally. We will learn how we can write this system using matrix algebra notation:
@@ -182,7 +192,7 @@ c
 \end{pmatrix}
 $$
 
-This section explains the notation used aboveIt turns that we can borrow this notation to linear models in statistics as well.
+This section explains the notation used above. It turns that we can borrow this notation to linear models in statistics as well.
 
 
 
@@ -306,7 +316,8 @@ a*X
 The transpose is an operation that simply changes columns to rows. We use either a $T$ or $'$ to denote transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
 
 $$
-\mathbf{X}^\top = \begin{pmatrix}
+\mathbf{X}^\top = 
+\begin{pmatrix}
   x_{1,1}&\dots & x_{p,1} \\
   x_{1,2}&\dots & x_{p,2} \\
    & \vdots & \\
@@ -327,11 +338,11 @@ Now we can understand the equations we showed to motivated linear algebra:
 
 
 $$
-\begin{eqnarray}
-a + b + c &=& 6\\
-3a - 2b + c &=& 2\\
-2a + b  - c &=& 1
-\end{eqnarray}
+\begin{aligned}
+a + b + c &=6\\
+3a - 2b + c &= 2\\
+2a + b  - c &= 1\\
+\end{aligned}
 $$
 
 can be written like this:
