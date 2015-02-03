@@ -47,8 +47,8 @@ How many of the null means are bigger than the observed value? That proportion w
 mean(abs(avgdiff) > abs(obs))
 ```
 
-Note that if we repeat for N=10, the observed difference is not significant using this approach. It is important to keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. Note for example that if there is a real differences, some of the permutations will be unblanced and will contain signal. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative p-values. For this reason when  we have few samples we can't do permutations. 
+Note that if we repeat for N=10, the observed difference is not significant using this approach. It is important to keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. Note for example that if there is a real differences, some of the permutations will be unbalanced and will contain signal. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative p-values. For this reason when  we have few samples we can't do permutations. 
 
-Note also that permutations tests still have assumptions: samples are assumed to be independent. If there is hidden structure in your data, then permutation tests can actually end up with null distributions that underestimate the details because the permutations amy destroy the existing structure in the original data.
+Note also that permutations tests still have assumptions: samples are assumed to be independent. If there is hidden structure in your data, then permutation tests can actually end up with null distributions that underestimate the details because the permutations may destroy the existing structure in the original data.
 
 
