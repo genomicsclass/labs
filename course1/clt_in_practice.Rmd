@@ -52,8 +52,8 @@ identical(var(x)*(N-1)/N, popvar)
 
 So to be mathematically correct we do not use `sd` or  `var`.
 ```{r}
-sd_hf <- mean((hfPopulation-mu_hf)^2)
-sd_control <- mean((controlPopulation-mu_control)^2)
+sd_hf <- sqrt(mean((hfPopulation-mu_hf)^2))
+sd_control <- sqrt(mean((controlPopulation-mu_control)^2))
 ```
 
 Remember, that in practice we do not get to compute these population parameters,
