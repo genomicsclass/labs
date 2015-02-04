@@ -79,7 +79,7 @@ p
 ```
 The expected table is therefore
 ```{r}
-expected <- rbind(c(1-p,p)*sum(genotype=="aa"),c(1-p,p)*sum(genotype=="AA/Aa"))
+expected <- rbind(c(1-p,p)*sum(genotype=="AA/Aa"),c(1-p,p)*sum(genotype=="aa"))
 dimnames(expected)<-dimnames(tab)
 expected
 ```
