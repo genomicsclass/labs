@@ -1,6 +1,6 @@
 ---
 title: "Power calculations"
-output: pdf_document
+output: html_document
 layout: page
 ---
 
@@ -86,11 +86,12 @@ reject <- function(N,alpha=0.05){
 }
 rejections <- replicate(B,reject(N))
 ```
-Our power is just the proportion of times we correctly reject
+Our power is just the proportion of times we correctly reject. So with  $N=12$ our power is only: 
 ```{r}
 mean(rejections)
 ```
-Note that with just $N=12$ we only have about 9% power. For those that were confused as to why the t-test was rejecting when we knew the null was false, this explains. To guard against false posties at the 0.05 level, we had to be this careful and ended up with making a type II error.
+
+For those that were confused as to why the t-test was rejecting when we knew the null was false, this explains. To guard against false posties at the 0.05 level, we had to be this careful and ended up with making a type II error.
 
 Let's see how power improves with N:
 ```{r}
