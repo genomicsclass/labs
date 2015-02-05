@@ -82,14 +82,15 @@ The typical statistics we use to summarize these results is the odds ratio (OR).
 (tab[2,2]/tab[2,1]) / (tab[1,2]/tab[1,1])
 ```
 
-Now to compute we don't use the OR directly  p-value we assume that there is no association between genotype and disease and compute what we expect to see in each cell. Note that 200 and 50 individuals in each group were assigned disease with the same probability. If this is the case then the probability of disease is
+Now to compute p-value we don't use the OR directly, we assume that there is no association between genotype and disease and compute what we expect to see in each cell. Note under the null that 200 and 50 individuals in each group were assigned disease with the same probability. If this is the case then the probability of disease is
 ```{r}
 p=mean(disease=="cases")
 p
 ```
 The expected table is therefore
 ```{r}
-expected <- rbind(c(1-p,p)*sum(genotype=="AA/Aa"),c(1-p,p)*sum(genotype=="aa"))
+expected <- rbind(c(1-p,p)*sum(genotype=="AA/Aa"),
+                  c(1-p,p)*sum(genotype=="aa"))
 dimnames(expected)<-dimnames(tab)
 expected
 ```
