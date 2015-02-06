@@ -1,6 +1,12 @@
 ---
-title: dplyr
+layout: page
+title: dplyr tutorial
 ---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ### What is dplyr?
 
@@ -51,6 +57,10 @@ Download the msleep data set in CSV format from
 and then load into R:
 
 ```{r}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv"
+filename <- "msleep_ggplot2.csv"
+if (!file.exists(filename)) download(url,filename)
 msleep <- read.csv("msleep_ggplot2.csv")
 head(msleep)
 ```
