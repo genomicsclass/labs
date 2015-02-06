@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Linear Models"
+title: "Matrix Algebra in Practice"
 author: "Rafa"
 date: "January 31, 2015"
 output: pdf_document
@@ -12,36 +12,144 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduciton
 
-```{r prep}
+```{r}
 library(rafalib)
 mypar2()
 ```
 
-We are going to describe three examples from the life sciences. One from physics, one related to genetics, and one from an mouse experiment. They are very different yet we end up using the same statistical technique: fitting linear models. Linear models typically taught and described in the language of matrix algebra. We will teach you both 
+Here we show in more detail how we use R to fit statistical models to data. Specifically, we demonstrate how we estimate model paramaters by minimizing the residual sum of squares. The estimates are referred to as least squares estimates (LSE). We will demonstrate with the falling object example.
 
-## Objects falling
+## Simulate the data
+
+Thanks to my high school physics teacher (Leonardo "Panchón" Morales) I know that the equation for a falling object is 
+
+$$d = h_0 + v_0 t -  0.5 \times 9.8 t^2$$
+with $h_0$ and $v_0$ the starting height and velocity respectively. We add a bit of measurement error to simulate `n` observations for dropping  the ball $(v_0=0)$ from the tower of Pisa $(h_0=56.67)$:
+
 ```{r simulate drop data}
 g <- 9.8 ## meters per second
 n <- 25
 tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
-d <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1)
+f <- 56.67  - 0.5*g*tt^2
+y <-  f + rnorm(n,sd=1)
 ```
 
-Imagine you are Galileo back in the 16th century trying to describe the velocity of an objects falling. An assistant climbs the Tower of Pizza and drops a ball while several another record the position at different times. They had the data to Galileo and this is what he sees:
+Here is what the data looks like with the solid line represneting the true trajectory:
 
 ```{r}
-plot(tt,d,ylab="Distance in meters",xlab="Time in seconds")
+plot(tt,y,ylab="Distance in meters",xlab="Time in seconds")
+lines(tt,f,col=2)
 ```
 
-He has a theory that acceleration is constant and that therefore that the position should follow a parabola. So he models the data with 
+But now let's pretend we are Galileo and don't know the parameters in the model. The data does suggest it is a parabola so we model it like this:
 
 $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
 
-With $Y_i$ representing location, $t_i$ representing the time, and $\varepsilon$ accounts for measurement error. 
+As stated earlier, $Y_i$ represents location, $t_i$ represents time of observation, and $\varepsilon$ accounts for measurement error. 
 
-But what are the $\beta$s?A standard approach in science is to find the values that minimize the distance of the fitted curve to the data:
-
+We will estimate the model by finding the LSE or the$\beta$ s that minimize the RSS:
 $$ \sum_{i=1}^n \{  Y_i - (\beta_0 + \beta_1 t_i + \beta_2 t_i^2)\}^2 $$
+
+
+# The `lm` function
+
+In R we can fit this model by simply using the `lm` function. We will describe this function in detail later, but here is a preview
+
+```{r}
+tt2 <-tt^2
+fit <- lm(y~tt+tt2)
+summary(fit)
+```
+
+It gives us the LSE as well as standard errors and p-values.
+
+
+
+Let's write a function that computes the RSS for any vector $\beta$
+```{r}
+rss <- function(Beta0,Beta1,Beta2){
+  r <- y - (Beta0+Beta1*tt+Beta2*tt^2)
+  return(sum(r^2))
+}
+```
+
+So for any three dimensional vector we get an RSS. Here is a plot of the RSS as a function of $\beta_2$ when we keep the other two fixed:
+
+```{r}
+Beta2s<- seq(-10,0,len=100)
+plot(Beta2s,sapply(Beta2s,rss,Beta0=55,Beta1=0),
+     ylab="RSS",xlab="Beta2",type="l")
+```
+
+Let's add another curve fixing another pair:
+
+```{r}
+Beta2s<- seq(-10,0,len=100)
+lines(Beta2s,sapply(Beta2s,rss,Beta0=65,Beta1=0),col=2)
+     
+```
+
+How do we find the three dimensional beta that minimizes this? Let's use what we learned.
+
+First let's define $\mathbf{X}$. We use the `cbind` function that joins vectors into matrices:
+
+```{r}
+X <- cbind(1,tt,tt^2)
+```
+
+Note that R assumes that by 1 we mean a vector of 1s automatically:
+
+```{r}
+head(X)
+```
+
+We can also create a $3\times 1$ vector of $\beta$ values, multiply by $\mathbf{X}$, compute residulas and form the RSS using matrix algebra
+
+```{r}
+Beta <- matrix(c(55,0,5),3,1)
+r <- y - X%*%Beta
+RSS <- t(r)%*%r ### or we can use 
+RSS <- crossprod(r)
+RSS
+```
+
+Note this gives the same answer as the previous approach
+
+```{r}
+rss(55,0,5)
+```
+
+We did the above simply to demonstrate matrix algebra operations in R. The actual More importantly we can easily find the LSEs through the 
+$$\hat{\boldsymbol{\beta}}=(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}$$ 
+
+
+```{r}
+betahat <- solve(t(X)%*%X)%*%t(X)%*%y
+```
+
+Note that `t` gives us the transponse and `solve` gives us the inverse. Now, the function `crossprod` makes the computation of $\mathbf{X}^\top \mathbf{Y}$ slightly faster so we instead write
+
+
+```{r}
+betahat <- solve(crossprod(X)) %*% crossprod(X,y)
+```
+
+Later we will show that using solve this way can be unstable and why we actually use the QR decompostion like this:
+
+```{r}
+QR <- qr(X)
+betahat <- solve(qr.R(QR) , crossprod(qr.Q(QR),y))
+```
+
+More on the QR composition later.
+
+
+
+
+
+
+
+
 
 This expression is called the residual sums of squares or RSS. Note, here we can use calculus and find the values: take the partial derivatives and set them to 0 and solve. Linear algebra provides another way of solving this problem. We will see that soon. 
 
@@ -603,7 +711,8 @@ Y_N
 $$
 
 or simply: 
-$$\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}
+$$
+\mathbf{Y}=\mathbf{X}\mathbf{\beta}+\mathbf{\varepsilon}
 $$
 
 which is a much simpler way to write it. 
@@ -613,32 +722,28 @@ which is a much simpler way to write it.
 The RSS equation becomes simpler as well as it is the following cross-product:
 
 $$
-(\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})^\top
-(\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})
+\mathbf{(Y-X\beta)^\top(Y-X\beta)}
 $$
 
 So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. The only one we need here tells us that the derivative of the above equation is:
 
-
-
+$$
+\mathbf{2 X^\top (Y - X \beta)}
+$$
 
 Note: that the RSS is like a square (multiply something by itself) and that this formula is similar to  similar to the derivative of $f(x)^2$ being $2f(x)f'(x)$. 
 
 By equating the derivative to 0 and solving for the $\beta$ we will have our solution:
 
 $$
-2 \mathbf{X}^\top (\mathbf{Y} - \mathbf{X} \boldsymbol{\hat{\beta}})=0
+\mathbf{2 X^\top (Y - X \beta)}=0
 $$
-
 $$
-\mathbf{X}^\top \mathbf{X} \boldsymbol{\hat{\beta}} = \mathbf{X}^\top \mathbf{Y}   
+\mathbf{X^\top X \beta = X^\top Y   }
 $$
-
-
 $$
-\boldsymbol{\hat{\beta}} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}   
+\mathbf{\beta = (X^\top X)^{-1} X^\top Y   }
 $$
-
 and we have our solution. 
 We usually put a hat on the $\beta$ that solves this, $\hat{\beta}$ as it is an estimate of the "real" $\beta$ that generated the data.
 
@@ -665,8 +770,7 @@ plot(x,y,xlab="Father's height",ylab="Son's height")
 lines(newx,fitted,col=2)
 ```
 
-This $\hat{\boldsymbol{\beta}}=(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}$
- is one of the most widely used results in data analysis. One of the beauties of this approach is that we can use the same approach for the other problem. Note we are using almost the same exact code:
+This $\hat{\beta}=(X'X)^\top X^\top Y$ is one of the most widely used results in data analysis. One of the beauties of this approach is that we can use the same approach for the other problem. Note we are using almost the same exact code:
 
 
 ```{r}
