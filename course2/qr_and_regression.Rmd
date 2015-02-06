@@ -1,0 +1,59 @@
+---
+title: "The QR decomposition"
+author: "Rafa"
+date: "January 31, 2015"
+output: pdf_document
+---
+
+## `solve` is unstable
+The QR decomposition
+
+```{r}
+n <- 50
+M <- 500
+x <- seq(1,M,len=n)
+X <- cbind(1,x,x^2,x^3)
+beta <- matrix(c(1,1,1,1),4,1)
+y <- X%*%beta+rnorm(n,sd=10^7)
+plot(x,y)
+solve(crossprod(X))%*%crossprod(X,y)
+
+tail(X)
+crossprod(X)
+QR <- qr(X)
+Q <- qr.Q( QR )
+R <- qr.R( QR )
+
+backsolve(R,crossprod(Q,y))
+
+plot(x,y)
+fitted <- tcrossprod(Q)%*%y
+lines(x,fitted,col=2)
+
+```
+
+If you plan on calculating $\hat{\beta}=(X'X)^\top X^\top Y$ often, and especially if you plan to work with large data sets, it serves you well to learn about the QR decomposition. You can search for the details elsewhere but here is a very useful result in R
+
+```{r}
+qr.X <- qr(X)
+R <- qr.R(qr.X)
+Q <- qr.Q(qr.X)
+betahat <- solve(R, crossprod(Q,y) )
+betahat
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
