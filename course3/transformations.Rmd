@@ -1,0 +1,49 @@
+---
+layout: page
+title: Transformation 
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+## Transformations
+
+### Mean-variance relationship
+
+In microarrays and RNAseq data we observe strong variance dependence on mean.
+```{r}
+if (!file.exists("bottomly_eset.RData")) download.file("http://bowtie-bio.sourceforge.net/recount/ExpressionSets/bottomly_eset.RData","bottomly_eset.RData")
+load("bottomly_eset.RData")
+library("Biobase")
+ind <- which(pData(bottomly.eset)$strain=="C57BL/6J")
+Y <- exprs(bottomly.eset)[,ind]
+avgs<-rowMeans(Y)
+sds <-genefilter::rowSds(Y)
+mypar(1,1)
+splot(avgs,sds,log="xy",subset=which(avgs>0),xlab="Average",ylab="SD")
+```
+
+This means that the larger values, vary the most. If we need to compute a mean to, say, normalize, it will be highly sensitive to the variation of the max:
+```{r}
+maxs <- apply(Y,2,max)
+sampleavgs <- colMeans(Y)
+plot(maxs,sampleavgs/min(sampleavgs),xlab="Max",ylab="Sample average increase",pch=21,bg=1,cex=1.5)
+```
+The log transformation can remove the strong dependence.
+
+```{r}
+lY <- log2(Y+0.5)
+lavgs<-rowMeans(lY)
+lsds <-genefilter::rowSds(lY)
+splot(lavgs,lsds,xlab="Average of log counts",ylab="SD of log counts")
+```
+
+```{r}
+lsampleavgs <- colMeans(lY)
+plot(maxs,sampleavgs/min(sampleavgs),xlab="Max",ylab="Sample average increase",bg=1,pch=21,cex=1.5)
+points(maxs,lsampleavgs/min(lsampleavgs),xlab="Max",ylab="Sample average",bg=2,pch=21,cex=1.5)
+legend("topleft",c("Original","Log"),pch=16,col=1:2,box.lwd=0)
+```
+
