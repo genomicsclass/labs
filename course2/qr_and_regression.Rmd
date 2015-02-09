@@ -6,7 +6,16 @@ output: pdf_document
 ---
 
 ## `solve` is unstable
+
 The QR decomposition
+
+
+```{r,echo=FALSE}
+set.seed(1)
+```
+
+If you plan on calculating $\hat{\beta}=(X'X)^\top X^\top Y$ often, and especially if you plan to work with large data sets, it serves you well to learn about the QR decomposition. You can search for the details elsewhere but here is a very useful result in R
+
 
 ```{r}
 n <- 50
@@ -32,13 +41,12 @@ lines(x,fitted,col=2)
 
 ```
 
-If you plan on calculating $\hat{\beta}=(X'X)^\top X^\top Y$ often, and especially if you plan to work with large data sets, it serves you well to learn about the QR decomposition. You can search for the details elsewhere but here is a very useful result in R
 
 ```{r}
 qr.X <- qr(X)
 R <- qr.R(qr.X)
 Q <- qr.Q(qr.X)
-betahat <- solve(R, crossprod(Q,y) )
+betahat <- backsolve(R, crossprod(Q,y) )
 betahat
 ```
 

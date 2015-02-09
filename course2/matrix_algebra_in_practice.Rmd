@@ -12,6 +12,12 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduciton
 
+
+```{r,echo=FALSE}
+set.seed(1)
+```
+
+
 ```{r}
 library(rafalib)
 mypar2()

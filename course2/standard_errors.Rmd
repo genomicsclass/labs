@@ -1,0 +1,49 @@
+---
+title: "Standard Errors"
+author: "Rafa"
+date: "January 31, 2015"
+output: pdf_document
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduciton
+
+```{r}
+library(rafalib)
+mypar2()
+```
+
+We have shown how to find the least squares estimates with matrix algebrea. For these to be useful we also need to compute the standard errors. Linear algebra also provides powerful approach for this task. 
+
+# Varaince covariance matrix
+
+As a first step we need to define the matrix covariance matrix. For a vector of random variable $\mathbf{Y}$ we define the matrix $\boldsymbol{\Sigma}$ as matrix with entry $i,j$ is $\mbox{Cov}(Y_i,Y_j)$. This  covariance variance if $i=j$ and equal to 0 if the variables are independent. In the cases considered up to now we have assumed independence and have the same variance $\sigma^2$ so the variance covariance matrix is $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$ the identity matrix.
+
+# Variance of linear combination 
+
+A useful result that linear algebra gives is that the variance covariance matrix of a linear combination $\mathbf{AY}$ of $\mathbf{Y}$ can be computed like this
+
+$$
+\mbox{var}(\mathbf{AY}) = \mathbf{A}\mbox{var}(\mathbf{Y}) \mathbf{A}^\top 
+$$
+
+
+# LSE standard errors
+
+Note that $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{(X^\top X)^{-1}X^\top Y}$ so we can use the equation above to derive the variance of our estimates:
+
+$$
+\mbox{var}(\boldsymbol{\hat{\beta}}) = \mbox{var}( \mathbf{(X^\top X)^{-1}X^\top Y} ) =  $$
+$$\mathbf{(X^\top X)^{-1} X^\top} \mbox{var}(Y) (\mathbf{(X^\top X)^{-1} X^\top})^\top = $$
+$$\mathbf{(X^\top X)^{-1} X^\top} \sigma^2 \mathbf{I} (\mathbf{(X^\top X)^{-1} X^\top})^\top = $$
+$$\sigma^2 \mathbf{(X^\top X)^{-1} X^\top}\mathbf{X} \mathbf{(X^\top X)^{-1}} = $$
+$$\sigma^2\mathbf{(X^\top X)^{-1}}$$
+
+
+
+
+

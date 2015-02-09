@@ -1,0 +1,281 @@
+---
+title: "Colinearity"
+author: "Rafa"
+date: "January 31, 2015"
+output: pdf_document
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduciton
+
+```{r}
+library(rafalib)
+mypar2()
+```
+
+If an experiment is designed incorrectly we may not be able to estimate what parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are fitting a linear model then we can detect these problems mathematical by looking for colinearity.
+
+
+# System of equations example
+
+
+Consider the following system of equations:
+
+$$
+\begin{aligned}
+a+c &=1\\
+b-c &=1\\
+a+b &=2
+\end{aligned}
+$$
+
+
+
+Note that it has more than one solution. Two examples are $a=1,b=1,c=0$ and $a=2,b=0,c=1$. In fact e as long as $a=1+c, b=1-c$ the equations are satisfied and thus there is an infinite number of triplets that solve this. 
+
+Using matrix algebra we can notice this right away. The system of equations can be written like this:
+$$
+\begin{pmatrix}
+1&0&1\\
+0&1&1\\
+1&1&0\\
+\end{pmatrix}
+\begin{pmatrix}
+a\\
+b\\
+c\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1\\
+1\\
+2
+\end{pmatrix}
+$$
+
+And note that we can write the equation above as
+
+$$
+\begin{pmatrix}
+1\\
+0\\
+1\\
+\end{pmatrix}
++
+-1 \begin{pmatrix}
+0\\
+1\\
+1\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1\\
+-1\\
+0\\
+\end{pmatrix}
+$$
+
+We say that these columns are colinear. This implies that the system of equations can be written 
+
+$$
+\begin{pmatrix}
+1&0&1\\
+0&1&1\\
+1&1&0\\
+\end{pmatrix}
+\begin{pmatrix}
+a\\
+b\\
+c\\
+\end{pmatrix}
+=
+a
+\begin{pmatrix}
+1\\
+0\\
+1\\
+\end{pmatrix}
++
+b \begin{pmatrix}
+0\\
+1\\
+1\\
+\end{pmatrix}
++
+c
+\begin{pmatrix}
+1+0\\
+0-1\\
+1+2\\
+\end{pmatrix}
+=
+(a+c)
+\begin{pmatrix}
+1\\
+0\\
+1\\
+\end{pmatrix}
++
+(b-c)
+\begin{pmatrix}
+0\\
+1\\
+1\\
+\end{pmatrix}
+$$
+
+Thus the last column does not add any constrain. Furthermore, this representation highlights that the solution only restricted $a-b$ and $b-c$, as opposed to the three variables. 
+
+
+
+
+# co-linearity in least squares example
+
+Similarly if we design an experiment that results in a design matrix $\mathbf{X}$ with two colinear column 
+
+$$
+\mathbf{X} = \begin{pmatrix}
+\mathbf{1}&\mathbf{X}_1&\mathbf{X}_2&\mathbf{X}_3\\
+\end{pmatrix}
+\mbox{ with, say, }
+\mathbf{X}_3 = - \mathbf{X}_2
+$$
+
+Then we can rewrite the residuals like this:
+
+$$
+\mathbf{Y}- \left( \mathbf{1} + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 + \mathbf{X}_3\beta_3\right)\\ 
+= \mathbf{Y}- \left( \mathbf{1} + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 - \mathbf{X}_2\beta_3\right)\\
+= \mathbf{Y}- \left( \mathbf{1} + \mathbf{X}_1 \beta_1 + \mathbf{X}_2(\beta_2  - \beta_3)\right)
+$$
+
+And the least square solution would give us $\beta_1$ and $\beta_2 - \beta_3$ but not the individual $\beta$ s. Note that if $\hat{\beta}_1$,$\hat{\beta}_2$,$\hat{\beta}_3$ is a solution then $\hat{\beta}_1$,$\hat{\beta}_2+1$, $\hat{\beta}_3+1$ is also a solution since it gives exactly the same residuals. 
+
+
+# Confounding as an example
+
+Suppose you are interested in estimating the effect of a three treatments A, B and C. Treatment A and B where given to males and females while treatment C only to females. A sex effect is expected so the model is 
+
+$$Y_i = \beta_0 + \beta_S X_{S,i} +\beta_A X_{A,i} + \beta_B X_{B,i} + \beta_C X_{C,i} + \varepsilon_i$$
+
+with $X_{A_i}=1$ if subject $i$ received treatment $A$, etc... and $X_{S_i}=1$ if the subject is female. 
+You have three subject per group so the design matrix looks like this
+$$
+\begin{pmatrix}
+1&0&1&0&0\\
+1&0&1&0&0\\
+1&0&1&0&0\\
+1&1&1&0&0\\
+1&1&1&0&0\\
+1&1&1&0&0\\
+1&0&0&1&0\\
+1&0&0&1&0\\
+1&0&0&1&0\\
+1&1&0&1&0\\
+1&1&0&1&0\\
+1&1&0&1&0\\
+1&1&0&0&1\\
+1&1&0&0&1\\
+1&1&0&0&1\\
+\end{pmatrix}
+$$
+
+It turns out that we can't separate the female effect from the treatment C effect. To see this, note that column associated with treatmetn C is a linear combination of three other columns:
+
+$$
+\begin{pmatrix}
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+1\\
+1\\
+1\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+\end{pmatrix}
+-
+\begin{pmatrix}
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+\end{pmatrix}
+-
+\begin{pmatrix}
+0\\
+0\\
+0\\
+0\\
+0\\
+0\\
+1\\
+1\\
+1\\
+1\\
+1\\
+1\\
+0\\
+0\\
+0\\
+\end{pmatrix}
+$$
+
+
+In R, the `qr` computes what is called the _rank_ of the matrix. The rank is the number of columns that are independent of the others. So if the rank is less than the number of columns then there is no unique solution.
+
+```{r}
+X <- cbind(1, c(0,0,0, 1,1,1, 0,0,0, 1,1,1, 1,1,1), c(1,1,1, 1,1,1, 0,0,0, 0,0,0, 0,0,0), c(0,0,0, 0,0,0, 1,1,1, 1,1,1, 0,0,0), c(0,0,0, 0,0,0, 0,0,0, 0,0,0, 1,1,1))
+qr(X)$rank
+```
+
+
+
+
+
+
+
+
+
+
+
+
