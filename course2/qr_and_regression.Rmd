@@ -23,7 +23,7 @@ M <- 500
 x <- seq(1,M,len=n)
 X <- cbind(1,x,x^2,x^3)
 beta <- matrix(c(1,1,1,1),4,1)
-y <- X%*%beta+rnorm(n,sd=10^7)
+y <- X%*%beta+rnorm(n,sd=1)
 plot(x,y)
 solve(crossprod(X))%*%crossprod(X,y)
 
