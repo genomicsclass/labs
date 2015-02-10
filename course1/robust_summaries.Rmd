@@ -17,7 +17,7 @@ x=c(rnorm(100,0,1)) ##real distribution
 x[23] <- 100 ##mistake made in 23th measurement
 boxplot(x)
 ```
-In statistics we refer to these types of points as _outliers_. A small number of outliers can throw of an entire analysis. For example notice how this one point results in the sample mean and sample variace being very far from the 0 and 1 respectively.
+In statistics we refer to this type of points as _outliers_. A small number of outliers can throw of an entire analysis. For example notice how this one point results in the sample mean and sample variace being very far from the 0 and 1 respectively.
 ```{r}
 mean(x)
 sd(x)
