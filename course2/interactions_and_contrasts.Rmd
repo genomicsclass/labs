@@ -1,0 +1,263 @@
+---
+title: Interactions and contrasts
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+For learning about linear models, we will be using a datasest which compares the different frictional coefficients on the different legs on a spider, and whether more friction comes from a pushing or pulling motion of the leg. The original paper from which the data was provided is: Jonas O. Wolff  & Stanislav N. Gorb, "Radial arrangement of Janus-like setae permits friction control in spiders", Scientific Reports, 22 January 2013. http://dx.doi.org/10.1038/srep01101
+
+The abstract of the paper says, "The hunting spider Cupiennius salei (Arachnida, Ctenidae) possesses hairy attachment pads (claw tufts) at its distal legs, consisting of directional branched setae... Friction of claw tufts on smooth glass was measured to reveal the functional effect of seta arrangement within the pad." Figure 1 includes some very pretty electron microscope images of the tufts. We are intereseted in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). We can recreate Figure 4 of the paper, by loading the data and calling boxplot():
+
+```{r}
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/spider_wolff_gorb_2013.csv"
+filename <- "spider_wolff_gorb_2013.csv"
+library(downloader)
+if (!file.exists(filename)) download(url, filename)
+spider <- read.csv(filename, skip=1)
+boxplot(spider$friction ~ spider$type * spider$leg, 
+        col=c("grey90","grey40"), las=2, 
+        main="Comparison of friction coefficients of different leg pairs ")
+```
+
+What we can see immediately, are two trends: 
+
+* pulling motion has a higher frictional coefficient than pushing motion
+* the leg pairs to the back of the spider (L4 being the last) generally have higher pulling frictional coefficients (although the trend is not there for pushing).
+
+## A linear model with one variable
+
+Note: this is a not a good approach for analysis, but we show here for demonstration purposes. It ignores the information we have regarding the different leg type, and so it loses power. We will show better approaches below.
+
+
+```{r}
+spider.sub <- spider[spider$leg == "L1",]
+fit <- lm(friction ~ type, data=spider.sub)
+summary(fit)
+(coefs <- coef(fit))
+s <- split(spider.sub$friction, spider.sub$type)
+mean(s[["pull"]])
+mean(s[["push"]]) - mean(s[["pull"]])
+```
+
+```{r}
+X <- model.matrix(~ type, data=spider)
+colnames(X)
+head(X)
+# library(devtools); install_github("ririzarr/rafalib")
+library(rafalib)
+imagemat(X, main="Model matrix for linear model with interactions")
+```
+
+### Examining the coefficients
+
+```{r}
+stripchart(split(spider.sub$friction, spider.sub$type), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
+a <- -0.25
+lgth <- .1
+library(RColorBrewer)
+cols <- brewer.pal(3,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+abline(h=coefs[1]+coefs[2],col=cols[2])
+legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+```
+
+## A linear model with two variables
+
+```{r}
+X <- model.matrix(~ type + leg, data=spider)
+colnames(X)
+head(X)
+imagemat(X, main="Model matrix for linear model with 2 factors")
+fit2 <- lm(friction ~ type + leg, data=spider)
+summary(fit2)
+(coefs <- coef(fit2))
+```
+
+### Reminder: the mathematics behind lm()
+
+$$ \hat{\beta} = (X^t X)^{-1} X^t y $$
+
+```{r}
+y <- spider$friction
+X <- model.matrix(~ type + leg, data=spider)
+beta <- solve(t(X) %*% X) %*% t(X) %*% y
+beta
+t(beta)
+coefs
+```
+
+### Examining the coefficients
+
+We might question the assumptions of a simple linear model here, since it supposes that the residuals, $r_i = hat{Y_i} - Y_i$, have the same variance in each group.
+
+```{r}
+spider$group <- factor(paste0(spider$leg, spider$type))
+stripchart(split(spider$friction, spider$group), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
+cols <- brewer.pal(5,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(3+a,coefs[1],3+a,coefs[1]+coefs[3],lwd=3,col=cols[3],length=lgth)
+arrows(5+a,coefs[1],5+a,coefs[1]+coefs[4],lwd=3,col=cols[4],length=lgth)
+arrows(7+a,coefs[1],7+a,coefs[1]+coefs[5],lwd=3,col=cols[5],length=lgth)
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+segments(3+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3],lwd=3,col=cols[3])
+arrows(4+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3]+coefs[2],lwd=3,col=cols[2],length=lgth)
+segments(5+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4],lwd=3,col=cols[4])
+arrows(6+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4]+coefs[2],lwd=3,col=cols[2],length=lgth)
+segments(7+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5],lwd=3,col=cols[5])
+arrows(8+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5]+coefs[2],lwd=3,col=cols[2],length=lgth)
+legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+```
+
+### Contrasting the coefficients
+
+A *contrast* is a combination of coefficients: $\boldsymbol{C} \beta$.
+
+```{r}
+library(contrast)
+L3vsL2 <- contrast(fit2,list(leg="L3",type="pull"),list(leg="L2",type="pull"))
+L3vsL2
+coefs[4] - coefs[3]
+(C <- L3vsL2$X)
+C %*% beta
+L3vsL2.equiv <- contrast(fit2,list(leg="L3",type="push"),list(leg="L2",type="push"))
+L3vsL2.equiv$X
+```
+
+
+## A linear model with interactions
+
+```{r}
+X <- model.matrix(~ type + leg + type:leg, data=spider)
+colnames(X)
+head(X)
+imagemat(X, main="Model matrix for linear model with interactions")
+```
+
+```{r}
+fit3 <- lm(friction ~ type + leg + type:leg, data=spider)
+summary(fit3)
+coefs <- coef(fit3)
+```
+
+
+### Examining the coefficients
+
+```{r}
+stripchart(split(spider$friction, spider$group), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
+cols <- brewer.pal(8,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(3+a,coefs[1],3+a,coefs[1]+coefs[3],lwd=3,col=cols[3],length=lgth)
+arrows(5+a,coefs[1],5+a,coefs[1]+coefs[4],lwd=3,col=cols[4],length=lgth)
+arrows(7+a,coefs[1],7+a,coefs[1]+coefs[5],lwd=3,col=cols[5],length=lgth)
+# now the interactions:
+segments(3+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3],lwd=3,col=cols[3])
+arrows(4+a,coefs[1]+coefs[3],4+a,coefs[1]+coefs[3]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(4+a,coefs[1]+coefs[2]+coefs[3],4+a,coefs[1]+coefs[2]+coefs[3]+coefs[6],lwd=3,col=cols[6],length=lgth)
+#
+segments(5+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4],lwd=3,col=cols[4])
+arrows(6+a,coefs[1]+coefs[4],6+a,coefs[1]+coefs[4]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(6+a,coefs[1]+coefs[4]+coefs[2],6+a,coefs[1]+coefs[4]+coefs[2]+coefs[7],lwd=3,col=cols[7],length=lgth)
+#
+segments(7+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5],lwd=3,col=cols[5])
+arrows(8+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5]+coefs[2],lwd=3,col=cols[2],length=lgth)
+arrows(8+a,coefs[1]+coefs[5]+coefs[2],8+a,coefs[1]+coefs[5]+coefs[2]+coefs[8],lwd=3,col=cols[8],length=lgth)
+legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+```
+
+### Contrasts
+
+For some simple cases, we can use the contrast package:
+
+```{r}
+library(contrast)
+L2push.vs.pull <- contrast(fit3,
+                   list(leg="L2", type = "push"), 
+                   list(leg="L2", type = "pull"))
+L2push.vs.pull
+coefs[2] + coefs[6]
+```
+
+### Differences of differences
+
+The question if the push vs pull difference is different for different legs can be asked in general by the anova() function:
+
+```{r}
+anova(fit3)
+```
+
+If we want to compare two specific groups, and one of the groups is the L1 group, then we can simply read off the interaction effects in summary(fit).
+
+### Difference of differences not involving the reference level
+
+```{r}
+library(multcomp)
+C <- matrix(c(0,0,0,0,0,-1,1,0), 1)
+L3vsL2interaction <- glht(fit3, linfct=C)
+summary(L3vsL2interaction)
+coefs[7] - coefs[6]
+```
+
+## A different specification of the same model
+
+```{r}
+# earlier, we defined the 'group' column:
+spider$group <- factor(paste0(spider$leg, spider$type))
+X <- model.matrix(~ 0 + group, data=spider)
+colnames(X)
+head(X)
+imagemat(X, main="Model matrix for linear model with interactions")
+```
+
+```{r}
+fit4 <- lm(friction ~ 0 + group, data=spider)
+summary(fit4)
+coefs <- coef(fit4)
+```
+
+### Examining the coefficients
+
+```{r}
+stripchart(split(spider$friction, spider$group), 
+           vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
+cols <- brewer.pal(8,"Dark2")
+abline(h=0)
+for (i in 1:8) {
+  arrows(i+a,0,i+a,coefs[i],lwd=3,col=cols[i],length=lgth)
+}
+legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+```
+
+### Simple contrasts using the contrast package
+
+```{r}
+groupL2push.vs.pull <- contrast(fit4,
+                                list(group = "L2push"), 
+                                list(group = "L2pull"))
+groupL2push.vs.pull
+coefs[4] - coefs[3]
+```
+
+### Differences of differences when there is not an intercept
+
+```{r}
+C <- matrix(c(0,0,1,-1,-1,1,0,0), 1)
+groupL3vsL2interaction <- glht(fit4, linfct=C)
+summary(groupL3vsL2interaction)
+(coefs[6] - coefs[5]) - (coefs[4] - coefs[3])
+```
+

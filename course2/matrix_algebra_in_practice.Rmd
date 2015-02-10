@@ -3,6 +3,7 @@ title: "Matrix Algebra in Practice"
 author: "Rafa"
 date: "January 31, 2015"
 output: pdf_document
+layout: page
 ---
 
 ```{r options, echo=FALSE}

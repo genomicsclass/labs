@@ -47,13 +47,13 @@ Stratification followed by boxplots lets us see the distribution of each group. 
 A pair of random variable $(X,y)$is considered to be approximated by bivariate normal when the proportion of values below, say $x$ and $y$ is approximated by this expression:
 
 $$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
-\exp{ \left\{
+\exp{ \left(
 \frac{1}{2(1-\rho^2)}
 \left[\left(\frac{x-\mu_x}{\sigma_x}\right)^2 -  
 2\rho\left(\frac{x-\mu_x}{\sigma_x}\right)\left(\frac{y-\mu_y}{\sigma_y}\right)+
 \left(\frac{y-\mu_y}{\sigma_y}\right)^2
 \right]
-\right\}
+\right)
 }
 $$
 

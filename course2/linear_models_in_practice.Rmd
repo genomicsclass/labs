@@ -1,0 +1,81 @@
+---
+title: Linear models in practice
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r}
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv"
+library(downloader)
+if (!file.exists(filename)) download(url, filename)
+dat <- read.csv(filename)
+stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
+           main="Bodyweight over Diet")
+```
+
+## A linear model with one variable
+
+```{r}
+levels(dat$Diet)
+X <- model.matrix(~ Diet, data=dat)
+X
+colnames(X)
+dat$Diet <- relevel(dat$Diet, ref="hf")
+model.matrix(~ Diet, data=dat)
+dat$Diet <- relevel(dat$Diet, ref="chow")
+```
+
+## The mathematics behind lm()
+
+$$ \hat{\beta} = (X^t X)^{-1} X^t y $$
+
+```{r}
+y <- dat$Bodyweight
+X <- model.matrix(~ Diet, data=dat)
+solve(t(X) %*% X) %*% t(X) %*% y
+```
+
+```{r}
+s <- split(dat$Bodyweight, dat$Diet)
+mean(s[["chow"]])
+mean(s[["hf"]]) - mean(s[["chow"]])
+```
+
+```{r}
+fit <- lm(Bodyweight ~ Diet, data=dat)
+summary(fit)
+(coefs <- coef(fit))
+```
+
+## Examining the coefficients
+
+```{r}
+stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
+           main="Bodyweight over Diet", ylim=c(0,40), xlim=c(0,3))
+a <- -0.25
+lgth <- .1
+library(RColorBrewer)
+cols <- brewer.pal(3,"Dark2")
+abline(h=0)
+arrows(1+a,0,1+a,coefs[1],lwd=3,col=cols[1],length=lgth)
+abline(h=coefs[1],col=cols[1])
+arrows(2+a,coefs[1],2+a,coefs[1]+coefs[2],lwd=3,col=cols[2],length=lgth)
+abline(h=coefs[1]+coefs[2],col=cols[2])
+legend("right",names(coefs),fill=cols,cex=.75,bg="white")
+```
+
+## Comparing simple two group to a t-test
+
+```{r}
+summary(fit)$coefficients
+(ttest <- t.test(s[["chow"]], s[["hf"]], var.equal=TRUE))
+summary(fit)$coefficients[2,3]
+ttest$statistic
+t.test(s[["hf"]], s[["chow"]], var.equal=TRUE)$statistic
+```
+
