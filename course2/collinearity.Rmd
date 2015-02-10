@@ -1,5 +1,5 @@
 ---
-title: "Colinearity"
+title: "Collinearity"
 author: "Rafa"
 date: "January 31, 2015"
 output: pdf_document
