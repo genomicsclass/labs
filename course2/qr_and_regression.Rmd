@@ -3,7 +3,13 @@ title: "The QR decomposition"
 author: "Rafa"
 date: "January 31, 2015"
 output: pdf_document
+layout: page
 ---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 ## `solve` is unstable
 

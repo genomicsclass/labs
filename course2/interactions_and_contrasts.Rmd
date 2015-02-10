@@ -1,4 +1,12 @@
-# Interactions and contrasts
+---
+title: Interactions and contrasts
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
 For learning about linear models, we will be using a datasest which compares the different frictional coefficients on the different legs on a spider, and whether more friction comes from a pushing or pulling motion of the leg. The original paper from which the data was provided is: Jonas O. Wolff  & Stanislav N. Gorb, "Radial arrangement of Janus-like setae permits friction control in spiders", Scientific Reports, 22 January 2013. http://dx.doi.org/10.1038/srep01101
 
