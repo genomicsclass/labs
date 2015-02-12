@@ -93,7 +93,7 @@ dat <- read.csv("femaleMiceWeights.csv")
 You can also use R to download the file and define the path yourself. In this example, we are using the `download.file` function to download the file to a specific location and then read it in. We assign it a random name and a random directory using the function `tempfile` but you can change this so the file is saved a directory of your choosing.
 
 ```{r}
-library(downloader) ##use install.packages to install
+library(downloader,message=FALSE) ##use install.packages to install
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
 filename <- tempfile()
 download(url,destfile=filename)
