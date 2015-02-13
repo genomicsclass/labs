@@ -1,0 +1,196 @@
+---
+title: "Matrix Operations"
+author: "Rafa"
+date: "January 31, 2015"
+output: html_document
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduciton
+
+```{r}
+library(rafalib)
+mypar2()
+```
+
+
+## The transpose, matrix multiplication, the identity matrix, and the inverse
+
+We want to reiterate that at first this will all seem over-complicated but once we get to the examples you will start to appreciate its power.
+
+### Multiplying by a scalar
+
+The simplest operation in matrix algebra is multiplying by a scalar. If we multiply a scalar by a matrix we simply multiply each entry by that scalar:
+
+$$
+a \mathbf{X} = 
+\begin{pmatrix}
+  a x_{1,1} & \dots & a x_{1,p}\\
+  & \vdots & \\
+  a x_{N,1} & \dots & a  x_{N,p}
+\end{pmatrix}
+$$
+
+Note that R automatically follows this rule when we multiple a number by a matrix:
+
+```{r}
+a <- 2
+X <- matrix(1:12,4,3)
+a*X
+```
+
+### The Transpose
+
+The transpose is an operation that simply changes columns to rows. We use either a $T$ or $'$ to denote transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
+
+$$
+\mathbf{X}^\top = 
+\begin{pmatrix}
+  x_{1,1}&\dots & x_{p,1} \\
+  x_{1,2}&\dots & x_{p,2} \\
+   & \vdots & \\
+  x_{1,N}&\dots & x_{p,N} \\
+  \end{pmatrix}
+$$
+
+In R we simply type 
+```{r}
+X <- matrix(1:12,4,3)
+X
+t(X)
+```
+
+### Matrix multiplication
+
+Now we can understand the equations we showed to motivated linear algebra:
+
+
+$$
+\begin{aligned}
+a + b + c &=6\\
+3a - 2b + c &= 2\\
+2a + b  - c &= 1\\
+\end{aligned}
+$$
+
+can be written like this:
+
+$$
+\begin{pmatrix}
+1&1&1\\
+3&-2&1\\
+2&1&-1
+\end{pmatrix}
+\begin{pmatrix}
+a\\
+b\\
+c\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+a + b + c \\
+3a - 2b + c \\
+2a + b  - c 
+\end{pmatrix}
+$$
+
+
+
+Here is the general definition of matrix multiplication of matrices $A$ and $X$
+
+$$
+\mathbf{AX} = \begin{pmatrix}
+  a_{1,1} & a_{1,2} & \dots & a_{1,N}\\
+  a_{2,1} & a_{2,2} & \dots & a_{2,N}\\
+  & & \vdots & \\
+  a_{M,1} & a_{M,2} & \dots & a_{M,N}\\
+\end{pmatrix}
+\begin{pmatrix}
+  x_{1,1}&\dots & x_{1,p} \\
+  x_{2,1}&\dots & x_{2,p} \\
+   & \vdots & \\
+  x_{N,1}&\dots & x_{N,p} \\
+  \end{pmatrix}
+$$
+  
+$$  =
+\begin{pmatrix}
+  \sum_{i=1}^N a_{1,i} x_{i,1} & \dots & \sum_{i=1}^N a_{1,i} x_{i,p}\\
+  & \vdots & \\
+  \sum_{i=1}^N a_{M,i} x_{i,1} & \dots & \sum_{i=1}^N a_{M,i} x_{i,p}
+\end{pmatrix}
+$$
+
+Note that you can only take the produce if the number of columns of the first matrix $A$ equals the number of rows of the second one $X$, and that the final matrix has the same row numbers as the first $A$ and the same column numbers as the second $X$. 
+After you study the example below you may want to come back and re-read the sections above.
+
+### The identity matrix
+
+The identity matrix is analogous to the number 1: if you multiply the identity matrix you get the same matrix. For this top happen we need it to be like this:
+
+$$
+\mathbf{I} = \begin{pmatrix}
+1&0&0&\dots&0&0\\
+0&1&0&\dots&0&0\\
+0&0&1&\dots&0&0\\
+\vdots &\vdots & \vdots&\ddots&\vdots&\vdots\\
+0&0&0&\dots&1&0\\
+0&0&0&\dots&0&1\\
+\end{pmatrix}
+$$
+
+Note that by this definition the identity always has to have the same number of rows as columns or what we call a square matrix.
+
+If you follow the matrix multiplication rule above you notice this works out:
+
+$$
+\mathbf{XI} = 
+\begin{pmatrix}
+  a x_{1,1} & \dots & a x_{1,p}\\
+  & \vdots & \\
+  a x_{N,1} & \dots & a  x_{N,p}
+\end{pmatrix}
+\begin{pmatrix}
+1&0&0&\dots&0&0\\
+0&1&0&\dots&0&0\\
+0&0&1&\dots&0&0\\
+ & & &\vdots& &\\
+0&0&0&\dots&1&0\\
+0&0&0&\dots&0&1\\
+\end{pmatrix}
+= 
+\begin{pmatrix}
+   x_{1,1} & \dots &  x_{1,p}\\
+  & \vdots & \\
+   x_{N,1} & \dots & x_{N,p}
+\end{pmatrix}
+$$
+
+
+<b> Optional homework</a>: work out the details.
+
+In R you can form the identity this way:
+```{r}
+diag(5)
+```
+
+### The inverse
+
+The inverse of matrix of $X$, denoted with $X^{-1}$ has the property that when multiplied give you the identity$X^{-1}X=I$. Note that not all matrices have inverses.
+As we will see being able to compute the inverse of a matrix is quite useful. 
+
+A very convenient aspect of R is that it includes a predefined function `solve` to do this. Here is how would use it to solve the linear of equations.
+
+```{r}
+X <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
+y <- matrix(c(6,2,1),3,1)
+solve(X)%*%y ##equivalent to solve(X,y)
+```
+
+
+Note: `solve` is a function that should be used with caution. One reason is that if fed a very large matrix it can take  a long time. Another certain properties of the matrix, such as using very different scales for the different columns, can make the algorithm fail, but not necessarily throw an error. To learn a more stable technique learn about the QR decomposition: `?qr
