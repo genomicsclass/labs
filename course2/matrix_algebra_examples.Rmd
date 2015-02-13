@@ -1,4 +1,4 @@
-op---
+---
 title: "Linear Algebra Examples "
 author: "Rafa"
 date: "January 31, 2015"
@@ -13,8 +13,12 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduciton
 
+Now we are ready to see how matrix algebra can be useful when analyzing data. We start with some simple example and eventually get to the main one: how to write linear models with matrix algebra notation and solve the least squares problem.
 
-To compute the sample average and variance of our data we use these formulas $\bar{Y}=\frac{1}{N} Y_i$ and $\mbox{var}(Y)=\frac{1}{N} \sum_{i=1}^N (Y_i - \bar{Y})^2$ with $\bar{Y}$ the average. We can represent these with matrix multiplication. First define this $N \times 1$ matrix made just of 1s
+
+# The average
+
+To compute the sample average and variance of our data we use these formulas $\bar{Y}=\frac{1}{N} Y_i$ and $\mbox{var}(Y)=\frac{1}{N} \sum_{i=1}^N (Y_i - \bar{Y})^2$. We can represent these with matrix multiplication. First define this $N \times 1$ matrix made just of 1s
 
 $$
 A=\begin{pmatrix}
@@ -25,7 +29,7 @@ A=\begin{pmatrix}
 \end{pmatrix}
 $$
 
-This implies that (note that we are multiplying by the scalar $1/N$)
+This implies that
 
 $$
 \frac{1}{N}
@@ -42,9 +46,10 @@ Y_N
 = \bar{Y}
 $$
 
-In R we multiply matrix using `%*%`
+Note that we are multiplying by the scalar $1/N$. In R we multiply matrix using `%*%`
 
-```{r}
+```{r,message=FALSE}
+library(UsingR)
 y <- father.son$sheight
 print(mean(y))
 
@@ -66,32 +71,33 @@ print(barY)
 For the variance we note that if
 
 $$
-\mathbf{r}=\begin{pmatrix}
+\mathbf{r}\equiv \begin{pmatrix}
 Y_1 - \bar{Y}\\
 \vdots\\ 
 Y_N - \bar{Y}
-\end{pmatrix}, 
+\end{pmatrix}, \,\,
 \frac{1}{N} \mathbf{r}^\top\mathbf{r} = 
 \frac{1}{N}\sum_{i=1}^N (Y_i - \bar{Y})^2
 $$
-And in R (note:if you only send one matrix into `crossprod` it computes: $r^\top r$)
+And in R if you only send one matrix into `crossprod` it computes: $r^\top r$ so we can simply type:
 
 ```{r}
 r <- y - barY
 crossprod(r)/N
 ```
 
-Which is equivalent to 
+Which is almost equivalent to 
 ```{r}
 var(y) 
 ```
-except for the fact that the R function `var` divides by $N-1$. 
+The difference is due to the fact that `var` is for the sample estimate which divides by $N-1$, so this
 
 ```{r}
 var(y) * (N-1) / N
 ```
+gives us the same answer as our matrix multiplication example.
 
-## Linear models
+# Linear models
 
 Now we are ready to put all this to use. Let's start with Galton's example. If we define these matrix 
 
@@ -162,21 +168,15 @@ which is a much simpler way to write it.
 
 <b>Optional homework</b>: write out the matrices multiplication convince yourself that this this is the case.
 
-The RSS equation becomes simpler as well as it is the following cross-product:
+The least squares equation becomes simpler as well as it is the following cross-product:
 
 $$
 (\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})^\top
 (\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})
 $$
 
-So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. The only one we need here tells us that the derivative of the above equation is:
+So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. By equating the derivative to 0 and solving for the $\beta$ we will have our solution. The only one we need here tells us that the derivative of the above equation is:
 
-
-
-
-Note: that the RSS is like a square (multiply something by itself) and that this formula is similar to  similar to the derivative of $f(x)^2$ being $2f(x)f'(x)$. 
-
-By equating the derivative to 0 and solving for the $\beta$ we will have our solution:
 
 $$
 2 \mathbf{X}^\top (\mathbf{Y} - \mathbf{X} \boldsymbol{\hat{\beta}})=0
@@ -191,8 +191,11 @@ $$
 \boldsymbol{\hat{\beta}} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}   
 $$
 
-and we have our solution. 
-We usually put a hat on the $\beta$ that solves this, $\hat{\beta}$ as it is an estimate of the "real" $\beta$ that generated the data.
+
+and we have our solution. We usually put a hat on the $\beta$ that solves this, $\hat{\beta}$ as it is an estimate of the "real" $\beta$ that generated the data.
+
+Note: that the least squares are like a square (multiply something by itself) and that this formula is similar to the derivative of $f(x)^2$ being $2f(x)f'(x)$. 
+
 
 Let's see how it works in R
 
@@ -218,7 +221,17 @@ lines(newx,fitted,col=2)
 ```
 
 This $\hat{\boldsymbol{\beta}}=(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}$
- is one of the most widely used results in data analysis. One of the beauties of this approach is that we can use the same approach for the other problem. Note we are using almost the same exact code:
+ is one of the most widely used results in data analysis. One of the beauties of this approach is that we can use in many different situations, for example our falling object problem. 
+ 
+```{r}
+set.seed(1)
+g <- 9.8 ## meters per second
+n <- 25
+tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
+d <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1)
+```
+
+Note we are using almost the same exact code:
 
 
 ```{r}
@@ -228,7 +241,7 @@ betahat <- solve(crossprod(X))%*%crossprod(X,y)
 newtt <- seq(min(tt),max(tt),len=100)
 X <- cbind(1,newtt,newtt^2)
 fitted <- X%*%betahat
-plot(tt,y,xlab="Father's height",ylab="Son's height")
+plot(tt,y,xlab="Time",ylab="Height")
 lines(newtt,fitted,col=2)
 ```
 
@@ -240,14 +253,21 @@ betahat
 
 The Tower of Pisa is about 56 meters high, there is no initial velocity and half the constant of gravity is 9.8/2=4.9.
 
-### The lm function
-R has a very convenient function that fits these models. We will learn more about this function later. But here is a preview
+### The `lm` function
+R has a very convenient function that fits these models. We will learn more about this function later. But here is a preview:
 
 ```{r}
 X <- cbind(tt,tt^2)
 fit=lm(y~X)
 summary(fit)
 ```
+
+Note that we obtain the same values as above.
+
+
+# Summary
+
+We have shown how write linear models using linear algebra. We are going to do this for several examples many of which are related to designed experiments. We showed how to obtain least squares estimates. But keep in mind the because $y$ is a random variable, these estimates are random as well. In a later section we will learn how to compute standard error for this estimates and use this to perform inference.
 
 
 

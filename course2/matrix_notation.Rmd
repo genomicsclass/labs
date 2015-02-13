@@ -13,13 +13,9 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduciton
 
-```{r}
-library(rafalib)
-mypar2()
-```
+Here we introduce the basics of matrix notation. At first this will all seem over-complicated but once we get to the examples you will start to appreciate its power of using this notation to both explain and derive solutions as well as implement them as R code. 
 
-
-# Matrix Algebra Notation: the language of linear models
+# The language of linear models
 
 Linear algebra notation actually  simplifies the mathematical descriptions and manipulations of linear models as well are coding in R. We will show you the basics of this notation and then show some example in R.
 
@@ -37,7 +33,7 @@ a + b + c &= 6\\
 \end{aligned}
 $$
 
-It provides very useful machinery to solve these problems generally. We will learn how we can write this system using matrix algebra notation:
+It provides very useful machinery to solve these problems generally. We will learn how we can write and solve this system using matrix algebra notation:
 
 
 $$
@@ -76,7 +72,7 @@ c
 \end{pmatrix}
 $$
 
-This section explains the notation used above. It turns that we can borrow this notation to linear models in statistics as well.
+This section explains the notation used above. It turns that we can borrow this notation for linear models in statistics as well.
 
 
 
@@ -85,7 +81,7 @@ This section explains the notation used above. It turns that we can borrow this 
 
 In the examples above the random variables associated with the data were represented by $Y_1,\dots,Y_n$. We can think of this as a vector. In fact, in R we are already doing this:
 
-```{r}
+```{r,message=FALSE}
 library(UsingR)
 y=father.son$fheight
 head(y)
@@ -100,7 +96,7 @@ Y_N
 \end{pmatrix}
 $$
 
-For reasons that will become clear soon, we the default representation of data vectors has dimension $N\times 1$ as opposed to $1 \times N$.
+For reasons that will become clear soon, default representation of data vectors have dimension $N\times 1$ as opposed to $1 \times N$.
 
 Note: we don't always use bold because commonly one can tell what is a matrix from the context.
 
@@ -119,7 +115,7 @@ x_{N,2}\\
 \end{pmatrix}
 $$
 
-Note that, for this particular example $x_{1,1}= t_i$ and $x_{i,1}=t_i^2$ with $t_i$ the time of the i-th observation. Also note that vectors can be thought of as $N\times 1$ matrices 
+Note that, for the object falling example $x_{1,1}= t_i$ and $x_{i,1}=t_i^2$ with $t_i$ the time of the i-th observation. Also note that vectors can be thought of as $N\times 1$ matrices 
 
 For reasons that will become clear soon, it is convenient to representing  these in matrices:
 
@@ -131,9 +127,11 @@ x_{N,1}&x_{N,2}\\
 \end{pmatrix}
 $$
 
-This matrix has dimensions $N \times 2$. We can create this matrix in R this way
+This matrix has dimension $N \times 2$. We can create this matrix in R this way
 
 ```{r}
+n <- 25
+tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
 X <- cbind(x1=tt,x2=tt^2)
 head(X)
 dim(X)
@@ -150,7 +148,7 @@ $$
   \end{pmatrix}
 $$
 
-Just as an example, we show you how to make one in R:
+Just as an example, we show you how to make one in R, now using `matrix` instead of `cbind`:
 
 ```{r}
 N <- 100; p <- 5
