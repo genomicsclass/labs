@@ -25,6 +25,7 @@ Graphing data is a powerful approach to detecting these problems. We refer to th
 We can think of any given dataset as a list of numbers. Suppose you have measured the heights of all men in a population. Imagine you need to describe these numbers to someone that has no idea what these heights are, for example an alien that has never visited earth.
 
 ```{r definingHeights, message=FALSE}
+# install.packages("UsingR")
 library(UsingR)
 x=father.son$fheight
 ```
