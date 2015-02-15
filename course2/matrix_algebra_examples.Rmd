@@ -22,9 +22,9 @@ To compute the sample average and variance of our data we use these formulas $\b
 
 $$
 A=\begin{pmatrix}
-1\\
-1\\
-\vdots\\
+1\\\
+1\\\
+\vdots\\\
 1
 \end{pmatrix}
 $$
@@ -36,12 +36,11 @@ $$
 \mathbf{A}^\top Y = \frac{1}{N}
 \begin{pmatrix}1&1&,\dots&1\end{pmatrix}
 \begin{pmatrix}
-Y_1\\
-Y_2\\
-\vdots\\
+Y_1\\\
+Y_2\\\
+\vdots\\\
 Y_N
-\end{pmatrix}
-=
+\end{pmatrix}=
 \frac{1}{N} \sum_{i=1}^N Y_i
 = \bar{Y}
 $$
@@ -72,8 +71,8 @@ For the variance we note that if
 
 $$
 \mathbf{r}\equiv \begin{pmatrix}
-Y_1 - \bar{Y}\\
-\vdots\\ 
+Y_1 - \bar{Y}\\\
+\vdots\\\
 Y_N - \bar{Y}
 \end{pmatrix}, \,\,
 \frac{1}{N} \mathbf{r}^\top\mathbf{r} = 
@@ -103,25 +102,25 @@ Now we are ready to put all this to use. Let's start with Galton's example. If w
 
 $$
 \mathbf{Y} = \begin{pmatrix}
-Y_1\\
-Y_2\\
-\vdots\\
+Y_1\\\
+Y_2\\\
+\vdots\\\
 Y_N
 \end{pmatrix},
 \mathbf{X} = \begin{pmatrix}
-1&x_1\\
-1&x_2\\
-\vdots\\
+1&x_1\\\
+1&x_2\\\
+\vdots\\\
 1&x_N
 \end{pmatrix},
 \mathbf{\beta} = \begin{pmatrix}
-\beta_0\\
-\beta_1\\
+\beta_0\\\
+\beta_1
 \end{pmatrix} \mbox{ and }
 \mathbf{\varepsilon} = \begin{pmatrix}
-\varepsilon_1\\
-\varepsilon_2\\
-\vdots\\
+\varepsilon_1\\\
+\varepsilon_2\\\
+\vdots\\\
 \varepsilon_N
 \end{pmatrix}
 $$
@@ -136,26 +135,25 @@ as
 
 $$
 \begin{pmatrix}
-Y_1\\
-Y_2\\
-\vdots\\
+Y_1\\\
+Y_2\\\
+\vdots\\\
 Y_N
-\end{pmatrix}
-= 
+\end{pmatrix} = 
 \begin{pmatrix}
-1&x_1\\
-1&x_2\\
-\vdots\\
+1&x_1\\\
+1&x_2\\\
+\vdots\\\
 1&x_N
 \end{pmatrix}
 \begin{pmatrix}
-\beta_0\\
-\beta_1\\
+\beta_0\\\
+\beta_1
 \end{pmatrix} +
 \begin{pmatrix}
-\varepsilon_1\\
-\varepsilon_2\\
-\vdots\\
+\varepsilon_1\\\
+\varepsilon_2\\\
+\vdots\\\
 \varepsilon_N
 \end{pmatrix}
 $$

@@ -27,9 +27,9 @@ Linear algebra was created by mathematicians to solve systems of linear equation
 
 $$
 \begin{aligned}
-a + b + c &= 6\\
-3a - 2b + c &= 2\\
-2a + b  - c &= 1\\
+a + b + c &= 6\\\
+3a - 2b + c &= 2\\\
+2a + b  - c &= 1
 \end{aligned}
 $$
 
@@ -38,37 +38,35 @@ It provides very useful machinery to solve these problems generally. We will lea
 
 $$
 \begin{pmatrix}
-1&1&1\\
-3&-2&1\\
-2&1&-1\\
+1&1&1\\\
+3&-2&1\\\
+2&1&-1
 \end{pmatrix}
 \begin{pmatrix}
-a\\
-b\\
-c\\
-\end{pmatrix}
-=
+a\\\
+b\\\
+c
+\end{pmatrix} =
 \begin{pmatrix}
-6\\
-2\\
-1\\
+6\\\
+2\\\
+1
 \end{pmatrix}
 \implies
 \begin{pmatrix}
-a\\
-b\\
-c\\
-\end{pmatrix}
-=
+a\\\
+b\\\
+c
+\end{pmatrix} =
 \begin{pmatrix}
-1&1&1\\
-3&-2&1\\
-2&1&-1\\
+1&1&1\\\
+3&-2&1\\\
+2&1&-1
 \end{pmatrix}^{-1}
 \begin{pmatrix}
-6\\
-2\\
-1\\
+6\\\
+2\\\
+1
 \end{pmatrix}
 $$
 
@@ -89,10 +87,10 @@ head(y)
 In math we can also use just one symbol and we usually use bold to distinguish it from the individual entries:
 
 $$ \mathbf{Y} = \begin{pmatrix}
-Y_1\\
-Y_2\\
-\vdots\\
-Y_N\\
+Y_1\\\
+Y_2\\\
+\vdots\\\
+Y_N
 \end{pmatrix}
 $$
 
@@ -104,14 +102,14 @@ Similarly we can use math notation to represent the covariates or predictors. In
 
 $$
 \mathbf{X}_1=\begin{pmatrix}
-x_{1,1}\\
-\vdots\\
-x_{N,1}\\
+x_{1,1}\\\
+\vdots\\\
+x_{N,1}
 \end{pmatrix}\mbox{ and }
 \mathbf{X}_2=\begin{pmatrix}
-x_{1,2}\\
-\vdots\\
-x_{N,2}\\
+x_{1,2}\\\
+\vdots\\\
+x_{N,2}
 \end{pmatrix}
 $$
 
@@ -121,9 +119,9 @@ For reasons that will become clear soon, it is convenient to representing  these
 
 $$
 \mathbf{X} = [ \mathbf{X}_1 \mathbf{X_2} ] = \begin{pmatrix}
-x_{1,1}&x_{1,2}\\
-\vdots\\
-x_{N,1}&x_{N,2}\\
+x_{1,1}&x_{1,2}\\\
+\vdots\\\
+x_{N,1}&x_{N,2}
 \end{pmatrix}
 $$
 
@@ -141,10 +139,10 @@ Note that we can also use this notation to denote an arbitrary number of covaria
 
 $$
 \mathbf{X} = \begin{pmatrix}
-  x_{1,1}&\dots & x_{1,p} \\
-  x_{2,1}&\dots & x_{2,p} \\
-   & \vdots & \\
-  x_{N,1}&\dots & x_{N,p} \\
+  x_{1,1}&\dots & x_{1,p} \\\
+  x_{2,1}&\dots & x_{2,p} \\\
+   & \vdots & \\\
+  x_{N,1}&\dots & x_{N,p} 
   \end{pmatrix}
 $$
 
