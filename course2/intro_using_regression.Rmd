@@ -99,6 +99,7 @@ $$ Y_i = \beta_0 + \sum_{j=1}^p \beta_j x_{i,j} + \varepsilon_i, i=1,\dots,n $$
 
 Note that we have a general number of predictors $p$. Matrix algebra provides a compact language and mathematical framework to compute and make derivations with any linear models that first into the above framework.
 
+<a name="estimates">
 # Estimating parameters
 
 For the models above to be useful we have to estimate the unknown $\beta$ s. In the first example, we want to describe a physical process for which we can't have unknown parameters. In the second example we better understand inheritence by estimating how much, on average, father height affects the son's. In the final example we want to determine if their is infact a difference: if $\beta_1 \neq 0$. 
