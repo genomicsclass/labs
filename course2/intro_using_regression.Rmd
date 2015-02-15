@@ -43,11 +43,6 @@ $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
 
 With $Y_i$ representing location, $t_i$ representing the time, and $\varepsilon$ accounts for measurement error. 
 
-But what are the $\beta$s? A standard approach in science is to find the values that minimize the distance of the fitted curve to the data. The following is called the least squares equation and we will see it often in this chapter:
-
-$$ \sum_{i=1}^n \\{  Y_i - (\beta_0 + \beta_1 t_i + \beta_2 t_i^2)\\}^2 $$
-
-Note, here we can use calculus and find the values: take the partial derivatives and set them to 0 and solve. Linear algebra provides another way of solving this problem. We will see that soon. Once we find the minimu, wel call the values the least squares estimates (LSE) and denote them with $\hat{\beta}$. The quantity retured by the least square equation above for these estimates is called the residual sum of squares (RSS). Note that because all these quantities depend on $y$ *they are random variables*.
 
 
 # Father son's heights
@@ -72,35 +67,6 @@ $$ Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N $$
 
 With $x_i$ and $Y_i$ the father and son heights respectively, for the $i$-th pair and $\varepsilon$ a term to account for the extra variability. Here we think of the father's height as the predictor and being fixed (not random) so we use lower case. Note that measurement error can't explain all the variability seen in $\varepsilon$. Note that this makes sense as there are other variables not in the model, for example, mother's height and environmentalism factors.
 
-Now, how do pick $\beta_0$ and $\beta_1$ ? As before a widely used approach is to minimize the least squares:
-
-$$ \sum_{i=1}^N \\{  Y_i - (\beta_0 + \beta_1 x_i) \\}^2 $$
-
-Note that this equation is similar to the one used with a dropped object data. Next we will described how linear algebra gives us a way to find the least squares estimates generally. 
-
-## More on Galton (advanced)
-When studying this data, Galton made a fascinating discovery using exploratory analysis.
-
-<center>
-<img src="http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg" width=400>
-</center>
-
-He noted that if he tabulated the number of father/son height pairs and followed all the x,y values having the same totals in the table
-they formed an ellipses. Below you see the ellipsis formed by the pairs having 3 cases. This then led to modeling this data as correlated bivariate normal. 
-
-$$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
-\exp{ \left\\{
-\frac{1}{2(1-\rho^2)}
-\left[\left(\frac{x-\mu_x}{\sigma_x}\right)^2 -  
-2\rho\left(\frac{x-\mu_x}{\sigma_x}\right)\left(\frac{y-\mu_y}{\sigma_y}\right)+
-\left(\frac{y-\mu_y}{\sigma_y}\right)^2
-\right]
-\right\\}
-}
-$$
-
-From here we can show, with some math, that if you keep $X$ fixed (condition to be $x$) the the distribution of $Y$ is normally distributed with mean:
-$\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. Homework what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$. It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
 
 # Random samples from multiple populations
 
@@ -135,4 +101,111 @@ $$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} 
  
 $$ Y_i = \beta_0 + \sum_{j=1}^p \beta_j x_{i,j} + \varepsilon_i, i=1,\dots,n $$
 
-Note that we have a general number of predictors $p$. Matrix algebra provides a compact language and mathematical framework to compute and make derivations with any linear models that first into the above framework,
+Note that we have a general number of predictors $p$. Matrix algebra provides a compact language and mathematical framework to compute and make derivations with any linear models that first into the above framework.
+
+# Motivating Matrix Algebra
+
+But what are the $\beta$s? A standard approach in science is to find the values that minimize the distance of the fitted curve to the data. The following is called the least squares equation and we will see it often in this chapter:
+
+$$ \sum_{i=1}^n \\{  Y_i - (\beta_0 + \beta_1 t_i + \beta_2 t_i^2)\\}^2 $$
+
+
+Thanks to my high school physics teacher I know that the equation for the falling object is 
+
+$$d = h_0 + v_0 t -  0.5 \times 9.8 t^2$$
+
+with $h_0$ and $v_0$ the starting height and velocity respectively. The data we simulated above followed this equation and added measurement error to simulate `n` observations for dropping  the ball $(v_0=0)$ from the tower of Pisa $(h_0=56.67)$:
+
+```{r simulate drop data}
+g <- 9.8 ## meters per second
+n <- 25
+tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
+f <- 56.67  - 0.5*g*tt^2
+y <-  f + rnorm(n,sd=1)
+```
+
+Here is what the data looks like with the solid line represneting the true trajectory:
+
+```{r}
+plot(tt,y,ylab="Distance in meters",xlab="Time in seconds")
+lines(tt,f,col=2)
+```
+
+But now we pretended we are Galileo and so we don't know the parameters in the model. The data does suggest it is a parabola so we model it like this:
+
+$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
+
+As stated earlier, $Y_i$ represents location, $t_i$ represents time of observation, and $\varepsilon$ accounts for measurement error. We noted that a common approach is to estimate these parameters by finding the values that minimize the LSE
+
+## The `lm` function
+
+In R we can fit this model by simply using the `lm` function. We will describe this function in detail later, but here is a preview
+
+```{r}
+tt2 <-tt^2
+fit <- lm(y~tt+tt2)
+summary(fit)$coef
+```
+
+It gives us the LSE as well as standard errors and p-values. 
+
+Part of what we do in this course is explain the mathematics behind this function. 
+
+Let's write a function that computes the RSS for any vector $\beta$
+```{r}
+rss <- function(Beta0,Beta1,Beta2){
+  r <- y - (Beta0+Beta1*tt+Beta2*tt^2)
+  return(sum(r^2))
+}
+```
+
+So for any three dimensional vector we get an RSS. Here is a plot of the RSS as a function of $\beta_2$ when we keep the other two fixed:
+
+```{r}
+Beta2s<- seq(-10,0,len=100)
+plot(Beta2s,sapply(Beta2s,rss,Beta0=55,Beta1=0),
+     ylab="RSS",xlab="Beta2",type="l")
+##Let's add another curve fixing another pair:
+Beta2s<- seq(-10,0,len=100)
+lines(Beta2s,sapply(Beta2s,rss,Beta0=65,Beta1=0),col=2)
+```
+
+Trial and error here is not going to work. Instead we can use calculus: take the partial derivatives, set them to 0 and solve. Note that we have several parameters, these equations can get rather complex. Linear algebra provides a compact and general way of solving this problem. 
+
+Once we find the minimu, wel call the values the least squares estimates (LSE) and denote them with $\hat{\beta}$. The quantity retured by the least square equation above for these estimates is called the residual sum of squares (RSS). Note that because all these quantities depend on $y$ *they are random variables*.
+How we actually explain how we go about finding these $\beta$ s. Matrix algebra gives us a simple way to obtain a general solution.
+
+Now, how do pick $\beta_0$ and $\beta_1$ ? As before a widely used approach is to minimize the least squares:
+
+$$ \sum_{i=1}^N \\{  Y_i - (\beta_0 + \beta_1 x_i) \\}^2 $$
+
+Note that this equation is similar to the one used with a dropped object data. Next we will described how linear algebra gives us a way to find the least squares estimates generally. 
+
+
+
+
+## More on Galton (advanced)
+When studying this data, Galton made a fascinating discovery using exploratory analysis.
+
+<center>
+<img src="http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg" width=400>
+</center>
+
+He noted that if he tabulated the number of father/son height pairs and followed all the x,y values having the same totals in the table
+they formed an ellipses. Below you see the ellipsis formed by the pairs having 3 cases. This then led to modeling this data as correlated bivariate normal. 
+
+$$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
+\exp{ \left\\{
+\frac{1}{2(1-\rho^2)}
+\left[\left(\frac{x-\mu_x}{\sigma_x}\right)^2 -  
+2\rho\left(\frac{x-\mu_x}{\sigma_x}\right)\left(\frac{y-\mu_y}{\sigma_y}\right)+
+\left(\frac{y-\mu_y}{\sigma_y}\right)^2
+\right]
+\right\\}
+}
+$$
+
+From here we can show, with some math, that if you keep $X$ fixed (condition to be $x$) the the distribution of $Y$ is normally distributed with mean:
+$\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. Homework what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$. It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
+
+
