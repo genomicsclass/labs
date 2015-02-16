@@ -11,6 +11,8 @@ January 19, 2015:
 
 https://www.edx.org/course/statistics-r-life-sciences-harvardx-ph525-1x
 
+*Note*: if you want to contribute through pull request, please first clone a new version of the repo. If you have a version of the repo from 2014, it might contain some large data objects, which accidentally snuck in, and we want to avoid reincluding these.
+
 ## Courses:
 
 - 1: Statistics and R for the Life Sciences
