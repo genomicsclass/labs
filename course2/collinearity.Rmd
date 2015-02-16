@@ -11,14 +11,14 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduciton
+# Introduction
 
 ```{r}
 library(rafalib)
 mypar2()
 ```
 
-If an experiment is designed incorrectly we may not be able to estimate what parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are fitting a linear model then we can detect these problems mathematical by looking for colinearity.
+If an experiment is designed incorrectly we may not be able to estimate what parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are fitting a linear model then we can detect these problems mathematical by looking for collinearity.
 
 
 # System of equations example
@@ -39,21 +39,21 @@ $$
 Note that it has more than one solution. Two examples are $a=1,b=1,c=0$ and $a=2,b=0,c=1$. In fact e as long as $a=1+c, b=1-c$ the equations are satisfied and thus there is an infinite number of triplets that solve this. 
 
 Using matrix algebra we can notice this right away. The system of equations can be written like this:
+
 $$
 \begin{pmatrix}
-1&0&1\\
-0&1&-1\\
-1&1&0\\
+1&0&1\\\
+0&1&-1\\\
+1&1&0\\\
 \end{pmatrix}
 \begin{pmatrix}
-a\\
-b\\
-c\\
+a\\\
+b\\\
+c\\\
 \end{pmatrix}
-=
-\begin{pmatrix}
-1\\
-1\\
+= \begin{pmatrix}
+1\\\
+1\\\
 2
 \end{pmatrix}
 $$
@@ -62,99 +62,93 @@ The third column is a linear combination of first two:
 
 $$
 \begin{pmatrix}
-1\\
-0\\
-1\\
+1\\\
+0\\\
+1\\\
 \end{pmatrix}
 +
 -1 \begin{pmatrix}
-0\\
-1\\
-1\\
+0\\\
+1\\\
+1\\\
 \end{pmatrix}
-=
-\begin{pmatrix}
-1\\
--1\\
-0\\
+= \begin{pmatrix}
+1\\\
+-1\\\
+0\\\
 \end{pmatrix}
 $$
 
-We say that these columns are colinear. This implies that the system of equations can be written 
+We say that these columns are collinear. This implies that the system of equations can be written 
 
 $$
 \begin{pmatrix}
-1&0&1\\
-0&1&1\\
-1&1&0\\
+1&0&1\\\
+0&1&1\\\
+1&1&0\\\
 \end{pmatrix}
 \begin{pmatrix}
-a\\
-b\\
-c\\
+a\\\
+b\\\
+c\\\
 \end{pmatrix}
-=
-a
+= a
 \begin{pmatrix}
-1\\
-0\\
-1\\
+1\\\
+0\\\
+1\\\
 \end{pmatrix}
 +
 b \begin{pmatrix}
-0\\
-1\\
-1\\
+0\\\
+1\\\
+1\\\
 \end{pmatrix}
 +
 c
 \begin{pmatrix}
-1+0\\
-0-1\\
-1-1\\
+1+0\\\
+0-1\\\
+1-1\\\
 \end{pmatrix}
-=
-(a+c)
+= (a+c)
 \begin{pmatrix}
-1\\
-0\\
-1\\
+1\\\
+0\\\
+1\\\
 \end{pmatrix}
 +
 (b-c)
 \begin{pmatrix}
-0\\
-1\\
-1\\
+0\\\
+1\\\
+1\\\
 \end{pmatrix}
 $$
 
 Thus the last column does not add any constrain. Furthermore, this representation highlights that the solution only restricted $a-b$ and $b-c$, as opposed to the three variables. 
 
+# Collinearity in least squares example
 
-
-
-# co-linearity in least squares example
-
-Similarly if we design an experiment that results in a design matrix $\mathbf{X}$ with two colinear column 
+Similarly if we design an experiment that results in a design matrix $\mathbf{X}$ with two collinear column 
 
 $$
 \mathbf{X} = \begin{pmatrix}
-\mathbf{1}&\mathbf{X}_1&\mathbf{X}_2&\mathbf{X}_3\\
+\mathbf{1}&\mathbf{X}\_1&\mathbf{X}\_2&\mathbf{X}\_3\\\
 \end{pmatrix}
 \mbox{ with, say, }
-\mathbf{X}_3 = - \mathbf{X}_2
+\mathbf{X}\_3 = - \mathbf{X}\_2
 $$
 
 Then we can rewrite the residuals like this:
 
 $$
-\mathbf{Y}- \left( \mathbf{1} + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 + \mathbf{X}_3\beta_3\right)\\ 
-= \mathbf{Y}- \left( \mathbf{1} + \mathbf{X}_1\beta_1 + \mathbf{X}_2\beta_2 - \mathbf{X}_2\beta_3\right)\\
-= \mathbf{Y}- \left( \mathbf{1} + \mathbf{X}_1 \beta_1 + \mathbf{X}_2(\beta_2  - \beta_3)\right)
+\mathbf{Y}- \left( \mathbf{1} + \mathbf{X}\_1\beta_1 + \mathbf{X}\_2\beta_2 + \mathbf{X}\_3\beta_3\right)\\\ 
+= \mathbf{Y}- \left( \mathbf{1} + \mathbf{X}\_1\beta_1 + \mathbf{X}\_2\beta_2 - \mathbf{X}\_2\beta_3\right)\\\
+= \mathbf{Y}- \left( \mathbf{1} + \mathbf{X}\_1 \beta_1 + \mathbf{X}\_2(\beta_2  - \beta_3)\right)
 $$
 
-And the least square solution would give us $\beta_1$ and $\beta_2 - \beta_3$ but not the individual $\beta$ s. Note that if $\hat{\beta}_1$,$\hat{\beta}_2$,$\hat{\beta}_3$ is a solution then $\hat{\beta}_1$,$\hat{\beta}_2+1$, $\hat{\beta}_3+1$ is also a solution since it gives exactly the same residuals. 
+And the least square solution would give us $\beta_1$ and $\beta_2 - \beta_3$ but not the individual $\beta$ s. Note that if $\hat{\beta}\_1$,$\hat{\beta}\_2$,$\hat{\beta}\_3$ is a solution then $\hat{\beta}\_1$,$\hat{\beta}\_2+1$, $\hat{\beta}\_3+1$ is also a solution since it gives exactly the same residuals. 
 
 
 # Confounding as an example
@@ -167,21 +161,21 @@ with $X_{A_i}=1$ if subject $i$ received treatment $A$, etc... and $X_{S_i}=1$ i
 You have three subject per group so the design matrix looks like this
 $$
 \begin{pmatrix}
-1&0&1&0&0\\
-1&0&1&0&0\\
-1&0&1&0&0\\
-1&1&1&0&0\\
-1&1&1&0&0\\
-1&1&1&0&0\\
-1&0&0&1&0\\
-1&0&0&1&0\\
-1&0&0&1&0\\
-1&1&0&1&0\\
-1&1&0&1&0\\
-1&1&0&1&0\\
-1&1&0&0&1\\
-1&1&0&0&1\\
-1&1&0&0&1\\
+1&0&1&0&0\\\
+1&0&1&0&0\\\
+1&0&1&0&0\\\
+1&1&1&0&0\\\
+1&1&1&0&0\\\
+1&1&1&0&0\\\
+1&0&0&1&0\\\
+1&0&0&1&0\\\
+1&0&0&1&0\\\
+1&1&0&1&0\\\
+1&1&0&1&0\\\
+1&1&0&1&0\\\
+1&1&0&0&1\\\
+1&1&0&0&1\\\
+1&1&0&0&1\\\
 \end{pmatrix}
 $$
 
@@ -189,75 +183,72 @@ It turns out that we can't separate the female effect from the treatment C effec
 
 $$
 \begin{pmatrix}
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-1\\
-1\\
-1\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+1\\\
+1\\\
+1\\\
 \end{pmatrix}
-=
-\begin{pmatrix}
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
+= \begin{pmatrix}
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
 \end{pmatrix}
--
-\begin{pmatrix}
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
+- \begin{pmatrix}
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
 \end{pmatrix}
--
-\begin{pmatrix}
-0\\
-0\\
-0\\
-0\\
-0\\
-0\\
-1\\
-1\\
-1\\
-1\\
-1\\
-1\\
-0\\
-0\\
-0\\
+- \begin{pmatrix}
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+0\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+1\\\
+0\\\
+0\\\
+0\\\
 \end{pmatrix}
 $$
 
