@@ -44,29 +44,42 @@ However, we will continue, and show the different kinds of linear models using t
 
 ## A linear model with one variable
 
-Note: this is a not a good approach for analysis, but we show here for demonstration purposes. It ignores the information we have regarding the different leg type, and so it loses power. We will show better approaches below.
-
+Just to remind ourselves about the simple two-group linear model, let's subset to the L1 leg pair, and run `lm`:
 
 ```{r}
 spider.sub <- spider[spider$leg == "L1",]
 fit <- lm(friction ~ type, data=spider.sub)
 summary(fit)
 (coefs <- coef(fit))
+```
+
+We remember that the coefficients are just the mean of the pull observations, and the difference between the means of the two groups:
+
+```{r}
 s <- split(spider.sub$friction, spider.sub$type)
 mean(s[["pull"]])
 mean(s[["push"]]) - mean(s[["pull"]])
 ```
 
+We can form the design matrix which was used internally to `lm`:
+
 ```{r}
-X <- model.matrix(~ type, data=spider)
+X <- model.matrix(~ type, data=spider.sub)
 colnames(X)
 head(X)
+```
+
+A useful plot, which is not very interesting for this example, is to put a black block for the 1's in the design matrix, and a white block for the 0's. If you have installed the *rafalib* library, you can make this plot with the `imagemat` function:
+
+```{r}
 # library(devtools); install_github("ririzarr/rafalib")
 library(rafalib)
-imagemat(X, main="Model matrix for linear model with interactions")
+imagemat(X, main="Model matrix for linear model with one variable")
 ```
 
 ### Examining the coefficients
+
+Now we will use a big chunk of code just to show how the coefficients from the linear model can be drawn as arrows. You wouldn't necessarily use this code in your daily practice, but it's helpful for visualizing what's going on in the linear model in your head.
 
 ```{r}
 stripchart(split(spider.sub$friction, spider.sub$type), 
@@ -85,11 +98,18 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 ## A linear model with two variables
 
+Now, we'll continue and examine the full dataset, including the observations from all leg pairs. In order to model both the leg pair differences and the push vs pull difference, we need to include both terms in the formula. Let's see what kind of design matrix will be formed with two variables in the formula:
+
 ```{r}
 X <- model.matrix(~ type + leg, data=spider)
 colnames(X)
 head(X)
-imagemat(X, main="Model matrix for linear model with 2 factors")
+imagemat(X, main="Model matrix for linear model with two factors")
+```
+
+
+
+```{r}
 fit2 <- lm(friction ~ type + leg, data=spider)
 summary(fit2)
 (coefs <- coef(fit2))
@@ -234,7 +254,7 @@ spider$group <- factor(paste0(spider$leg, spider$type))
 X <- model.matrix(~ 0 + group, data=spider)
 colnames(X)
 head(X)
-imagemat(X, main="Model matrix for linear model with interactions")
+imagemat(X, main="Model matrix for linear model with group variable")
 ```
 
 ```{r}
