@@ -51,9 +51,9 @@ We can calculate this in R using our matrix multiplication operator `%*%`, the i
 
 
 ```{r}
-y <- dat$Bodyweight
+Y <- dat$Bodyweight
 X <- model.matrix(~ Diet, data=dat)
-solve(t(X) %*% X) %*% t(X) %*% y
+solve(t(X) %*% X) %*% t(X) %*% Y
 ```
 
 Note that these coefficients are the average of the control group and the difference of the averages:
