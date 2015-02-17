@@ -182,7 +182,7 @@ coefs[2]
 To introduce the concept of *contrasts*, first consider the comparisons which we can read off from the linear model summary:
 
 ```{r}
-summary(fitTL)
+coefs
 ```
 
 We have the push vs pull effect across all leg pairs, and and the L2 vs L1 effect, the L3 vs L1 effect, and the L4 vs L1 effect. What if we want to compare two groups, and one of the groups is not L1? The solution to this question is to use *contrasts*. 
@@ -230,7 +230,6 @@ Again, to show it doesn't matter if we had picked `type="push"`. The reason it d
 L3vsL2.equiv <- contrast(fitTL,list(leg="L3",type="push"),list(leg="L2",type="push"))
 L3vsL2.equiv$X
 ```
-
 
 ## A linear model with interactions
 
