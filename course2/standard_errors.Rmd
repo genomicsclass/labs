@@ -145,11 +145,6 @@ Again, this is because we are not fixing `tt`.
 
 
 
-
-
-
-
-
 # Variance of a linear combination 
 
 A useful result that linear algebra gives is that the variance covariance-matrix of a linear combination $\mathbf{AY}$ of $\mathbf{Y}$ can be computed like this
@@ -165,11 +160,11 @@ $$\mbox{var}\{Y_1+Y_2\} =
 
 $$ =\begin{pmatrix}1&1\end{pmatrix} \sigma^2 \mathbf{I}\begin{pmatrix} 1\\1\\ \end{pmatrix}=2\sigma^2$$
 
-as we expect. 
+as we expect. We use this result to obtain the standard errors of LSE.
 
 # LSE standard errors
 
-Note that $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with  $\mathbf{A}=\mathbf{(X^\top X)^{-1}X^\top \mathbf{Y}}$ so we can use the equation above to derive the variance of our estimates:
+Note that $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with  $\mathbf{A}=\mathbf{(X^\top X)^{-1}X}^\top$ so we can use the equation above to derive the variance of our estimates:
 
 $$
 \mbox{var}(\boldsymbol{\hat{\beta}}) = \mbox{var}( \mathbf{(X^\top X)^{-1}X^\top Y} ) =  $$
@@ -178,23 +173,24 @@ $$\mathbf{(X^\top X)^{-1} X^\top} \sigma^2 \mathbf{I} (\mathbf{(X^\top X)^{-1} X
 $$\sigma^2 \mathbf{(X^\top X)^{-1} X^\top}\mathbf{X} \mathbf{(X^\top X)^{-1}} = $$
 $$\sigma^2\mathbf{(X^\top X)^{-1}}$$
 
-From here we can obtain the variance of our estimates from the diagonal of this matrix.
+The diagonal of the square root of this matrix contains the standard error of our estimates. 
 
 ## Estimating $\sigma^2$
 
-Note that previously we estimated the standard errors from the sample. However, not that the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
+To obtain an actual estimate in practice from the formulas above we need to estimate $\sigma^2$. Note that previously we estimated the standard errors from the sample. However, not that the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
 
-We form the residuals: 
+We form the residuals like this: 
 
 $$
 \mathbf{r}\equiv\boldsymbol{\hat{\varepsilon}} = \mathbf{Y}-\mathbf{X}\boldsymbol{\hat{\beta}}$$
 
+Note that both $\mathbf{r}$ and $\boldsymbol{\hat{\varepsilon}}$ notations are used to denote residuals.
 
-Then use estimate with 
+Then we use these to estimate in a similar way to what we do in the univariate case:
 
-$$ s^2 \equiv \hat{\sigma}^2 = \frac{1}{N-p}\mathbf{r}^\top\mathbf{r} $$
+$$ s^2 \equiv \hat{\sigma}^2 = \frac{1}{N-p}\mathbf{r}^\top\mathbf{r} = \frac{1}{N-p}\sum_{i=1}^N r_i^2$$
 
-Here $N$ is the sample size and $p$ is the number of columns in $\mathbf{X}$ or number of parameters (including the intercept term $\beta_0$). 
+Here $N$ is the sample size and $p$ is the number of columns in $\mathbf{X}$ or number of parameters (including the intercept term $\beta_0$). The reason we divide by $N-p$ is because mathematical theory tells us that this will give us better (unbiased) estimate.
 
 Let's try this in R
 
@@ -239,6 +235,8 @@ $$\hat{\beta}_2 - \hat{\beta}_1 =
 Using the above, we know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$.
 
 
+# CLT and t-distribution
 
+We have shown how we can obtain standard errors for our estimates. But, as we learn in the first chapter to perofrm inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is becasue the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{beta}$ and standard errors as described. 
 
 
