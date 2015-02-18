@@ -2,7 +2,7 @@
 title: "The QR decomposition"
 author: "Rafa"
 date: "January 31, 2015"
-output: pdf_document
+output: html_document
 layout: page
 ---
 
@@ -11,68 +11,179 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## `solve` is unstable
+# Introduction
 
-The QR decomposition
-
-
-```{r,echo=FALSE}
-set.seed(1)
-```
-
-If you plan on calculating $\hat{\beta}=(X'X)^\top X^\top Y$ often, and especially if you plan to work with large data sets, it serves you well to learn about the QR decomposition. You can search for the details elsewhere but here is a very useful result in R
+We have seen that to calculate the LSE we need to invert a marix. We have shown how to use solve. It turns out that solve is not a stable solution. When coding LSE computation we use the QR decomposition.
 
 
+# Inverting $\mathbf{X^\top X}$
+
+
+To miminize the RSS: 
+
+$$
+(\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})^\top
+(\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})
+$$
+
+We need to solve:
+
+$$
+\mathbf{X}^\top \mathbf{X} \boldsymbol{\hat{\beta}} = \mathbf{X}^\top \mathbf{Y}   
+$$
+
+The solution is: 
+
+$$
+\boldsymbol{\hat{\beta}} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}   
+$$
+
+Thus  we need to compute $(\mathbf{X}^\top \mathbf{X})^{-1}$
+
+# `solve` is unstable
+
+Here we construct an extreme case 
 ```{r}
-n <- 50
-M <- 500
+n <- 50;M <- 500
 x <- seq(1,M,len=n)
 X <- cbind(1,x,x^2,x^3)
 beta <- matrix(c(1,1,1,1),4,1)
 y <- X%*%beta+rnorm(n,sd=1)
-plot(x,y)
-solve(crossprod(X))%*%crossprod(X,y)
+```
 
-tail(X)
-crossprod(X)
+The standard R function for inverse gives an error:
+```{r,eval=FALSE}
+solve(crossprod(X)) %*% crossprod(X,y)
+```
+
+To see why this happens look at $(\mathbf{X}^\top \mathbf{X})$
+```{r,include=FALSE}
+options(digits=2)
+```
+
+```{r}
+log10(crossprod(X))
+```
+
+Note the difference of several orders of magnitude. On a digitial computer we have a limited range of numbers which makes some numbers seem like 0 which leads to division by 0 errors.
+
+# The QR Factorization 
+
+The QR factorization is based on a mathematical result that tells us that for a full rank $N\times p$ matrix $\mathbf{X}$ we can decompose as
+
+$$
+\mathbf{X = QR}$$
+with 
+
+* $\mathbf{Q}$ a $N \times p$ matrix with  $\mathbf{Q^\top Q=I}$
+* $\mathbf{R}$ a $p \times p$ upper triangular matrix.
+
+Upper triangular matrices are very convinient for solving system of equations.
+
+## Example of Upper Triangular Matrix
+
+In the example below, the matrix on the left is upper triangular: It only has 0s below the diagonal.
+Note that this facilitates solving the system of equations greatly:
+
+$$\begin{pmatrix}
+1&2&-1\\
+0&1&2\\
+0&0&1\\
+\end{pmatrix}
+\begin{pmatrix}
+a\\
+b\\
+c\\
+\end{pmatrix}
+=
+\begin{pmatrix}
+6\\
+4\\
+1\\
+\end{pmatrix}
+$$
+
+We immediately know that 
+$c=1$ which implies that $b+2=4$ which implies  $b=2$ and thuse $a+4-1=6$ so $a = 3$. Writing an algorithm to do this is straigh-forward for any upper triangular matrix.
+
+# Finding LSE with QR 
+
+If we rewrite the equations of the LSE using $\mathbf{QR}$ instead of $\mathbf{X}$ we have:
+
+$$\mathbf{X}^\top \mathbf{X} \boldsymbol{\beta} = \mathbf{X}^\top \mathbf{Y}$$
+
+$$(\mathbf{Q}\mathbf{R})^\top (\mathbf{Q}\mathbf{R}) \boldsymbol{\beta} = (\mathbf{Q}\mathbf{R})^\top \mathbf{Y}$$
+
+$$\mathbf{R}^\top (\mathbf{Q}^\top \mathbf{Q}) \mathbf{R} \boldsymbol{\beta} = \mathbf{R}^\top \mathbf{Q}^\top \mathbf{Y}$$
+
+$$\mathbf{R}^\top \mathbf{R} \boldsymbol{\beta} = \mathbf{R}^\top \mathbf{Q}^\top \mathbf{Y}$$
+
+$$(\mathbf{R}^\top)^{-1} \mathbf{R}^\top \mathbf{R} \boldsymbol{\beta} = (\mathbf{R}^\top)^{-1} \mathbf{R}^\top \mathbf{Q}^\top \mathbf{Y}$$
+
+$$\mathbf{R} \boldsymbol{\beta} = \mathbf{Q}^\top \mathbf{Y}$$
+
+
+$\mathbf{R}$ being uppertriangular makes solving this more stable. Also beacuse $\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}$ we know that the columns of $\mathbf{Q}$ are in the same scale which stabilizes the right side. 
+
+Now we are ready to find LSE using the QR decomposition. To solve 
+
+$$\mathbf{R} \boldsymbol{\beta} = \mathbf{Q}^\top \mathbf{Y}$$
+
+We use `backsolve` which takes advantage of the upper triangular nature of $\mathbf{R}$.
+```{r}
 QR <- qr(X)
 Q <- qr.Q( QR )
 R <- qr.R( QR )
+betahat <- backsolve(R, crossprod(Q,y) ) 
+```
 
-backsolve(R,crossprod(Q,y))
+Note that in practice we do not need to do any of this due to the built in `solve.qr` function:
 
+```{r}
+QR <- qr(X)
+betahat <- solve.qr(QR, y)
+```
+
+
+
+# Fitted values
+
+This factorization also simplifies the calculation for fitted values:
+
+$$\mathbf{X}\boldsymbol{\hat{\beta}} = 
+(\mathbf{QR})\mathbf{R}^{-1}\mathbf{Q}^\top \mathbf{y}= \mathbf{Q}\mathbf{Q}^\top\mathbf{y} $$
+
+In R we simply do the following:
+```{r,eval=FALSE}
+```{r,fig.width=5,fig.height=5,fig.align="center"}
+library(rafalib)
+mypar(1,1)
 plot(x,y)
 fitted <- tcrossprod(Q)%*%y
 lines(x,fitted,col=2)
-
 ```
 
+# Standard Errors
+
+To obtain the standard errors of the LSE we note that
+
+$$(\mathbf{X^\top X})^{-1} = (\mathbf{R^\top Q^\top QR})^{-1} = (\mathbf{R^\top R})^{-1}$$
+
+The function `chol2inv` is specifically designed to find this inverse. So all we do is the following
 
 ```{r}
-qr.X <- qr(X)
-R <- qr.R(qr.X)
-Q <- qr.Q(qr.X)
-betahat <- backsolve(R, crossprod(Q,y) )
-betahat
+df <- length(y)-QR$rank
+sigma2 <- sum((y-fitted)^2)/df
+var <- sigma2*chol2inv(QR$qr)
+SE <- sqrt(diag(var))
+cbind(betahat,SE)
 ```
 
-### The QR decomposition
-
-If you plan on calculating $\hat{\beta}=(X'X)^\top X^\top Y$ often, and especially if you plan to work with large data sets, it serves you well to learn about the QR decomposition. You can search for the details elsewhere but here is a very useful result in R
+Note that this gives us identical results to the `lm` function.
 
 ```{r}
-qr.X <- qr(X)
-R <- qr.R(qr.X)
-Q <- qr.Q(qr.X)
-betahat <- solve(R, crossprod(Q,y) )
-betahat
+summary(lm(y~0+X))$coef
 ```
-
-
-
-
-
-
 
 
 
