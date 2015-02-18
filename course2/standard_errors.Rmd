@@ -2,7 +2,7 @@
 title: "Standard Errors"
 author: "Rafa"
 date: "January 31, 2015"
-output: pdf_document
+output: html_document
 layout: page
 ---
 
@@ -22,7 +22,7 @@ We have shown how to find the least squares estimates with matrix algebra. These
 It is useful to think about where randomness comes from. In our smalling object example, randomness was introduced through measurement errors. Everytime we rerun the experiment a new set of measurement errors will be made which implies our data will be random. This implies that our estimate of, for example, the gravitational constant will change. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
 
 ```{r}
-set.seet(1)
+set.seed(1)
 B <- 1000
 g <- 9.8 ## meters per second
 n <- 25
@@ -47,7 +47,7 @@ qqnorm(betahat)
 qqline(betahat)
 ```
 
-Becuae $\hat{beta}$ is a linear combination of the data, which we made normal in our simulation, it is also normal as seen in the qq-plot above. Note also that the mean of the distribution is 
+Becuase $\hat{\beta}$ is a linear combination of the data, which we made normal in our simulation, it is also normal as seen in the qq-plot above. Note also that the mean of the distribution is 
 
 ```{r}
 round(-2*mean(betahat),1)
@@ -64,7 +64,7 @@ Here we will show how we can compute theis standard error whithout a Monte Carlo
 
 In the father and son height examples we have randomness because we have a random sample of father and son pairs. For the sake of illustration let's assume that this is the entire population:
 
-```{r}
+```{r,message=FALSE}
 library(UsingR)
 x <- father.son$fheight
 y <- father.son$sheight
@@ -111,9 +111,15 @@ We will also learn how we estimate standard errors of our estimates in practice.
 
 # Variance covariance matrix
 
-As a first step we need to define the variance-covariance matrix. For a vector of random variable $\mathbf{Y}$ we define the matrix $\boldsymbol{\Sigma}$ as the matrix with entry $i,j$ is $\mbox{Cov}(Y_i,Y_j)$. This  covariance variance if $i=j$ and equal to 0 if the variables are independent. In the cases considered up to now we have assumed independence and have the same variance $\sigma^2$ so the variance covariance matrix is $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$ the identity matrix.
+As a first step we need to define the variance-covariance matrix. For a vector of random \\(x^2)\\ variable \\( \mathbf{Y} )\\ we define the matrix $\boldsymbol{\Sigma}$ as the matrix with entry $i,j$ is $\mbox{Cov}(Y_i,Y_j)$. This  covariance variance if $i=j$ and equal to 0 if the variables are independent. In the cases considered up to now we have assumed independence and have the same variance $\sigma^2$ so the variance covariance matrix has 
 
-Later, we will see a case, specifically the \\(\hat{\boldsymbol{\beta}})\\, that has non-zero entries in the off diagonals.
+$$ \mbox{Cov}(Y_i,Y_i) = \mbox{var}(Y_i) = \sigma^2$$
+
+$$ \mbox{Cov}(Y_i,Y_j) = 0, \mbox{ for } i\neq j$$
+
+which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$ the identity matrix.
+
+Later, we will see a case, specifically the $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonals.
 
 # Variance of a linear combination 
 
@@ -123,10 +129,18 @@ $$
 \mbox{var}(\mathbf{AY}) = \mathbf{A}\mbox{var}(\mathbf{Y}) \mathbf{A}^\top 
 $$
 
+For example, If $Y_1$ and $Y_2$ are independent both with variance $\sigma^2$ then
+
+$$\mbox{var}\{Y_1+Y_2\} = 
+\mbox{var}\left\{ \begin{pmatrix}1&1\end{pmatrix}\begin{pmatrix} Y_1\\Y_2\\ \end{pmatrix}\right\}$$
+
+$$ =\begin{pmatrix}1&1\end{pmatrix} \sigma^2 \mathbf{I}\begin{pmatrix} 1\\1\\ \end{pmatrix}=2\sigma^2$$
+
+as we expect. 
 
 # LSE standard errors
 
-Note that $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{(X^\top X)^{-1}X^\top Y}$ so we can use the equation above to derive the variance of our estimates:
+Note that $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with  $\mathbf{A}=\mathbf{(X^\top X)^{-1}X^\top \mathbf{Y}}$ so we can use the equation above to derive the variance of our estimates:
 
 $$
 \mbox{var}(\boldsymbol{\hat{\beta}}) = \mbox{var}( \mathbf{(X^\top X)^{-1}X^\top Y} ) =  $$
@@ -134,4 +148,41 @@ $$\mathbf{(X^\top X)^{-1} X^\top} \mbox{var}(Y) (\mathbf{(X^\top X)^{-1} X^\top}
 $$\mathbf{(X^\top X)^{-1} X^\top} \sigma^2 \mathbf{I} (\mathbf{(X^\top X)^{-1} X^\top})^\top = $$
 $$\sigma^2 \mathbf{(X^\top X)^{-1} X^\top}\mathbf{X} \mathbf{(X^\top X)^{-1}} = $$
 $$\sigma^2\mathbf{(X^\top X)^{-1}}$$
+
+From here we can obtain the variance of our estimates from the diagonal of this matrix.
+
+## Estimating $\sigma^2$
+
+Note that previously we estimated the standard errors from the sample. However, not that the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
+
+We form the residuals: 
+
+$$
+\mathbf{r}\equiv\boldsymbol{\hat{\varepsilon}} = \mathbf{Y}-\mathbf{X}\boldsymbol{\hat{\beta}}$$
+
+
+Then use estimate with 
+
+$$ s^2 \equiv \hat{\sigma}^2 = \frac{1}{N-p}\mathbf{r}^\top\mathbf{r} $$
+
+Here $N$ is the sample size and $p$ is the number of columns in $\mathbf{X}$ or number of parameters (including the interecept term $\beta_0$). 
+
+## Linear Combination of Estimates
+
+Commonly we want to compute the standard deviation of a linear combination of estimates such as 
+
+$$\hat{\beta}_2 - \hat{\beta}_1 = 
+\begin{pmatrix}0&1&-1&0&\dots&0\end{pmatrix} \begin{pmatrix}
+\hat{\beta}_0\\
+\hat{\beta}_1 \\ 
+\hat{\beta}_2 \\ 
+\vdots\\
+\hat{\beta}_p
+\end{pmatrix}$$
+
+We know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$
+
+
+
+
 
