@@ -19,7 +19,7 @@ We have shown how to find the least squares estimates with matrix algebra. These
 
 ## Falling object
 
-It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will change randomly which impies our estimates wil change randomly. This implies that our estimate of, for example, the gravitational constant will change everytime we perform the experiment. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
+It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will change randomly which implies our estimates will change randomly. This implies that our estimate of, for example, the gravitational constant will change every time we perform the experiment. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
 
 ```{r}
 set.seed(1)
@@ -88,7 +88,7 @@ betahat <- replicate(B,{
   })
 betahat <- t(betahat) ## have estimates in two columns
 ```
-By making qq-plots, we see that our estimates are approximately nomral random variables:
+By making qq-plots, we see that our estimates are approximately normal random variables:
 
 ```{r}
 mypar2(1,2)
@@ -237,6 +237,6 @@ Using the above, we know how to compute the variance covariance matrix of $\hat{
 
 # CLT and t-distribution
 
-We have shown how we can obtain standard errors for our estimates. But, as we learn in the first chapter to perofrm inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is becasue the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{beta}$ and standard errors as described. 
+We have shown how we can obtain standard errors for our estimates. But, as we learned in the first chapter to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed then the $\hat{beta}-\beta$ follow a t-distribution. Proving this mathematically is rather advanced, but the results are extremely useful as it is how we construct p-values and confidence intervals in the context of linear models.
 
 
