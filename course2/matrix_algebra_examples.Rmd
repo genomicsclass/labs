@@ -209,7 +209,7 @@ betahat <- solve(crossprod(X))%*%crossprod(X,y)
 ```
 
 
-Now we can see the results of this by computing the estimated $\hat{\beta}_0+\hat{\beta}_1 x$ for any value of $x$
+Now we can see the results of this by computing the estimated $\hat{\beta}_0+\hat{\beta}_1 x$ for any value of $x$:
 
 ```{r}
 newx <- seq(min(x),max(x),len=100)
