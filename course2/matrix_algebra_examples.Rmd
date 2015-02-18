@@ -1,7 +1,7 @@
 ---
 title: "Linear Algebra Examples "
 author: "Rafa"
-date: "January 31, 2015"
+date: "February 18, 2015"
 output: html_document
 layout: page
 ---

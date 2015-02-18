@@ -13,25 +13,28 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduction
 
-We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute the standard errors. Linear algebra also provides powerful approach for this task. 
+We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute their standard errors. Linear algebra also provides powerful approach for this task. 
 
 # Examples
 
 ## Falling object
 
-It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will be random. This implies that our estimate of, for example, the gravitational constant will change. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
+It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will change randomly which impies our estimates wil change randomly. This implies that our estimate of, for example, the gravitational constant will change everytime we perform the experiment. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
 
 ```{r}
 set.seed(1)
 B <- 10000
+h0 <- 56.67
+v0 <- 0
 g <- 9.8 ## meters per second
+
 n <- 25
 tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
 X <-cbind(1,tt,tt^2)
 ##create X'X^-1 X'
 A <- solve(crossprod(X))%*%t(X)
 betahat<-replicate(B,{
-  y <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1)
+  y <- h0 + v0*tt  - 0.5*g*tt^2 + rnorm(n,sd=1)
   betahats <- A%*%y
   return(betahats[3])
 })
@@ -39,7 +42,7 @@ head(betahat)
 ```
 
 Note that, as expected, the estimate is different every time. It is a random variable and it has a distribution:
-```{r}
+```{r,message=FALSE}
 library(rafalib)
 mypar2(1,2)
 hist(betahat)
@@ -50,10 +53,10 @@ qqline(betahat)
 Because $\hat{\beta}$ is a linear combination of the data, which we made normal in our simulation, it is also normal as seen in the qq-plot above. Note also that the mean of the distribution is 
 
 ```{r}
-round(-2*mean(betahat),1)
+round(mean(betahat),1)
 ```
 
-is the true parameter $-0.5g$. The standard error of our estimate is approximately:
+the true parameter $-0.5g$. But we won't see this value when we estimate because the standard error of our estimate is approximately:
 ```{r}
 sd(betahat) 
 ```
@@ -71,7 +74,7 @@ y <- father.son$sheight
 n <- length(y)
 ```
 
-Now let's run a Monte Carlo simulation in which we take a sample of size 50 over and over again. This 
+Now let's run a Monte Carlo simulation in which we take a sample of size 50 over and over again. 
 
 ```{r}
 N <- 50
@@ -85,21 +88,21 @@ betahat <- replicate(B,{
   })
 betahat <- t(betahat) ## have estimates in two columns
 ```
-We see that our estimates are random variable 
+By making qq-plots, we see that our estimates are approximately nomral random variables:
 
 ```{r}
 mypar2(1,2)
-hist(betahat[,1])
-hist(betahat[,2])
+qqnorm(betahat[,1]);qqline(betahat[,1])
+qqnorm(betahat[,2]);qqline(betahat[,2])
 ```
 
-Here we note that the correlation of our estimates is negative:
+We also note that the correlation of our estimates is negative:
 
 ```{r}
 cor(betahat[,1],betahat[,2])
 ```
 
-This will be important to know because when we compute linear combinations of our estimates, we will need this information to calculate the standard error of this linear combination.
+This will be important to know because when we compute linear combinations of our estimates, we will need this information to correctly calculate the standard error of these linear combination.
 
 In the next section we will describe the variance-covariance matrix. The covariance of two random variables is defined as follows:
 
@@ -107,7 +110,10 @@ In the next section we will describe the variance-covariance matrix. The covaria
 mean( (betahat[,1]-mean(betahat[,1] ))* (betahat[,2]-mean(betahat[,2])))
 ```
 
-We will also learn how we estimate standard errors of our estimates in practice.
+The covariance is the correlation multiplied by the standard deviations of each random variable:
+$$\mbox{Corr}(X,Y) = \frac{\mbox{Cov}(X,Y)}{\sigma_X \sigma_Y}$$
+
+Other than that, this quantity does not have a useful interpretation in practice. However, as we will see it is a very useful quantity for mathematical derivations. In the next sections we show useful matrix algebra calculations that can be used to estimate standard errors of linear model estimates. 
 
 # Variance covariance matrix
 
@@ -120,6 +126,29 @@ $$ \mbox{Cov}(Y_i,Y_j) = 0, \mbox{ for } i\neq j$$
 which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$ the identity matrix.
 
 Later, we will see a case, specifically the $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonals.
+
+## Technical note
+
+The standard approach to writing linear models either assume the $X$ are fixed or that we are conditioning on them. Thus  $X\beta$ has no variance as the $X$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following: 
+```{r}
+x <- father.son$fheight
+beta <- c(34,0.5)
+var(beta[1]+beta[2]*x)
+```
+it is no where near 0. This is an example in which we have to be careful to distinguish code from math. The function `var` is simply computing the variance of the list while the mathematical use of var is considering only quantities that are random variables. In the R code above, $x$ is not fixed at all: we are letting it vary but when we write  $\mbox{var}(Y_i) =\sigma^2$ we are imposing, mathematically, $x$ to be fixed. Similarly if we use R to compute the variance of $Y$ in our object dropping example we obtain something very different than $\sigma^2=1$ (the known variance):
+```{r}
+y <- h0 + v0*tt  - 0.5*g*tt^2 + rnorm(n,sd=1)
+var(y)
+```
+Again, this is because we are not fixing `tt`. 
+
+
+
+
+
+
+
+
 
 # Variance of a linear combination 
 
