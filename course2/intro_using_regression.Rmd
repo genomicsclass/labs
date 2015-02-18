@@ -13,12 +13,13 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduction
 
+We are going to describe three examples from the life sciences. One from physics, one related to genetics, and one from a mouse experiment. They are very different yet we end up using the same statistical technique: fitting linear models. Linear models are typically taught and described in the language of matrix algebra. We will teach you both. 
+
 ```{r prep}
 library(rafalib)
 mypar2()
 ```
 
-We are going to describe three examples from the life sciences. One from physics, one related to genetics, and one from a mouse experiment. They are very different yet we end up using the same statistical technique: fitting linear models. Linear models are typically taught and described in the language of matrix algebra. We will teach you both. 
 
 # Objects falling
 
@@ -83,9 +84,7 @@ We want to estimate the difference in average weight between populations. We sho
 
 $$ Y_i = \beta_0 + \beta_1 x_{i} + \varepsilon_i$$
 
-with $\beta_0$ the chow diet average weight, $\beta_1$ the difference between averages,
-$x_i = 1$ when mouse $i$ gets the high fat (hf) diet, $x_i = 0$ when it gets the chow diet, and 
- $\varepsilon_i$ explains the differences between mice of same population. 
+with $\beta_0$ the chow diet average weight, $\beta_1$ the difference between averages, $x_i = 1$ when mouse $i$ gets the high fat (hf) diet, $x_i = 0$ when it gets the chow diet, and $\varepsilon_i$ explains the differences between mice of same population. 
  
 
 # General linear model
@@ -100,6 +99,7 @@ $$ Y_i = \beta_0 + \sum_{j=1}^p \beta_j x_{i,j} + \varepsilon_i, i=1,\dots,n $$
 Note that we have a general number of predictors $p$. Matrix algebra provides a compact language and mathematical framework to compute and make derivations with any linear models that first into the above framework.
 
 <a name="estimates"></a>
+
 # Estimating parameters
 
 For the models above to be useful we have to estimate the unknown $\beta$ s. In the first example, we want to describe a physical process for which we can't have unknown parameters. In the second example we better understand inheritence by estimating how much, on average, father height affects the son's. In the final example we want to determine if their is infact a difference: if $\beta_1 \neq 0$. 
@@ -180,24 +180,22 @@ Trial and error here is not going to work. Instead we can use calculus: take the
 When studying the father son data, Galton made a fascinating discovery using exploratory analysis.
 
 <center>
-<img src="http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg" width=400>
+<img src="http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg" width="400">
 </center>
 
-He noted that if he tabulated the number of father/son height pairs and followed all the x,y values having the same totals in the table
-they formed an ellipses. In the plot above, made by Galton, you see the ellipsis formed by the pairs having 3 cases. This then led to modeling this data as correlated bivariate normal. 
+He noted that if he tabulated the number of father/son height pairs and followed all the x,y values having the same totals in the table they formed an ellipses. In the plot above, made by Galton, you see the ellipsis formed by the pairs having 3 cases. This then led to modeling this data as correlated bivariate normal. 
 
 $$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
-\exp{ \left\\{
+\exp{ \left\{
 \frac{1}{2(1-\rho^2)}
 \left[\left(\frac{x-\mu_x}{\sigma_x}\right)^2 -  
 2\rho\left(\frac{x-\mu_x}{\sigma_x}\right)\left(\frac{y-\mu_y}{\sigma_y}\right)+
 \left(\frac{y-\mu_y}{\sigma_y}\right)^2
 \right]
-\right\\}
+\right\}
 }
 $$
 
-From here we can show, with some math, that if you keep $X$ fixed (condition to be $x$) the the distribution of $Y$ is normally distributed with mean:
-$\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. Homework what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$. It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
+From here we can show, with some math, that if you keep $X$ fixed (condition to be $x$) the the distribution of $Y$ is normally distributed with mean: $\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. Homework what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$. It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
 
 
