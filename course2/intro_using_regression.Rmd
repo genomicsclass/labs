@@ -41,7 +41,7 @@ He does not know the exact equation but looking at the plot above, he deduces th
 
 $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
 
-With $Y_i$ representing location, $t_i$ representing the time, and $\varepsilon$ accounts for measurement error. This is a linear model becuase it is a linear combination of known quantities (th $x$ s) referred to as predictors or covariates and unknown parameters (the $\beta$ s). 
+With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon$ accounts for measurement error. This is a linear model becuase it is a linear combination of known quantities (th $x$ s) referred to as predictors or covariates and unknown parameters (the $\beta$ s). 
 
 # Father son's heights
 Now imagine you are Francis Galton in the 19th century and you collect paired height data from father and sons. You suspect that height is inherited. Your data 

@@ -11,7 +11,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduciton
+# Introduction
 
 In the previous section we motivated the use of matrix algebra with this system of equations:
 $$\begin{eqnarray}
