@@ -7,15 +7,15 @@ title: Getting Started
 
 ### Installing R
 
-The first step is to install R. There are several resources on the internet on how to do this. But here are two:
+The first step is to install R. There are several resources on the internet on how to do this.
 
-* [Installing R on Windows](http://youtu.be/mfGFv-iB724)
+* [Installing R on Windows](https://github.com/genomicsclass/windows)
 * [Installing R on Mac](http://youtu.be/Icawuhf0Yqo)
 * [Installing R on Ubuntu](http://cran.r-project.org/bin/linux/ubuntu/README)
 
 ### Installing RStudio
 
-The next step is to install RStudio. Technically you can run all the code shown here without installing RStudio, but we highly recommend this integrated development environment (IDE). Instructions are [here](http://www.rstudio.com/products/rstudio/download/)
+The next step is to install RStudio. Technically you can run all the code shown here without installing RStudio, but we highly recommend this integrated development environment (IDE). Instructions are [here](http://www.rstudio.com/products/rstudio/download/) and for Windows we have special [instructions](https://github.com/genomicsclass/windows).
 
 ### Installing packages
 
@@ -65,6 +65,7 @@ The three files we start with in the class are these:
 * [entire population dataset](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv)
 
 You can navigate to these file by visiting the data directory of dagadat on [github](https://github.com/genomicsclass/dagdata/tree/master/inst/extdata)
+
 ### The working directory
 
 When you are working in R it is useful to know your _working directory_. This is the directory or folder in which R will save or look for files by default. You can see your working directory by typing:
