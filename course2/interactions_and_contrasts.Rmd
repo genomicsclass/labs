@@ -67,6 +67,7 @@ We can form the design matrix which was used internally to `lm`:
 X <- model.matrix(~ type, data=spider.sub)
 colnames(X)
 head(X)
+tail(X)
 ```
 
 Now we'll make a plot of the `X` matrix, by putting a black block for the 1's in the design matrix and a white block for the 0's. This plot will be more interesting for the linear models later on in this script. Along the y-axis is the sample number (the row number of the `data`), and along the x-axis is the column of the design matrix $\mathbf{X}$. If you have installed the *rafalib* library, you can make this plot with the `imagemat` function:
