@@ -36,7 +36,7 @@ What we can see immediately, are two trends:
 * pulling motion has a higher frictional coefficient than pushing motion
 * the leg pairs to the back of the spider (L4 being the last) generally have higher pulling frictional coefficients.
 
-Another thing to notice is that the groups have different spread, what we call *within-group variance*. This is somewhat of a problem for the kinds of linear models we will explore below, because we will assume that around the fitted values $\hat{Y}_i$, the errors $\varepsilon_i$ are distributed identically, meaning the same variance within each group. The consequence of ignoring the different variance is that comparisons between the groups with small variances with be overly "conservative" (because the overall estimate of variance is larger than these groups), and comparisons between the groups with large variances will be overly confident.
+Another thing to notice is that the groups have different spread, what we call *within-group variance*. This is somewhat of a problem for the kinds of linear models we will explore below, because we will assume that around the fitted values $\hat{Y}_i$, the errors $\varepsilon_i$ are distributed identically, meaning the same variance within each group. The consequence of ignoring the different variance is that comparisons between the groups with small variances will be overly "conservative" (because the overall estimate of variance is larger than these groups), and comparisons between the groups with large variances will be overly confident.
 
 An alternative test for comparing groups would be t-tests without the equal variance assumption, using a "Welch" or "Satterthwaite approximation", or a test of a shift in distribution, such as the Mann-Whitney-Wilcoxon test.
 
