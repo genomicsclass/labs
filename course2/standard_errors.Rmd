@@ -192,11 +192,15 @@ $$ s^2 \equiv \hat{\sigma}^2 = \frac{1}{N-p}\mathbf{r}^\top\mathbf{r} = \frac{1}
 
 Here $N$ is the sample size and $p$ is the number of columns in $\mathbf{X}$ or number of parameters (including the intercept term $\beta_0$). The reason we divide by $N-p$ is because mathematical theory tells us that this will give us better (unbiased) estimate.
 
-Let's try this in R
+Let's try this in R and see if we obtain the same values as we did with the Monte Carlo simulaion above.
 
 ```{r}
-x <- father.son$fheight
-y <- father.son$sheight
+n <- nrow(father.son)
+N <- 50
+index <- sample(n,N)
+sampledat <- father.son[index,]
+x <- sampledat$fheight
+y <- sampledat$sheight
 X <- model.matrix(~x)
 
 N <- nrow(X)
@@ -210,11 +214,16 @@ s <- sqrt( sum(resid^2)/(N-p))
 ses <- sqrt(diag(XtXinv))*s 
 ```
 
-Let's compare to what `lm` provides:
+Let's compare to what `lm` provides 
 
 ```{r}
 summary(lm(y~x))$coef[,2]
 ses
+```
+
+They are identical because they are doing the same thing. Also note that we approxiamte the Monte Carlo reulsts:
+```{r}
+apply(betahat,2,sd)
 ```
 
 
