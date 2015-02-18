@@ -167,9 +167,36 @@ $$ s^2 \equiv \hat{\sigma}^2 = \frac{1}{N-p}\mathbf{r}^\top\mathbf{r} $$
 
 Here $N$ is the sample size and $p$ is the number of columns in $\mathbf{X}$ or number of parameters (including the interecept term $\beta_0$). 
 
+Let's try this in R
+
+```{r}
+x <- father.son$fheight
+y <- father.son$sheight
+X <- model.matrix(~x)
+
+N <- nrow(X)
+p <- ncol(X)
+
+XtXinv <- solve(crossprod(X))
+
+resid <- y - X %*% XtXinv %*% crossprod(X,y)
+
+s <- sqrt( sum(resid^2)/(N-p))
+ses <- sqrt(diag(XtXinv))*s 
+```
+
+Let's compare to what `lm` provides:
+
+```{r}
+summary(lm(y~x))$coef[,2]
+ses
+```
+
+
+
 ## Linear Combination of Estimates
 
-Commonly we want to compute the standard deviation of a linear combination of estimates such as 
+Commonly we want to compute the standard deviation of a linear combination of estimates such as $\hat{\beta}_2 - \hat{\beta}_1$. Note that this is a linear combination of $\hat{\boldsymbol{\beta}}$:
 
 $$\hat{\beta}_2 - \hat{\beta}_1 = 
 \begin{pmatrix}0&1&-1&0&\dots&0\end{pmatrix} \begin{pmatrix}
@@ -180,7 +207,7 @@ $$\hat{\beta}_2 - \hat{\beta}_1 =
 \hat{\beta}_p
 \end{pmatrix}$$
 
-We know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$
+Using the above, we know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$.
 
 
 
