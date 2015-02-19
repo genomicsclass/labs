@@ -23,7 +23,7 @@ mypar2()
 
 # Objects falling
 
-Imagine you are Galileo back in the 16th century trying to describe the velocity of an objects falling. An assistant climbs the Tower of Pizza and drops a ball while several anothers record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
+Imagine you are Galileo back in the 16th century trying to describe the velocity of an objects falling. An assistant climbs the Tower of Pizza and drops a ball while several others record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
 ```{r}
 set.seed(1)
 g <- 9.8 ## meters per second
@@ -106,7 +106,7 @@ For the models above to be useful we have to estimate the unknown $\beta$ s. In 
 
 The standard approach in science is to find the values that minimize the distance of the fitted model to the data. The following is called the least squares (LS) equation and we will see it often in this chapter:
 
-$$ \sum_{i=1}^n \\{  Y_i - (\beta_0 + \sum_{j=1}^p \beta_j x_{i,j}\\}^2 $$
+$$ \sum_{i=1}^n \{  Y_i - (\beta_0 + \sum_{j=1}^p \beta_j x_{i,j}\}^2 $$
 
 Once we find the minimum, we will call the values the least squares estimates (LSE) and denote them with $\hat{\beta}$. The quantity obtained when evaluating the least square equation at the estimates is called the residual sum of squares (RSS). Note that because all these quantities depend on $Y$, *they are random variables*. The $\hat{\beta}$ s are random variables and we will eventually perform inference on them.
 

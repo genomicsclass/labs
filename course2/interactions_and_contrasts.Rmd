@@ -236,6 +236,13 @@ L3vsL2.equiv$X
 
 ## A linear model with interactions
 
+As we saw in the previous linear model, we assumed that the push vs pull effect was the same for all of the leg pairs (the same orange arrow). You can easily see that this does not capture the data that well, that is, the tips of the arrows did not line up perfectly with the group averages. For the L1 leg pair, the push vs pull coefficient overshot, and for the L3 leg pair, the push vs pull coefficient was too small.
+
+*Interaction* terms will help us overcome this problem, by introducing additional terms to compensate for differences in the push vs pull effect across the 4 groups. As we already have a push vs pull term in the model, we only need to add three more terms to have the freedom to find leg-pair-specific push vs pull differences. Interaction terms are added to the design matrix simply by multiplying the columns of the design matrix representing existing terms. 
+
+We can see this by building our model with an *interaction* between `type` and `leg`, by including an extra term in the formula `type:leg`. An equivalent way to specify this model is `~ type*leg` which will expand to the formula shown below, with main effects for `type`, `leg` and an interaction of `type:leg`.
+
+
 ```{r}
 X <- model.matrix(~ type + leg + type:leg, data=spider)
 colnames(X)
@@ -243,14 +250,21 @@ head(X)
 imagemat(X, main="Model matrix for linear model with interactions")
 ```
 
+Note that columns 6-8 (`typepush:legL2`, `typepush:legL3`, and `typepush:legL4`) are the product of the 2nd column (`typepush`) and the 3-5 columns (the three `leg` columns). Looking at the last column for example, the `typepush:legL4` column will give an extra term $\beta_{\textrm{push,L4}$ to those samples which are both push samples and leg pair L4 samples. This will account for when the mean samples in the L4-push group is not simply the addition of the main push coefficient and the main L4 coefficient.
+
+We can run the linear model using the same code as before:
+
 ```{r}
 fitX <- lm(friction ~ type + leg + type:leg, data=spider)
 summary(fitX)
 coefs <- coef(fitX)
 ```
 
-
 ### Examining the coefficients
+
+Here is where the plot with arrows help us to see what is going on with the interaction terms. The interaction terms (the yellow, brown and silver arrows), are extra terms which help us to fit leg-pair-specific differences in the push vs pull difference. The orange arrow now represents the push vs pull difference for the reference leg pair, which is L1. If the interaction term is large, this means that the push vs pull difference for that group is different than the push vs pull difference in the reference leg pair.
+
+Now, as we have eight terms in the model and 8 parameters, you can check that the tips of the arrowheads are exactly equal to the group means.
 
 ```{r}
 stripchart(split(spider$friction, spider$group), 
@@ -280,7 +294,7 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 ### Contrasts
 
-For some simple cases, we can use the contrast package:
+Again we will show how to combine coefficients from the model using *contrasts*. For some simple cases, we can use the contrast package. Suppose we want to know the push vs pull effect for the L2 leg pair samples. We can see from the arrow plot that this is the orange arrow plus the yellow arrow. We can also specify this comparison with the `contrast` function:
 
 ```{r}
 library(contrast)
