@@ -250,7 +250,7 @@ head(X)
 imagemat(X, main="Model matrix for linear model with interactions")
 ```
 
-Note that columns 6-8 (`typepush:legL2`, `typepush:legL3`, and `typepush:legL4`) are the product of the 2nd column (`typepush`) and the 3-5 columns (the three `leg` columns). Looking at the last column for example, the `typepush:legL4` column will give an extra term $\beta_{\textrm{push,L4}$ to those samples which are both push samples and leg pair L4 samples. This will account for when the mean samples in the L4-push group is not simply the addition of the main push coefficient and the main L4 coefficient.
+Note that columns 6-8 (`typepush:legL2`, `typepush:legL3`, and `typepush:legL4`) are the product of the 2nd column (`typepush`) and the 3-5 columns (the three `leg` columns). Looking at the last column for example, the `typepush:legL4` column will give an extra term $\beta_{\textrm{push,L4}}$ to those samples which are both push samples and leg pair L4 samples. This will account for when the mean samples in the L4-push group is not simply the addition of the main push coefficient and the main L4 coefficient.
 
 We can run the linear model using the same code as before:
 
@@ -316,7 +316,9 @@ summary(fitX)
 
 ### Difference of differences not involving the reference level
 
-Suppose we want to know if the push vs pull difference is *different* for the L3 leg pair vs the L2 leg pair. If we work out the math, this is:
+Suppose we want to know if the push vs pull difference is *different* for the L3 leg pair vs the L2 leg pair. Considering the arrows in the plot, the push vs pull difference for a leg pair other then L1 is the `typepush` arrow plus the interaction term for that group.
+
+If we work out the math for comparing across two non-reference leg pairs, this is:
 
 $$ (typepush + typepush:legL3) - (typepush + typepush:legL2) $$ 
 
@@ -351,15 +353,37 @@ If we consider the first line, it says that, from a model with only an intercept
 mu0 <- mean(spider$friction)
 initial.ss <- sum((spider$friction - mu0)^2)
 s <- split(spider$friction, spider$type)
-type.ss <- sum(sapply(s, function(x) sum((x - mean(x))^2)))
-initial.ss - type.ss
+after.type.ss <- sum(sapply(s, function(x) sum((x - mean(x))^2)))
+(type.ss <- initial.ss - after.type.ss)
 ```
+
+Through [simple arithmetic](http://en.wikipedia.org/wiki/Partition_of_sums_of_squares#Proof), this can be shown to be equivalent to the sum of squares of the fitted values from the model using the type information to the fitted values from the model with only an intercept:
+
+```{r}
+sum(sapply(s, length) * (sapply(s, mean) - mu0)^2)
+```
+
+Note that the order of terms in the formula, and therefore rows in the ANOVA table is important: each row considers the reduction in the sum of squares after adding information to the model in the previous row.
 
 The other columns in the ANOVA table show the "degrees of freedom" with each row. As the `type` variable introduced only one term in the model, the `Df` column has a 1. Because the `leg` variable introduced three terms in the model (`legL2`, `legL3` and `legL4`), the `Df` column has a 3.
 
-Finally, there is a column which lists the *F value*.
+Finally, there is a column which lists the *F value*. The F value is the *mean of squares* for the inclusion of the terms of interest (the sum of squares divided by the degrees of freedom) divided by the mean squared residuals (from the bottom row):
+
+$$ r_i = Y_i - \hat{Y}_i $$
+
+$$ MeanSq = \frac{1}{N - p} \sum_{i=1}^N r_i^2 $$
+
+where $p$ is the sum of all the terms in the model (here 8, including the intercept term).
+
+Under the null hypothesis that the true value of the additional terms is 0, we have a theoretical result for what the distribution of the F value will be for each row. Let's take as an example the last row, the three interaction terms. Under the null hypothesis that the true value for these three additional terms is actually 0, e.g. $\beta_{\textrm{push,L2}} = 0, \beta_{\textrm{push,L3}} = 0, \beta_{\textrm{push,L4}} = 0$, then we can calculate the chance of seeing such a large F value for this row of the ANOVA table. Note that we are only concerned with large values here, because we have a ratio of sum of squares, the F value can only be positive. 
+
+The p-value in the last column for the `type:leg` row can be interpreted as following: under the null hypothesis that there are no differences in the push vs pull difference across leg pair, this is the probability of the interaction terms explaining so much of the observed variance. If this p-value is small, we would consider rejecting the null hypothesis that the push vs pull difference is the same across leg pair.
+
+The [F distribution](http://en.wikipedia.org/wiki/F-distribution) has two parameters: one for the degrees of freedom of the numerator (the terms of interest) and one for the denominator (the residuals). In the case of the interactions row, this is 3, the number of interaction terms divided by 274, the number of samples minus the total number of coefficients.
 
 ## A different specification of the same model
+
+In this last section, we show an alternate way to specify the model where we suppose that each group has its own mean (that the push vs pull effect is not the same for each leg pair). This specification is in some ways simpler, but it does not allow us to build the ANOVA table as above, because it does not split interaction terms out in the same way. Here we simply include a term for each unique combination of `type` and `leg`. We include a `0 +` in the formula because we do not want to include an intercept:
 
 ```{r}
 # earlier, we defined the 'group' column:
@@ -370,6 +394,8 @@ head(X)
 imagemat(X, main="Model matrix for linear model with group variable")
 ```
 
+We can run the linear model with the familiar call:
+
 ```{r}
 fitG <- lm(friction ~ 0 + group, data=spider)
 summary(fitG)
@@ -377,6 +403,8 @@ coefs <- coef(fitG)
 ```
 
 ### Examining the coefficients
+
+Now we have eight arrows, on for each group. The arrow tips align directly with the mean of each group:
 
 ```{r}
 stripchart(split(spider$friction, spider$group), 
@@ -391,6 +419,8 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 ### Simple contrasts using the contrast package
 
+While we cannot perform an F test with this formulation, we can easily contrast individual groups using the `contrast` function:
+
 ```{r}
 groupL2push.vs.pull <- contrast(fitG,
                                 list(group = "L2push"), 
@@ -401,10 +431,17 @@ coefs[4] - coefs[3]
 
 ### Differences of differences when there is not an intercept
 
+And we can also make pair-wise comparisons of the push vs pull difference. For example if we want to compare the push vs pull difference in leg pair L3 vs leg pair L2:
+
+$$ (L3push - L3 pull) - (L2push - L2pull) $$
+
+$$ = L3 push + L2 pull - L3pull - L2push $$
+
 ```{r}
 C <- matrix(c(0,0,1,-1,-1,1,0,0), 1)
 groupL3vsL2interaction <- glht(fitG, linfct=C)
 summary(groupL3vsL2interaction)
+names(coefs)
 (coefs[6] - coefs[5]) - (coefs[4] - coefs[3])
 ```
 
