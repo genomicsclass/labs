@@ -305,25 +305,59 @@ L2push.vs.pull
 coefs[2] + coefs[6]
 ```
 
+
 ### Differences of differences
 
-The question if the push vs pull difference is different for different legs can be asked in general by the anova() function:
+As we mentioned above, if we want to ask the question, is the push vs pull difference *different* in L2 compared to L1, this is answered by a single term in the model, the `typepush:legL2` term corresponding to the yellow arrow in the plot. Similarly, we can test the L3 vs L1 and L4 vs L1 differences, straight from the summary table of the linear model:
 
 ```{r}
-anova(fitX)
+summary(fitX)
 ```
-
-If we want to compare two specific groups, and one of the groups is the L1 group, then we can simply read off the interaction effects in summary(fit).
 
 ### Difference of differences not involving the reference level
 
+Suppose we want to know if the push vs pull difference is *different* for the L3 leg pair vs the L2 leg pair. If we work out the math, this is:
+
+$$ (typepush + typepush:legL3) - (typepush + typepush:legL2) $$ 
+
+$$ = typepush:legL3 - typepush:legL2 $$
+
+We can't make this contrast using the `contrast` function shown before, but we can make this comparison using the `glht` (for "general linear hypothesis test") function from the *multcomp* package. All we need to do is form a 1-row matrix which has a -1 for the `typepush:legL2` effect and a +1 for the `typepush:legL3` effect. We provide this matrix to the `linfct` (linear function) argument, and obtain a summary table for this contrast alone.
+
+*Note*: there are other ways to perform contrasts using base R, but this function is in my opinion simpler to use.
+
 ```{r}
+# install.packages("multcomp")
 library(multcomp)
 C <- matrix(c(0,0,0,0,0,-1,1,0), 1)
 L3vsL2interaction <- glht(fitX, linfct=C)
 summary(L3vsL2interaction)
 coefs[7] - coefs[6]
 ```
+
+### Testing all differences of differences: analysis of variance
+
+Finally, suppose that we want to know if the push vs pull difference is *different* across leg pairs in general. Here we are not comparing any two leg pairs in particular but want to know if the three interaction terms which represent differences in the push vs pull difference are larger than we would expect them to be, if the push vs pull difference was actually contant across the leg pairs.
+
+In statistics, such a question can be answered by an "analysis of variance", which is often abbreviated *ANOVA*. The `anova` adds terms to the model in the sequence provided in the formula, and with each additional term or set of terms, the function calculates the reduction in the sum of squares of the residuals. Let's first print this table and then examine the results in detail:
+
+```{r}
+anova(fitX)
+```
+
+If we consider the first line, it says that, from a model with only an intercept, adding the information about which observations were push and which were pull reduced the sum of squares by 42.783. We can reproduce this number in R by examining the sum of squares from a model with only an intercept (the mean of all observations) and the sum of squares from a model which groups by type:
+
+```{r}
+mu0 <- mean(spider$friction)
+initial.ss <- sum((spider$friction - mu0)^2)
+s <- split(spider$friction, spider$type)
+type.ss <- sum(sapply(s, function(x) sum((x - mean(x))^2)))
+initial.ss - type.ss
+```
+
+The other columns in the ANOVA table show the "degrees of freedom" with each row. As the `type` variable introduced only one term in the model, the `Df` column has a 1. Because the `leg` variable introduced three terms in the model (`legL2`, `legL3` and `legL4`), the `Df` column has a 3.
+
+Finally, there is a column which lists the *F value*.
 
 ## A different specification of the same model
 
