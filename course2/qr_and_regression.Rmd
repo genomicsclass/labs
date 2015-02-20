@@ -43,11 +43,13 @@ Thus  we need to compute $(\mathbf{X}^\top \mathbf{X})^{-1}$
 # `solve` is unstable
 
 Here we construct an extreme case 
+
 ```{r}
 n <- 50;M <- 500
 x <- seq(1,M,len=n)
 X <- cbind(1,x,x^2,x^3)
 beta <- matrix(c(1,1,1,1),4,1)
+set.seed(1)
 y <- X%*%beta+rnorm(n,sd=1)
 ```
 
@@ -57,8 +59,9 @@ solve(crossprod(X)) %*% crossprod(X,y)
 ```
 
 To see why this happens look at $(\mathbf{X}^\top \mathbf{X})$
+
 ```{r,include=FALSE}
-options(digits=2)
+options(digits=4)
 ```
 
 ```{r}
@@ -72,7 +75,9 @@ Note the difference of several orders of magnitude. On a digitial computer we ha
 The QR factorization is based on a mathematical result that tells us that for a full rank $N\times p$ matrix $\mathbf{X}$ we can decompose as
 
 $$
-\mathbf{X = QR}$$
+\mathbf{X = QR}
+$$
+
 with 
 
 * $\mathbf{Q}$ a $N \times p$ matrix with  $\mathbf{Q^\top Q=I}$
@@ -103,8 +108,7 @@ c\\
 \end{pmatrix}
 $$
 
-We immediately know that 
-$c=1$ which implies that $b+2=4$ which implies  $b=2$ and thuse $a+4-1=6$ so $a = 3$. Writing an algorithm to do this is straigh-forward for any upper triangular matrix.
+We immediately know that $c=1$ which implies that $b+2=4$ which implies  $b=2$ and thuse $a+4-1=6$ so $a = 3$. Writing an algorithm to do this is straigh-forward for any upper triangular matrix.
 
 # Finding LSE with QR 
 
@@ -122,8 +126,7 @@ $$(\mathbf{R}^\top)^{-1} \mathbf{R}^\top \mathbf{R} \boldsymbol{\beta} = (\mathb
 
 $$\mathbf{R} \boldsymbol{\beta} = \mathbf{Q}^\top \mathbf{Y}$$
 
-
-$\mathbf{R}$ being uppertriangular makes solving this more stable. Also beacuse $\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}$ we know that the columns of $\mathbf{Q}$ are in the same scale which stabilizes the right side. 
+$\mathbf{R}$ being upper triangular makes solving this more stable. Also beacuse $\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}$ we know that the columns of $\mathbf{Q}$ are in the same scale which stabilizes the right side. 
 
 Now we are ready to find LSE using the QR decomposition. To solve 
 
@@ -134,14 +137,14 @@ We use `backsolve` which takes advantage of the upper triangular nature of $\mat
 QR <- qr(X)
 Q <- qr.Q( QR )
 R <- qr.R( QR )
-betahat <- backsolve(R, crossprod(Q,y) ) 
+(betahat <- backsolve(R, crossprod(Q,y) ) )
 ```
 
 Note that in practice we do not need to do any of this due to the built in `solve.qr` function:
 
 ```{r}
 QR <- qr(X)
-betahat <- solve.qr(QR, y)
+(betahat <- solve.qr(QR, y))
 ```
 
 
@@ -172,10 +175,10 @@ $$(\mathbf{X^\top X})^{-1} = (\mathbf{R^\top Q^\top QR})^{-1} = (\mathbf{R^\top 
 The function `chol2inv` is specifically designed to find this inverse. So all we do is the following
 
 ```{r}
-df <- length(y)-QR$rank
+df <- length(y) - QR$rank
 sigma2 <- sum((y-fitted)^2)/df
-var <- sigma2*chol2inv(QR$qr)
-SE <- sqrt(diag(var))
+varbeta <- sigma2*chol2inv(qr.R(QR))
+SE <- sqrt(diag(varbeta))
 cbind(betahat,SE)
 ```
 
@@ -184,13 +187,4 @@ Note that this gives us identical results to the `lm` function.
 ```{r}
 summary(lm(y~0+X))$coef
 ```
-
-
-
-
-
-
-
-
-
 
