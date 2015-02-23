@@ -75,8 +75,8 @@ Read in the data, either from your home directory or from dagdata:
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename <- tempfile()
-download(url,destfile=filename)
+filename <- "femaleControlsPopulation.csv"
+if (!file.exists(filename)) download(url,destfile=filename)
 population <- read.csv(filename)
 ```
 

@@ -22,8 +22,8 @@ We have used the example of the effects of two different diets on the weight of 
 ```{r}
 library(downloader)
 url<-"https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
-filename <- tempfile()
-download(url,destfile=filename)
+filename <- "mice_pheno.csv"
+if (!file.exists(filename)) download(url,destfile=filename)
 dat <- read.csv(filename)
 hfPopulation <- dat[dat$Sex=="F" & dat$Diet=="hf",3]
 controlPopulation <- dat[dat$Sex=="F" & dat$Diet=="chow",3]
@@ -72,21 +72,25 @@ alpha <- 0.05
 ```
 
 What is my power with this particular data? We will compute this probability by re-running the exercise many times and calculating the proportion of times reject. Specifically, we will run 
+
 ```{r}
-B <- 10000
+B <- 2000
 ```
+
 simulations.
 
 ```{r}
-reject <- function(N,alpha=0.05){
+reject <- function(N, alpha=0.05){
    hf <- sample(hfPopulation,N) 
    control <- sample(controlPopulation,N)
    pval <- t.test(hf,control)$p.value
-   ifelse(pval < alpha,1,0)
+   pval < alpha
 }
 rejections <- replicate(B,reject(N))
 ```
+
 Our power is just the proportion of times we correctly reject. So with  $N=12$ our power is only: 
+
 ```{r}
 mean(rejections)
 ```
@@ -94,34 +98,33 @@ mean(rejections)
 For those that were confused as to why the t-test was rejecting when we knew the null was false, this explains. To guard against false posties at the 0.05 level, we had to be this careful and ended up with making a type II error.
 
 Let's see how power improves with N:
+
 ```{r}
-Ns <- seq(5,50,5)
+Ns <- seq(5, 50, 5)
 power <- sapply(Ns,function(N){
-  rejections <- replicate(B,reject(N))
+  rejections <- replicate(B, reject(N))
   mean(rejections)
   })
 ```
+
 Not surprisingly power increases with N:
+
 ```{r}
-plot(Ns,power)
+plot(Ns, power, type="b")
 ```
 
 Similarly if we change the level `alpha` at which we reject, power changes. The smaller I want the chance of type I error to be, the less power I will have. We can see this by writing similar code but keeping $N$ fixed and considering several values of `alpha`
 
 ```{r}
-N<-30
+N <- 30
 alphas <- c(0.1,0.05,0.01,0.001,0.0001)
 power <- sapply(alphas,function(alpha){
-   rejections <- replicate(B,reject(N,alpha=alpha))
+  rejections <- replicate(B,reject(N,alpha=alpha))
   mean(rejections)
 })
-plot(log10(alphas),power,xlab="log (base 10) alpha")
+plot(log10(alphas), power, xlab="log (base 10) alpha", type="b")
 ```
 
 Note that there is no "right"" power or "right" alpha level. But it is important that you understand what each means.
 
 <b>Optional homework</b> Create a plot with curves of power versus N. Show several curves in the same plot with color representing alpha level.
-
-
-
-
