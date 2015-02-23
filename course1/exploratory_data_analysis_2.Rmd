@@ -18,7 +18,9 @@ library(rafalib)
 We introduce EDA for _univariate_ data. Here we describe EDA and summary statistics for paired data. 
 
 <a name="scatterplots"></a>
+
 # Scatterplots and correlation
+
 The methods described above relate to _univariate_ variables. In the biomedical sciences it is common to be interested in the relationship between two or more variables. A classic examples is the father/son height data used by Galton to understand heredity. Were we to summarize these data we could use the two averages and two standard deviations as both distributions are well approximated by the normal distribution. This summary, however, fails to describe an important characteristic of the data.
 
 ```{r fig.width=4, fig.height=4}
@@ -33,6 +35,7 @@ plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=pas
 The scatter plot shows a general trend: the taller the father the taller to son. A summary of this trend is the correlation coefficient which in this cases is 0.5. We motivate this statistic by trying to predict son's height using the father's. 
 
 # Stratification
+
 Suppose we are asked to guess the height of randomly select sons. The average height, 68.7 inches, is the value with the highest proportion (see histogram) and would be our prediction. But what if we are told that the father is 72 inches tall, do we sill guess 68.7?
 
 Note that the father is taller than average. He is 1.7 standard deviations taller than the average father. So should we predict that the son is also 1.75 standard deviations taller? Turns out this is an overestimate. To see this we look at all the sons with fathers who are about 72 inches. We do this by _stratifying_ the son heights.
@@ -45,7 +48,7 @@ Stratification followed by boxplots lets us see the distribution of each group. 
 
 # Bi-variate normal distribution
 
-A pair of random variable $(X,y)$is considered to be approximated by bivariate normal when the proportion of values below, say $x$ and $y$ is approximated by this expression:
+A pair of random variable $(X,y)$ is considered to be approximated by bivariate normal when the proportion of values below, say $x$ and $y$ is approximated by this expression:
 
 $$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
 \exp{ \left(
@@ -84,6 +87,7 @@ Another way to see this is that to form a prediction $\hat{Y}$, for every SD awa
 $$
 \frac{\hat{Y} - \mu_Y}{\sigma_Y} = r \frac{x-\mu_X}{\sigma_X}
 $$
+
 with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. So if there is perfect correlation we predict the same number of SDs, if there is 0 correlation then we don't use $x$ at all, and for values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
 
 
@@ -100,6 +104,7 @@ abline(0,cor(x,y))
 ```
 
 # Spearman's correlation
+
 Just like the average and standard deviation are not good summaries when the data is not well approximated by the normal distribution, the correlation is not a good summary when pairs of lists are not approximated by the bivariate normal distribution. Examples include cases in which on variable is related to another by a parabolic function. Another, more common example are caused by outliers or extreme values.
 
 ```{r fig.width=3, fig.height=3}
@@ -108,5 +113,4 @@ b=rnorm(100);b[1]=11
 plot(a,b,main=paste("correlation =",signif(cor(a,b),2)))
 ```
 In the example above the data are not associated but for one pair both values are very large. The correlation here is about 0.5. This is driven by just that one point as taking it out lowers to correlation to about 0. An alternative summary for cases with outliers or extreme values is Spearman's correlation which is based on ranks instead of the values themselves. 
-
 
