@@ -27,7 +27,7 @@ We start by reading in the data and selecting the appropriate rows:
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
-filename <- tempfile()
+filename <- "mice_pheno.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
 dat <- read.csv(filename)
 chowPopulation <- dat[dat$Sex=="F" & dat$Diet=="chow",3]
@@ -163,16 +163,15 @@ We recommend that in practice confidence intervals be reported instead of p-valu
 
 If we are talking about a t-test p-value, we are asking if the difference we observe $\bar{X} - \bar{Y}$ is actually equal to zero. So we can form a confidence interval for this difference. Instead of writing $\bar{X} - \bar{Y}$ over and over again, let's define this difference as a new variable $\Delta \equiv \bar{X} - \bar{Y}$. The symbol $\Delta$ is often used for the difference between two variables in math and physics. 
 
-Suppose you use CLT and report $\Delta \pm 2 s_\Delta/\sqrt{N}$ as a 95% confidence interval for the difference and this interval does not include 0. Because the interval does not include 0, this implies that either 
-$\Delta - 2 s_\Delta/\sqrt{N}  > 0$ or $\Delta + 2 s_\Delta/\sqrt{N}  < 0$ which in turn implies that either $\sqrt{N}\Delta/s_\Delta > 2$ or $\sqrt{N}\Delta/s_\Delta < 2$ which implies the t-statistic is more extreme than 2 which implies the p-value must be smaller than 0.05. The same calculation can be made if we use the t-distribution instead of CLT. In summary, if a 95% or 99% confidence interval does not include 0 then the p-value must be smaller than 0.05 or 0.01 respectively.
+Suppose you use CLT and report $\Delta \pm 2 s_\Delta/\sqrt{N}$ as a 95% confidence interval for the difference and this interval does not include 0. Because the interval does not include 0, this implies that either $\Delta - 2 s_\Delta/\sqrt{N}  > 0$ or $\Delta + 2 s_\Delta/\sqrt{N} < 0$ which in turn implies that either $\sqrt{N}\Delta/s_\Delta > 2$ or $\sqrt{N}\Delta/s_\Delta < 2$ which implies the t-statistic is more extreme than 2 which implies the p-value must be smaller than 0.05. The same calculation can be made if we use the t-distribution instead of CLT. In summary, if a 95% or 99% confidence interval does not include 0 then the p-value must be smaller than 0.05 or 0.01 respectively.
 
 Note that the confidence interval for the difference $\Delta$ is provided by the `t.test` function:
 
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
-filename <- tempfile()
-download(url,destfile=filename)
+filename <- "femaleMiceWeights.csv"
+if (!file.exists(filename)) download(url,destfile=filename)
 dat <- read.csv(filename)
 controlIndex <- which(dat$Diet=="chow")
 treatmentIndex <- which(dat$Diet=="hf")

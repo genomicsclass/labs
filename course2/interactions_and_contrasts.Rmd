@@ -222,7 +222,7 @@ where we saw the covariance of the coefficients earlier:
 $$ \mathbf{\Sigma} = \hat{\sigma}^2 (\mathbf{X}^T \mathbf{X})^{-1}$$
 
 ```{r}
-(Sigma <- sum(fitTL$residuals^2)/(nrow(X) - 5) * solve(t(X) %*% X))
+(Sigma <- sum(fitTL$residuals^2)/(nrow(X) - ncol(X)) * solve(t(X) %*% X))
 sqrt(C %*% Sigma %*% t(C))
 L3vsL2$SE
 ```
@@ -371,7 +371,7 @@ Finally, there is a column which lists the *F value*. The F value is the *mean o
 
 $$ r_i = Y_i - \hat{Y}_i $$
 
-$$ MeanSq = \frac{1}{N - p} \sum_{i=1}^N r_i^2 $$
+$$ Mean Sq Residuals = \frac{1}{N - p} \sum_{i=1}^N r_i^2 $$
 
 where $p$ is the sum of all the terms in the model (here 8, including the intercept term).
 

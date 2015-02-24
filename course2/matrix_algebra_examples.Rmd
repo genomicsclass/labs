@@ -63,7 +63,7 @@ print(barY)
 As we will see later, multiplying the transpose of a matrix with another is very common in statistics. So common there is a function in R
 
 ```{r}
-bary=crossprod(A,Y) / N
+barY=crossprod(A,Y) / N
 print(barY)
 ```
 

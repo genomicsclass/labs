@@ -75,8 +75,8 @@ Read in the data, either from your home directory or from dagdata:
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename <- tempfile()
-download(url,destfile=filename)
+filename <- "femaleControlsPopulation.csv"
+if (!file.exists(filename)) download(url,destfile=filename)
 population <- read.csv(filename)
 ```
 
@@ -132,7 +132,8 @@ mean(null>=diff)
 
 Only 1.5%. So what do we conclude as skeptics. When there is no diet effect, we see value a `diff` as big as the one we observed only 1.5% of the time. Note that this is what is known as a p-value which we will also define more formally later
 
-##Illustration of the null distribution
+## Illustration of the null distribution
+
 Let's repeat the loop above but this time let's add a point to the figure every time we re-run the experiment
 
 ```{r}
@@ -169,7 +170,7 @@ plot(values,myecdf(values),type="l")
 
 The `ecdf` function is not typical and we won't discuss it here. Furthermore, these ecdfs are actually not as popular as histograms which give us the same information but show us the proportion of values in intervals
 
-$$\mbox{Pr}(a \leq x \leq b) = F(b)-F(a)$$.
+$$ \mbox{Pr}(a \leq x \leq b) = F(b) - F(a) $$
 
 This is a more useful plot because we are usually more interested in intervals. It is also easier to distinguish different types (families) of distributions by looking at histograms. 
 
@@ -186,6 +187,7 @@ An important point to keep in mind here is that while we defined $Pr(a)$ by coun
 <a name="normal_distribution"></a>
 
 ## Normal distribution
+
 If instead of the total numbers we report the proportions, then the histogram is a probability distribution. The probability distribution we see above approximates one that is very common in a nature: the bell curve or normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution we can use a convenient mathematical formula to approximate the proportion of individuals in any given interval
 
 $$
@@ -200,23 +202,7 @@ Here $\mu$ and $\sigma$ are refereed to as the mean and standard deviation. If t
 
 Later we will learn there is a mathematical explanation for this. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this we can compute the proportion of values in any interval. 
 
-##Summary
+## Summary
+
 So this was pretty easy no? But why are we not done? Note that to make this calculation we did the equivalent of buying all the mice available from Jackson laboratories and performed our experiment over and over again to define the null distribution. This is not something we can do in practice. Statistical Inference is the mathematical theory that permits you to approximate this with only the data from your sample, i.e. the original 24 mice. This is what we will learn in the following sections. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
