@@ -1,0 +1,52 @@
+---
+title: "Introduction to Advanced Statistics for the Life Sciences"
+author: "Rafa"
+date: "January 31, 2015"
+output: html_document
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduction
+
+High-throughput technologies have changed basic biology and the biomedical sciences from a data poor discipline to a data intensive one. A specific example comes from research fields interested in understanding gene expression. Gene expression is the process in which DNA, the blueprint for life, is copied into RNA, the templates for the synthesis of proteins, the building blocks for life.  In the 1990s, the analysis of gene expression data amounted to spotting black dots on a piece of paper or extracting a few numbers from standard curves. With high-throughput technologies such as microarrays this suddenly changed to sifting through tens of thousands of numbers. Biologists went from using their eyes or simple summaries to categorize results to having thousands (and now millions) of measurements per sample to analyze. Here we will learn about the statistical techniques that have been widely used with these technologies.
+
+Becuase there is a vast number of public datasets, we use many gene expression examples but the statistical techniques you will learn have also proven useful in other fields that make use of high throughput technologies. Technologies such as microarrays, next generation sequencing, fRMI, and mass spectrometry all produce data that for which we can apply what we learn here. The specific topics we will learn are inference in the context of highthroughput data, distance and clustering, dimension reduction, machine learning, modeling, Bayesian statistics, and adavnced exploratory data analysis. Because there is interplay between these topics we will conver each separately. 
+
+```{r prep}
+library(rafalib)
+mypar2()
+```
+
+# Installing Bioconductor
+
+Many of the datasets we will use in this chapter require packages made availalbe via the Bioconductor project. Bioconductor is similar to CRAN but a different set of functions are used for download. Here we show how to install the Biobase package. 
+
+```{r}
+source("http://bioconductor.org/biocLite.R")
+biocLite("Biobase")
+```
+
+You can install a suite of recommended packages by simply typing `biocLite()`
+
+# Data organized in three tables
+
+Most of the data we use as examples in this class are created with high-throughput technologies. These technologies measure thousands of features at once. Each specific technology wil have a specific set of features. For example, a specific microarray product will have a set of genes that are always measured. The most common approach for any given study is to use this same product for several experimental units such as individuals. This implies that these measures can be stored in an $n \times m$ matrix with $n$ the number of units and $m$ the number of features. In R the convention has been to store the transpose of these matrices. 
+
+
+```{r}
+##can be installed like this: devtools::install_github("genomicsclass/GSE5859")
+library(GSE5859)
+dat <- exprs(e)
+```
+
+
+
+In R the convention has been to store the transpose of these matrices so that columns represent the experimental units.
+
+
+
