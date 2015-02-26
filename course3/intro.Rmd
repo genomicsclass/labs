@@ -22,54 +22,40 @@ library(rafalib)
 mypar2()
 ```
 
-# Installing Bioconductor
-
-Many of the datasets we will use in this chapter require packages made availalbe via the Bioconductor project. Bioconductor is similar to CRAN but uses a different set of functions for downloads. It also includes many more data packages as well as _annotation_ packages that store information about either highthroughout products or information about molecular endpoints such as genes. We will need to some of these packages in this chapter. Here we show how to install the Biobase package. 
-
-```{r}
-source("http://bioconductor.org/biocLite.R")
-biocLite("Biobase")
-```
-
-You can install a suite of recommended packages by simply typing `biocLite()`
-
 # Data organized in three tables
 
 Most of the data we use as examples in this class are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of feautre are genes, single base locations of the genome, or genomic regions. Each specific measurement product is defined by a specific set of features. 
-For example, a specific microarray is defined by a set of genes that are always measured. 
+For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
 
-A specific study will typically use one product and use it to make measurements on several experimental units such as individuals. The most common experimental unit will be the individual but it they can be defined by other entities such as different parts of a tumor. We often call the experimental units _samples_ following because experimentalists jargon. It is important that these are not comfunsed with samples in the context of our previous chapters as in "random sample". 
+A specific study will typically use one product and use it to make measurements on several experimental units such as individuals. The most common experimental unit will be the individual but  they can be defined by other entities such as different parts of a tumor. We often call the experimental units _samples_ following because experimentalists jargon. It is important that these are not comfunsed with samples in the context of our previous chapters as in "random sample". 
 
 So a high throughput experiments is usually defined by three tables: one with the highthrougput measueremetns and two tables with information about the columns and rows of this first table respectively.
 
 Because a dataset is typically defined by set of experimental unit and product whith defines a fixed set of features the high-throughput measurements can be stored in an $n \times m$ matrix with $n$ the number of units and $m$ the number of features. In R the convention has been to store the transpose of these matrices. Here is an example from a gene expression dataset:
 
 ```{r}
-##can be installed like this: devtools::install_github("genomicsclass/GSE5859")
-library(GSE5859)
-dat <- exprs(e)
-dim(dat)
+##can be isntalled with 
+library(devtools)
+install_github("genomicsclass/GSE5859Subset")
+library(GSE5859Subset)
+data(GSE5859Subset) ##this loads the three tables
+dim(geneExpression)
 ```
 
 We have measurements for 8793 genes from blood taken from 208 individuals (the experimental units). For most statistical analysis we wil also need information about the individuals. For example, in this case, the data was collected to compare gene expression across ethnic groups. This Bioconductor object stores this information as well:
 
 ```{r}
-subjectInfo <- pData(e)
-dim(subjectInfo)
-head(subjectInfo)
+dim(sampleInfo)
+head(sampleInfo)
 ```
 
-Note that this table also includes three columns each with information about individuals the data the measurements were made as well as the name of the original raw data file. One of the advantages of the Bioconductor object being used here is that it guarantees that rows of this columns of this table match the columns of the data matrix. In a typical experiment we focus on one of these columns. In this case it will be ethninicty.
+Finally, we have a table describing the features
 
-A final table, which we will cover in much more detail in the Bioconducto chapter, is a table that describes the rows, in this case genes. Because each product will have a different table, these have already been created in Bioconductor. 
 ```{r}
-library(hgfocus.db)
-annot <- elect(hgfocus.db, keys=featureNames(e), keytype="PROBEID", columns=c("CHR", "CHRLOC", "SYMBOL"))
-##pick one
-annot <-annot[match(featureNames(e),annot$PROBEID),]
-head(annot)
-dim(annot)
+dim(geneAnnotation)
+head(geneAnnotation)
 ```
+
 
 # Examples
 
