@@ -35,6 +35,8 @@ dat=read.csv("femaleMiceWeights.csv")
 
 An alternative is to read the file from the `dagdata` package:
 ```{r}
+# library(devtools)
+# install_github("genomicsclass/dagdata")
 dir <- system.file(package="dagdata")
 list.files(dir)
 list.files(file.path(dir,"extdata"))
