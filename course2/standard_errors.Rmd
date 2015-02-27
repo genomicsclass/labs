@@ -119,11 +119,11 @@ Other than that, this quantity does not have a useful interpretation in practice
 
 # Variance covariance matrix
 
-As a first step we need to define the *variance-covariance matrix*. For a vector of random variable, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
+As a first step we need to define the *variance-covariance matrix*, $\boldsymbol{\Sigma}$. For a vector of random variables, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
 
 $$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$
 
-The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has been:
+The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has had only two kinds of elements:
 
 $$ \mbox{Cov}(Y_i, Y_i) = \mbox{var}(Y_i) = \sigma^2$$
 
@@ -131,7 +131,7 @@ $$ \mbox{Cov}(Y_i, Y_j) = 0, \mbox{ for } i \neq j$$
 
 which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$, the identity matrix.
 
-Later, we will see a case, specifically the $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$.
+Later, we will see a case, specifically the estimate coefficients of a linear model, $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$. Furthermore, the diagonal elements will not be equal to a single value $\sigma^2$.
 
 ## Technical note
 
