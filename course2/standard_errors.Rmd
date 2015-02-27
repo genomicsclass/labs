@@ -115,17 +115,23 @@ $$\mbox{Corr}(X,Y) = \frac{\mbox{Cov}(X,Y)}{\sigma_X \sigma_Y}$$
 
 Other than that, this quantity does not have a useful interpretation in practice. However, as we will see it is a very useful quantity for mathematical derivations. In the next sections we show useful matrix algebra calculations that can be used to estimate standard errors of linear model estimates. 
 
+<a name="varcov"></a>
+
 # Variance covariance matrix
 
-As a first step we need to define the variance-covariance matrix. For a vector of random variable $\mathbf{Y}$ we define the matrix $\boldsymbol{\Sigma}$ as the matrix with entry $i,j$ is $\mbox{Cov}(Y_i,Y_j)$. This  covariance variance if $i=j$ and equal to 0 if the variables are independent. In the cases considered up to now we have assumed independence and have the same variance $\sigma^2$ so the variance covariance matrix has 
+As a first step we need to define the *variance-covariance matrix*. For a vector of random variable, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
 
-$$ \mbox{Cov}(Y_i,Y_i) = \mbox{var}(Y_i) = \sigma^2$$
+$$ \Sigma_{i,j} \equiv \mbox{Cov}(Y_i, Y_j) $$
 
-$$ \mbox{Cov}(Y_i,Y_j) = 0, \mbox{ for } i\neq j$$
+The covariance is equal to the variance if $i = j$ and equal to 0 if the variables are independent. In the kinds of vectors considered up to now, for example, a vector $\mathbf{Y}$ of individual observations $Y_i$ sampled from a population, we have assumed independence of each observation and assumed the $Y_i$ all have the same variance $\sigma^2$, so the variance-covariance matrix has been:
 
-which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$ the identity matrix.
+$$ \mbox{Cov}(Y_i, Y_i) = \mbox{var}(Y_i) = \sigma^2$$
 
-Later, we will see a case, specifically the $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonals.
+$$ \mbox{Cov}(Y_i, Y_j) = 0, \mbox{ for } i \neq j$$
+
+which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$, the identity matrix.
+
+Later, we will see a case, specifically the $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$.
 
 ## Technical note
 

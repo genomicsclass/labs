@@ -21,8 +21,8 @@ We start by reading in the data. A first important step is to identify which row
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
-filename <- tempfile()
-download(url,destfile=filename)
+filename <- "femaleMiceWeights.csv"
+if (!file.exists(filename)) download(url,filename)
 dat <- read.csv(filename)
 head(dat) ##quick look at the data 
 controlIndex <- which(dat$Diet=="chow")
