@@ -8,14 +8,13 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-```{r}
+```{r,message=FALSE}
 library(rafalib)
 ```
 
 # Introduction 
 
-Supposed we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if instead thousands of genes we were handed data from just one gene we could simply apply what 
-we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+Supposed we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
 
 # Thousands of test
 
@@ -27,7 +26,7 @@ g <- sampleInfo$group
 g
 ```
 
-If we were interested in a particular gene, say the 25th we would simply compute a t-test, assuming the data is well approximated by normal:
+If we were interested in a particular gene, let's arbitrarily pick the one on the 25th row, we would simply compute a t-test; assuming the data is well approximated by normal:
 
 ```{r}
 e <- geneExpression[25,]
@@ -38,20 +37,20 @@ qqnorm(e[g==0])
 qqline(e[g==0])
 ```
 
-The t-test does not find this gene to be statistically singificant
+The qq-plots show that the data is well approximated by the normal approximation so apply a t-test. The t-test does not find this gene to be statistically singificant:
 
 ```{r}
 t.test(e[g==1],e[g==0])
 ```
 
-To answer the question for each gene we simply to this for every gene
+To answer the question for each gene we simply do this for every gene. Here we will define our own function and use `apply`:
 
 ```{r}
 myttest <- function(x) t.test(x[g==1],x[g==0],var.equal=TRUE)$p.value
 pvals <- apply(geneExpression,1,myttest)
 ```
 
-We can now see which genes have p-values less than, say, 0.05. For example right away we see that
+We can now see which genes have p-values less than, say, 0.05. For example right away we see that:
 
 ```{r}
 sum(pvals<0.05)
@@ -59,7 +58,7 @@ sum(pvals<0.05)
 
 genes had p-values less than 0.05
 
-However, as we will describe in more detail below, we have to be careful in the interpretation of this because we have performed over  8,000 test. If we did the same on random data:
+However, as we will describe in more detail below, we have to be careful in interpreting this result because we have performed over  8,000 test. Note that if we performed the same procedure on random data, for which the null hypothesis is true for all feature, we obtain the following results:
 
 ```{r}
 set.seed(1)
@@ -70,7 +69,7 @@ nullpvals <- apply(randomData,1,myttest)
 sum(nullpvals<0.05)
 ```
 
-As we will explain this is to be expected. Note that 419 is roughly 0.05*8192. 
+As we will explain in the chapter, this is to be expected. Note that 419 is roughly 0.05*8192 and we will describe the theory that tells us why this prediction works.
 
 # Faster implementation of t-test
 
@@ -81,6 +80,8 @@ library(genefilter)
 results <- rowttests(geneExpression,factor(g))
 max(abs(pvals-results$p))
 ```
+
+Note that we get practically the same answer and much faster performance.
 
 # Volcano plots
 
