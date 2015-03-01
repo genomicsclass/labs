@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Basic inference and EDA for high-throughput data
+title: Basic inference for high-throughput data
 ---
 
 ```{r options, echo=FALSE}
@@ -82,64 +82,5 @@ max(abs(pvals-results$p))
 ```
 
 Note that we get practically the same answer and much faster performance.
-
-# Volcano plots
-
-As we described in the Introduction chapter, reporting only p-values is a mistake when we can aslo report effect sizes. With high-throughput data we can visualize the results by makine a plot. The idea behind a _volcano plot_ is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis the effect size. By using - log (base 10) we have the "highly significant" results be high in the plot. Using log permits us to better distinguis between, say, 0.05 and 0.001.  Here is the volcano plot for our results above:
-
-```{r}
-plot(results$dm,-log10(results$p.value),xlab="Effect size",ylab="- log (base 10) p-values")
-```
-
-
-# p-value histograms
-
-Another plot we can make to get an overall idea of what our results are telling us is to make histograms of p-values. Note that when we generate completely null data the histrogram follows a uniform distribtuion (we will say more about this). With our original data set we see a higher frequency of smaller p-values
-
-```{r}
-mypar2(1,2)
-hist(nullpvals,ylim=c(0,1400))
-hist(pvals,ylim=c(0,1400))
-```
-
-
-
-# Data boxplots and histogram
-
-```{r}
-mypar2(1,1)
-boxplot(geneExpression)
-```
-
-
-```{r}
-mypar2(1,1)
-shist(geneExpression)
-```
-
-
-```{r}
-quantiles <- t(apply(geneExpression,2,quantile,prob=c(0,0.05,0.25,0.5,0.75,0.95,1)))
-matplot(quantiles,type="l")
-```
-
-
-# MA plot
-
-```{r}
-x <- geneExpression[,3]
-y <- geneExpression[,16]
-mypar(1,1)
-plot(x,y)
-plot((x+y)/2,x-y)
-```
-
-
-
-
-
-
-
-
 
 
