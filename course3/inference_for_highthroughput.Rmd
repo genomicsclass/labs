@@ -14,7 +14,7 @@ library(rafalib)
 
 # Introduction 
 
-Supposed we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+Supposed we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
 
 # Thousands of test
 
@@ -37,7 +37,7 @@ qqnorm(e[g==0])
 qqline(e[g==0])
 ```
 
-The qq-plots show that the data is well approximated by the normal approximation so apply a t-test. The t-test does not find this gene to be statistically singificant:
+The qq-plots show that the data is well approximated by the normal approximation so apply a t-test. The t-test does not find this gene to be statistically significant:
 
 ```{r}
 t.test(e[g==1],e[g==0])
@@ -73,7 +73,7 @@ As we will explain in the chapter, this is to be expected. Note that 419 is roug
 
 # Faster implementation of t-test
 
-Before, we continue, we should note that the above implementation is very inneficiant. There are several faster implementations that perform t-test for high throughput data. For example
+Before, we continue, we should note that the above implementation is very inefficient. There are several faster implementations that perform t-test for high throughput data. For example
 
 ```{r}
 library(genefilter)
