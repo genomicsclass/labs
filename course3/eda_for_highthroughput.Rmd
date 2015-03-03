@@ -22,13 +22,13 @@ library(GSE5859Subset)
 data(GSE5859Subset)
 g <- factor(sampleInfo$group)
 results <- rowttests(geneExpression,g)
-pvals <- results$p.values
+pvals <- results$p.value
 
 ##Null data
 m <- nrow(geneExpression)
 n <- ncol(geneExpression)
 randomData <- matrix(rnorm(n*m),m,n)
-nullpvals <- rowttests(randomData,g)$p.values
+nullpvals <- rowttests(randomData,g)$p.value
 ```
 
 # Volcano plots
