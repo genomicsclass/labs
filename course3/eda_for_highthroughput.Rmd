@@ -13,7 +13,7 @@ library(rafalib)
 ```
 
 # Introduction 
-An underappreciated advantage of highthroughput data is that one probles with the data are sometimes more easilty exposed. The fact that we have thousands of measurements permits us to see problems that are not apparent when only a few measurements are available. A powerful way to detect these porblems is with highthroughput technologies. Here we review some of the plots that allow us to detect quality problems.
+An underappreciated advantage of highthroughput data is that the problems with the data are sometimes more easilty exposed. The fact that we have thousands of measurements permits us to see problems that are not apparent when only a few measurements are available. A powerful way to detect these problems is with highthroughput technologies. Here we review some of the plots that allow us to detect quality problems.
 
 We will use the results of an analysis from a previous section:
 
@@ -33,7 +33,7 @@ nullpvals <- rowttests(randomData,g)$p.values
 
 # Volcano plots
 
-As we described in the Introduction chapter, reporting only p-values is a mistake when we can aslo report effect sizes. With high-throughput data we can visualize the results by making a plot. The idea behind a _volcano plot_ is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis the effect size. By using - log (base 10) we have the "highly significant" results be high on the plot. Using log permits us to better distinguis between, say, 0.05 and 0.001.  Here is the volcano plot for our results above:
+As we described in the Introduction chapter, reporting only p-values is a mistake when we can also report effect sizes. With high-throughput data we can visualize the results by making a plot. The idea behind a _volcano plot_ is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis the effect size. By using - log (base 10) we have the "highly significant" results be high on the plot. Using log permits us to better distinguish between, say, 0.05 and 0.001.  Here is the volcano plot for our results above:
 
 ```{r}
 plot(results$dm,-log10(results$p.value),xlab="Effect size",ylab="- log (base 10) p-values")
@@ -79,7 +79,7 @@ qs <- t(apply(e,2,quantile,prob=c(0.05,0.25,0.5,0.75,0.95)))
 matplot(qs,type="l")
 ```
 
-We can also plot all the histograms. Because we have so much data we can use small bins and smooth the hieghts of the bars and the plot _smooth histograms_. 
+We can also plot all the histograms. Because we have so much data we can use small bins and smooth the heights of the bars and the plot _smooth histograms_. 
 
 ```{r}
 mypar2(1,1)
