@@ -75,10 +75,17 @@ As we will explain in the chapter, this is to be expected. Note that 419 is roug
 
 Before, we continue, we should note that the above implementation is very inefficient. There are several faster implementations that perform t-test for high throughput data. For example
 
-```{r}
+```{r,message=FALSE}
 library(genefilter)
 results <- rowttests(geneExpression,factor(g))
 max(abs(pvals-results$p))
+```
+
+Note that `genefilter` is available from the Bioconductor projects. In a later section we will say more about this project but here is how one installs it:
+ 
+```{r,eval=FALSE}
+source("http://www.bioconductor.org/biocLite.R")
+biocLite("genefilter")
 ```
 
 Note that we get practically the same answer and much faster performance.

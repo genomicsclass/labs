@@ -70,7 +70,7 @@ Note that it includes an ID that permits us to connect the rows of this table wi
 ```{r}
 head(match(geneAnnotation$PROBEID,rownames(geneExpression)))
 ```
-The talbe also includes biological information abuot the features. Namely,  chromosome location and the gene "name" used by biologists.
+The table also includes biological information abuot the features. Namely,  chromosome location and the gene "name" used by biologists.
 
 # Examples
 
