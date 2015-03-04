@@ -11,7 +11,6 @@ y<- colMeans(exprs(e)[which(annot$CHR=="chrY"),])
 sex <- ifelse(y<4.5,"F","M")
 
 sampleInfo <- pData(e)
-sampleInfo <- sampleInfo[,which(colnames(sampleInfo)!="filename")]
 sampleInfo$group <- ifelse(sex=="F",1,0)
 
 batch <- format(pData(e)$date,"%y%m")

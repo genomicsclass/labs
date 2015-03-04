@@ -35,7 +35,7 @@ So a high throughput experiment is usually defined by three tables: one with the
 Because a dataset is typically defined by set of experimental unit and a product  defines a fixed set of features the high-throughput measurements can be stored in an $n \times m$ matrix with $n$ the number of units and $m$ the number of features. In R the convention has been to store the transpose of these matrices. Here is an example from a gene expression dataset:
 
 ```{r}
-##can be isntalled with:
+##can be installed with:
 #library(devtools)
 #install_github("genomicsclass/GSE5859Subset")
 library(GSE5859Subset)
@@ -70,7 +70,11 @@ Note that it includes an ID that permits us to connect the rows of this table wi
 ```{r}
 head(match(geneAnnotation$PROBEID,rownames(geneExpression)))
 ```
+<<<<<<< HEAD
 The table also includes biological information abuot the features. Namely,  chromosome location and the gene "name" used by biologists.
+=======
+The table also includes biological information about the features. Namely,  chromosome location and the gene "name" used by biologists.
+>>>>>>> 804decaab299a457775ea851d64dadc2ff08d928
 
 # Examples
 

@@ -14,9 +14,13 @@ library(rafalib)
 
 # Introduction 
 
+<<<<<<< HEAD
 Supposed we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+=======
+Suppose we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+>>>>>>> 804decaab299a457775ea851d64dadc2ff08d928
 
-# Thousands of test
+# Thousands of tests
 
 In this data we have two groups denoted with 0 and 1:
 ```{r}

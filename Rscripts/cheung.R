@@ -23,6 +23,6 @@ eth2[is.na(eth2)]<-"HAN" ##from LA, checked here
 ##http://ccr.coriell.org/Sections/Search/Advanced_Search.aspx?PgId=175
 
 
-pd=data.frame(ethnicity=eth2,date=dates,filename=basename(filenames))
+pd=data.frame(ethnicity=eth2,date=dates,filename=I(basename(filenames)))
 pData(e)<-pd
 save(e,file="GSE5859.rda")
