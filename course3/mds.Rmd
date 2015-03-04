@@ -1,0 +1,214 @@
+---
+layout: page
+title: Multidimensional scaling
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduction
+
+Visualizing data is one of the most, if not the most, important step in the analysis of high throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, that is typically appropriate, completely useless. 
+
+We have shown methods for visualizing global properties of the columns of rows but plots that reveal relatioships between columns or between rows is more complicated due to the high dimensionality of data. To compare each of the 189 samples to each other we would have to create, for example, 17,766 MA plots. Creating a scatter plot of the data is imposible since points are very high dimensional. 
+
+Here we describe a powerful technique for exploratory data analysis based on dimension reduction. The general idea is relatively simple, we reduce the dataset to have a few dimensions yet approximately preserve certain properties such as distance between samples. Once we reduce it to, say, two dimensions, we can easily make plots. The technique behind it all, the singular value decomposition, is also useful in other context.  
+
+
+
+# Singular Value Decomposition
+
+We will cover the Singular Value Decompoition (SVD) in more detail in a later section. Here we give an overview that is necessary to understand multidimensional scaling. The main result SVD provides is that we can write an $m \times n$ matrix $\mathbf{Y}$ as
+
+$$\mathbf{Y = UDV^\top}$$
+
+
+With:
+
+* $\mathbf{U}$ is an $m\times n$ orthogonal matrix
+* $\mathbf{V}$ is an $n\times n$ orthogonal matrix
+* $\mathbf{D}$ is an $n\times n$ diagonal matrix
+
+and with the special property that the variability (sum of squares to be precise) of the columns of $\mathbf{VD}$ and $\mathbf{UD}$ are decreasing. We will see how this  particular property turns out to be quite useful. 
+
+If, for example, there are colinear columns the then  $\mathbf{UD}$ will include several columns with no variability. This can be seen like this
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+z <- cbind(x,x,x,y,y)
+SVD <- svd(z)
+round(SVD$d,2)
+```
+In this case we can reconstruct `z` with just 2 columns:
+
+```{r}
+newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
+max(abs(newz-z))
+```
+
+In cases with approximate colinearity we can get a very good approximation:
+
+```{r}
+n <- length(x)
+s <- 0.01
+z <- cbind(x,x+rnorm(x,0,s),x+rnorm(x,0,s),y,y+rnorm(x,0,s))
+SVD <- svd(z)
+round(SVD$d,2)
+newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
+max(abs(newz-z))
+```
+
+We can visualize the approximation like this:
+<img src="figs/SVD1.png" align="middle" size=400>
+
+<img src="figs/SVD2.png" align="middle" size=400>
+
+
+
+# Math for Multidimensional Scaling Plot
+
+If the sum of squares of the first two columns of $\mathbf{U^\top Y=DV}$ is much larger than the rest then:
+
+$$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1,1}&0\\
+    0&d_{2,2}\\
+  \end{pmatrix}
+  [\mathbf{V}_1 \mathbf{V}_2]^\top  
+$$
+
+This implies that column $i$ is approximately
+
+$$
+\mathbf{Y}_i \approx
+[\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1,1}&0\\
+    0&d_{2,2}\\
+  \end{pmatrix}
+  \begin{pmatrix}
+    V_{i,1}\\
+    V_{i,2}\\
+     \end{pmatrix}
+    =
+    [\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1,1} V_{i,1}\\
+    d_{2,2} V_{i,2}
+ \end{pmatrix}
+$$
+
+
+Let 
+
+$$\mathbf{Z}_i=\begin{pmatrix}
+    d_{1,1} V_{i,1}\\
+    d_{2,2} V_{i,2}
+ \end{pmatrix}$$
+
+Then the distance between samples $i$ and $j$ is approximately:
+
+$$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx
+( [\mathbf{U}_1 \mathbf{U}_2] \mathbf{Z})^\top ([\mathbf{U}_1 \mathbf{U}_2] \mathbf{Z})
+$$
+
+$$ = \mathbf{Z}^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] \mathbf{Z} =   \mathbf{Z}^\top \mathbf{Z}
+$$
+
+$$
+= (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+$$
+
+So the distance between $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is approximated by the distance between two dimensional points. Note because this is a two dimensional vector and we can visualize the distances by plotting $\mathbf{Z}_1$ versus $\mathbf{Z}_2$. Note also that we may need more than two dimensions to obtain a decent approximation. Here we use only two to be able to make a scatter-plot. However, the same arguments can be made for more dimensions, let $\mathbf{Z}$ have more dimensions and then summarize the data with a series of scatterplots.
+
+
+# Example 
+
+Here is an MDS plot for kidney, liver and  colon samples
+
+```{r,echo=FALSE}
+library(tissuesGeneExpression)
+data(tissuesGeneExpression)
+##show matrix
+colind <- tissue%in%c("kidney","colon","liver")
+mat <- e[,colind]
+ftissue <- factor(tissue[colind])
+```
+
+The `cmdscale` by default uses returns a two dimensional approximation:
+
+```{r,echo=FALSE,fig.align="center"}
+d <- dist(t(mat))
+mds <- cmdscale(d,k=2)
+library(rafalib)
+mypar2(1,1)
+plot(mds[,1],mds[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
+legend("bottomleft",levels(ftissue),col=seq(along=levels(ftissue)),pch=15,cex=1.5)
+```
+
+# Variance Explained
+
+Because the columns of $\mathbf{U}$ and $\mathbf{V}$ are 
+orthogonal we know their sum of squares is 1. So the sum of squares of the columns of $\mathbf{DU}$ and $\mathbf{VD}$ are determined by $\mathbf{D}$. This is a diagonal matrix so all the information is stored in just one vector. 
+
+```{r}
+SVD <- svd(mat-rowMeans(mat))
+length(SVD$d)
+```
+
+The sum of squares of the, say, 11th column of $\mathbf{DU}$ is therefore 
+
+```{r}
+i <- 11
+SVD$d[i]^2
+```
+
+We can see how much "variability" is added to the approximation of $\mathbf{Y}$ by looking at the percent of variability for each colunn:
+
+
+```{r,echo=FALSE,fig.align="center",fig.height=5}
+mypar(1,1)
+plot(SVD$d^2/sum(SVD$d^2),xlab="Column",ylab="Variance explained")
+```
+
+Here we can see that we can get a very good approximation with just the first 20 so, since after that practically nothing is added. We can confirm:
+
+```{r}
+k <- 20
+mathat <- SVD$u[,1:k] %*% diag(SVD$d[1:k]) %*% t(SVD$v[,1:k])
+mean((mat - rowMeans(mat) - mathat)^2)
+```
+
+
+# Multidimensional scaling with SVD
+
+Note that these two are equivalent
+
+```{r}
+i=2
+plot(mds[,i],SVD$v[,i]*SVD$d[i])
+abline(0,1)
+#abline(0,-1)
+```
+
+Also note that the columns of $\mathbf{Z}$ are multiplied by scalars $d_{11}$ and $d_{22}$. Thus the only difference between plotting with mds and plotting $\mathbf{V}$ are these scalers. We can add them back by multiplying by $\mathbf{D}$ but we can make quick plots like this
+
+```{r,echo=FALSE,fig.align="center"}
+mypar2(1,1)
+plot(SVD$v[,1:2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
+legend("bottomleft",levels(ftissue),col=seq(along=levels(ftissue)),pch=15,cex=1.5)
+```
+
+Here are columns 3 and 4
+
+```{r,echo=FALSE,fig.align="center"}
+mypar2(1,1)
+plot(SVD$v[,3:4],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
+legend("bottomleft",levels(ftissue),col=seq(along=levels(ftissue)),pch=15,cex=1.5)
+```
+
+
+
+
