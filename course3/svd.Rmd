@@ -1,0 +1,161 @@
+---
+layout: page
+title: Singular Value Decomposition
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduction
+
+Visualizing data is one of the most, if not the most, important step in the analysis of high throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, that is typically appropriate, completely useless. 
+
+We have shown methods for visualizing global properties of the columns of rows but plots that reveal relatioships between columns or between rows is more complicated due to the high dimensionality of data. To compare each of the 189 samples to each other we would have to create, for example, 17,766 MA plots. Creating a scatter plot of the data is imposible since points are very high dimensional. 
+
+Here we describe a powerful technique for exploratory data analysis based on dimension reduction. The general idea is relatively simple, we reduce the dataset to have a few dimensions yet approximately preserve certain properties such as distance between samples. Once we reduce it to, say, two dimensions, we can easily make plots. The technique behind it all, the singular value decomposition, is also useful in other context.  
+
+
+
+# Singular Value Decomposition
+
+We will cover the Singular Value Decompoition (SVD) in more detail in a later section. Here we give an overview that is necessary to understand multidimensional scaling. 
+
+The main result SVD provides is that we can write an $m \times n$ matrix $\mathbf{Y}$ as
+
+$$\mathbf{Y = UDV^\top}$$
+
+
+With:
+
+* $\mathbf{U}$ is an $m\times n$ orthogonal matrix
+* $\mathbf{V}$ is an $n\times n$ orthogonal matrix
+* $\mathbf{D}$ is an $n\times n$ diagonal matrix
+
+and with the special property that the variability (sum of squares to be precise) of the columns of $\mathbf{VD}$ and $\mathbf{UD}$ are decreasing. We will see how this  particular property turns out to be quite useful. 
+
+If, for example, there are colinear columns the then  $\mathbf{UD}$ will include several columns with no variability. This can be seen like this
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+z <- cbind(x,x,x,y,y)
+SVD <- svd(z)
+round(SVD$d,2)
+```
+In this case we can reconstruct `z` with just 2 columns:
+
+```{r}
+newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
+max(abs(newz-z))
+```
+
+# How is this useful?
+
+It is not immediately obvious how incredibly useful the SVD can be. Let's consider some examples.
+
+First let's compute the SVD on the gene expression table we have been working with. We will take a subset so that computations are faster.
+```{r}
+library(tissuesGeneExpression)
+data(tissuesGeneExpression)
+set.seed(1)
+ind <- sample(nrow(e),500)
+Y <- t(apply(e[ind,],1,scale)) #standardize data for illustration
+```
+
+The `svd` command returns the three matrices (only the diagonal entries are returned for $D$)
+```{r}
+s <- svd(Y)
+U <- s$u
+V <- s$v
+D <- diag(s$d) ##turn it into a matrix
+```
+
+First note that we can in fact reconstruct y
+
+```{r}
+Yhat <- U %*% D %*% t(V)
+resid <- Y - Yhat
+max(abs(resid))
+i <- sample(ncol(Y),1)
+plot(Y[,i],Yhat[,i])
+abline(0,1)
+boxplot(resid)
+```
+
+If we look at the sum of squares of $\mathbf{UD}$ we see that the last few are quite small. 
+
+```{r}
+plot(s$d)
+```
+
+So what happens if we remove the last column?
+```{r}
+k <- ncol(Y)-4
+Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
+resid <- Y - Yhat 
+Range <- quantile(Y,c(0.01,0.99))
+boxplot(resid,ylim=Range,range=0)
+```
+
+From looking at $d$, we can see that in this particular dataset we can obtain a good approximation keeping only 94 columns:
+
+```{r}
+k <- 94
+Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
+resid <- Y - Yhat
+boxplot(resid,ylim=Range,range=0)
+```
+
+Therefore, by using only half as many dimensions we retain most of the variability in our data:
+
+```{r}
+var(as.vector(resid))/var(as.vector(Y))
+```
+
+We say that we explain 96% of the variabilty.
+
+Note that we can predict this from $D$:
+```{r}
+1-sum(s$d[1:k]^2)/sum(s$d^2)
+```
+
+
+# Highly correlated data
+
+To help understand how the SVD does not that for two highly correlated columns, the second column adds very little "inforamtion" to the first.
+
+For example:
+
+```{r}
+m <- 100
+n <- 2
+x <- rnorm(m)
+e <- rnorm(n*m,0,0.01)
+Y <- cbind(x,x)+e
+cor(Y)
+```
+
+Reporting `rowMeans(Y)` provides alsmot the same information as $Y$. This turns out the be the information in the first column on $U$. And in this case we explain almost all the variability with just this first column:
+
+```{r}
+d <- svd(Y)$d
+d[1]^2/sum(d^2)
+```
+
+In cases with many correlated columns we can achieve great dimension reduction:
+
+```{r}
+m <- 100
+n <- 25
+x <- rnorm(m)
+e <- rnorm(n*m,0,0.01)
+Y <- replicate(n,x)+e
+d <- svd(Y)$d
+d[1]^2/sum(d^2)
+```
+
+
+
+
+
