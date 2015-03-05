@@ -17,64 +17,14 @@ We have shown methods for visualizing global properties of the columns of rows b
 Here we describe a powerful technique for exploratory data analysis based on dimension reduction. The general idea is relatively simple, we reduce the dataset to have a few dimensions yet approximately preserve certain properties such as distance between samples. Once we reduce it to, say, two dimensions, we can easily make plots. The technique behind it all, the singular value decomposition, is also useful in other context.  
 
 
-
-# Singular Value Decomposition
-
-We will cover the Singular Value Decompoition (SVD) in more detail in a later section. Here we give an overview that is necessary to understand multidimensional scaling. The main result SVD provides is that we can write an $m \times n$ matrix $\mathbf{Y}$ as
-
-$$\mathbf{Y = UDV^\top}$$
-
-
-With:
-
-* $\mathbf{U}$ is an $m\times n$ orthogonal matrix
-* $\mathbf{V}$ is an $n\times n$ orthogonal matrix
-* $\mathbf{D}$ is an $n\times n$ diagonal matrix
-
-and with the special property that the variability (sum of squares to be precise) of the columns of $\mathbf{VD}$ and $\mathbf{UD}$ are decreasing. We will see how this  particular property turns out to be quite useful. 
-
-If, for example, there are colinear columns the then  $\mathbf{UD}$ will include several columns with no variability. This can be seen like this
-```{r}
-x <- rnorm(100)
-y <- rnorm(100)
-z <- cbind(x,x,x,y,y)
-SVD <- svd(z)
-round(SVD$d,2)
-```
-In this case we can reconstruct `z` with just 2 columns:
-
-```{r}
-newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
-max(abs(newz-z))
-```
-
-In cases with approximate colinearity we can get a very good approximation:
-
-```{r}
-n <- length(x)
-s <- 0.01
-z <- cbind(x,x+rnorm(x,0,s),x+rnorm(x,0,s),y,y+rnorm(x,0,s))
-SVD <- svd(z)
-round(SVD$d,2)
-newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
-max(abs(newz-z))
-```
-
-We can visualize the approximation like this:
-<img src="figs/SVD1.png" align="middle" size=400>
-
-<img src="figs/SVD2.png" align="middle" size=400>
-
-
-
 # Math for Multidimensional Scaling Plot
 
 If the sum of squares of the first two columns of $\mathbf{U^\top Y=DV}$ is much larger than the rest then:
 
 $$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
   \begin{pmatrix}
-    d_{1,1}&0\\
-    0&d_{2,2}\\
+    d_{1}&0\\
+    0&d_{2}\\
   \end{pmatrix}
   [\mathbf{V}_1 \mathbf{V}_2]^\top  
 $$
@@ -85,41 +35,51 @@ $$
 \mathbf{Y}_i \approx
 [\mathbf{U}_1 \mathbf{U}_2] 
   \begin{pmatrix}
-    d_{1,1}&0\\
-    0&d_{2,2}\\
+    d_{1}&0\\
+    0&d_{2}\\
   \end{pmatrix}
   \begin{pmatrix}
-    V_{i,1}\\
-    V_{i,2}\\
+    v_{i,1}\\
+    v_{i,2}\\
      \end{pmatrix}
     =
     [\mathbf{U}_1 \mathbf{U}_2] 
   \begin{pmatrix}
-    d_{1,1} V_{i,1}\\
-    d_{2,2} V_{i,2}
+    d_{1} v_{i,1}\\
+    d_{2} v_{i,2}
  \end{pmatrix}
 $$
 
 
-Let 
+Define the following two dimensional vector:
 
-$$\mathbf{Z}_i=\begin{pmatrix}
-    d_{1,1} V_{i,1}\\
-    d_{2,2} V_{i,2}
+ $$\mathbf{Z}_i=\begin{pmatrix}
+    d_{1} v_{i,1}\\
+    d_{2} v_{i,2}
  \end{pmatrix}$$
 
-Then the distance between samples $i$ and $j$ is approximately:
+Then
+
+$$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx$$
+
+$$\left\{ [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \right\}^\top \left\{[\mathbf{U}_1 \mathbf{U}_2]  (\mathbf{Z}_i-\mathbf{Z}_j)\right\} =
+$$
+
+$$ (\mathbf{Z}_i-\mathbf{Z}_j)^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) =$$
+
+$$(\mathbf{Z}_i-\mathbf{Z}_j)^\top(\mathbf{Z}_i-\mathbf{Z}_j)=
+$$
+
+$$(Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+$$
+
+This derivation tells us that the distance between samples $i$ and $j$ is approximated by the distance between two two dimensional points.
+
 
 $$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx
-( [\mathbf{U}_1 \mathbf{U}_2] \mathbf{Z})^\top ([\mathbf{U}_1 \mathbf{U}_2] \mathbf{Z})
+ (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
 $$
 
-$$ = \mathbf{Z}^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] \mathbf{Z} =   \mathbf{Z}^\top \mathbf{Z}
-$$
-
-$$
-= (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
-$$
 
 So the distance between $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is approximated by the distance between two dimensional points. Note because this is a two dimensional vector and we can visualize the distances by plotting $\mathbf{Z}_1$ versus $\mathbf{Z}_2$. Note also that we may need more than two dimensions to obtain a decent approximation. Here we use only two to be able to make a scatter-plot. However, the same arguments can be made for more dimensions, let $\mathbf{Z}$ have more dimensions and then summarize the data with a series of scatterplots.
 
@@ -135,13 +95,50 @@ data(tissuesGeneExpression)
 colind <- tissue%in%c("kidney","colon","liver")
 mat <- e[,colind]
 ftissue <- factor(tissue[colind])
+dim(mat)
 ```
 
-The `cmdscale` by default uses returns a two dimensional approximation:
+Suppose we want to explore just two dimensions. Then the calculations above tell us we should look at `z` as defined here:
+
+```{r}
+s <- svd(mat-rowMeans(mat))
+z <- sweep(s$v[,1:2],2,s$d[1:2],"*")
+```
+
+As we noted these are 99 two dimensional points:
+
+```{r}
+dim(z)
+```
+
+And we are approximating the distance between our 99 22215 dimensional points with these 99 two-dimensional points. 
+But now we can plot them:
+
+
+```{r,echo=FALSE,fig.align="center"}
+library(rafalib)
+mypar2(1,1)
+plot(z[,1],z[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension")
+legend("bottomright",levels(ftissue),col=seq(along=levels(ftissue)),pch=15)
+```
+
+We can easilty look at other dimensions
+
+```{r}
+z <- sweep(s$v[,3:4],2,s$d[3:4],"*")
+mypar2(1,1)
+plot(z[,1],z[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension")
+```
+
+Here we note there is separation between the kidneys. 
+
+# `cmdscale`
+
+The `cmdscale` makes this computation for us. It is also useful because it only computes the number of dimensions we ask for. One does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the paramter `k`
 
 ```{r,echo=FALSE,fig.align="center"}
 d <- dist(t(mat))
-mds <- cmdscale(d,k=2)
+mds <- cmdscale(d)
 library(rafalib)
 mypar2(1,1)
 plot(mds[,1],mds[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
