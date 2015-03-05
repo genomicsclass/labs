@@ -1,0 +1,92 @@
+---
+title: "Introduction to Advanced Statistics for the Life Sciences"
+author: "Rafa"
+date: "January 31, 2015"
+output: html_document
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduction
+
+High-throughput technologies have changed basic biology and the biomedical sciences from data poor disciplines to a data intensive ones. A specific example comes from research fields interested in understanding gene expression. Gene expression is the process in which DNA, the blueprint for life, is copied into RNA, the templates for the synthesis of proteins, the building blocks for life.  In the 1990s, the analysis of gene expression data amounted to spotting black dots on a piece of paper or extracting a few numbers from standard curves. With high-throughput technologies such as microarrays this suddenly changed to sifting through tens of thousands of numbers. Biologists went from using their eyes or simple summaries to categorize results to having thousands (and now millions) of measurements per sample to analyze. Here we will learn about the statistical techniques that have been widely used with these technologies.
+
+Because there is a vast number of public datasets, we use many gene expression examples but the statistical techniques you will learn have also proven useful in other fields that make use of high throughput technologies. Technologies such as microarrays, next generation sequencing, fRMI, and mass spectrometry all produce data to answer questions for which what we learn here will be indispensable. The specific topics we will learn are inference in the context of high-throughput data, distance and clustering, dimension reduction, machine learning, modeling including Bayesian/hierarchical models and advanced exploratory data analysis. Because there is an interplay between these topics we will cover each separately. 
+
+```{r,message=FALSE}
+library(rafalib)
+mypar2()
+```
+<a name="threetables"></a>
+
+# Data organized in three tables
+
+Most of the data we use as examples in this class are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of feature are genes, single base locations of the genome, genomic regions, or image pixel intensities. Each specific measurement product is defined by a specific set of features. 
+For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
+
+A specific study will typically use one product and use it to make measurements on several experimental units such as individuals. The most common experimental unit will be the individual but  they can be defined by other entities such as different parts of a tumor. We often call the experimental units _samples_ following because experimental jargon. It is important that these are not confused with samples in the context of our previous chapters as in "random sample". 
+
+So a high throughput experiment is usually defined by three tables: one with the high-throughput measurements and two tables with information about the columns and rows of this first table respectively.
+
+Because a dataset is typically defined by set of experimental unit and a product  defines a fixed set of features the high-throughput measurements can be stored in an $n \times m$ matrix with $n$ the number of units and $m$ the number of features. In R the convention has been to store the transpose of these matrices. Here is an example from a gene expression dataset:
+
+```{r}
+##can be installed with:
+#library(devtools)
+#install_github("genomicsclass/GSE5859Subset")
+library(GSE5859Subset)
+data(GSE5859Subset) ##this loads the three tables
+dim(geneExpression)
+```
+
+We have RNA expression measurements for 8793 genes from blood taken from 24 individuals (the experimental units). For most statistical analysis we will also need information about the individuals. For example, in this case, the data was originally collected to compare gene expression across ethnic groups. However, we have created a subset of this dataset for illustration and separated the data into two groups:
+
+
+```{r}
+dim(sampleInfo)
+head(sampleInfo)
+sampleInfo$group
+```
+
+Note that one of the columns, filenames, permits us connect the rows of this table to the columns of the measurement table.
+
+```{r}
+match(sampleInfo$filename,colnames(geneExpression))
+```
+
+
+Finally, we have a table describing the features
+
+```{r}
+dim(geneAnnotation)
+head(geneAnnotation)
+```
+
+Note that it includes an ID that permits us to connect the rows of this table with the rows of the measurement table:
+```{r}
+head(match(geneAnnotation$PROBEID,rownames(geneExpression)))
+```
+<<<<<<< HEAD
+The table also includes biological information abuot the features. Namely,  chromosome location and the gene "name" used by biologists.
+=======
+The table also includes biological information about the features. Namely,  chromosome location and the gene "name" used by biologists.
+>>>>>>> 804decaab299a457775ea851d64dadc2ff08d928
+
+# Examples
+
+Here we list of some of the examples of data analysis questions we might be asked to answer with the dataset shown here:
+
+* Inference: for which genes are the population averages different across ethnic groups? 
+
+* Machine learning: build an algorithm that given gene expression patterns, predicts ethnic group.
+
+* Clustering: Can we discover subpopulations of individuals from the gene expression patterns? Or can we discover genes pathways based on which cluster together across individuals?
+
+* Exploratory data analysis: Did some epxeriments failed experiments? Are the assumptions needed to use standard statistical techniques met? 
+
+We will cover all these topics and more. 
+

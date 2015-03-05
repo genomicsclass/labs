@@ -27,7 +27,7 @@ You can install a suite of recommended packages by simply typing `biocLite()`
 
 One of the great advantages of using Bioconductor for high throughput data is that it provides obeject classes specifically designed to keep high throughput data organized. Below we show an example of how the three tables that are needed to conduct data analysis are avaialabe from bioconductor data objects. For example for gene expression we can use the ExpressionSet object.
 
-```{r}
+```{r,message=FALSE}
 library(Biobase)
 ##can be installed like this: devtools::install_github("genomicsclass/GSE5859")
 library(GSE5859)

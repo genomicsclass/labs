@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Basic inference and EDA for high-throughput data
+title: Basic inference for high-throughput data
 ---
 
 ```{r options, echo=FALSE}
@@ -8,16 +8,19 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-```{r}
+```{r,message=FALSE}
 library(rafalib)
 ```
 
 # Introduction 
 
-Supposed we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if instead thousands of genes we were handed data from just one gene we could simply apply what 
-we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+<<<<<<< HEAD
+Supposed we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+=======
+Suppose we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+>>>>>>> 804decaab299a457775ea851d64dadc2ff08d928
 
-# Thousands of test
+# Thousands of tests
 
 In this data we have two groups denoted with 0 and 1:
 ```{r}
@@ -27,7 +30,7 @@ g <- sampleInfo$group
 g
 ```
 
-If we were interested in a particular gene, say the 25th we would simply compute a t-test, assuming the data is well approximated by normal:
+If we were interested in a particular gene, let's arbitrarily pick the one on the 25th row, we would simply compute a t-test; assuming the data is well approximated by normal:
 
 ```{r}
 e <- geneExpression[25,]
@@ -38,20 +41,20 @@ qqnorm(e[g==0])
 qqline(e[g==0])
 ```
 
-The t-test does not find this gene to be statistically singificant
+The qq-plots show that the data is well approximated by the normal approximation so apply a t-test. The t-test does not find this gene to be statistically significant:
 
 ```{r}
 t.test(e[g==1],e[g==0])
 ```
 
-To answer the question for each gene we simply to this for every gene
+To answer the question for each gene we simply do this for every gene. Here we will define our own function and use `apply`:
 
 ```{r}
 myttest <- function(x) t.test(x[g==1],x[g==0],var.equal=TRUE)$p.value
 pvals <- apply(geneExpression,1,myttest)
 ```
 
-We can now see which genes have p-values less than, say, 0.05. For example right away we see that
+We can now see which genes have p-values less than, say, 0.05. For example right away we see that:
 
 ```{r}
 sum(pvals<0.05)
@@ -59,7 +62,7 @@ sum(pvals<0.05)
 
 genes had p-values less than 0.05
 
-However, as we will describe in more detail below, we have to be careful in the interpretation of this because we have performed over  8,000 test. If we did the same on random data:
+However, as we will describe in more detail below, we have to be careful in interpreting this result because we have performed over  8,000 test. Note that if we performed the same procedure on random data, for which the null hypothesis is true for all feature, we obtain the following results:
 
 ```{r}
 set.seed(1)
@@ -70,75 +73,25 @@ nullpvals <- apply(randomData,1,myttest)
 sum(nullpvals<0.05)
 ```
 
-As we will explain this is to be expected. Note that 419 is roughly 0.05*8192. 
+As we will explain in the chapter, this is to be expected. Note that 419 is roughly 0.05*8192 and we will describe the theory that tells us why this prediction works.
 
 # Faster implementation of t-test
 
-Before, we continue, we should note that the above implementation is very inneficiant. There are several faster implementations that perform t-test for high throughput data. For example
+Before, we continue, we should note that the above implementation is very inefficient. There are several faster implementations that perform t-test for high throughput data. For example
 
-```{r}
+```{r,message=FALSE}
 library(genefilter)
 results <- rowttests(geneExpression,factor(g))
 max(abs(pvals-results$p))
 ```
 
-# Volcano plots
-
-As we described in the Introduction chapter, reporting only p-values is a mistake when we can aslo report effect sizes. With high-throughput data we can visualize the results by makine a plot. The idea behind a _volcano plot_ is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis the effect size. By using - log (base 10) we have the "highly significant" results be high in the plot. Using log permits us to better distinguis between, say, 0.05 and 0.001.  Here is the volcano plot for our results above:
-
-```{r}
-plot(results$dm,-log10(results$p.value),xlab="Effect size",ylab="- log (base 10) p-values")
+Note that `genefilter` is available from the Bioconductor projects. In a later section we will say more about this project but here is how one installs it:
+ 
+```{r,eval=FALSE}
+source("http://www.bioconductor.org/biocLite.R")
+biocLite("genefilter")
 ```
 
-
-# p-value histograms
-
-Another plot we can make to get an overall idea of what our results are telling us is to make histograms of p-values. Note that when we generate completely null data the histrogram follows a uniform distribtuion (we will say more about this). With our original data set we see a higher frequency of smaller p-values
-
-```{r}
-mypar2(1,2)
-hist(nullpvals,ylim=c(0,1400))
-hist(pvals,ylim=c(0,1400))
-```
-
-
-
-# Data boxplots and histogram
-
-```{r}
-mypar2(1,1)
-boxplot(geneExpression)
-```
-
-
-```{r}
-mypar2(1,1)
-shist(geneExpression)
-```
-
-
-```{r}
-quantiles <- t(apply(geneExpression,2,quantile,prob=c(0,0.05,0.25,0.5,0.75,0.95,1)))
-matplot(quantiles,type="l")
-```
-
-
-# MA plot
-
-```{r}
-x <- geneExpression[,3]
-y <- geneExpression[,16]
-mypar(1,1)
-plot(x,y)
-plot((x+y)/2,x-y)
-```
-
-
-
-
-
-
-
-
+Note that we get practically the same answer and much faster performance.
 
 
