@@ -87,11 +87,11 @@ $$ Y_i = \beta_0 + \beta_1 x_{i} + \varepsilon_i$$
 with $\beta_0$ the chow diet average weight, $\beta_1$ the difference between averages, $x_i = 1$ when mouse $i$ gets the high fat (hf) diet, $x_i = 0$ when it gets the chow diet, and $\varepsilon_i$ explains the differences between mice of same population. 
  
 
-# General linear model
+# Linear model in general
 
 We have seen three very different examples in which linear models can be used. A general model that encompasses all of the above examples is the following:
 
-$$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} \varepsilon_i, i=1,\dots,n $$
+$$ Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \dots +  \beta_2 x_{i,p} + \varepsilon_i, i=1,\dots,n $$
 
  
 $$ Y_i = \beta_0 + \sum_{j=1}^p \beta_j x_{i,j} + \varepsilon_i, i=1,\dots,n $$
