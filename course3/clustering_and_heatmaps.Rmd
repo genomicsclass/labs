@@ -83,3 +83,44 @@ plot(mds[,1], mds[,2], col=km$cluster, pch=16)
 table(true=tissue,cluster=km$cluster)
 ```
 
+
+# Heatmaps
+
+Heatmaps are useful plots for visualizing the measurements  for a subset of rows over all the samples. A *dendrogram* is added on top and on the side is a hierarchical clustering as we saw before. First we will
+use the `heatmap` available in base R. First define a color palette.
+
+```{r}
+# install.packages("RColorBrewer")
+library(RColorBrewer)
+hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
+```
+
+Now, pick the genes with the top variance over all samples:
+
+```{r}
+library(genefilter)
+rv <- rowVars(e)
+idx <- order(-rv)[1:40]
+```
+
+Now we can plot a heatmap of these genes:
+
+```{r}
+heatmap(e[idx,], col=hmcol)
+```
+
+The `heatmap.2` function in the `gplots` package on CRAN is a bit more
+customizable. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
+
+```{r}
+# install.packages("gplots")
+library(gplots)
+cols <- palette(brewer.pal(8, "Dark2"))[as.fumeric(tissue)]
+cbind(colnames(e),cols)
+heatmap.2(e[idx,], labCol=tissue,
+          trace="none", 
+          ColSideColors=cols, 
+          col=hmcol)
+```
+
+
