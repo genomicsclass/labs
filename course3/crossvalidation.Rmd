@@ -142,5 +142,4 @@ res <- sapply(ks, function(k) {
 plot(ks, res, type="o",ylim=c(0,0.20))
 ```
 
-
 Important note: We applied `cmdscale` to the entire dataset to create a smaller one for illustration purposes. However, in a real machine learning application all transformations of the data must be applied separately on the test and training dataset.
