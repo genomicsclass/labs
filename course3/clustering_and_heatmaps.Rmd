@@ -121,7 +121,7 @@ customization. For example, it stretches to fill the window. Here we add colors 
 # install.packages("gplots")
 library(gplots)
 cols <- palette(brewer.pal(8, "Dark2"))[as.fumeric(tissue)]
-cbind(colnames(e),cols)
+head(cbind(colnames(e),cols))
 heatmap.2(e[idx,], labCol=tissue,
           trace="none", 
           ColSideColors=cols, 
