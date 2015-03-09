@@ -12,13 +12,13 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 The concept of distance can be generalized from  physical distance. For example, we cluster animals into groups. When we do this, we put animals that "close" in the same group:
 
-<img src="figs/animals.jpg" align="middle" width=300>
+<img src="images/animals.jpg" align="middle" width=300>
 
 Any time we cluster individuals into separate groups we are, explicitely or implicitely computing a distance. 
 
 Do create _heatmaps_ a distance is computed explicitely. Heatmaps are widely used in genomics and other highthroughput fields:
 
-<img src="figs/Heatmap.png" align="middle" width=300>
+<img src="images/Heatmap.png" align="middle" width=300>
 Image Source: Heatmap, Gaeddal, 01.28.2007, http://commons.wikimedia.org/wiki/File:Heatmap.png, PD
 
 In these plots the measurements, which are stored ina matrix, are represented with colors after the columns and rows have been clustered. Here we will learn the necessary mathematics and computing skill to understand and create heatmaps. We start by reviewing the mathematical definition of distance. 
