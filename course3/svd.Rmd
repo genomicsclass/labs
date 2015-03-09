@@ -9,7 +9,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 # Introduction
-The main mathematical result we use to achieve dimension reduction is the singular value decompostion (SVD).
+The main mathematical result we use to achieve dimension reduction is the singular value decomposition (SVD).
 We will cover the SVD in more detail in a later section. Here we give an overview that is necessary to understand multidimensional scaling. 
 
 # Singular Value Decomposition
@@ -115,7 +115,7 @@ Therefore, by using only half as many dimensions we retain most of the variabili
 var(as.vector(resid))/var(as.vector(Y))
 ```
 
-We say that we explain 96% of the variabilty.
+We say that we explain 96% of the variability.
 
 Note that we can predict this from $D$:
 ```{r}
@@ -125,7 +125,7 @@ Note that we can predict this from $D$:
 
 # Highly correlated data
 
-To help understand how the SVD does not that for two highly correlated columns, the second column adds very little "inforamtion" to the first.
+To help understand how the SVD does not that for two highly correlated columns, the second column adds very little "information" to the first.
 
 For example:
 
@@ -138,7 +138,7 @@ Y <- cbind(x,x)+e
 cor(Y)
 ```
 
-Reporting `rowMeans(Y)` provides alsmot the same information as $Y$. This turns out the be the information in the first column on $U$. And in this case we explain almost all the variability with just this first column:
+Reporting `rowMeans(Y)` provides almost the same information as $Y$. This turns out the be the information in the first column on $U$. And in this case we explain almost all the variability with just this first column:
 
 ```{r}
 d <- svd(Y)$d
