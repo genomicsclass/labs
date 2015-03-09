@@ -23,8 +23,9 @@ Let's act as if we don't know these are different tissues and are interested in 
 d <- dist(t(e))
 ```
 
+<a name="hierarchical"></a>
 
-# Hieararchichal clustering
+# Hierarchical clustering
 
 We can perform hierarchical clustering based on the
 distances defined above, using the `hclust` function.
@@ -44,7 +45,7 @@ Does this technique "discover" the clusters defined by the different tissues? In
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
 ```
 
-Note that hierarchichal clustering does not define specific clusters but rather defines a dendrogram. To define clusters we need to "cut the tree" at some height and group all samples that are within that split into different groups below that line. We use 120 as an example:
+Note that hierarchical clustering does not define specific clusters but rather defines a dendrogram. To define clusters we need to "cut the tree" at some height and group all samples that are within that split into different groups below that line. We use 120 as an example:
 
 ```{r}
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
@@ -57,6 +58,8 @@ If we use the line above to cut the tree into clusters, we can examine how the c
 hclusters <- cutree(hc, h=120)
 table(true=tissue, cluster=hclusters)
 ```
+
+<a name="kmeans"></a>
 
 # K-means
 
@@ -84,6 +87,8 @@ table(true=tissue,cluster=km$cluster)
 ```
 
 
+<a name="heatmap"></a>
+
 # Heatmaps
 
 Heatmaps are useful plots for visualizing the measurements  for a subset of rows over all the samples. A *dendrogram* is added on top and on the side is a hierarchical clustering as we saw before. First we will
@@ -110,7 +115,7 @@ heatmap(e[idx,], col=hmcol)
 ```
 
 The `heatmap.2` function in the `gplots` package on CRAN is a bit more
-customizable. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
+customization. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
 
 ```{r}
 # install.packages("gplots")
