@@ -124,7 +124,7 @@ plot(ks, res, type="o")
 ```
 
 
-Finally, to show that gene expression can perfectly predict tissue, we use 5 dimensions instea of 2 and note we get perfect prediction
+Finally, to show that gene expression can perfectly predict tissue, we use 5 dimensions instead of 2 and note we get perfect prediction
 
 ```{r}
 Xsmall <- cmdscale(dist(X),k=5)
