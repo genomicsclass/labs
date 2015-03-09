@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Visualizing data is one of the most, if not the most, important step in the analysis of high throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, that is typically appropriate, completely useless. 
 
-We have shown methods for visualizing global properties of the columns of rows but plots that reveal relatioships between columns or between rows is more complicated due to the high dimensionality of data. To compare each of the 189 samples to each other we would have to create, for example, 17,766 MA plots. Creating a scatter plot of the data is imposible since points are very high dimensional. 
+We have shown methods for visualizing global properties of the columns of rows but plots that reveal relationships between columns or between rows is more complicated due to the high dimensionality of data. To compare each of the 189 samples to each other we would have to create, for example, 17,766 MA plots. Creating a scatter plot of the data is impossible since points are very high dimensional. 
 
 Here we describe a powerful technique for exploratory data analysis based on dimension reduction. The general idea is relatively simple, we reduce the dataset to have a few dimensions yet approximately preserve certain properties such as distance between samples. Once we reduce it to, say, two dimensions, we can easily make plots. The technique behind it all, the singular value decomposition, is also useful in other context.  
 
@@ -122,7 +122,7 @@ plot(z[,1],z[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Seco
 legend("bottomright",levels(ftissue),col=seq(along=levels(ftissue)),pch=15)
 ```
 
-We can easilty look at other dimensions
+We can easily look at other dimensions
 
 ```{r}
 z <- sweep(s$v[,3:4],2,s$d[3:4],"*")
@@ -134,7 +134,7 @@ Here we note there is separation between the kidneys.
 
 # `cmdscale`
 
-The `cmdscale` makes this computation for us. It is also useful because it only computes the number of dimensions we ask for. One does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the paramter `k`
+The `cmdscale` makes this computation for us. It is also useful because it only computes the number of dimensions we ask for. One does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the parameter `k`
 
 ```{r,echo=FALSE,fig.align="center"}
 d <- dist(t(mat))
@@ -162,7 +162,7 @@ i <- 11
 SVD$d[i]^2
 ```
 
-We can see how much "variability" is added to the approximation of $\mathbf{Y}$ by looking at the percent of variability for each colunn:
+We can see how much "variability" is added to the approximation of $\mathbf{Y}$ by looking at the percent of variability for each column:
 
 
 ```{r,echo=FALSE,fig.align="center",fig.height=5}
@@ -190,7 +190,7 @@ abline(0,1)
 #abline(0,-1)
 ```
 
-Also note that the columns of $\mathbf{Z}$ are multiplied by scalars $d_{11}$ and $d_{22}$. Thus the only difference between plotting with mds and plotting $\mathbf{V}$ are these scalers. We can add them back by multiplying by $\mathbf{D}$ but we can make quick plots like this
+Also note that the columns of $\mathbf{Z}$ are multiplied by scalars $d_{11}$ and $d_{22}$. Thus the only difference between plotting with MDS and plotting $\mathbf{V}$ are these scalars. We can add them back by multiplying by $\mathbf{D}$ but we can make quick plots like this
 
 ```{r,echo=FALSE,fig.align="center"}
 mypar2(1,1)
