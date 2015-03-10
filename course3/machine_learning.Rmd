@@ -12,7 +12,7 @@ Here we give brief introduction to machine learning. Some of the examples we giv
 
 <http://statweb.stanford.edu/~tibs/ElemStatLearn/>
 
-Similary to infernece in the context of regression, Machine Learning (ML) studies the relationships between outcomes $Y$ and covariates $X$. In ML we call $X$ the predictors. The main difference between ML and inference is that in ML we are interested in predicting $Y$ using $X$. Statistical models are used, but while in inference we estimate and interprete model parameters, in ML they are mainly a means to an end: predicting $Y$. 
+Similar to inference in the context of regression, Machine Learning (ML) studies the relationships between outcomes $Y$ and covariates $X$. In ML we call $X$ the predictors. The main difference between ML and inference is that in ML we are interested in predicting $Y$ using $X$. Statistical models are used, but while in inference we estimate and interpret model parameters, in ML they are mainly a means to an end: predicting $Y$. 
 
 Here we introduce the main concepts needed to understand ML along with two specific algorithms: regression and k nearest neighbors (knn). Note there are dozens of popular algorithms that we do not cover here are some 
 
@@ -21,14 +21,14 @@ Here we introduce the main concepts needed to understand ML along with two speci
 
 Prediction problems can be divided into categorical and continuous outcomes. However, many of the algorithms can be applied to both due to the connection between conditional probabilities and conditional expectations. 
 
-In categorical problems, for example binary outcome, if we know the probability of $Y$ being a 1 given that we know the value of the predictors $X=(X_1,\dots,X_p)^\top$ then we can optimize our predictions. We write this probability like this$f(x)=\mbox{Pr}(Y=1|X=x)$. Note that $Y$ is a random variable which implies we are not guaranteed perfect prediction (unless these probabilites are 1 or 0). You can think of this probability as the proportion of the population with covariates $X=x$ that is a 1.
+In categorical problems, for example binary outcome, if we know the probability of $Y$ being a 1 given that we know the value of the predictors $X=(X_1,\dots,X_p)^\top$ then we can optimize our predictions. We write this probability like this $f(x)=\mbox{Pr}(Y=1|X=x)$. Note that $Y$ is a random variable which implies we are not guaranteed perfect prediction (unless these probabilities are 1 or 0). You can think of this probability as the proportion of the population with covariates $X=x$ that is a 1.
 
-Now, given that the expectation is the average of all the values of $Y$, in this is equivalent to the proportion of 1s which in this case is the probability. So for this case $f(x) \equiv \mbox{E}(Y|X=x)=\mbox{Pr}(Y=1|X=x)$. The expected value has another attractive mathematical property and it is that it mimimized the expected distance between the predictor $\hat{Y}$ and $Y$: $\mbox{E}\{ (\hat{Y} - Y)^2 | X=x \}. 
+Now, given that the expectation is the average of all the values of $Y$, in this is equivalent to the proportion of 1s which in this case is the probability. So for this case $f(x) \equiv \mbox{E}(Y|X=x)=\mbox{Pr}(Y=1|X=x)$. The expected value has another attractive mathematical property and it is that it minimized the expected distance between the predictor $\hat{Y}$ and $Y$: $\mbox{E}\{ (\hat{Y} - Y)^2 | X=x \}$. 
 
-Here, we start by describing linear regression in the context of prediction. We use the son and father height example to illustrate. In our example we are trying to predict the son's height $Y$ based on the father's $X$. Note that here we have only on predictor. Note that if we are asked to predict the height of a randomely selected son we would go with the mean:
+Here, we start by describing linear regression in the context of prediction. We use the son and father height example to illustrate. In our example we are trying to predict the son's height $Y$ based on the father's $X$. Note that here we have only on predictor. Note that if we are asked to predict the height of a randomly selected son we would go with the mean:
 
 
-```{r,fig.width=4, fig.height=4}
+```{r,fig.width=4, fig.height=4,message=FALSE}
 library(rafalib)
 mypar(1,1)
 library(UsingR)
@@ -39,9 +39,9 @@ hist(y,breaks=seq(min(y),max(y)))
 abline(v=mean(y),col=2)
 ```
 
-In this case we can also approximate the distirbution of $Y$ as normal which implies the mean maximizes the probability density. 
+In this case we can also approximate the distribution of $Y$ as normal which implies the mean maximizes the probability density. 
 
-Now imagine we are given more information. We are told the the father of this randomely selected son has height 71 inches (1.2 SDs taller than the average) What is our prediction now? 
+Now imagine we are given more information. We are told the the father of this randomly selected son has height 71 inches (1.2 SDs taller than the average) What is our prediction now? 
 
 
 ```{r}
@@ -50,8 +50,10 @@ abline(v=c(-0.35,0.35)+71,col="red")
 hist(y[x==71],xlab="Heights",nc=8,main="",xlim=range(y))
 ```
 
+<a name="regression"></a>
+
 ## Stratification
-The best guess is still the expecation, but our strate has changed from all the data to only the $Y$ with $X=71$. So we can stratify and take the average which is the conditional expencations. Out prediction for any $x$ is therefore:
+The best guess is still the expectation, but our strata has changed from all the data to only the $Y$ with $X=71$. So we can stratify and take the average which is the conditional expectations. Out prediction for any $x$ is therefore:
 $$
 f(x) = E(Y|X=x)
 $$
@@ -71,10 +73,11 @@ hist(y[x==71],xlab="Heights",nc=8,main="",xlim=range(y))
 
 In this particular case the regression line provides an optimal prediction function for $Y$. But this is not generally true
 
+<a name="smoothing"></a>
 
 # Smoothing 
 
-The following data are from measurements from replicated RNA. We consider that data used in an the MA-plot ($Y$=log ratios and $A$=averages) and take down-sample in a way that balances the number of points for different stratas of $A$:
+The following data are from measurements from replicated RNA. We consider that data used in an the MA-plot ($Y$=log ratios and $A$=averages) and take down-sample in a way that balances the number of points for different strata of $A$:
 
 ```{r,cache=TRUE}
 library(SpikeIn)
@@ -104,14 +107,14 @@ In the MA plot we see that there $Y$ depends on $X$. Note that this this depende
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9}
 library(rafalib)
-mypar(1,1)
+mypar2(1,1)
 plot(X,Y)
 ```
 
-Note that linear regression is biased does not capture the aparent curvature in $f(x)$:
+Note that linear regression is biased does not capture the apparent curvature in $f(x)$:
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9,echo=FALSE}
-mypar(1,1)
+mypar2(1,1)
 plot(X,Y)
 fit <- lm(Y~X)
 points(X,Y,pch=21,bg=ifelse(Y>fit$fitted,1,3))
@@ -121,10 +124,11 @@ Note for example that points above the fitted line (green) and those below (purp
 
 ## Bin Smoothing
 
-Instead of fitting a line, let's go back to the idea of stratifying and computing the mean. This is referred to as _bin smoothing_. Now, if we stratify by $x$ The general idea is that the underlying curve is "smooth" enough that in small bins it is approximately constant which implies all the $Y$ in that bin have the same expected value. For example, in the plot below we highlight points in a bin centered at 8.6 as well as the points of a bin centered at 12.1 if we us bins of size 1. We also show  and the fitted mean values for the $Y$ in those bin (dahsed lines):
+Instead of fitting a line, let's go back to the idea of stratifying and computing the mean. This is referred to as _bin smoothing_. Now, if we stratify by $x$ The general idea is that the underlying curve is "smooth" enough that in small bins it is approximately constant which implies all the $Y$ in that bin have the same expected value. For example, in the plot below we highlight points in a bin centered at 8.6 as well as the points of a bin centered at 12.1 if we us bins of size 1. We also show  and the fitted mean values for the $Y$ in those bin (dashed lines):
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9}
-mypar(1,1)
+mypar2(1,1)
+centers <- seq(min(X),max(X),len=12)
 plot(X,Y,col="grey",pch=16)
 windowSize <- .5
 i <- 25
@@ -143,10 +147,9 @@ lines(c(min(X[ind]),max(X[ind])),c(fit,fit),col=2,lty=2,lwd=4)
 
 By computing this mean for bins around every point we form an estimate of the underlying curve $f(x)$:
 ```{r, fig.align="center",fig.width=11,fig.height=6.9}
-centers <- seq(min(X),max(X),len=12)
 windowSize<-0.5
 smooth<-rep(NA,length(centers))
-mypar(4,3)
+mypar2(4,3)
 for(i in seq(along=centers)){
   plot(X,Y,col="grey",pch=16)
   center<-centers[i]
@@ -162,7 +165,7 @@ for(i in seq(along=centers)){
 The final result looks like this:
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9,echo=FALSE}
-mypar(1,1)
+mypar2(1,1)
 plot(X,Y,col="darkgrey",pch=16)
 lines(centers,smooth,col="black",lwd=3)
 ```
@@ -174,7 +177,7 @@ Local weighted regression (loess) is similar to bin smoothing. The difference is
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9}
 centers <- seq(min(X),max(X),0.1)
-mypar(1,1)
+mypar2(1,1)
 plot(X,Y,col="darkgrey",pch=16)
 windowSize <- 1
 i <- 25
@@ -196,7 +199,7 @@ lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2,lwd=3)
 Here are 12 steps of the process:
 ```{r, include=FALSE}
 centers <- seq(min(X),max(X),len=12)
-mypar(4,3)
+mypar2(4,3)
 windowSize<-1
 smooth<-rep(NA,length(centers))
 for(i in seq(along=centers)){
@@ -217,14 +220,14 @@ for(i in seq(along=centers)){
 This results is a smoother fit since we use larger sample sizes to estimate our local parameters:
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9,echo=FALSE}
-mypar(1,1)
+mypar2(1,1)
 plot(X,Y,col="darkgrey",pch=16)
 lines(centers,smooth,col="black",lwd=3)
 ```
 
 # Multivariate predictors
 
-Most of ML is concerned with cases with more than one predictor. For illustration purposes we move to a case in whch $X$ is two dimensional and $Y$ is binary. We simulate a situation with a non-linear relationship using an example from Hastie, Tibshirani and Friednman's book. In the plot below we show the actual values of $f(x_1,x_2)=E(Y|X_1=x_1,X_2=x_2)$ using colors
+Most of ML is concerned with cases with more than one predictor. For illustration purposes we move to a case in which $X$ is two dimensional and $Y$ is binary. We simulate a situation with a non-linear relationship using an example from Hastie, Tibshirani and Friedman's book. In the plot below we show the actual values of $f(x_1,x_2)=E(Y|X_1=x_1,X_2=x_2)$ using colors
 
 ```{r}
 library(rafalib)
@@ -284,7 +287,7 @@ colshat <- bayesrule
 
 colshat <- hmcol[floor(bayesrule*100)+1]
 
-mypar(1,1)
+mypar2(1,1)
 plot(x,type="n",xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
 points(newx,col=colshat,pch=16,cex=0.35)
 ```
@@ -293,7 +296,7 @@ If we should $E(Y|X=x)>0.5$ in red and the rest in blue we see the boundary regi
 
 ```{r}
 ##Draw contours of E(Y|X) < 0.5
-mypar(1,1)
+mypar2(1,1)
 colshat[bayesrule>=0.5] <- mycols[2]
 colshat[bayesrule<0.5] <- mycols[1]
 plot(x,type="n",xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
@@ -307,7 +310,8 @@ Now make a plot of training data and test data
 plot(x,pch=21,bg=cols,xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
 ```
 
-We will review two speicif ML techniques. First, we need to review the main concept we use to evaluate the performance of these methods. 
+We will review two specif ML techniques. First, we need to review the main concept we use to evaluate the performance of these methods. 
+
 # Training and Test sets
 
 In the code above you will notice that we created two sets data""
@@ -321,9 +325,9 @@ x <- rbind(x0,x1) ## one matrix with everything
 test <- rbind(testx0,testx1)
 ```
 
-You will notice that the test and train set have similar global properties as they were generated by the same random varialbes (more blue towards the bottom right) but are, by construction, differnet. 
+You will notice that the test and train set have similar global properties as they were generated by the same random variables (more blue towards the bottom right) but are, by construction, different. 
 ```{r}
-mypar(1,2)
+mypar2(1,2)
 plot(x,pch=21,bg=cols,xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
 plot(test,pch=21,bg=colstest,xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
 ```
@@ -334,7 +338,7 @@ The reason for this is to detect over-training  by testing on a different data t
 ## Predicting with regression
 
 
-A first naive approach to thi ML problem is to fit a two varible linear regression model:
+A first naive approach to this ML problem is to fit a two variable linear regression model:
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9}
 X1 <- x[,1] ##these are the covariates
@@ -357,22 +361,15 @@ We can quickly obtain predicted values for any set of values using the `predict`
 yhat <- predict(fit1,newdata=data.frame(X1=newx[,1],X2=newx[,2]))
 ```
 
-Now we can obtain a plot showing where we predict 1s and where we predict 0 as well as the boundary:
+Now we can obtain a plot showing where we predict 1s and where we predict 0 as well as the boundary. We can also use the `predict` function to obtain predicted values for our test set. Note that nowhere do we fit the model on the test set: 
+
 ```{r}
 colshat <- yhat
 colshat[yhat>=0.5] <- mycols[2]
 colshat[yhat<0.5] <- mycols[1]
-m <- -fit1$coef[2]/fit1$coef[3]
-b <- (0.5 - fit1$coef[1])/fit1$coef[3]
+m <- -fit1$coef[2]/fit1$coef[3] #boundary slope
+b <- (0.5 - fit1$coef[1])/fit1$coef[3] #boundary intercept
 
-abline(b,m)
-points(newx,col=colshat,cex=.35,pch=16)
-points(x,pch=21,bg=cols,xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
-```
-
-
-We can also use the `predict` function to obtain predicted values for our test set. Note that nowhere do we fit the model on the test set.  
-```{r}
 ##prediction on test
 yhat <- predict(fit1,newdata=data.frame(X1=test[,1],X2=test[,2]))
 yhat <- as.numeric(yhat>0.5)
@@ -381,18 +378,21 @@ cat("Linear regression prediction error in test:",1-mean(yhat==ytest),"\n")
 plot(test,type="n",xlab="X1",ylab="X2",xlim=XLIM,ylim=YLIM)
 abline(b,m)
 points(newx,col=colshat,pch=16,cex=0.35)
+
 points(test,bg=cols,pch=21)
 ```
 
-Note that the error rates in the test and train sets are quite similar. Thus do not seem to be overtrainig. This is not surprising as we are fitting a 2 parameter model to 400 data points. However note that the boudary is a line. Because we are fitting plane to the data, there is no other option here. The linear regression method is too rigid. The rigid makes it stable and avoids over training but it also keeps the model from adpating to the non-linear relationship between $Y$ and $X$. We saw this before in the smoothing section. The next ML technique we consider is similar to the smoothing techniques described before.
+Note that the error rates in the test and train sets are quite similar. Thus do not seem to be over-training. This is not surprising as we are fitting a 2 parameter model to 400 data points. However note that the boundary is a line. Because we are fitting plane to the data, there is no other option here. The linear regression method is too rigid. The rigid makes it stable and avoids over training but it also keeps the model from adapting to the non-linear relationship between $Y$ and $X$. We saw this before in the smoothing section. The next ML technique we consider is similar to the smoothing techniques described before.
+
+<a name="knn"></a>
 
 # K-nearest neighbor
 
-K-nearest neighnors (kNN) is similar to bin smoothing but it is easier to adapt to multiple dimensions. Basically for any point $x$ for which we want an estimate we look for the k nearest points and then take an avarege. We can now control flexibilty through  $k$. Here we comapre $k=1$ and $k=100$.
+K-nearest neighbors (kNN) is similar to bin smoothing but it is easier to adapt to multiple dimensions. Basically for any point $x$ for which we want an estimate we look for the k nearest points and then take an average. We can now control flexibility through  $k$. Here we compare $k=1$ and $k=100$.
 
-```{r}
+```{r, fig.align="center",fig.width=14,fig.height=7.5}
 library(class)
-mypar(2,2)
+mypar2(2,2)
 for(k in c(1,200)){
   cat(k,"nearest neighbors\n")
   
@@ -423,7 +423,7 @@ for(k in c(1,200)){
 
 Note that when $k=1$ we make no mistakes in the training test since every point is it's closes neighbor and it is equal to itself. Note that the we some islands of blue in the red area that once we move to the test set are more error prone. In the case $k=100$ we do not have this problem and we also see that we improve over linear regression
 
-Here is a comparison of the test and train set errors for various values of $k$. We also include the error rate that we would make if we actaully knew $\mobx{E}(Y|X_1=x1,X_2=x_2)$ referred to as _Bayes Rule_
+Here is a comparison of the test and train set errors for various values of $k$. We also include the error rate that we would make if we actually knew $\mobx{E}(Y|X_1=x1,X_2=x_2)$ referred to as _Bayes Rule_
 ```{r}
 ###Bayes Rule
 yhat <- apply(test,1,p)
@@ -450,5 +450,8 @@ lines(ks,test.error,type="b",col=5,lty=3,lwd=2)
 abline(h=bayes.error,col=6)
 legend("bottomright",c("Train","Test","Bayes"),col=c(4,5,6),lty=c(2,3,1),box.lwd=0)
 ```
+
+
+
 
 
