@@ -125,7 +125,7 @@ Note that we can predict this from $D$:
 
 # Highly correlated data
 
-To help understand how the SVD does not that for two highly correlated columns, the second column adds very little "information" to the first.
+To help understand how the SVD works, we construct a dataset with two highly correlated columns. 
 
 For example:
 
@@ -137,8 +137,7 @@ e <- rnorm(n*m,0,0.01)
 Y <- cbind(x,x)+e
 cor(Y)
 ```
-
-Reporting `rowMeans(Y)` provides almost the same information as $Y$. This turns out the be the information in the first column on $U$. And in this case we explain almost all the variability with just this first column:
+In this case, the second column adds very little "information" since all the entries of `Y[,1]-Y[,2]` are close to 0. Reporting `rowMeans(Y)` is even more efficient since `Y[,1]-rowMeans(Y)` and `Y[,2]-rowMeans(Y)` are even closer to 0. `rowMeans(Y)`  turns out to be the information represented in the first column on $U$. The SVD helps us notice that we explain almost all the variability with just this first column:
 
 ```{r}
 d <- svd(Y)$d
