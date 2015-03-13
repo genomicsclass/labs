@@ -19,7 +19,7 @@ Here we describe a powerful technique for exploratory data analysis based on dim
 
 # Math for Multidimensional Scaling Plot
 
-If the sum of squares of the first two columns of $\mathbf{U^\top Y=DV}$ is much larger than the rest then:
+If the sum of squares of the first two columns of $\mathbf{U^\top Y=DV^\top}$ is much larger than the rest then:
 
 $$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
   \begin{pmatrix}

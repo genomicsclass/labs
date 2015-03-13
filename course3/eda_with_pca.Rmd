@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Singular Value Decomposition
+title: EDA with PCA
 ---
 
 ```{r options, echo=FALSE}
@@ -9,10 +9,124 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 # Introduction
-The main mathematical result we use to achieve dimension reduction is the singular value decomposition (SVD).
-We will cover the SVD in more detail in a later section. Here we give an overview that is necessary to understand multidimensional scaling. 
 
-# Singular Value Decomposition
+Now that we understand PCA we are going to demonstrate how we use it in practoce. One of them main uses for exploratory data analysis.
+
+# Gene Expression Data
+
+We are now going to explore the original gene expressiond dat
+```{r}
+library(Biobase)
+library(GSE5859)
+data(GSE5859)
+```
+
+First we note that there are replicates and take them out
+```{r}
+cors <- cor(exprs(e))
+Pairs=which(abs(cors)>0.9999,arr.ind=TRUE)
+out = Pairs[which(Pairs[,1]<Pairs[,2]),,drop=FALSE]
+if(length(out[,2])>0) e=e[,-out[2]]
+```
+
+Also take out control probes
+
+```{r}
+out <- grep("AFFX",featureNames(e))
+e <- e[-out,]
+```
+
+
+Now we are ready to procede
+```{r}
+y <- exprs(e)-rowMeans(exprs(e))
+dates <- pData(e)$date
+eth <- pData(e)$ethnicity
+```
+
+Define sex
+
+```{r}
+library(hgfocus.db)
+annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID",columns=c("CHR", "CHRLOC", "SYMBOL"))[,-4]
+##for genes with multiples, pick on
+annot <-annot[match(featureNames(e),annot$PROBEID),]
+annot$CHR <- ifelse(is.na(annot$CHR),NA,paste0("chr",annot$CHR))
+chryexp<- colMeans(exprs(e)[which(annot$CHR=="chrY"),])
+sex <- factor(ifelse(chryexp<4.5,"F","M"))
+```
+
+
+
+We have shown how we can compute pricipal components using 
+
+```{r}
+s <- svd(y)
+```
+
+
+But we can also use `prcomp` which creates an object with just the PCs and also demeans by default. Note `svd` keeps $U$ which is as large as `y`
+
+
+```{r}
+pc <- prcomp(y)
+for(i in 1:5) print( round( cor( pc$rotation[,i],s$v[,i]),3))
+```
+
+# Variance explained
+
+```{r}
+plot(s$d^2/sum(s$d^2))
+```
+
+
+# MDS plot
+
+As we previously showed we can make MDS plots. To explore we can add color to represent variables of interest. 
+
+
+```{r,fig.align='center'}
+cols = as.numeric(eth)
+mypar(1,1)
+plot(s$v[,1],s$v[,2],col=cols,pch=16,
+     xlab="PC1",ylab="PC2")
+legend("bottomleft",levels(eth),col=seq(along=levels(eth)),pch=16)
+```
+
+Now let's make that with date?
+
+```{r,fig.align='center'}
+year = factor(format(dates,"%y"))
+cols = as.numeric(year)
+mypar(1,1)
+plot(s$v[,1],s$v[,2],col=cols,pch=16,
+     xlab="PC1",ylab="PC2")
+legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
+```
+
+It is difficulty to parse due to correlation
+```{r}
+table(year,eth)
+```
+
+
+# Boxplot of PCs
+
+```{r}
+month <- format(dates,"%y%m")
+variable <- as.numeric(month)
+mypar(1,1)
+plot(t(cor(variable,s$v)))
+
+for(i in 1:5){
+  boxplot(split(s$v[,i],variable),las=2,range=0)
+  stripchart(split(s$v[,i],variable),add=TRUE,vertical=TRUE,pch=1,cex=.5,col=1)
+
+  }
+```
+
+
+
 
 The main result SVD provides is that we can write an $m \times n$ matrix $\mathbf{Y}$ as
 

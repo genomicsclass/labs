@@ -1,0 +1,115 @@
+---
+layout: page
+title: Batch adjustment
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+To illustrate how we can adjust for batch effects using statistcal methods, we will create a data example in which the outcome of interest is confounded with batch but not completely. We will also select a outcome for which we have an expectation of what genes should be differentially expressed. Namely, we make sex the outcome of interest and expect genes on the Y chromosome to be differentially expressed. Note that we may also see genes from the X chromosome as differentially expressed as some escape X inactivation. 
+
+We start by finding the genes on the Y chromosome.
+```{r}
+library(rafalib)
+library(GSE5859Subset)
+data(GSE5859Subset)
+y <- geneExpression-rowMeans(geneExpression)
+```
+
+
+To illustrate the confounding we will pick some genes to show in a heatmap plot. We pick all Y chromosome genes, some genes that we see correlate with batch, and then some randomly selected genes.
+```{r}
+ind1 <- which(geneAnnotation$CHR=="chrY") ##real differences
+month <- factor(format(sampleInfo$date,"%m"))
+tt<-genefilter::rowttests(y,month)
+ind2 <- setdiff(c(order(tt$dm)[1:25],order(-tt$dm)[1:25]),ind1)
+###now pick at random from rest:
+set.seed(1)
+ind0 <- setdiff(sample(seq(along=tt$dm),50),c(ind2,ind1))
+geneindex<-c(ind2,ind0,ind1)
+
+mat<-geneExpression[geneindex,]
+mat <- mat-rowMeans(mat)
+```
+
+Here is a the data for the selected genes:
+```{r}
+icolors <- rev(brewer.pal(11,"RdYlBu"))
+mypar(1,1)
+image(t(mat),xaxt="n",yaxt="n",col=icolors)
+```
+
+So what follows is like the analysis we would do in practice. We don't know there is a batch and we are interested in finding genes that are different between males and females. We start by computing t-statistics and p-values comparing males and females. We use histograms to notice the problem introduced by the batch.
+
+The batch effect adjustment methods are best described with the linear models so we start by writing down the linear more for this particular case:
+
+
+
+## SVA
+
+```{r}
+library(sva)
+library(limma)
+sex <- sampleInfo$group
+mod <- model.matrix(~sex)
+cind <- order( as.Date(sampleInfo$date) )
+dates <- gsub("2005-","",sampleInfo$date)
+weights=rep(1,nrow(y))
+for(b in 1:5){
+  mypar2(1,1)
+  par(mar = c(4.1, 5.1, 3.5, 2.1))
+  layout(matrix(c(1:3),nrow=1),widths=c(5,1.5,5))
+  image(1:ncol(mat),1:nrow(mat),t(mat[,cind]*weights[geneindex]),xaxt="n",yaxt="n",col=icolors,xlab="",ylab="")
+  axis(side=1,seq(along=dates),dates[cind],las=2)
+  abline(v=12.5)
+  
+  
+  svafit <- sva(y,mod,B=b,n.sv=5)
+  weights = svafit$pprob.gam*(1-svafit$pprob.b)
+  ## Weighted SVD
+  surrogate <- svd( y*weights)$v[,1]
+  
+  image(matrix(weights[geneindex],nrow=1),,xaxt="n",yaxt="n",col=brewer.pal(9,"Blues"))
+  plot(surrogate[cind],bg=sex[cind]+1,pch=21,xlab="",xaxt="n",ylab="Surrogate variable",ylim=c(-.5,.5),cex=1.5)
+  axis(side=1,seq(along=dates),dates[cind],las=2)
+  abline(v=12.5)
+  text(1,0.5,"June")
+  text(13.5,0.5,"Oct")
+  legend("bottomright",c("0","1"),col=c(1,2),pch=16)
+}
+```
+
+
+```{r}
+lmfit <- lmFit(dat,svaX)
+tt<-lmfit$coef[,2]*sqrt(lmfit$df.residual)/(2*lmfit$sigma)
+mypar(1,2)
+pval<-2*(1-pt(abs(tt),lmfit$df.residual[1]))
+hist(pval[!chr%in%c("chrX","chrY")],xlab="p-values",ylim=HLIM,main="")
+hist(pval[chr%in%c("chrY")],nc=20,xlab="p-value",ylim=c(0,9),main="")
+```
+
+Decompose the data
+```{r}
+Batch<- lmfit$coef[geneindex,3:7]%*%t(svaX[,3:7])
+Signal<-lmfit$coef[geneindex,1:2]%*%t(svaX[,1:2])
+error <- dat[geneindex,]-Signal-Batch
+##demean for plot
+Signal <-Signal-rowMeans(Signal)
+mat <- dat[geneindex,]-rowMeans(dat[geneindex,])
+mypar(1,4,mar = c(2.75, 4.5, 2.6, 1.1))
+image(t(mat),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
+image(t(Signal),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
+image(t(Batch),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
+image(t(error),col=icolors,zlim=c(-5,5),xaxt="n",yaxt="n")
+```
+
+## Footnotes
+
+### Principal Components Analysis (PCA)
+
+Jolliffe, Ian. Principal component analysis. John Wiley & Sons, Ltd, 2005.
+
+Dunteman, George H. Principal components analysis. No. 69. Sage, 1989.
