@@ -79,7 +79,7 @@ In this particular case the regression line provides an optimal prediction funct
 
 The following data are from measurements from replicated RNA. We consider that data used in an the MA-plot ($Y$=log ratios and $A$=averages) and take down-sample in a way that balances the number of points for different strata of $A$:
 
-```{r,cache=TRUE}
+```{r,cache=TRUE,message=FALSE}
 library(SpikeIn)
 data(SpikeIn95)
 
@@ -128,7 +128,7 @@ Instead of fitting a line, let's go back to the idea of stratifying and computin
 
 ```{r, fig.align="center",fig.width=11,fig.height=6.9}
 mypar2(1,1)
-centers <- seq(min(X),max(X),len=12)
+centers <- seq(min(X),max(X),0.1)
 plot(X,Y,col="grey",pch=16)
 windowSize <- .5
 i <- 25
@@ -151,14 +151,16 @@ windowSize<-0.5
 smooth<-rep(NA,length(centers))
 mypar2(4,3)
 for(i in seq(along=centers)){
-  plot(X,Y,col="grey",pch=16)
   center<-centers[i]
   ind=which(X>center-windowSize & X<center+windowSize)
   smooth[i]<-mean(Y[ind])
-  points(X[ind],Y[ind],bg=3,pch=21)
-  lines(c(min(X[ind]),max(X[ind])),c(smooth[i],smooth[i]),col=2,lty=2)
-  lines(centers[1:i],smooth[1:i],col="black")
-  points(centers[i],smooth[i],col="black",pch=16,cex=1.5)
+  if(i%%round(length(centers)/12)==1){ ##we show 12
+    plot(X,Y,col="grey",pch=16)
+    points(X[ind],Y[ind],bg=3,pch=21)
+    lines(c(min(X[ind]),max(X[ind])),c(smooth[i],smooth[i]),col=2,lty=2)
+    lines(centers[1:i],smooth[1:i],col="black")
+    points(centers[i],smooth[i],col="black",pch=16,cex=1.5)
+  }
 }
 ```
 
@@ -197,23 +199,25 @@ lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2,lwd=3)
 ```
 
 Here are 12 steps of the process:
-```{r, include=FALSE}
-centers <- seq(min(X),max(X),len=12)
+```{r, fig.align="center",fig.width=11,fig.height=6.9}
 mypar2(4,3)
 windowSize<-1
 smooth<-rep(NA,length(centers))
 for(i in seq(along=centers)){
-  plot(X,Y,col="grey",pch=16)
   center<-centers[i]
   ind=which(X>center-windowSize & X<center+windowSize)
   fit<-lm(Y~X,subset=ind)
-  points(X[ind],Y[ind],bg=3,pch=21)
-  a <- min(X[ind]);b <- max(X[ind])
-  lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2)
-
   smooth[i]<-fit$coef[1]+fit$coef[2]*center
-  lines(centers[1:i],smooth[1:i],col="black")
-  points(centers[i],smooth[i],col="black",pch=16,cex=1.5)
+
+  if(i%%round(length(centers)/12)==1){ ##we show 12
+    plot(X,Y,col="grey",pch=16)
+    points(X[ind],Y[ind],bg=3,pch=21)
+    a <- min(X[ind]);b <- max(X[ind])
+    lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2)
+  
+    lines(centers[1:i],smooth[1:i],col="black")
+    points(centers[i],smooth[i],col="black",pch=16,cex=1.5)
+  }
 }
 ```
 
