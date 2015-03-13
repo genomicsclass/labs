@@ -1,0 +1,276 @@
+---
+layout: page
+title: EDA with PCA
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduction
+
+Now that we understand PCA we are going to demonstrate how we use it in practoce. One of them main uses for exploratory data analysis.
+
+# Gene Expression Data
+
+We are now going to explore the original gene expressiond dat
+```{r}
+library(Biobase)
+library(GSE5859)
+data(GSE5859)
+```
+
+First we note that there are replicates and take them out
+```{r}
+cors <- cor(exprs(e))
+Pairs=which(abs(cors)>0.9999,arr.ind=TRUE)
+out = Pairs[which(Pairs[,1]<Pairs[,2]),,drop=FALSE]
+if(length(out[,2])>0) e=e[,-out[2]]
+```
+
+Also take out control probes
+
+```{r}
+out <- grep("AFFX",featureNames(e))
+e <- e[-out,]
+```
+
+
+Now we are ready to procede
+```{r}
+y <- exprs(e)-rowMeans(exprs(e))
+dates <- pData(e)$date
+eth <- pData(e)$ethnicity
+```
+
+Define sex
+
+```{r}
+library(hgfocus.db)
+annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID",columns=c("CHR", "CHRLOC", "SYMBOL"))[,-4]
+##for genes with multiples, pick on
+annot <-annot[match(featureNames(e),annot$PROBEID),]
+annot$CHR <- ifelse(is.na(annot$CHR),NA,paste0("chr",annot$CHR))
+chryexp<- colMeans(exprs(e)[which(annot$CHR=="chrY"),])
+sex <- factor(ifelse(chryexp<4.5,"F","M"))
+```
+
+
+
+We have shown how we can compute pricipal components using 
+
+```{r}
+s <- svd(y)
+```
+
+
+But we can also use `prcomp` which creates an object with just the PCs and also demeans by default. Note `svd` keeps $U$ which is as large as `y`
+
+
+```{r}
+pc <- prcomp(y)
+for(i in 1:5) print( round( cor( pc$rotation[,i],s$v[,i]),3))
+```
+
+# Variance explained
+
+```{r}
+plot(s$d^2/sum(s$d^2))
+```
+
+
+# MDS plot
+
+As we previously showed we can make MDS plots. To explore we can add color to represent variables of interest. 
+
+
+```{r,fig.align='center'}
+cols = as.numeric(eth)
+mypar(1,1)
+plot(s$v[,1],s$v[,2],col=cols,pch=16,
+     xlab="PC1",ylab="PC2")
+legend("bottomleft",levels(eth),col=seq(along=levels(eth)),pch=16)
+```
+
+Now let's make that with date?
+
+```{r,fig.align='center'}
+year = factor(format(dates,"%y"))
+cols = as.numeric(year)
+mypar(1,1)
+plot(s$v[,1],s$v[,2],col=cols,pch=16,
+     xlab="PC1",ylab="PC2")
+legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
+```
+
+It is difficulty to parse due to correlation
+```{r}
+table(year,eth)
+```
+
+
+# Boxplot of PCs
+
+```{r}
+month <- format(dates,"%y%m")
+variable <- as.numeric(month)
+mypar(1,1)
+plot(t(cor(variable,s$v)))
+
+for(i in 1:5){
+  boxplot(split(s$v[,i],variable),las=2,range=0)
+  stripchart(split(s$v[,i],variable),add=TRUE,vertical=TRUE,pch=1,cex=.5,col=1)
+
+  }
+```
+
+
+
+
+The main result SVD provides is that we can write an $m \times n$ matrix $\mathbf{Y}$ as
+
+$$\mathbf{Y = UDV^\top}$$
+
+
+With:
+
+* $\mathbf{U}$ is an $m\times n$ orthogonal matrix
+* $\mathbf{V}$ is an $n\times n$ orthogonal matrix
+* $\mathbf{D}$ is an $n\times n$ diagonal matrix
+
+and with the special property that the variability (sum of squares to be precise) of the columns of $\mathbf{VD}$ and $\mathbf{UD}$ are decreasing. We will see how this  particular property turns out to be quite useful. 
+
+If, for example, there are colinear columns the then  $\mathbf{UD}$ will include several columns with no variability. This can be seen like this
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+z <- cbind(x,x,x,y,y)
+SVD <- svd(z)
+round(SVD$d,2)
+```
+In this case we can reconstruct `z` with just 2 columns:
+
+```{r}
+newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
+max(abs(newz-z))
+```
+
+# How is this useful?
+
+It is not immediately obvious how incredibly useful the SVD can be. Let's consider some examples.
+
+First let's compute the SVD on the gene expression table we have been working with. We will take a subset so that computations are faster.
+```{r}
+library(tissuesGeneExpression)
+data(tissuesGeneExpression)
+set.seed(1)
+ind <- sample(nrow(e),500)
+Y <- t(apply(e[ind,],1,scale)) #standardize data for illustration
+```
+
+The `svd` command returns the three matrices (only the diagonal entries are returned for $D$)
+```{r}
+s <- svd(Y)
+U <- s$u
+V <- s$v
+D <- diag(s$d) ##turn it into a matrix
+```
+
+First note that we can in fact reconstruct y
+
+```{r}
+Yhat <- U %*% D %*% t(V)
+resid <- Y - Yhat
+max(abs(resid))
+i <- sample(ncol(Y),1)
+plot(Y[,i],Yhat[,i])
+abline(0,1)
+boxplot(resid)
+```
+
+If we look at the sum of squares of $\mathbf{UD}$ we see that the last few are quite small. 
+
+```{r}
+plot(s$d)
+```
+
+So what happens if we remove the last column?
+```{r}
+k <- ncol(Y)-4
+Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
+resid <- Y - Yhat 
+Range <- quantile(Y,c(0.01,0.99))
+boxplot(resid,ylim=Range,range=0)
+```
+
+From looking at $d$, we can see that in this particular dataset we can obtain a good approximation keeping only 94 columns. The following plots are useful for seeing how much of the variability is explained by each column:
+
+```{r}
+plot(s$d^2/sum(s$d^2)*100,ylab="Percent variability explained")
+```
+We can also make cumulative plot
+
+```{r}
+plot(cumsum(s$d^2)/sum(s$d^2)*100,ylab="Percent variability explained",ylim=c(0,100),type="l")
+```
+
+
+```{r}
+k <- 94
+Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
+resid <- Y - Yhat
+boxplot(resid,ylim=Range,range=0)
+```
+
+Therefore, by using only half as many dimensions we retain most of the variability in our data:
+
+```{r}
+var(as.vector(resid))/var(as.vector(Y))
+```
+
+We say that we explain 96% of the variability.
+
+Note that we can predict this from $D$:
+```{r}
+1-sum(s$d[1:k]^2)/sum(s$d^2)
+```
+
+
+# Highly correlated data
+
+To help understand how the SVD works, we construct a dataset with two highly correlated columns. 
+
+For example:
+
+```{r}
+m <- 100
+n <- 2
+x <- rnorm(m)
+e <- rnorm(n*m,0,0.01)
+Y <- cbind(x,x)+e
+cor(Y)
+```
+In this case, the second column adds very little "information" since all the entries of `Y[,1]-Y[,2]` are close to 0. Reporting `rowMeans(Y)` is even more efficient since `Y[,1]-rowMeans(Y)` and `Y[,2]-rowMeans(Y)` are even closer to 0. `rowMeans(Y)`  turns out to be the information represented in the first column on $U$. The SVD helps us notice that we explain almost all the variability with just this first column:
+
+```{r}
+d <- svd(Y)$d
+d[1]^2/sum(d^2)
+```
+
+In cases with many correlated columns we can achieve great dimension reduction:
+
+```{r}
+m <- 100
+n <- 25
+x <- rnorm(m)
+e <- rnorm(n*m,0,0.01)
+Y <- replicate(n,x)+e
+d <- svd(Y)$d
+d[1]^2/sum(d^2)
+```
+
+
+
+
+
