@@ -229,6 +229,20 @@ plot(X,Y,col="darkgrey",pch=16)
 lines(centers,smooth,col="black",lwd=3)
 ```
 
+The that function `loess` performs this analysis for us:
+
+```{r}
+fit <- loess(Y~X, degree=1, span=1/3)
+
+newx <- seq(min(X),max(X),len=100)
+smooth <- predict(fit,newdata=data.frame(X=newx))
+
+mypar2(1,1)
+plot(X,Y,col="darkgrey",pch=16)
+lines(newx,smooth,col="black",lwd=3)
+```
+
+
 # Multivariate predictors
 
 Most of ML is concerned with cases with more than one predictor. For illustration purposes we move to a case in which $X$ is two dimensional and $Y$ is binary. We simulate a situation with a non-linear relationship using an example from Hastie, Tibshirani and Friedman's book. In the plot below we show the actual values of $f(x_1,x_2)=E(Y|X_1=x_1,X_2=x_2)$ using colors
