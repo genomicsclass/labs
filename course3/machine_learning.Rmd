@@ -232,7 +232,7 @@ lines(centers,smooth,col="black",lwd=3)
 
 The that function `loess` performs this analysis for us:
 
-```{r}
+```{r, fig.align="center",fig.width=11,fig.height=6.9}
 fit <- loess(Y~X, degree=1, span=1/3)
 
 newx <- seq(min(X),max(X),len=100) 
