@@ -217,7 +217,7 @@ This is an extraneous variable and should not affect the values in `geneExpressi
 We can immediately see that year and ethnicity are almost completely confounded:
 
 ```{r}
-year = format(sampleInfo$date,"%y")
+year = factor( format(sampleInfo$date,"%y") )
 tab = table(year,sampleInfo$ethnicity)
 print(tab)
 ```
@@ -232,7 +232,7 @@ eth <- sampleInfo$ethnicity
 ind<- which(eth%in%c("CEU","ASN"))
 res1 <- rowttests(geneExpression[,ind],droplevels(eth[ind]))
 ind <- which(year%in%c("02","03") & eth=="CEU")
-res2 <- rowttests(geneExpression[,ind],droplevels(eth[ind]))
+res2 <- rowttests(geneExpression[,ind],droplevels(year[ind]))
 
 XLIM <- max(abs(c(res1$dm,res2$dm)))*c(-1,1)
 YLIM <- range(-log10(c(res1$p,res2$p)))
