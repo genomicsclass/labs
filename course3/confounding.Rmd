@@ -14,7 +14,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Simpson's paradox
 
-Admission data from Berkeley 1973 showed more men were being admitted than women: 44\% men admitted compared to 30\% women. This actually led to a ![lawsuit](http://en.wikipedia.org/wiki/Simpson%27s_paradox#Berkeley_gender_bias_case). See: PJ Bickel, EA Hammel, and JW O'Connell. Science (1975)
+Admission data from Berkeley 1973 showed more men were being admitted than women: 44\% men admitted compared to 30\% women. This actually led to a [lawsuit](http://en.wikipedia.org/wiki/Simpson%27s_paradox#Berkeley_gender_bias_case). See: PJ Bickel, EA Hammel, and JW O'Connell. Science (1975)
 
 
 ```{r}
@@ -228,11 +228,14 @@ By running a t-test and creating a volcano plot we note that thousands of genes 
 ```{r}
 library(genefilter)
 
+##remove control genes
+out <- grep("AFFX",rownames(geneExpression))
+
 eth <- sampleInfo$ethnicity
 ind<- which(eth%in%c("CEU","ASN"))
-res1 <- rowttests(geneExpression[,ind],droplevels(eth[ind]))
+res1 <- rowttests(geneExpression[-out,ind],droplevels(eth[ind]))
 ind <- which(year%in%c("02","03") & eth=="CEU")
-res2 <- rowttests(geneExpression[,ind],droplevels(year[ind]))
+res2 <- rowttests(geneExpression[-out,ind],droplevels(year[ind]))
 
 XLIM <- max(abs(c(res1$dm,res2$dm)))*c(-1,1)
 YLIM <- range(-log10(c(res1$p,res2$p)))

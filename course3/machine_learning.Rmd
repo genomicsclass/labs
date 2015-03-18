@@ -147,7 +147,7 @@ lines(c(min(X[ind]),max(X[ind])),c(fit,fit),col=2,lty=2,lwd=4)
 ```
 
 By computing this mean for bins around every point we form an estimate of the underlying curve $f(x)$:
-```{r, fig.align="center",fig.width=11,fig.height=6.9}
+```{r, fig.align="center",fig.width=11,fig.height=12}
 windowSize<-0.5
 smooth<-rep(NA,length(centers))
 mypar2(4,3)
@@ -158,7 +158,7 @@ for(i in seq(along=centers)){
   if(i%%round(length(centers)/12)==1){ ##we show 12
     plot(X,Y,col="grey",pch=16)
     points(X[ind],Y[ind],bg=3,pch=21)
-    lines(c(min(X[ind]),max(X[ind])),c(smooth[i],smooth[i]),col=2,lty=2)
+    lines(c(min(X[ind]),max(X[ind])),c(smooth[i],smooth[i]),col=2,lwd=2)
     lines(centers[1:i],smooth[1:i],col="black")
     points(centers[i],smooth[i],col="black",pch=16,cex=1.5)
   }
@@ -200,7 +200,7 @@ lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lty=2,lwd=3)
 ```
 
 Here are 12 steps of the process:
-```{r, fig.align="center",fig.width=11,fig.height=13}
+```{r, fig.align="center",fig.width=11,fig.height=12}
 mypar2(4,3)
 windowSize<-1.25
 smooth<-rep(NA,length(centers))
@@ -214,7 +214,7 @@ for(i in seq(along=centers)){
     plot(X,Y,col="grey",pch=16)
     points(X[ind],Y[ind],bg=3,pch=21)
     a <- min(X[ind]);b <- max(X[ind])
-    lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2)
+    lines(c(a,b),fit$coef[1]+fit$coef[2]*c(a,b),col=2,lwd=2)
   
     lines(centers[1:i],smooth[1:i],col="black")
     points(centers[i],smooth[i],col="black",pch=16,cex=1.5)
