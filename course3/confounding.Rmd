@@ -36,7 +36,7 @@ women = admissions[!index,]
 menYes = sum(men$Number*men$Percent/100)
 menNo = sum(men$Number*(1-men$Percent/100))
 womenYes = sum(women$Number*women$Percent/100)
-womenNo = sum(women$Number*(1-women$Percent/100))
+womenNo = sum(women$Number*(1-wo  men$Percent/100))
 tab = matrix(c(menYes,womenYes,menNo,womenNo),2,2)
 print(chisq.test(tab)$p.val)
 ```
@@ -209,7 +209,7 @@ sampleInfo = pData(e)
 Note that some samples were processed at different times.
 
 ```{r}
-head(sampleInfo$dates)
+head(sampleInfo$date)
 ```
 
 This is an extraneous variable and should not affect the values in `geneExpression`. However, as we have seen in previous analyses it does appear to have an effect so we will explore this here.
@@ -222,7 +222,7 @@ tab = table(year,sampleInfo$ethnicity)
 print(tab)
 ```
 
-By running a t-test and creating a volcano plot we note that thousands of genes appear to be differential expressed. But when we perform a similar comparison between 2002 and 2003 only on the CEU population we again obtain thousands of deferentially expressed genes:
+By running a t-test and creating a volcano plot we note that thousands of genes appear to be differentially expressed. But when we perform a similar comparison between 2002 and 2003 only on the CEU population we again obtain thousands of diferentially expressed genes:
 
 
 ```{r}
