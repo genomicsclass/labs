@@ -1,0 +1,150 @@
+
+---
+layout: page
+title: "Searching the reference genome for array probe sequences"
+Author: "Vince Carey"
+---
+
+# Introduction
+
+Classic Affymetrix expression arrays are known as "3'-biased".
+This is because the probe sequences used were selected primarily
+from
+sequences constituting the 3' untranslated region of mammalian
+genes.  In this document we'll see how Bioconductor's
+annotation facilities can be used to check asserted locations
+of array probes.
+
+# The probe packages; sequence for a gene
+
+With Affymetrix expression arrays
+the primary unit intended for analysis is the probe 
+set used for mRNA abundance quantification.
+Probe sequences are provided in Bioconductors *probe
+package series.
+
+```{r quietatt, echo=FALSE, results="hide"}
+options(width=90)
+suppressPackageStartupMessages({
+library(hgu133plus2probe)  # probe package
+library(hgu133plus2.db)    # ChipDb package, annotation mapping
+library(dplyr)
+library(Biostrings)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(lumiHumanAll.db)
+library(lumi)
+library(SNPlocs.Hsapiens.dbSNP.20120608)
+library(GenomeInfoDb)
+})
+```
+```{r lkp}
+library(hgu133plus2probe)  # probe package
+library(hgu133plus2.db)    # ChipDb package, annotation mapping
+```
+
+We'll use the `select` method to find identifiers for
+a gene of interest in various disease processes, BCL2L2.
+```{r getid}
+AnnotationDbi::select(hgu133plus2.db, 
+  key="BCL2L2", keytype="SYMBOL", columns=c("PROBEID", "ENTREZID", "CHRLOC",
+    "CHRLOCEND"))
+```
+
+Now we will obtain the probe sequences for one of these
+probe sets
+```{r gets}
+library(dplyr)
+bs = hgu133plus2probe %>% 
+    filter(Probe.Set.Name == "209311_at") 
+bs
+```
+
+#  Matching the sequences to the reference genome
+
+First we convert the character data on probe sequence
+to Biostrings DNAStrings.
+```{r conv}
+ss = bs[,"sequence"]
+library(Biostrings)
+sss = DNAStringSet(ss)
+```
+Obtain the reference sequence for chr14
+```{r getbsg}
+library(BSgenome.Hsapiens.UCSC.hg19)
+c14 = Hsapiens$chr14
+c14
+```
+Biostrings can match fairly large numbers of
+sequences (called query sequences) to a
+subject sequence using the Aho-Corasick approach
+(see ?PDict for a reference.)
+```{r dodi}
+pd = PDict(sss)
+pd
+```
+
+We now carry out the search.
+```{r doma}
+mats = matchPDict(pd, c14)
+mats
+```
+
+# Are the probes in 3'UTR?
+
+We will use TranscriptDb to conclude this study.
+```{r getlk}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene # shorten
+```
+For simplicity, we'll restrict attention to chr14.
+```{r doac}
+ii = isActiveSeq(txdb)
+ii[] = FALSE
+ii["chr14"] = TRUE
+isActiveSeq(txdb) = ii
+utrs3 = threeUTRsByTranscript(txdb, use.names=TRUE)
+utrs3
+```
+
+We can structure the record of matches of probe sequences
+to reference genome as a GRanges:
+```{r restr}
+mats = GRanges("chr14", unlist(mats))
+fo = findOverlaps(mats, utrs3)
+table(subjectHits(fo))
+ufo = unique(subjectHits(fo))
+utrs3[ufo]
+```
+
+# Analogous work with Illumina probe sequences
+
+You can perform a similar check with illumina probes.
+```{r lkl}
+library(lumiHumanAll.db)
+library(lumi)
+sel = AnnotationDbi::select(lumiHumanAll.db, key="BCL2L2",
+  keytype="SYMBOL", columns="PROBEID")
+sel
+id2seq(sel)
+```
+
+Search and verify.
+
+# SNPs in probes?
+
+There is a slight complication because dbSNP
+uses an unusual chromosome naming convention.
+```{r lksn}
+library(SNPlocs.Hsapiens.dbSNP.20120608)
+library(GenomeInfoDb)
+s14 = getSNPlocs("ch14", as.GRanges=TRUE)
+seqlevelsStyle(s14) = "UCSC"
+findOverlaps(s14, mats)
+```
+
+We find that there are population level polymorphisms
+within the sequences for two of the Affy probes.
+Under what conditions
+would this cause a problem for accurate expression quantification?
+What sorts of statistical methods could ameliorate this?
