@@ -55,7 +55,7 @@ image(t(mat),xaxt="n",yaxt="n",col=icolors)
 
 So what follows is like the analysis we would do in practice. We don't know there is a batch and we are interested in finding genes that are different between males and females. We start by computing t-statistics and p-values comparing males and females. We use histograms to notice the problem introduced by the batch.
 
-The batch effect adjustment methods are best described with the linear models so we start by writing down the linear more for this particular case:
+The batch effect adjustment methods are best described with the linear models so we start by writing down the linear model for this particular case:
 
 
 
