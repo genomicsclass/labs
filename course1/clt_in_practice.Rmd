@@ -13,7 +13,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 set.seed(1) ##so that we get same results
 ```
 
-Let's use our data to see how well the central limit approximates sample averages from our data. We will leverage our entire population dataset to compare the results we obtain by actually sampling from the distribtuion to what the CLT predicts.  
+Let's use our data to see how well the central limit approximates sample averages from our data. We will leverage our entire population dataset to compare the results we obtain by actually sampling from the distribution to what the CLT predicts.  
 
 ```{r}
 library(downloader)
@@ -56,7 +56,7 @@ popvar <- function(x) mean( (x-mean(x))^2)
 popsd <- function(x) sqrt(popvar(x)) 
 ```
 
-Now we can compute the popultion SD:
+Now we can compute the population SD:
 
 ```{r}
 sd_hf <- popsd(hfPopulation)
@@ -70,9 +70,9 @@ N <- 12
 hf <- sample(hfPopulation,12)
 control <- sample(controlPopulation,12)
 ```
-The CLT tells us that, for large $N$, each of these is approximately normal with average population mean and standard error population variance divided by $N$. We mentioned that a rule of thumb is that $N$ should be 30 or more. But that is just a rule of thumb as the precisness of the approximation depends on the population distribution. Here we can acually check the approximation and we do that for various values of $N$.
+The CLT tells us that, for large $N$, each of these is approximately normal with average population mean and standard error population variance divided by $N$. We mentioned that a rule of thumb is that $N$ should be 30 or more. But that is just a rule of thumb as the preciseness of the approximation depends on the population distribution. Here we can actually check the approximation and we do that for various values of $N$.
 
-Now we use sapply and replicate instead of for loops, which is recommended.
+Now we use `sapply` and `replicate` instead of `for` loops, which is recommended.
 ```{r}
 Ns <- c(3,12,25,50)
 B <- 10000 #number of simulations
