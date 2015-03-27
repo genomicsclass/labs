@@ -1,4 +1,3 @@
-
 ---
 title: "Computing with chromosomes and variants"
 author: "Vince"
