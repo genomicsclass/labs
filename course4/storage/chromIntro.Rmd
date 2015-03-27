@@ -1,0 +1,82 @@
+
+
+---
+layout: page
+title: "Introductory problems with chromosomes and variants"
+Author: "Vince Carey"
+---
+
+# The composition of a gene
+
+We can obtain chromosomal sequence for all genes
+on chr17 as follows.
+
+```{r getviews}
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
+aseq = isActiveSeq(txdb)
+aseq[] = FALSE
+aseq["chr17"] = TRUE
+isActiveSeq(txdb) = aseq
+gs17 = genes(txdb)
+gsv17 = Views(Hsapiens, gs17)
+gsv17
+```
+
+What is the distribution of nucleotide counts for gene
+ORMDL3?  We need to obtain the ENTREZID:
+```{r gettag}
+library(Homo.sapiens)
+eid  = select(Homo.sapiens, keys="ORMDL3", keytype="SYMBOL",
+ columns="ENTREZID")$ENTREZID
+```
+Now tabulate nucleotides:
+```{r dotab}
+alphabetFrequency( gsv17[ which(mcols(gsv17)$gene_id == eid) ] )
+```
+
+# Determination of the alternate allele
+
+rs145615430 is a SNP on chr17.  What is the alternate allele?
+
+```{r dolo}
+library(SNPlocs.Hsapiens.dbSNP.20120608)
+s17 = getSNPlocs("ch17")
+head(s17)
+```
+
+We see that it is at base 56 on chr17.
+
+```{r getch}
+c17 = Hsapiens$chr17
+substr(c17, 56, 56)
+```
+The IUPAC code is Y, indicating a CT diallele, so the alternate
+is T.
+
+The associated dbSNP record indicates no frequency data available.
+
+# SNPs in ORMDL3
+
+Are there population-level polymorphisms in the coding region
+of ORMDL3?  We can use GRanges to investigate.
+```{r dopo}
+orgr = granges( gsv17[ which(mcols(gsv17)$gene_id == eid) ] )
+s17r = getSNPlocs("ch17", as.GRanges=TRUE)
+seqlevelsStyle(s17r) = "UCSC"
+genome(s17r) = genome(orgr)
+seqlevels(s17r) = seqlevels(orgr) = "chr17"
+fo = findOverlaps(s17r, orgr, ignore.strand=TRUE)
+s17r[subjectHits(fo)]
+```
+
+# GWAS hits for ORMDL3
+
+We can see the traits of GWAS in which ORMDL3 was implicated.
+
+```{r lkgw}
+library(gwascat)
+data(gwrngs19)
+gwrngs19[ grep("ORMDL3", mcols(gwrngs19)$Reported.Gene.s) ]
+``
