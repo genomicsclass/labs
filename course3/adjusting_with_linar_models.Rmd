@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Adjusting for batch effects with linear models
+title: Projections
 ---
 
 ```{r options, echo=FALSE}
