@@ -20,6 +20,13 @@ chromosomes and variants in Bioconductor.
 
 # BSgenome and available genomes
 
+```{r sillib,echo=FALSE,results="hide"}
+library(BSgenome)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(SNPlocs.Hsapiens.dbSNP.20120608)
+library(gwascat)
+```
 
 ```{r lkbs}
 library(BSgenome)
