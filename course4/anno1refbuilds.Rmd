@@ -1,5 +1,5 @@
 ---
-title: "Chromosomes and their substructures"
+title: "Chromosomes and their substructures 1: Reference genomes"
 author: "Vince"
 date: "March 19, 2015"
 output: html_document
@@ -70,6 +70,7 @@ available.genomes()
 For organisms not covered at present by the project, tools
 for building compatible packages are available in the
 BSgenome package (see the BSgenomeForge vignette).
+
 
 # Biostrings: basic infrastructure for computing on sequences
 
@@ -157,6 +158,17 @@ i2-10
 i1+(1:4)
 ```
 
+### Coercion
+
+A column-oriented representation can be produced.
+```{r lkco}
+as(i1, "data.frame")
+```
+
+When repeated overlap testing is to be performed, it can
+be useful to coerce an `IRanges` instance to class `IntervalTree`.
+We will address this in benchmarking examples later on.
+
 ### Reduce, disjoin, gaps
 
 We'll borrow some code from the IRanges vignette to illustrate
@@ -218,3 +230,41 @@ the overlap conditions.
 ```
 
 ### Partitionings
+
+It is often useful to distinguish subsets of ranges.  When
+this is done on a large scale, copying can be a concern.
+A partitioning structure can be added to reflect the
+substructure and to direct subset-oriented computations.
+
+```{r lkpart}
+irs = split(ir, c(1,1,2,2,3,3,3))
+irs
+elementLengths(irs)
+```
+
+### Metadata
+
+Range-specific metadata can be attached using a `DataFrame` instance.
+In this example, we want to label each range with a letter and
+supply a random uniform score.
+
+```{r dometa}
+irmd = DataFrame( code=LETTERS[1:7], score=runif(7) )
+mcols(ir) = irmd
+ir
+mcols(ir)  # could be elementMetadata, but falling out of favor
+```
+
+Also useful is a global metadata facility.  This involves
+creating and binding a list.
+```{r docre}
+metadata(ir) = list(creator="Vince", creationDate=date())
+```
+
+The latter approach to fostering object self-description is
+underutilized.
+
+
+
+
+
