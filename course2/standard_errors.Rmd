@@ -186,7 +186,7 @@ The diagonal of the square root of this matrix contains the standard error of ou
 
 ## Estimating $\sigma^2$
 
-To obtain an actual estimate in practice from the formulas above we need to estimate $\sigma^2$. Note that previously we estimated the standard errors from the sample. However, not that the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
+To obtain an actual estimate in practice from the formulas above we need to estimate $\sigma^2$. Note that previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
 
 We form the residuals like this: 
 
@@ -230,7 +230,8 @@ summary(lm(y~x))$coef[,2]
 ses
 ```
 
-They are identical because they are doing the same thing. Also note that we approxiamte the Monte Carlo reulsts:
+They are identical because they are doing the same thing. Also note that we approximate the Monte Carlo results:
+
 ```{r}
 apply(betahat,2,sd)
 ```
