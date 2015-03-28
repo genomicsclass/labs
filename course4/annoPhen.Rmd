@@ -1,4 +1,3 @@
-
 ---
 title: "Annotating phenotypes and molecular function"
 author: "Vince"
@@ -28,7 +27,10 @@ with(expr.meta, table(gender, diagmaj))
 ```
 ## Continuous by categorical
 
-```{r lkbx, echo=FALSE,fig.width=8,fig.height=4.5,dpi=300,out.width="1920px",height="1080px",}
+Here's a boxplot of pack-years distributions, stratified by
+gender and disease status.  The stratum labels become clumsy.
+
+```{r lkbx, fig.width=8,fig.height=4.5,dpi=300,out.width="1920px",height="1080px",}
 gd = with(expr.meta, factor(paste(gender,diagmaj)))
 expr.meta$gd = gd
 library(ggplot2)
@@ -56,7 +58,7 @@ ggplot(expr.meta, aes(x=gd, y=pkyrs)) + geom_boxplot()
 - ORMDL3 is a gene implicated in genome-wide association
 studies as a factor in risk of asthma
 - Here's a view of its "structure" according to human reference build hg19 (use ph525x::modPlot)
-```{r domo,fig.height=4,fig.width=7,echo=FALSE}
+```{r domo,fig.height=4,fig.width=7}
 library(ph525x)
 modPlot("ORMDL3", collapse=FALSE, useGeneSym=FALSE)
 ```
@@ -66,7 +68,8 @@ modPlot("ORMDL3", collapse=FALSE, useGeneSym=FALSE)
 
 ```{r dohum}
 library(Homo.sapiens)
-orfunc = select(Homo.sapiens, key="ORMDL3", keytype="SYMBOL", columns=c("GO", "TERM"))
+orfunc = select(Homo.sapiens, key="ORMDL3", keytype="SYMBOL", 
+   columns=c("GO", "TERM"))
 orfunc[,c("ONTOLOGY", "TERM")]
 ```
 - Gene Ontology standardizes terminology for biological processes, cellular components, and molecular functions
