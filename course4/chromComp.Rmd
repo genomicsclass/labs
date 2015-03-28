@@ -40,7 +40,7 @@ head(available.genomes())  # requires internet access
 grep("Hsapiens", available.genomes(), value=TRUE)
 ```
 
-# The human reference sequence, build hg19, and the Views concept
+# The human reference sequence, build hg19; gene sequence
 
 ```{r lkhs}
 library(BSgenome.Hsapiens.UCSC.hg19)
@@ -70,9 +70,12 @@ g17
 Now we make a structure that has addresses and sequences of genes.
 
 ```{r getv}
-gs17 = Views(Hsapiens, g17)
+gs17 = getSeq(Hsapiens, g17)
 gs17
 ```
+
+In the next version of Bioconductor this can be accomplished somewhat
+more efficiently using "Views()".
 
 # dbSNP
 
