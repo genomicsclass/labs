@@ -8,9 +8,7 @@ layout: page
 
 # Overview
 
-We will consider how to do various very high-level
-tasks with
-chromosomes and variants in Bioconductor.
+We will consider how to do various very high-level tasks with chromosomes and variants in Bioconductor.
 
 - listing packages representing reference builds for humans and model organisms
 - acquiring human reference genome sequence
@@ -21,11 +19,13 @@ chromosomes and variants in Bioconductor.
 # BSgenome and available genomes
 
 ```{r sillib,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
 library(BSgenome)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(SNPlocs.Hsapiens.dbSNP.20120608)
 library(gwascat)
+})
 ```
 
 ```{r lkbs}
