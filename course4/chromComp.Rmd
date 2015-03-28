@@ -31,6 +31,7 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(SNPlocs.Hsapiens.dbSNP.20120608)
 library(gwascat)
+library(ggbio)
 })
 ```
 
@@ -40,7 +41,7 @@ head(available.genomes())  # requires internet access
 grep("Hsapiens", available.genomes(), value=TRUE)
 ```
 
-# The human reference sequence, build hg19; gene sequence
+# The human reference sequence, build hg19; gene sequences
 
 ```{r lkhs}
 library(BSgenome.Hsapiens.UCSC.hg19)
