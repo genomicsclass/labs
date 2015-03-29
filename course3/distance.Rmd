@@ -21,7 +21,7 @@ Do create _heatmaps_ a distance is computed explicitely. Heatmaps are widely use
 <img src="images/Heatmap.png" align="middle" width=300>
 Image Source: Heatmap, Gaeddal, 01.28.2007, http://commons.wikimedia.org/wiki/File:Heatmap.png, PD
 
-In these plots the measurements, which are stored ina matrix, are represented with colors after the columns and rows have been clustered. Here we will learn the necessary mathematics and computing skill to understand and create heatmaps. We start by reviewing the mathematical definition of distance. 
+In these plots the measurements, which are stored in a matrix, are represented with colors after the columns and rows have been clustered. Here we will learn the necessary mathematics and computing skill to understand and create heatmaps. We start by reviewing the mathematical definition of distance. 
 
 
 # Euclidean Distance
@@ -100,7 +100,7 @@ sqrt(sum((x-y)^2))
 sqrt(sum((x-z)^2))
 ```
 
-As expeceted the kidneys are closer to each other. A faster way to compute this is using matrix algebra
+As expected the kidneys are closer to each other. A faster way to compute this is using matrix algebra
 
 ```{r}
 sqrt( crossprod(x-y) )
