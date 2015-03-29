@@ -1,0 +1,88 @@
+---
+title: "Annotating genes and other structural and functional genomic elements"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+library(ph525x)
+library(Homo.sapiens)
+library(Mus.musculus)
+library(rtracklayer)
+})
+```
+
+# Programming with gene catalogs
+
+The simplest way to get a detailed collection of gene models
+with Bioconductor, for human, rat, or mouse,
+is to use packages implementing the OrganismDb concept.
+We'll illustrate with mouse.
+
+```{r lkmo}
+library(Mus.musculus)
+Mus.musculus
+```
+
+The NCBI Entrez gene identifiers are keys in this database
+interface.
+
+```{r lkk}
+mk = keys(Mus.musculus, keytype="ENTREZID")
+mk[1:5]
+```
+
+The keys can be used to query for values of associated attributes.
+The available attributes can be listed directly with "columns":
+
+```{r lkcolm}
+columns(Mus.musculus)
+```
+
+```{r lkat}
+select(Mus.musculus, keys=mk[1:5],
+  keytype="ENTREZID", columns=c("SYMBOL", "CHRLOC", "GENENAME"))
+```
+
+We can move directly to GRanges representations of
+addresses using TxDb.  Here we generate a list indexed
+by Entrez identifier.
+
+```{r lktx}
+mt = transcriptsBy(Mus.musculus, by="gene")
+mt
+```
+
+Visualization of gene models can occur easily
+using the custom package.
+
+```{r lkmodmm,fig=TRUE,fig.height=2.5}
+library(ph525x)
+modPlot("Pzp", genome="mm10", annoResource=Mus.musculus, 
+   collapse=FALSE, useGeneSym=FALSE)
+```
+
+Gene function and localization information can be retrieved using
+various types of key.
+```{r lkat2}
+select(Mus.musculus, keys="Pzp",
+  keytype="SYMBOL", columns=c("GO", "TERM"))
+```
+
+## BioMart
