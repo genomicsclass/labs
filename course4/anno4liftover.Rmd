@@ -51,7 +51,7 @@ library(rtracklayer)
 ch = import.chain("~/hg38ToHg19.over.chain")
 ch
 str(ch[[1]])
-``
+```
 
 Let's get the addresses for genes on chromosome 1
 in hg38.
@@ -71,3 +71,9 @@ g1_19L = liftOver(g1_38, ch)
 
 The result is a list of GRanges, one for
 each translation event.
+
+```{r lktx}
+g1_19L
+```
+
+Verification of accuracy of translation is covered in exercises.
