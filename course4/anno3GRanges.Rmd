@@ -16,11 +16,15 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ```{r setup,echo=FALSE,results="hide"}
 suppressPackageStartupMessages({
-library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(Biostrings)
 library(GenomicRanges)
 library(IRanges)
 library(ph525x)
+library(Homo.sapiens)
+library(Gviz)
 })
 ```
 
@@ -238,17 +242,66 @@ in the GenomicFeatures package.
 We can combine address information in the TxDb GRanges
 with sequence information in the BSgenome.Hsapiens package.
 
-We will focus on chromosome 17, using the `isActiveSeq`
-facility.
+We will focus on chromosome 17, using the `seqlevels`
+facility with forcing.
 
 ```{r lkvvv}
-ias = isActiveSeq(txdb)
-ias[] = FALSE
-ias[17] = TRUE
-isActiveSeq(txdb) = ias
-allg = genes(txdb)
-vall = getSeq(Hsapiens, allg)
-vall
+seqlevels(txdb, force=TRUE) = "chr17"
+#ii = isActiveSeq(txdb)
+#ii[] = FALSE
+#ii["chr17"] = TRUE
+#isActiveSeq(txdb) = ii
+allg17 = genes(txdb)
+call17 = getSeq(Hsapiens, allg17)
+call17
 ```
 
-# Managing chromosome names: GenomeInfoDb
+# Managing chromosome names and lengths: GenomeInfoDb
+
+There are at least three prominent but incompatible
+schemes for naming chromosomes.  The UCSC genome browser
+uses "chr" as a prefix, omitted in most NCBI resources.
+Many dbSNP builds use "ch".  Combining information
+from different providers is often important, and depends
+upon consistency in naming of `seqnames` elements of
+GRanges instances.
+
+The GenomeInfoDb package helps with establishing consistency.
+Let's consider the genes on chromosome 17.  The seqinfo
+element controls the labeling of seqnames.
+
+```{r lk17}
+allg17
+seqinfo(allg17)
+```
+
+The `seqlevelsStyle` method can be used to switch nomenclatures.
+
+```{r ch17}
+seqlevelsStyle(allg17) = "NCBI"
+seqlevels(allg17)
+```
+
+This can be applied at high levels.
+```{r lkseqi}
+seqlevelsStyle(Hsapiens) = "dbSNP"
+seqlevels(Hsapiens)[1:8]
+seqlevelsStyle(txdb)
+seqlevelsStyle(txdb) = "NCBI"
+seqlevels(txdb)
+```
+
+The seqinfo component that holds genome
+tags and chromosome lengths is useful
+for checking consistency between GRanges that may have been
+generated independently, with limited provenance metadata.
+
+```{r lklen}
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+tx38 = TxDb.Hsapiens.UCSC.hg38.knownGene
+seqlevelsStyle(tx38) = "NCBI"
+seqlevels(tx38, force=TRUE) = "17"
+allg17_38 = genes(tx38)
+fo = try(findOverlaps(allg17, allg17_38))
+cat(fo)
+```
