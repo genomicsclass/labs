@@ -27,6 +27,7 @@ library(Mus.musculus)
 library(rtracklayer)
 library(biomaRt)
 library(AnnotationHub)
+library(grid)
 })
 ```
 
@@ -134,10 +135,11 @@ To give a sense of the sort of data we need a convenient interface to,
 consider this slice of information that forms a part of the
 epigenomic road map.
 
-```{r lkrmm, fig=TRUE}
+```{r lkencrm,fig=TRUE}
 library(ph525x)
 sydhTop()
 ```
+
 Rows are transcription factors, columns are cell lines from
 different organs and donors.
 Our aim is to support
