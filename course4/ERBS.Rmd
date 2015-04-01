@@ -1,0 +1,103 @@
+---
+title: "Estrogen receptor binding: data representation and location analysis"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(GenomicFeatures)
+library(GenomicRanges)
+library(IRanges)
+library(devtools)
+library(ERBS)
+library(Homo.sapiens)
+})
+```
+
+# Interval data on ER binding
+
+A 2006 Nature Genetics paper (v38, n11) by Carroll, Meyer, Song et al.
+describes the notion that a group of genes
+whose expression correlates 
+with the expression of the estrogen receptor (ER) gene
+forms a signature of a breast cancer subtype
+called "luminal".  This finding motivates interest in determining
+the set of all genomic elements to which ER binds, and this has
+been carried out using ChIP-seq experiments.  An important 
+finding of the Carroll et al. paper was that ER binding 
+in the MCF-7 cell line occurred only rarely promoter-proximal regions.
+This study therefore unearthed previously unexplored 
+cis-regulatory sites.
+
+We will show how to relate binding peak locations to gene
+transcription start sites in two cell lines analyzed in the
+ENCODE project.
+
+# Acquisition of binding data
+
+Get the ERBS package.
+
+```{r geter}
+library(devtools)
+install_github("genomicsclass/ERBS")
+library(ERBS)
+data(HepG2)  # cell line of liver origin
+data(GM12878)  # immortalized B cell
+HepG2  # locations of ER binding peaks
+```
+
+# Acquisition of gene transcription start sites
+
+We can use Homo.sapiens:
+
+```{r geths}
+library(Homo.sapiens)
+ghs = genes(Homo.sapiens)
+tss = ifelse(strand(ghs)=="-", end(ghs), start(ghs))
+tss[1:10]
+```
+We'll use distanceToNearest and want the chromosome
+and strand information for the TSS.
+```{r makegr}
+tssgr = GRanges(seqnames(ghs), IRanges(tss, width=1), strand=strand(ghs))
+```
+
+# Finding nearest gene for each binding event
+
+The distanceToNearest function from GenomicFeatures will
+create a Hits object with metadata giving the positive distance
+between peak location and nearest TSS.  We'll discuss the Hits
+object in the video.
+
+```{r donear}
+d = distanceToNearest(HepG2, tssgr)
+d
+```
+
+We will call a distance negative if the peak is 5' to the nearest TSS.
+The density estimate given below shows that the vast majority of
+events are remote from the 1kb region around TSS; we use dashed
+lines to denote that region.
+
+```{r getsi,fig=TRUE}
+dists = mcols(d)$distance
+sdists = ifelse(end(HepG2) < start(tssgr[subjectHits(d)]), dists, -dists)
+plot(density(sdists), xlim=c(-1e5,1e5), main="Density of d(ER binding peak, nearest TSS)" )
+abline(v=1e3, lty=2)
+abline(v=-1e3, lty=2)
+```
+
+
+
+
+
+
