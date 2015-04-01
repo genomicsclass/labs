@@ -1,0 +1,307 @@
+---
+title: "Chromosomes and their substructures 3: GRanges for transcripts and genes"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+library(ph525x)
+library(Homo.sapiens)
+library(Gviz)
+})
+```
+
+# Organizing genomic sequences: GRanges
+
+It is seldom of great interest to compute with the
+entire chromosomal sequence.  Subsequences formed of
+contiguous bases are used to define genes and other
+genomic elements, and coincidences of subsequences (for
+example, sequences defining locations of variants and
+sequences defining locations of promoters) should
+be efficiently computable.
+
+## IRanges, the low-level support infrastructure
+
+The IRanges package provides a very basic and efficient
+set of structures and tools for manipulating intervals,
+defined as sequences of consecutive integers.  The IRanges
+instances can be handled as vectors of intervals.
+
+### Construction and arithmetic
+
+```{r lkira}
+library(IRanges)
+i1 = IRanges(start=c(3,4,5,6), end=c(400,450,20, 122))
+i2 = IRanges(start=c(34,52,68,777), end=c(4400,1450,209, 2122))
+i1
+```
+
+Arithmetic on IRanges instances is specialized.  Ranges
+contract when a constant (vector) is subtracted from them, and expand when
+a constant (vector) is added. 
+
+```{r doima}
+i2-10
+i1+(1:4)
+```
+
+### Coercion
+
+A column-oriented representation can be produced.
+```{r lkco}
+as(i1, "data.frame")
+```
+
+When repeated overlap testing is to be performed, it can
+be useful to coerce an `IRanges` instance to class `IntervalTree`.
+We will address this in benchmarking examples later on.
+
+### Reduce, disjoin, gaps
+
+We'll borrow some code from the IRanges vignette to illustrate
+additional ideas.
+
+```{r plotr,echo=FALSE}
+plotRanges <- function(x, xlim = x, main = deparse(substitute(x)),
+                       col = "black", sep = 0.5, ...)
+{
+  height <- 1
+  if (is(xlim, "Ranges"))
+    xlim <- c(min(start(xlim)), max(end(xlim)))
+  bins <- disjointBins(IRanges(start(x), end(x) + 1))
+  plot.new()
+  plot.window(xlim, c(0, max(bins)*(height + sep)))
+  ybottom <- bins * (sep + height) - height
+  rect(start(x)-0.5, ybottom, end(x)+0.5, ybottom + height, col = col, ...)
+  title(main)
+  axis(1)
+}
+```
+```{r newr}
+ir <- IRanges(c(1, 8, 14, 15, 19, 34, 40),
+  width = c(12, 6, 6, 15, 6, 2, 7))
+```
+
+First, let's visualize `ir`:
+```{r lkir,fig.height=2.25}
+plotRanges(ir)
+```
+Operations reduce, disjoin, and gaps have the following results:
+```{r lkir2,fig.height=2.25}
+plotRanges(reduce(ir))
+```
+```{r lkir3,fig.height=2.25}
+plotRanges(disjoin(ir))
+```
+```{r lkir4,fig.height=2.25}
+plotRanges(gaps(ir))
+```
+
+### findOverlaps
+
+We'll create another IRanges instance to illustrate findOverlaps.
+```{r neewo}
+ir2 = IRanges(19,21)
+findOverlaps(ir, ir2)
+```
+
+`findOverlaps` creates a `Hits` instance which can be
+queried for indices of query or subject ranges satisfying
+the overlap conditions.
+
+```{r newooo,fig=TRUE}
+ par(mfrow=c(3,1))
+ plotRanges(ir, xlim=c(0,50))
+ plotRanges(ir2, xlim=c(0,50))
+ plotRanges(ir[queryHits(findOverlaps(ir,ir2))], xlim=c(0,50))
+```
+
+### Partitionings
+
+It is often useful to distinguish subsets of ranges.  When
+this is done on a large scale, copying can be a concern.
+A partitioning structure can be added to reflect the
+substructure and to direct subset-oriented computations.
+
+```{r lkpart}
+irs = split(ir, c(1,1,2,2,3,3,3))
+irs
+elementLengths(irs)
+```
+
+### Metadata
+
+Range-specific metadata can be attached using a `DataFrame` instance.
+In this example, we want to label each range with a letter and
+supply a random uniform score.
+
+```{r dometa}
+irmd = DataFrame( code=LETTERS[1:7], score=runif(7) )
+mcols(ir) = irmd
+ir
+mcols(ir)  # could be elementMetadata, but falling out of favor
+```
+
+Also useful is a global metadata facility.  This involves
+creating and binding a list.
+```{r docre}
+metadata(ir) = list(creator="Vince", creationDate=date())
+```
+
+The latter approach to fostering object self-description is
+underutilized.
+
+## IRanges applied to genomic sequences: GRanges
+
+Efficient computations on chromosome contents and
+subsequences are performed using IRanges infrastructure
+with additional metadata that help define genomic
+context.  These include
+
+- `seqinfo`, to identify high-level organizing elements such as reference build and chromosome lengths from which the specific ranges in an object are derived
+- `seqnames`, to provide, on a range-specific basis, the name of the sequence from which the range is derived
+- `strand`, to indicate strand of residence of a range, when relevant
+
+To illustrate, we'll use the custom `ph525x` package to
+create a gene model.
+```{r demog}
+library(ph525x)
+om = genemodel("ORMDL3")
+om
+```
+This represents the addresses of exons identified in transcripts
+associated with ORMDL3.  We can create a picture, again using
+a custom function.  The amount of infrastructure required is
+substantial, but once it is in place, we can create models
+and visualizations fairly rapidly.
+
+```{r lkor,fig.height=2.25,fig=TRUE}
+modPlot("ORMDL3", collapse=FALSE, useGeneSym=FALSE)
+```
+
+The additional information defining genomic context is worth reviewing.
+```{r lkext}
+seqinfo(om)
+seqnames(om)
+strand(om)
+```
+
+The use of run-length-encoding for highly repetitious components
+like seqnames and strand achieves efficiency of representation.
+
+## Using GRanges to create views of chromosomal substructures
+
+With the hg19 reference, we can obtain addresses of all
+genes and their sequence contents very efficiently.
+
+To do this we use a `TxDb` instance that includes transcript
+addresses for the knownGene track of the UCSC hg19 build.
+
+### The TxDb transcript databases
+
+Addresses, names and relationships among transcripts, exons, and
+genes are modeled in the TxDb framework.
+
+```{r showv}
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene  # abbreviate
+txdb
+```
+
+The transcripts recorded for three Entrez genes are represented
+thusly:
+```{r lktxtx}
+txg = transcriptsBy(txdb, by="gene")
+txg[8:10]
+```
+
+Other query functions for TxDb instances are provided
+in the GenomicFeatures package.
+
+### Extracting genomic sequence for genes
+
+We can combine address information in the TxDb GRanges
+with sequence information in the BSgenome.Hsapiens package.
+
+We will focus on chromosome 17, using the `seqlevels`
+facility with forcing.
+
+```{r lkvvv}
+seqlevels(txdb, force=TRUE) = "chr17"
+#ii = isActiveSeq(txdb)
+#ii[] = FALSE
+#ii["chr17"] = TRUE
+#isActiveSeq(txdb) = ii
+allg17 = genes(txdb)
+call17 = getSeq(Hsapiens, allg17)
+call17
+```
+
+# Managing chromosome names and lengths: GenomeInfoDb
+
+There are at least three prominent but incompatible
+schemes for naming chromosomes.  The UCSC genome browser
+uses "chr" as a prefix, omitted in most NCBI resources.
+Many dbSNP builds use "ch".  Combining information
+from different providers is often important, and depends
+upon consistency in naming of `seqnames` elements of
+GRanges instances.
+
+The GenomeInfoDb package helps with establishing consistency.
+Let's consider the genes on chromosome 17.  The seqinfo
+element controls the labeling of seqnames.
+
+```{r lk17}
+allg17
+seqinfo(allg17)
+```
+
+The `seqlevelsStyle` method can be used to switch nomenclatures.
+
+```{r ch17}
+seqlevelsStyle(allg17) = "NCBI"
+seqlevels(allg17)
+```
+
+This can be applied at high levels.
+```{r lkseqi}
+seqlevelsStyle(Hsapiens) = "dbSNP"
+seqlevels(Hsapiens)[1:8]
+seqlevelsStyle(txdb)
+seqlevelsStyle(txdb) = "NCBI"
+seqlevels(txdb)
+```
+
+The seqinfo component that holds genome
+tags and chromosome lengths is useful
+for checking consistency between GRanges that may have been
+generated independently, with limited provenance metadata.
+
+```{r lklen}
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+tx38 = TxDb.Hsapiens.UCSC.hg38.knownGene
+seqlevelsStyle(tx38) = "NCBI"
+seqlevels(tx38, force=TRUE) = "17"
+allg17_38 = genes(tx38)
+fo = try(findOverlaps(allg17, allg17_38))
+cat(fo)
+```

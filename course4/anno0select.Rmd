@@ -1,0 +1,153 @@
+---
+title: "Genomic annotation in Bioconductor: Overview"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(AnnotationDbi)
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+})
+```
+
+# Basic annotation resources and their discovery
+
+In this document we will review Bioconductor's facilities for
+handling and annotating genomic sequence.  We'll look at
+reference genomic sequence, transcripts and genes, and
+conclude with gene pathways.  Keep in mind that our ultimate aim
+is to use annotation information to help produce reliable
+interpretations of genomic experiments.  A basic objective of
+Bioconductor is to make it easy to incorporate
+information on genome structure and function 
+into statistical analysis procedures.
+
+## A simple hierarchy of annotation concepts
+
+Bioconductor includes many different types of genomic annotation.
+We can think of these annotation resources in a hierarchical structure.
+
+- At the base is the reference genomic sequence for an organism.
+This is always arranged into chromosomes, specified by linear
+sequences of nucleotides.
+
+- Above this is the organization of chromosomal sequence into
+regions of interest.  The most prominent regions of interest are
+genes, but other structures like SNPs or CpG sites are
+annotated as well.  Genes have internal structure,
+with parts that are transcribed and parts that are not,
+and "gene models" define the ways in which
+these structures are labeled and laid out in genomic coordinates.
+
+- Above this is the organization of genes or gene products into
+groups with shared structural or functional properties.  Examples
+include pathways, groups of genes found together in cells, or
+identified as cooperating in biological processes.
+
+## Discovering available reference genomes
+
+Bioconductor's collection of annotation packages brings
+all elements of this hierarchy into a programmable environment.
+Reference genomic sequences are managed using the infrastructure
+of the Biostrings and BSgenome packages, and the `available.genomes`
+function lists the reference genome build for humans and
+various model organisms now available.
+
+```{r lkbs}
+library(Biostrings)
+ag = available.genomes()
+length(ag)
+head(ag)
+```
+
+## Reference build versions are important
+
+Note that the genome sequence packages have long names
+that include build versions.  It is very important to avoid
+mixing coordinates from different reference builds.
+We will show later how to convert genomic coordinates of
+features between different reference builds, using the UCSC
+"liftOver" utility interfaced to R in the `rtracklayer` package.
+
+# A reference genomic sequence for H. sapiens
+
+The reference sequence for *Homo sapiens* is acquired by installing
+and attaching
+a single package.  This is in contrast to downloading and parsing
+FASTA files.  The package defines an object `Hsapiens`
+that is the source of chromosomal sequence, but when
+evaluated on its own
+provides a report of the origins of the sequence data that
+it contains.
+
+```{r lkhs}
+library(BSgenome.Hsapiens.UCSC.hg19)
+Hsapiens
+```
+
+We acquire a chromosome's sequence using the `$` operator.
+```{r lkc}
+Hsapiens$chr17
+```
+
+# The transcripts and genes for a reference sequence
+
+The `TxDb` family of packages and data objects manages
+information on transcripts and gene models.
+
+```{r gettx}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene # abbreviate
+txdb
+```
+
+We can use `genes()` to get the addresses of genes using 
+Entrez Gene IDs.
+
+```{r getg}
+ghs = genes(txdb)
+ghs
+```
+
+# The NCBI Entrez Gene annotation maps
+
+Packages named org.*.eg.db collect information at the gene level
+with links to location, protein product identifiers, KEGG pathway and
+GO terms, PMIDs of papers mentioning genes, and to
+identifiers for other annotation resources.
+
+```{r lkor}
+library(org.Hs.eg.db)
+keytypes(org.Hs.eg.db) # columns() gives same answer
+```
+```{r lkt}
+head(select(org.Hs.eg.db, keys="ORMDL3", keytype="SYMBOL", 
+   columns="PMID"))
+```
+
+# A unified, self-describing approach
+
+The OrganismDb packages simplify access to annotation.
+Queries that succeed against TxDb, and org.[Nn].eg.db
+can be directed at the OrganismDb object.
+
+```{r getl}
+library(Homo.sapiens)
+class(Homo.sapiens)
+tx = transcripts(Homo.sapiens)
+keytypes(Homo.sapiens)
+columns(Homo.sapiens)
+```
+

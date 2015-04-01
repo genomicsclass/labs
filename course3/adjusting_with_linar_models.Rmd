@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Adjusting for batch effects with linear models
+title: Projections
 ---
 
 ```{r options, echo=FALSE}
@@ -74,7 +74,7 @@ Note that the histogram is not flat. Instead, low p-values are over-represented.
 
 # Adjusting with liner models
 
-We have already noted that processing date has an effect on gene expression thus we will try to _adjust_ for thi s by including it a model.  When we perform a t-test comparing the two groups it is equivalent to fitting the following linear model:
+We have already noted that processing date has an effect on gene expression thus we will try to _adjust_ for this s by including it a model.  When we perform a t-test comparing the two groups it is equivalent to fitting the following linear model:
 
 $$Y_{ij} = \alpha_j + x_i \beta_{j} + \varepsilon_{ij}$$
 
@@ -139,7 +139,7 @@ cat("Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE))
 
 ```
 
-Note the great improvement in specificity (less false positives) without much loss in sensitivity (we still find many chrY genes). However, we stil see some bias in the histogram. In the following sections we will see that month does not perfectly account for the batch effect and better estimates are possible.
+Note the great improvement in specificity (less false positives) without much loss in sensitivity (we still find many chrY genes). However, we still see some bias in the histogram. In the following sections we will see that month does not perfectly account for the batch effect and better estimates are possible.
 
 
 ## A note on computing efficiency
@@ -168,4 +168,40 @@ pvals <- 2*pt(-abs(ttest),fit$df)
 We will cover `limma` in more detail in a later section.
 
 
+
+## Combat
+
+ Combat [NEED CITATION] is a popular method and is based on using linear models to adjust for batch effects. It fits a hierarchical model (we will learn about these in the next section) to estimate and remove row specific batch effects. ComBat uses a modular approach. In a first step what is considered to be a batch effect is removed:
+
+```{r}
+library(sva)
+mod <- model.matrix(~sex)
+cleandat <- ComBat(geneExpression,batch,mod)
+```
+
+Then the results can be used to fit a model with our variable of interest
+
+
+```{r}
+res<-genefilter::rowttests(cleandat,factor(sex))
+```
+
+In this case, the results are less specific than we obtain by fitting the simple linear model.
+
+```{r}
+mypar2(1,2)
+hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
+
+plot(res$dm,-log10(res$p.value))
+points(res$dm[which(chr=="chrX")],-log10(res$p.value[which(chr=="chrX")]),col=1,pch=16)
+points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,xlab="Effect size",ylab="-log10(p-value)")
+legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
+qvals <- qvalue(res$p.value)$qvalue
+index <- which(qvals<0.1)
+abline(h=-log10(max(res$p.value[index])))
+
+cat("Total genes with q-value < 0.1:",length(index))
+cat("Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE))
+cat("Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE))
+```
 

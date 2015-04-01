@@ -1,0 +1,79 @@
+---
+title: "Chromosomes and their substructures 1: Reference genomes"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+})
+```
+
+# Genomic sequence, reference builds
+
+## Human
+
+The genomic sequence for humans has recently
+been revised.  We can use the most recent major
+revision as follows:
+
+```{r hg38}
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+Hsapiens
+h38 = Hsapiens # for later
+```
+
+Notice the number of sequences reported, and their names.  We can
+get the sequence for a chromosome by using list-like
+syntax with `Hsapiens`.
+
+```{r lkc22}
+h38$"22"
+```
+
+This shows that the starting and ending bases are indeterminate.
+We can obtain the overall nucleotide frequencies as
+
+```{r lkf}
+alphabetFrequency(Hsapiens$"22")
+```
+
+A great deal of reference data in use are annotated to 
+build hg19 (also known as GRCh37).
+
+```{r lk19}
+library(BSgenome.Hsapiens.UCSC.hg19)
+Hsapiens
+h19 = Hsapiens
+```
+
+Note that there is a different sequence naming convention
+and a different number of sequences managed in this build.
+
+
+## Other organisms
+
+If you have an internet connection, the `available.genomes` function
+will list packages that contain reference sequences.
+
+```{r lkav, eval=FALSE}
+available.genomes()
+```
+ 
+For organisms not covered at present by the project, tools
+for building compatible packages are available in the
+BSgenome package (see the BSgenomeForge vignette).
+
+

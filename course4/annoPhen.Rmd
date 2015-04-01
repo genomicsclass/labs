@@ -1,0 +1,87 @@
+---
+title: "Annotating phenotypes and molecular function"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# The phenotype concept
+
+
+- "Phenotype" is an extremely broad term
+- In this course, it connotes low-dimensional representation of observable characteristics of an organism
+- Representation can be numerical or categorical
+    * units of measurement should be recorded
+    * "codes" for categorical items should be clear
+
+## Example: ExperimentalData package on COPD
+
+We cross-tabulate gender and disease status for individuals in a study of chronic obstructive pulmonary disease
+
+```{r dodim}
+library(COPDSexualDimorphism.data)
+data(lgrc.expr.meta)
+with(expr.meta, table(gender, diagmaj))
+```
+## Continuous by categorical
+
+Here's a boxplot of pack-years distributions, stratified by
+gender and disease status.  The stratum labels become clumsy.
+
+```{r lkbx, fig.width=8,fig.height=4.5,dpi=300,out.width="1920px",height="1080px",}
+gd = with(expr.meta, factor(paste(gender,diagmaj)))
+expr.meta$gd = gd
+library(ggplot2)
+ggplot(expr.meta, aes(x=gd, y=pkyrs)) + geom_boxplot()
+#plot(pkyrs~gd, data=expr.meta)
+```
+## Phenotype carefully and record faithfully
+
+- Validated questionnaires and protocols
+- Standardized terminology, units
+- Precise phenotypic characterization fosters more accurate mechanistic modeling
+- Caveat: molecular "basis" suggests causal directionality, but phenotype and environment can influence molecular state
+
+# Computing tools for inference on molecular mechanisms
+
+- "Molecular basis" is likewise a broad notion
+- Systematic terminologies exist to help clarify what is asserted in a given hypothesis or finding
+- At the boundaries of scientific knowledge, disagreement is common and terminologies diverge
+- Two examples: 
+    * What is a gene?
+    * What is a gene's function?
+    
+# Gene: A concrete computational definition
+
+- ORMDL3 is a gene implicated in genome-wide association
+studies as a factor in risk of asthma
+- Here's a view of its "structure" according to human reference build hg19 (use ph525x::modPlot)
+```{r domo,fig.height=4,fig.width=7}
+library(ph525x)
+modPlot("ORMDL3", collapse=FALSE, useGeneSym=FALSE)
+```
+* This will change with new reference build GRCh38
+
+# Characterizing ORMDL3 functionality
+
+```{r dohum}
+library(Homo.sapiens)
+orfunc = select(Homo.sapiens, key="ORMDL3", keytype="SYMBOL", 
+   columns=c("GO", "TERM"))
+orfunc[,c("ONTOLOGY", "TERM")]
+```
+- Gene Ontology standardizes terminology for biological processes, cellular components, and molecular functions
+
+# Summary
+
+* Phenotype characterization is challenging and frequently non-standard
+* Tokens available for data analysis in R are fairly simple and are used in ad hoc ways to characterize sample phenotype and condition
+* Reasoning about molecular processes underlying phenotype and disease states is intrinsically complex
+* Standardized vocabularies and models exist and are available in Bioconductor, but limitations must be admitted
+

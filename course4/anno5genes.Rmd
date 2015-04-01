@@ -1,0 +1,222 @@
+---
+title: "Annotating genes and other structural and functional genomic elements"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+library(ph525x)
+library(Homo.sapiens)
+library(Mus.musculus)
+library(rtracklayer)
+library(biomaRt)
+library(AnnotationHub)
+library(grid)
+})
+```
+
+# Programming with gene catalogs
+
+The simplest way to get a detailed collection of gene models
+with Bioconductor, for human, rat, or mouse,
+is to use packages implementing the OrganismDb concept.
+We'll illustrate with mouse.
+
+```{r lkmo}
+library(Mus.musculus)
+Mus.musculus
+```
+
+The NCBI Entrez gene identifiers are keys in this database
+interface.
+
+```{r lkk}
+mk = keys(Mus.musculus, keytype="ENTREZID")
+mk[1:5]
+```
+
+The keys can be used to query for values of associated attributes.
+The available attributes can be listed directly with "columns":
+
+```{r lkcolm}
+columns(Mus.musculus)
+```
+
+```{r lkat}
+select(Mus.musculus, keys=mk[1:5],
+  keytype="ENTREZID", columns=c("SYMBOL", "CHRLOC", "GENENAME"))
+```
+
+We can move directly to GRanges representations of
+addresses using TxDb.  Here we generate a list indexed
+by Entrez identifier.
+
+```{r lktx}
+mt = transcriptsBy(Mus.musculus, by="gene")
+mt
+```
+
+Visualization of gene models can occur easily
+using the custom package.
+
+```{r lkmodmm,fig=TRUE,fig.height=2.5}
+library(ph525x)
+modPlot("Pzp", genome="mm10", annoResource=Mus.musculus, 
+   collapse=FALSE, useGeneSym=FALSE)
+```
+
+Gene function and localization information can be retrieved using
+various types of key.
+```{r lkat2}
+select(Mus.musculus, keys="Pzp",
+  keytype="SYMBOL", columns=c("GO", "TERM"))
+```
+
+## BioMart
+
+A vast collection of biological annotation can
+be obtained from the Biomart servers.
+
+A hierarchical interface is used.  We begin by
+selecting a "mart" to use, and then a dataset
+within the mart.  The mart instance is updated.
+
+```{r getbm}
+library(biomaRt)
+head(listMarts())
+# m = useMart("ensembl")  # typical, but if biomart is down, use:
+m=useMart("ENSEMBL_MART_ENSEMBL", host="www.ensembl.org")
+head(listDatasets(mart=m))
+m = useDataset("hsapiens_gene_ensembl", mart=m)
+m
+```
+
+We obtain data by issuing requests through filters.
+Requests are framed using attributes.
+
+```{r lkf}
+head(listFilters(m))
+head(listAttributes(m))
+```
+
+The query interface is the getBM function.  Here's an
+example of getting three types of identifiers for ORMDL3
+and its transcripts.
+
+```{r getb,eval=TRUE}
+getBM(attributes=c("ensembl_gene_id", "entrezgene", "ucsc"), 
+    filters="hgnc_symbol", values="ORMDL3", mart=m)
+```
+
+# AnnotationHub
+
+A recent and evolving resource for various annotation resources
+is the AnnotationHub package.  The idea is to give convenient
+access for programming to items like the UCSC genome browser
+track set, or the datasets organized on [the epigenomic roadmap](http://www.roadmapepigenomics.org/).
+
+To give a sense of the sort of data we need a convenient interface to,
+consider this slice of information that forms a part of the
+epigenomic road map.
+
+```{r lkencrm,fig=TRUE}
+library(ph525x)
+sydhTop()
+```
+
+Rows are transcription factors, columns are cell lines from
+different organs and donors.
+Our aim is to support
+statistical analysis of binding patterns derived from ChIP-seq
+experiments.
+
+## Tracks from the epigenomic road map project
+
+We begin by connecting to the hub.  Metadata are returned along
+with the connection.
+
+```{r ahh}
+library(AnnotationHub)
+ah = AnnotationHub()
+ah
+head(names(ah))
+```
+
+A flexible query interface is provided.  We know that "Sydh" is
+used in the names of tracks related to the road map matrix shown
+above.
+
+```{r lkq}
+sydq = query(ah, "Sydh")
+length(sydq)
+head(names(sydq))
+```
+
+A GRanges with information on binding of BRCA1 A300 (synthetic
+peptide corresponding to a component of the BRCA1 gene) to 
+DNA extracted from the HepG2 cell lines (liver-derived)
+is:
+
+```{r getqqqq}
+bh = ah[[ names(sydq)[1] ]]
+bh
+```
+
+## Resources from dbSNP
+
+Here we will see
+what is in the hub from dbSNP.
+
+```{r lkdbs}
+qd = query(ah, "dbSNP")
+head(names(qd))
+```
+
+This indicates that representations of variants for HapMap populations
+are available.  The data are in the [Variant Call Format](http://www.1000genomes.org/wiki/analysis/variant%20call%20format/vcf-variant-call-format-version-41) (VCF).
+Let's retrieve one for population CEU, chr20.
+We found the specific name by searching the full set of names(qd).
+
+```{r get1}
+aaa = ah[["dbSNP.organisms.human_9606.VCF.ByChromosome.20.1409.CEU.RData"]]
+dim(geno(aaa)$GT)
+```
+
+We'll learn more about Bioconductor's representation of VCF shortly.
+
+## The AceView gene models
+
+```{r doace}
+allace = query(ah, "AceView")
+names(allace)
+ace19 = ah[["goldenpath.hg19.database.acembly_0.0.1.RData"]]
+ace19
+```
+
+More work would be needed to isolate the AceView gene models, by
+working on the `name` component of the mcols of the returned
+GRanges.
+
+## Building your own annotation resources
+
+It has long been recognized that labs will generate their own
+annotation of various forms for organisms that may not be
+covered by Bioconductor's efforts.  See the
+[AnnotationForge](http://www.bioconductor.org/packages/release/bioc/html/AnnotationForge.html) vignette, and post to the support site if this
+is not sufficient.

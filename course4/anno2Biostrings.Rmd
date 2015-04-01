@@ -1,0 +1,74 @@
+---
+title: "Chromosomes and their substructures 2: Biostrings"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+})
+```
+
+
+# Biostrings: basic infrastructure for computing on sequences
+
+## Construction, sets, restricted alphabets
+
+Very large strings like chromosome sequences receive
+special handling in Bioconductor.  We use a general container
+class called `BString` for "big" strings that are
+distringuished from R character vectors in that BStrings a) obey
+different rules for copying and b) do not contain multiple
+strings (see the man page for BString).  Classes `DNAString`
+and `AAString` have restrictions on the characters that can be
+managed in instances.
+
+```{r lkbs}
+library(Biostrings)
+bdemo = BString("BCDEF")
+ddemo = try(DNAString("BCDEF"))
+cat(ddemo)
+ademo = try(AAString("BCDEF"))
+```
+
+Efficient management of multiple strings employs classes with
+"Set" as suffix.
+```{r lkds}
+ddem2 = DNAStringSet(c("ACTG", "GTCAG"))
+ddem2
+```
+
+The restrictions on contents of genomic strings are defined
+in constant vectors in `Biostrings`.  For example
+```{r lkcon}
+AA_ALPHABET
+IUPAC_CODE_MAP
+```
+
+## Operations
+
+There are over 200 functions defined in the Biostrings package,
+all devoted to computation on sequence data.  Here's an
+example illustrating basic notions.
+
+```{r doop}
+D = DNAString("ACTGACGTACGTAGGCTAGCGATCGATATACGATATACG")
+translate(D)
+codons(D)
+```
+
+Notice that the output of codons is printed as a `Views` instance.
+This is a very efficient approach to creating references to
+subsequences of a sequence, without copying any data.

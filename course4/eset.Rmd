@@ -1,0 +1,54 @@
+---
+title: "The ExpressionSet container"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Overview
+
+We'll work with the basic representation of expression experiments
+in Bioconductor.  An example is in package Biobase.
+
+```{r do1}
+library(Biobase)
+data(sample.ExpressionSet)
+sample.ExpressionSet
+```
+
+We'll abbreviate the name:
+
+```{r do2}
+samp = sample.ExpressionSet
+```
+
+# Queries and extractors
+
+```{r do3}
+dim(samp)
+exprs(samp)[1:5,1:6]  # extract expression values
+pData(samp)    # extract sample level data
+experimentData(samp)
+abstract(samp)  # special accessor
+```
+
+Have a look at annotation package pmid2MIAME function to see
+how to extract abstracts of papers from pubmed.  These can be
+bound into ExpressionSets with experimentData().
+
+# Matrix-like subscripting
+
+We can use matrix-like syntax directly to restrict the
+ExpressionSet, getting back a new ExpressionSet
+```{r doex}
+samp[1:4,3:20]
+samp[, samp$sex=="Male"]
+```
+
+

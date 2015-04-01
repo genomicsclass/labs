@@ -1,0 +1,79 @@
+---
+title: "Chromosomes and their substructures 4: Translating addresses between genome builds"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(Biostrings)
+library(GenomicRanges)
+library(IRanges)
+library(ph525x)
+library(Homo.sapiens)
+library(rtracklayer)
+})
+```
+
+# Translating addresses between genome builds: liftOver
+
+The rtracklayer package includes an interface to the
+liftOver utilities developed for the UCSC genome browser.
+The idea is that a collection of local alignments
+can be defined and used to remap coordinates from
+one reference build to another.
+
+We can illustrate this with gene addresses created for hg38,
+the current reference build.  We want to translate them
+for comparison to addresses asserted for hg19.
+
+We need a "chain file", uncompressed.  You can
+get it from the following URL, and use gunzip on your
+system to uncompress in your home dir, if you would
+like to emulate the commands below.
+
+"ftp://hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz"
+
+```{r domyimport}
+library(rtracklayer)
+ch = import.chain("~/hg38ToHg19.over.chain")
+ch
+str(ch[[1]])
+```
+
+Let's get the addresses for genes on chromosome 1
+in hg38.
+
+```{r get38}
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+tx38 = TxDb.Hsapiens.UCSC.hg38.knownGene
+seqlevels(tx38, force=TRUE) = "chr1"
+g1_38 = genes(tx38)
+```
+
+Now execute the liftOver:
+
+```{r doli}
+g1_19L = liftOver(g1_38, ch)
+```
+
+The result is a list of GRanges, one for
+each translation event.
+
+```{r lktx}
+g1_19L
+```
+
+Verification of accuracy of translation is covered in exercises.

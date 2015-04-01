@@ -36,7 +36,7 @@ women = admissions[!index,]
 menYes = sum(men$Number*men$Percent/100)
 menNo = sum(men$Number*(1-men$Percent/100))
 womenYes = sum(women$Number*women$Percent/100)
-womenNo = sum(women$Number*(1-wo  men$Percent/100))
+womenNo = sum(women$Number*(1-women$Percent/100))
 tab = matrix(c(menYes,womenYes,menNo,womenNo),2,2)
 print(chisq.test(tab)$p.val)
 ```

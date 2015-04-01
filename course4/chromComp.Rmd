@@ -1,0 +1,111 @@
+---
+title: "Computing with chromosomes and variants"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Overview
+
+We will consider how to do various very high-level tasks with chromosomes and variants in Bioconductor.
+
+- listing packages representing reference builds for humans and model organisms
+- acquiring human reference genome sequence
+- finding views of genes as sequences
+- examining the dbSNP catalog of small variants in populations of human genomes
+- examining the NHGRI GWAS catalog of associations between variants and phenotypes
+
+# BSgenome and available genomes
+
+```{r sillib,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(IRanges)
+library(BSgenome)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(SNPlocs.Hsapiens.dbSNP.20120608)
+library(gwascat)
+library(ggbio)
+})
+```
+
+```{r lkbs}
+library(BSgenome)
+head(available.genomes())  # requires internet access
+grep("Hsapiens", available.genomes(), value=TRUE)
+```
+
+# The human reference sequence, build hg19; gene sequences
+
+```{r lkhs}
+library(BSgenome.Hsapiens.UCSC.hg19)
+Hsapiens
+c17 = Hsapiens$chr17
+c17
+```
+
+The class of `c17` is `r class(c17)`.  This is a full in-memory representation of all the bases of the chromosome.  We can work with substructures of interest without duplicating the contents of memory devoted to the sequence.  We'll obtain a view of coding sequences of genes on chromosome 17.  To do this we will employ a special transcript database structure.
+
+```{r gettx}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
+txdb
+```
+
+We are only interested in information on chr17 at the moment.  We establish chr17 as the active sequence in this transcript database
+```{r settx}
+tmp = isActiveSeq(txdb) 
+tmp[] = FALSE # turn all off
+tmp[17] = TRUE # turn 17 on
+isActiveSeq(txdb) = tmp
+g17 = genes(txdb)
+g17
+```
+
+Now we make a structure that has addresses and sequences of genes.
+
+```{r getv}
+gs17 = getSeq(Hsapiens, g17)
+gs17
+```
+
+In the next version of Bioconductor this can be accomplished somewhat
+more efficiently using "Views()".
+
+# dbSNP
+
+We have an image of the dbSNP variant catalog for hg19.  The information retained is limited to the dbSNP identifier, chromosome location, and variant content.
+
+```{r dodb}
+library(SNPlocs.Hsapiens.dbSNP.20120608)
+sl17 = getSNPlocs("ch17", as.GRanges=TRUE)
+sl17
+```
+
+The allele codes are translated by the IUPAC map.
+```{r lkal}
+IUPAC_CODE_MAP
+```
+
+# GWAS catalog
+
+National Human Genome Research Institute maintains a listing of genetic association studies that have found significant associations between DNA variants and major phenotypes and diseases.  Inclusion in the catalog requires that the findings be replicated in an independent population.
+
+```{r lkgw}
+library(gwascat)
+data(gwrngs19) # for hg19
+gwrngs19
+```
+
+A simple display of associations and phenotypes is available
+with the `traitsManh` function.
+
+```{r lkg2,fig=TRUE}
+example(traitsManh)
+```
