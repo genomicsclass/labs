@@ -12,15 +12,13 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-```{r setup,echo=FALSE,results="hide"}
-suppressPackageStartupMessages({
+```{r setup,echo=FALSE,results="hide",message=FALSE}
 library(GenomicFeatures)
 library(GenomicRanges)
 library(IRanges)
 library(devtools)
 library(ERBS)
 library(Homo.sapiens)
-})
 ```
 
 # Interval data on ER binding
@@ -55,6 +53,27 @@ data(GM12878)  # immortalized B cell
 HepG2  # locations of ER binding peaks
 ```
 
+We will use `granges` for clarify avoid all the columns
+```{r}
+HepG2
+granges(HepG2)
+```
+
+
+# Genomic Ranges tools
+
+```{r}
+
+browseVignettes("GenomicRanges")
+
+res = findOverlaps(HepG2,GM12878)
+
+erbs = HepG2[queryHits(res)]
+
+erbs = granges(erbs)
+```
+
+
 # Acquisition of gene transcription start sites
 
 We can use Homo.sapiens:
@@ -62,14 +81,34 @@ We can use Homo.sapiens:
 ```{r geths}
 library(Homo.sapiens)
 ghs = genes(Homo.sapiens)
-tss = ifelse(strand(ghs)=="-", end(ghs), start(ghs))
-tss[1:10]
+ghs
 ```
-We'll use distanceToNearest and want the chromosome
-and strand information for the TSS.
-```{r makegr}
-tssgr = GRanges(seqnames(ghs), IRanges(tss, width=1), strand=strand(ghs))
+
+Explain genes have direction and what is a transcription start site
+
+```{r}
+tssgr = resize(ghs,1)
+granges(ghs)[1:3,]
+granges(tssgr)[1:3,]
 ```
+
+
+```{r}
+index <- precede(HepG2,ghs)
+HepG2[1:3,]
+granges(HepG2)[1:3,]
+granges(ghs)[index[1:3],]
+d = distance(HepG2,ghs[index])
+```
+
+If we want the closest to a start site, regardless of befor or after, for example if overlaps. We want something different.
+
+We can create a granges of TSS like this:
+
+```{r}
+tssgr = resize(ghs,1)
+```
+
 
 # Finding nearest gene for each binding event
 
@@ -81,6 +120,10 @@ object in the video.
 ```{r donear}
 d = distanceToNearest(HepG2, tssgr)
 d
+##note this gives an error
+try(d[,3])
+###instead we have to do this
+dists = values(d)$distance
 ```
 
 We will call a distance negative if the peak is 5' to the nearest TSS.
@@ -89,11 +132,32 @@ events are remote from the 1kb region around TSS; we use dashed
 lines to denote that region.
 
 ```{r getsi,fig=TRUE}
-dists = mcols(d)$distance
-sdists = ifelse(end(HepG2) < start(tssgr[subjectHits(d)]), dists, -dists)
-plot(density(sdists), xlim=c(-1e5,1e5), main="Density of d(ER binding peak, nearest TSS)" )
-abline(v=1e3, lty=2)
-abline(v=-1e3, lty=2)
+index = subjectHits(d)
+sdists = ifelse(end(HepG2) < start(tssgr[index]), dists, -dists)
+hist(sdists, xlim=c(-100000,100000), main="Density of d(ER binding peak, nearest TSS)" ,breaks=seq(min(sdists),max(sdists),len=1000))
+abline(v=-c(10000,10000), lty=2)
+```
+
+## Getting information about genes
+
+# Annotating genes
+
+Get information on genes
+
+```{r}
+index <- subjectHits(d)[dists<1000]
+dists = values(d)$distance
+##better way to do this?
+geneids <- mcols(tssgr[index])$GENEID
+```
+
+```{r geths2}
+library(Homo.sapiens)
+?select
+columns(Homo.sapiens)
+keytypes(Homo.sapiens)
+geneids <- as.character(geneids)
+select(Homo.sapiens,keys=geneids,columns="GENENAME",keytype="GENEID")
 ```
 
 
