@@ -1,0 +1,98 @@
+---
+title: "Genomic sequence -- utility for motif checking"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide",message=FALSE}
+library(GenomicFeatures)
+library(GenomicRanges)
+library(IRanges)
+library(devtools)
+library(ERBS)
+library(Homo.sapiens)
+```
+
+# Overview
+
+In this document we'll show how to look for occurrences
+of a binding motif in genomic sequence underlying binding peaks.
+
+Recall that we have the ER binding peaks for two cell
+lines in the ERBS package.  We'll focus on HepG2
+
+```{r pkgs}
+library(ERBS)
+data(HepG2)
+HepG2
+```
+
+We'd like to look at the genomic sequence underneath the peaks
+and inspect it for the binding motif "TCAAGGTCA".  This is
+easy to do with the Biostrings and BSGenome infrastructure.
+
+# Reference genomic sequence for humans
+
+We'll work with hg19.  The BSgenome... package will
+create variable `Hsapiens` on attachment.
+This variable gives a metadata report.
+
+```{r gethg}
+library(BSgenome.Hsapiens.UCSC.hg19)
+Hsapiens
+```
+
+The reference sequence for a chromosome can be obtained
+with the $ operator.
+
+```{r getch}
+Hsapiens$chr17
+```
+
+# Targeted retrieval of reference sequence
+
+The getSeq function obtains sequence
+corresponding to addresses listed in GRanges.
+We'll obtain the sequence under the peaks as
+`hepseq`, and a set of control sequences of similar
+lengths obtained by shifting the binding peak intervals
+by 2500 bases and obtaining the reference sequence in the
+shifted intervals.
+
+```{r getsq}
+hepseq = getSeq(Hsapiens, HepG2)
+rhepseq = getSeq(Hsapiens, shift(HepG2,2500))
+hepseq
+```
+
+# Counting motif occurrences
+
+We count the occurrences of the ESRRA
+binding motif
+"TCAAGGTCA" in the bound intervals (and their reverse complement
+representation).  This is compared to the frequency of occurrence in the
+control sequences.  We'll use the `vcountPattern` function of the
+Biostrings package to carry this out.
+
+```{r lk1}
+sum(vcountPattern("TCAAGGTCA", hepseq))+sum(vcountPattern("TCAAGGTCA", 
+   reverseComplement(hepseq)))
+sum(vcountPattern("TCAAGGTCA", rhepseq))+sum(vcountPattern("TCAAGGTCA", 
+   reverseComplement(rhepseq)))
+```
+
+We see a 9-fold increase in occupancy in the bound regions compared
+to the shifted regions.  This is not the way one assesses motif occurrences.
+First, the motif is generally represented as a model and not a string.
+The model is typically expressed as a position weight matrix (PWM).
+Second, the most common software tools for evaluating motif enrichment are
+MEME and FIMO; matchPWM of the Biostrings package can perform similar analyses.
+package can also 
