@@ -1,0 +1,96 @@
+---
+title: "Importing genomic regions from files"
+author: "Mike Love and Rafa"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Introduction 
+
+A common way you will be accessing genomic regions data is through files. The standard used by most software application is [BED](http://genome.ucsc.edu/FAQ/FAQformat.html#format1). The ENCODE project has created it's new format: [NarrowPeak](http://genome.ucsc.edu/FAQ/FAQformat.html#format12). Here we demonstrate the `import` function from the `rtracklayer` package that facilitates the creation of `GRanges` objects from these files.
+
+
+# Finding the files
+
+Here we use as an example the original files used to create the objects in the `ERBS` library. Once you install this package the files can be found here:
+
+```{r}
+dir <- file.path( system.file(package="ERBS"), "extdata")
+```
+
+We included a `sampleInfo` file that includes the names and provenance of the data.
+
+```{r}
+sampleInfo <- read.table(file.path(dir,"sampleInfo.txt"), stringsAsFactors=FALSE)
+sampleInfo
+```
+
+As an example we will read in just the first file:
+
+```{r}
+filename <- file.path(dir,sampleInfo[1,1])
+```
+
+# Import
+
+To import the files we can now use the `import` function. Note that import does not support NarrowPeak files but it does support BED files and is able read it in.
+
+
+```{r}
+library(rtracklayer)
+HepG2 <- import(filenames[1], format="bedGraph")
+HepG2
+```
+We do successfully create a `GRanges` object but note the metadata names are missing. We can add these by hand.
+```{r}
+names(mcols(HepG2)) <- c("name","score","col","signalValue","pValue","qValue","peak")
+```
+
+# Adding metadata
+
+A much more important piece of information that is missing here relates to provenance and genome annotation. Where do the files original come from? What build of the human genome was used? What chromosomes were considered? 
+
+We highly recommend that you add this information to your object even if is not installed in the file. Here is how we constructed the objects in `ERBS`
+
+Add data provenance:
+```{r}
+metadata(HepG2) <- list("ENCODE accession: ENCSR000EEW. ESRRA ChIP-seq peaks of HepG2 cell line https://www.encodeproject.org/experiments/ENCSR000EEW/")
+metadata(GM12878) <- list("ENCODE accession: ENCSR000DYQ. ESRRA ChIP-seq peaks of GM12878 cell line https://www.encodeproject.org/experiments/ENCSR000DYQ/")
+```
+
+Next, we can add the genome build that was used:
+
+```{r}
+# add simple text descriptor for genome
+genome(HepG2) <- "hg19" 
+genome(GM12878) <- "hg19" 
+```
+
+Finally we denote the chromosome annotation that should be used by copying it from one of the `BSgenome` objects.
+
+We start by checking that they are in fact the same style 
+
+```{r}
+# import chromosomal length information as well (also UCSC)
+library(BSgenome.Hsapiens.UCSC.hg19)
+seqlevelsStyle(HepG2)
+seqlevelsStyle(Hsapiens)
+```
+
+and that all the chromosome names in `HepG2` are in `Hsapiens`
+
+```{r}
+seqlevels(HepG2)%in% seqlevels(Hsapiens)
+```
+
+Once we see that they are then we simply borrow the information from the `Hsapines` object:
+```{r}
+seqinfo(HepG2) <- seqinfo(Hsapiens)
+```
