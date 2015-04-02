@@ -100,13 +100,17 @@ granges( HepG2[ chr == "chr20" ] )
 
 # Genomic Ranges tools
 
+Before we continue on to finding gene near our binding sites we are going to construct a consensus `GRanges`. Specifically, we are going to construct an object represnenting the regions that are reported for both cell lines. We can easily find these regions using the `findOverlaps` function:
 
 ```{r}
-
 res = findOverlaps(HepG2,GM12878)
+res
+```
+ 
+ TO BE CONTINUED
 
+```{r}
 erbs = HepG2[queryHits(res)]
-
 erbs = granges(erbs)
 ```
 
