@@ -1,5 +1,5 @@
 ---
-title: "Additional comments on GRanges operations"
+title: "GRanges operations related to gene model, TSS, and promoter region identification"
 author: "Vince"
 date: "March 19, 2015"
 output: html_document
@@ -27,8 +27,14 @@ library(Homo.sapiens)
 library(Gviz)
 })
 ```
+# Overview
 
-### A simple set of ranges
+In this document we work with a small set of ranges and
+illustrate basic intra-range operations reduce, disjoin, gaps.
+We then add strand and seqname information and show how
+resize and flank are useful for identifying TSS and promoter regions.
+
+## A simple set of ranges
 
 ```{r newr}
 ir <- IRanges(c(3, 8, 14, 15, 19, 34, 40),
@@ -82,13 +88,22 @@ plotRanges(gaps(ir), xlim=c(0,60))
 
 reduce(x) produces a set of
 nonoverlapping ranges that cover all positions covered by x.
+This can be used to reduce complexity of a gene model
+with many transcripts, where we may just want the addresses
+of intervals known to be transcribed, regardless of transcript
+of residence.
 
 disjoin(x) produces a set of ranges that cover all positions
 covered by x, such that none of the ranges in the
 disjoin output overlaps any end points of intervals in x.
+This gives us the largest possible collection of contiguous
+intervals that are separated wherever the original set
+of intervals had an endpoint.
 
 gaps(x) produces a set of ranges covering the positions
 in [start(x), end(x)] that are not covered by any range in x.
+Given coding sequence addresses and exon intervals, this can
+be used to enumerate introns.
 
 # Extension to GRanges
 
