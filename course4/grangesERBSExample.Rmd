@@ -1,6 +1,6 @@
 ---
 title: "Estrogen receptor binding: data representation and location analysis"
-author: "Vince"
+author: "Vince and Rafa"
 date: "March 19, 2015"
 output: html_document
 layout: page
@@ -16,12 +16,9 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 library(GenomicFeatures)
 library(GenomicRanges)
 library(IRanges)
-library(devtools)
-library(ERBS)
-library(Homo.sapiens)
 ```
 
-# Interval data on ER binding
+# Introduction: Interval data on ER binding
 
 A 2006 Nature Genetics paper (v38, n11) by Carroll, Meyer, Song et al.
 describes the notion that a group of genes
@@ -42,29 +39,69 @@ ENCODE project.
 
 # Acquisition of binding data
 
-Get the ERBS package.
+The examples shown here are reported binding sites for estrogen related receptor binding sites derinved from ChIPSeq experiments on two of the main cell lines used by ENCODE: HepG2 and GM12878. In this section we focus on the analysis that comes after the genomic regions are defined. These data can be found as NarrowPeak files on the public repositories but we have created a R package with `GRanges` objects already created. If you have not done so already you can install it like this:
 
-```{r geter}
+```{r geter,eval=FALSE}
 library(devtools)
 install_github("genomicsclass/ERBS")
+```
+
+Once installed you can attach two object, one for each cell line, and view it's content:
+```{r}
 library(ERBS)
 data(HepG2)  # cell line of liver origin
 data(GM12878)  # immortalized B cell
 HepG2  # locations of ER binding peaks
 ```
 
-We will use `granges` for clarify avoid all the columns
+Note that these object contain two main parts, the regions of the genome which we can extract with  `granges`:
 ```{r}
-HepG2
 granges(HepG2)
+```
+and other information that we can obtain with either the `mcols` or `values` functions:
+```{r}
+values(HepG2) ##or mcols(HepG2)
+```
+
+<a name="basic"></a>
+# Basic operations 
+
+These object are of class `GRanges` defined in the `GenomicsRanges` package:
+```{r}
+class(HepG2)
+```
+There are a large number of tools available to use for this class and the best way to learn about them is through the vignette `browseVignettes("GenomicRanges")`
+
+Here we start with some very basic example. Suppose these regions are ordered and we want to work with just the first 10. We can subset these objects as you would expect:
+```{r}
+granges( HepG2[1:10] )
+```
+Now what if we want to subset the object by chromosomes? We can access the chromosomes with `seqnames`. Note that not all organisms have chromosomes so Bioconductor uses a more genreal name:
+
+```{r}
+chr <- seqnames(HepG2)
+chr
+```
+
+Note that chr is not a factor or character vector as we would expect. Instead run-length encoding is used. The reason for this is that it provides a much more efficient way to store large granges, for example those obtained from stroing short reads. Note also that we have chromosome names that are not the standard chromosome names such as `chrUn_gl000247`. The human genome actually has some sequences that have not been mapped into one of the chromosomes and are given names like these. 
+
+The Rle class behaves like factors in several useful ways. For example we can tabulate:
+
+```{r}
+table(chr)[1:24]
+```
+
+We can also subset the object to data based on these. Here is the subset of regions on chr20:
+
+```{r}
+granges( HepG2[ chr == "chr20" ] )
 ```
 
 
 # Genomic Ranges tools
 
-```{r}
 
-browseVignettes("GenomicRanges")
+```{r}
 
 res = findOverlaps(HepG2,GM12878)
 
