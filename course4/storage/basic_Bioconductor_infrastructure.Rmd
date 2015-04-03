@@ -1,0 +1,214 @@
+---
+layout: page
+title: Basic Bioconductor infrastructure
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+## IRanges
+
+```{r}
+library(IRanges)
+ir <- IRanges(5,10)
+ir
+start(ir)
+end(ir)
+width(ir)
+# ?IRanges
+```
+
+```{r}
+ir <- IRanges(start=c(3,5,17), end=c(10,8,20))
+ir
+ir <- IRanges(5,10)
+```
+
+```{r}
+# ?"intra-range-methods"
+shift(ir, -2)
+```
+
+Remeber, all of these commands can work on more than one range at once. Here we show the effects of the different methods using a single range:
+
+```{r}
+shift(ir,-2)
+narrow(ir, start=2)
+narrow(ir, end=5)
+flank(ir, width=3, start=TRUE, both=FALSE)
+flank(ir, width=3, start=FALSE, both=FALSE)
+flank(ir, width=3, start=TRUE, both=TRUE)
+ir * 2
+ir + 2
+ir - 2
+```
+
+
+```{r}
+# set up a plotting window so we can look at range operations
+plotir <- function(ir,i) { arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3) }
+plot(0,0,xlim=c(0,15),ylim=c(0,11),type="n",xlab="",ylab="",xaxt="n")
+axis(1,0:15)
+abline(v=0:30 + .5,col=rgb(0,0,0,.5))
+
+# plot the original IRange
+plotir(ir,1)
+
+# draw a red shadow for the original IRange
+polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5,end(ir)+.5),c(-1,12,12,-1),col=rgb(1,0,0,.2),border=NA)
+plotir(shift(ir,-2), 2)
+plotir(narrow(ir, start=2), 3)
+plotir(narrow(ir, end=5), 4)
+plotir(flank(ir, width=3, start=TRUE, both=FALSE), 5)
+plotir(flank(ir, width=3, start=FALSE, both=FALSE), 6)
+plotir(flank(ir, width=3, start=TRUE, both=TRUE), 7)
+plotir(ir * 2, 8)
+plotir(ir + 2, 9)
+plotir(ir - 2, 10)
+```
+
+```{r}
+# ?"inter-range-methods"
+ir <- IRanges(start=c(3,5,17), end=c(10,8,20))
+range(ir)
+reduce(ir)
+gaps(ir)
+disjoin(ir)
+```
+
+## GRanges and GRangesList
+
+### GRanges
+
+```{r}
+library(GenomicRanges)
+gr <- GRanges("chrZ", IRanges(start=c(5,10),end=c(35,45)),
+              strand="+", seqlengths=c(chrZ=100L))
+gr
+shift(gr, 10)
+shift(gr, 80)
+trim(shift(gr, 80))
+mcols(gr)
+mcols(gr)$value <- c(-1,4)
+gr
+```
+
+### GRangesList
+
+```{r}
+gr2 <- GRanges("chrZ",IRanges(11:13,51:53))
+mcols(gr)$value <- NULL
+grl <- GRangesList(gr,gr2)
+grl
+length(grl)
+grl[[1]]
+mcols(grl)$value <- c(5,7)
+grl
+mcols(grl)
+```
+
+### findOverlaps and %over%
+
+```{r}
+gr1 <- GRanges("chrZ",IRanges(c(1,11,21,31,41),width=5))
+gr2 <- GRanges("chrZ",IRanges(c(19,33),c(38,35)))
+gr1
+gr2
+fo <- findOverlaps(gr1, gr2)
+fo
+queryHits(fo)
+subjectHits(fo)
+gr1 %over% gr2
+gr1[gr1 %over% gr2]
+```
+
+### Rle and Views
+
+```{r}
+r <- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20)))
+r
+str(r)
+as.numeric(r)
+Views(r, start=c(4,2), end=c(7,6))
+```
+
+
+
+## ExpressionSet and SummarizedExperiment
+
+```{r}
+library(Biobase)
+library(GEOquery)
+geoq <- getGEO("GSE9514")
+names(geoq)
+e <- geoq[[1]]
+```
+
+### ExpressionSet
+
+```{r}
+dim(e)
+exprs(e)[1:3,1:3]
+dim(exprs(e))
+
+pData(e)[1:3,1:6]
+dim(pData(e))
+names(pData(e))
+pData(e)$characteristics_ch1
+
+fData(e)[1:3,1:3]
+dim(fData(e))
+names(fData(e))
+head(fData(e)$"Gene Symbol")
+head(rownames(e))
+
+experimentData(e)
+annotation(e)
+```
+
+### Summarized Experiment
+
+```{r}
+library(parathyroidSE)
+data(parathyroidGenesSE)
+se <- parathyroidGenesSE
+se
+```
+
+
+```{r}
+dim(se)
+assay(se)[1:3,1:3]
+dim(assay(se))
+
+colData(se)[1:3,1:6]
+dim(colData(se))
+names(colData(se))
+colData(se)$treatment
+
+rowData(se)[1]
+class(rowData(se))
+length(rowData(se))
+head(rownames(se))
+metadata(rowData(se))
+
+exptData(se)$MIAME
+abstract(exptData(se)$MIAME)
+```
+
+## Footnotes
+
+For more information about the `GenomicRanges` package, check out the PLOS Comp Bio paper, which the authors of GenomicRanges published:
+
+<http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118>
+
+Also the software vignettes have a lot of details about the functionality. Check out "An Introduction to Genomic Ranges Classes":
+
+<http://www.bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.pdf>
+
+All of the vignette PDFs are available here:
+
+<http://www.bioconductor.org/packages/release/bioc/html/GenomicRanges.html>
+
