@@ -8,10 +8,26 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
+Here we will investigate some of the core objects in Bioconductor, which are re-used over and over again within other packages. 
+
+The object we will cover are:
+
+* IRanges 
+* GRanges
+* Rle (run length encoding)
+* Views
+* ExpressionSet
+* SummarizedExperiment
+
+<a name="iranges"></a>
+
 ## IRanges
 
-```{r}
+```{r message=FALSE}
 library(IRanges)
+```
+
+```{r}
 ir <- IRanges(5,10)
 ir
 start(ir)
@@ -78,6 +94,8 @@ gaps(ir)
 disjoin(ir)
 ```
 
+<a name="granges"></a>
+
 ## GRanges and GRangesList
 
 ### GRanges
@@ -134,13 +152,16 @@ as.numeric(r)
 Views(r, start=c(4,2), end=c(7,6))
 ```
 
-
+<a name="eset"></a>
 
 ## ExpressionSet and SummarizedExperiment
 
-```{r}
+```{r message=FALSE}
 library(Biobase)
 library(GEOquery)
+```
+
+```{r}
 geoq <- getGEO("GSE9514")
 names(geoq)
 e <- geoq[[1]]
@@ -170,8 +191,12 @@ annotation(e)
 
 ### Summarized Experiment
 
-```{r}
+```{r message=FALSE}
 library(parathyroidSE)
+```
+
+
+```{r}
 data(parathyroidGenesSE)
 se <- parathyroidGenesSE
 se
