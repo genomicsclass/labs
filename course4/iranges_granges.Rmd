@@ -10,8 +10,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## IRanges
 
-```{r}
+```{r message=FALSE}
 library(IRanges)
+```
+
+```{r}
 ir <- IRanges(5,10)
 ir
 start(ir)
@@ -43,6 +46,10 @@ flank(ir, width=3, start=TRUE, both=TRUE)
 ir * 2
 ir + 2
 ir - 2
+```
+
+```{r}
+resize(ir, 1)
 ```
 
 
@@ -78,12 +85,17 @@ gaps(ir)
 disjoin(ir)
 ```
 
+<a name="granges"></a>
+
 ## GRanges and GRangesList
 
 ### GRanges
 
-```{r}
+```{r message=FALSE}
 library(GenomicRanges)
+```
+
+```{r}
 gr <- GRanges("chrZ", IRanges(start=c(5,10),end=c(35,45)),
               strand="+", seqlengths=c(chrZ=100L))
 gr
@@ -132,18 +144,6 @@ r
 str(r)
 as.numeric(r)
 Views(r, start=c(4,2), end=c(7,6))
-```
-
-
-
-## ExpressionSet and SummarizedExperiment
-
-```{r}
-library(Biobase)
-library(GEOquery)
-geoq <- getGEO("GSE9514")
-names(geoq)
-e <- geoq[[1]]
 ```
 
 ## Footnotes
