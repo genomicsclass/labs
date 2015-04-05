@@ -8,11 +8,17 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
+The IRanges and GRanges objects are core components of the Bioconductor infrastructure for defining *integer ranges* in general (IRanges), and specifically for addressing locations in the genome and hence including chromosome and strand information (GRanges). Here we will briefly explore what these objects are and a subset of the operations which manipulate IRanges and GRanges.
+
 ## IRanges
 
-```{r message=FALSE}
+First we load the IRanges package. This is included in the base installation of Bioconductor, but as with all Bioconductor packages it can be installed with `biocLite`. R will print out a bunch of messages when you load IRanges about objects which are masked from other packages. This is part of the normal loading process. Here we print these messages, although on some other book pages we suppress the messages for cleanliness:
+
+```{r}
 library(IRanges)
 ```
+
+The `IRanges` function defines interval ranges. If you provide it with two numbers, these are the start and end of a inclusive range, e.g. $[5,10] = \{ 5,6,7,8,9,10 \}$, which has *width* 6. When referring to the size of a range, the term *width* is used, instead of *length*.
 
 ```{r}
 ir <- IRanges(5,10)
@@ -20,51 +26,57 @@ ir
 start(ir)
 end(ir)
 width(ir)
+# for detailed information on the class:
 # ?IRanges
 ```
 
-```{r}
-ir <- IRanges(start=c(3,5,17), end=c(10,8,20))
-ir
-ir <- IRanges(5,10)
-```
+A single *IRanges* object can hold more than one range. We do this by specifying vector to the `start` and `end` arguments. 
 
 ```{r}
+IRanges(start=c(3,5,17), end=c(10,8,20))
+```
+
+We will continue to work with the single range $[5,10]$ though. We can look up a number of *intra-range* methods for IRanges objects, which mean that the operations work on each range independently. For example, we can shift all the ranges two integers to the left. By left and right, we refer to the direction on the integer number line: $\{ \dots, -2, -1, 0, 1, 2, \dots \}$. Compare `ir` and `shift(ir, -2)`:
+
+```{r}
+# full details on the intra-range methods:
 # ?"intra-range-methods"
+ir
 shift(ir, -2)
 ```
 
-Remeber, all of these commands can work on more than one range at once. Here we show the effects of the different methods using a single range:
+Here we show the result of a number of different operations applied to `ir`, with a picture below.
 
 ```{r}
-shift(ir,-2)
+ir
 narrow(ir, start=2)
 narrow(ir, end=5)
 flank(ir, width=3, start=TRUE, both=FALSE)
 flank(ir, width=3, start=FALSE, both=FALSE)
 flank(ir, width=3, start=TRUE, both=TRUE)
 ir * 2
+ir * -2
 ir + 2
 ir - 2
-```
-
-```{r}
 resize(ir, 1)
 ```
 
+Those same operations plotted in a single window. The red bar shows the shadow of the original range `ir`. The best way to get the hang of these operations is to try them out yourself in the console on ranges you define yourself.
 
-```{r}
+```{r echo=FALSE}
 # set up a plotting window so we can look at range operations
-plotir <- function(ir,i) { arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3) }
-plot(0,0,xlim=c(0,15),ylim=c(0,11),type="n",xlab="",ylab="",xaxt="n")
+plot(0,0,xlim=c(0,23),ylim=c(0,13),type="n",xlab="",ylab="",xaxt="n")
 axis(1,0:15)
-abline(v=0:30 + .5,col=rgb(0,0,0,.5))
+abline(v=0:14 + .5,col=rgb(0,0,0,.5))
 
 # plot the original IRange
+plotir <- function(ir,i) { arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3) }
 plotir(ir,1)
 
 # draw a red shadow for the original IRange
-polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5,end(ir)+.5),c(-1,12,12,-1),col=rgb(1,0,0,.2),border=NA)
+polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5,end(ir)+.5),c(-1,15,15,-1),col=rgb(1,0,0,.2),border=NA)
+
+# draw the different ranges
 plotir(shift(ir,-2), 2)
 plotir(narrow(ir, start=2), 3)
 plotir(narrow(ir, end=5), 4)
@@ -72,18 +84,54 @@ plotir(flank(ir, width=3, start=TRUE, both=FALSE), 5)
 plotir(flank(ir, width=3, start=FALSE, both=FALSE), 6)
 plotir(flank(ir, width=3, start=TRUE, both=TRUE), 7)
 plotir(ir * 2, 8)
-plotir(ir + 2, 9)
-plotir(ir - 2, 10)
+plotir(ir * -2, 9)
+plotir(ir + 2, 10)
+plotir(ir - 2, 11)
+plotir(resize(ir, 1), 12)
+
+text(rep(15,12), 1:12, c("ir","shift(ir,-2)","narrow(ir,start=2)",
+                         "narrow(ir,end=5)",
+                         "flank(ir, start=T, both=F)",
+                         "flank(ir, start=F, both=T)",
+                         "flank(ir, start=T, both=T)",
+                         "ir * 2","ir * -2","ir + 2","ir - 2",
+                         "resize(ir, 1)"), pos=4)
+
 ```
 
+There are also a set of *inter-range* methods. These are operations which work on a set of ranges, and the output depends on all the ranges, thus distinguishes these methods from the *intra-range* methods, for which the other ranges in the set do not change the output. This is best explained with some examples. The `range` function gives the integer range from the start of the leftmost range to the end of the rightmost range:
+
 ```{r}
+# full details on the inter-range methods:
 # ?"inter-range-methods"
-ir <- IRanges(start=c(3,5,17), end=c(10,8,20))
+(ir <- IRanges(start=c(3,5,17), end=c(10,8,20)))
 range(ir)
+```
+
+The `reduce` function collapses the ranges, so that integers are covered by only one range in the output.
+
+```{r}
 reduce(ir)
+```
+
+The `gaps` function gives back the ranges of integers which are in `range(ir)` but not covered by any of the ranges in `ir`:
+
+```{r}
 gaps(ir)
+```
+
+The `disjoin` function breaks up the ranges in `ir` into discrete ranges. This is best explained with examples, but here is the formal definition first:
+
+> returns a disjoint object, by finding the union of the
+> end points in ‘x’. In other words, the result consists of a range
+> for every interval, of maximal length, over which the set of
+> overlapping ranges in ‘x’ is the same and at least of size 1.
+
+```{r}
 disjoin(ir)
 ```
+
+Note that this is not a comprehensive list! Check the man pages we listed above, and the best way to get the hang of the functions is to try them out on some ranges you construct yourself. Note that most of the functions are defined both for IRanges and for GRanges, which will be described below.
 
 <a name="granges"></a>
 
