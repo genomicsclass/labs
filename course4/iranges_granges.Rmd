@@ -257,25 +257,43 @@ gr1 %over% gr2
 
 ### Rle and Views
 
+Lastly, we give you a short glimpse into two related classes defined in IRanges, the *Rle* and *Views* classes. *Rle* stands for *run-length encoding*, which is a form of compression for repetitive data. Instead of storing: $[1,1,1,1]$, we would store the number 1, and the number of repeats: 4. The more repetitive the data, the greater the compression with *Rle*.
+
+We use `str` to examine the internal structure of the Rle, to show it is only storing the numeric values and the number of repeats
+
 ```{r}
-r <- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20)))
-r
+(r <- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20))))
 str(r)
 as.numeric(r)
-Views(r, start=c(4,2), end=c(7,6))
+```
+
+A *Views* object can be thought of as "windows" looking into a sequence. 
+
+```{r}
+(v <- Views(r, start=c(4,2), end=c(7,6)))
+```
+
+Note that the internal structure of the Views object is just the original object, and the *IRanges* which specify the windows. The great benefit of Views is when the original object is not stored in memory, in which case the Views object is a lightweight class which helps us reference subsequences, without having to load the entire sequence into memory.
+
+```{r}
+str(v)
 ```
 
 ## Footnotes
 
 For more information about the `GenomicRanges` package, check out the PLOS Comp Bio paper, which the authors of GenomicRanges published:
 
-<http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118>
+http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118
 
-Also the software vignettes have a lot of details about the functionality. Check out "An Introduction to Genomic Ranges Classes":
+Also the software vignettes have a lot of details about the functionality. Check out the "An Introduction to GenomicRanges" vignette. All of the vignette PDFs are available here:
 
-<http://www.bioconductor.org/packages/release/bioc/vignettes/GenomicRanges/inst/doc/GenomicRangesIntroduction.pdf>
+```{r eval=FALSE}
+browseVignettes("GenomicRanges")
+```
 
-All of the vignette PDFs are available here:
+Or the help pages here:
 
-<http://www.bioconductor.org/packages/release/bioc/html/GenomicRanges.html>
+```{r eval=FALSE}
+help(package="GenomicRanges", help_type="html")
+```
 
