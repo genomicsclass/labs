@@ -80,10 +80,9 @@ juxta = function (chrname="chr22", ...)
     data(HepG2)
     data(GM12878)
     require(ggbio)
-    require(GenomicRanges)
-    lim = function(x) x[which(seqnames(x) == chrname)]
-    ap1 = autoplot(lim(HepG2))
-    ap2 = autoplot(lim(GM12878))
+    require(GenomicRanges)  # "subset" is overused, need import detail
+    ap1 = autoplot(GenomicRanges::subset(HepG2, seqnames==chrname))
+    ap2 = autoplot(GenomicRanges::subset(GM12878, seqnames==chrname))
     tracks(HepG2 = ap1, Bcell = ap2, ...)
 }
 ```
@@ -112,7 +111,7 @@ a very lightweight integrative package.
 
 ```{r doodb}
 library(OrganismDbi)
-gd = list( join1 = c(GO.db="GOID", org.Hs.eg.db="GO"),
+gd = list( join1 = c(GO.db="GOID", org.Sc.sgd.db="GO"),
            join2 = c(org.Sc.sgd.db="ENTREZID",
               TxDb.Scerevisiae.UCSC.sacCer3.sgdGene="GENEID"))
 if (!file.exists("Sac.cer3")) # don't do twice...
@@ -237,3 +236,36 @@ to quickly isolate features and samples of interest
 - Immediate access to R's visualization and statistical
 analysis functions makes appraisal and inference
 very convenient.
+
+### Harvesting GEO for families of microarray archives
+
+The NCBI Gene Expression Omnibus is a basic resource for
+integrative bioinformatics.  The Bioconductor GEOmetadb
+package helps with discovery and retrieval of tools for
+analyzing GEO datasets.
+
+The GEOmetadb database is a 240MB download that decompresses to 3.6 GB
+of SQLite.  Once you have acquired the GEOmetadb.sqlite file using
+the `getSQLiteFile` function, you can create a connection
+and start interrogating.
+
+```{r dosq}
+library(RSQLite)
+lcon = dbConnect(SQLite(), "GEOmetadb.sqlite")
+dbListTables(lcon)
+```
+
+We will build a query that returns all the GEO GSE entries
+that have the phrase "pancreatic cancer" in their titles.
+
+```{r doquer}
+vbls = "gse.gse, gse.title, gpl.gpl, gpl.bioc_package"
+req1 = " from gse join gse_gpl on gse.gse=gse_gpl.gse"
+req2 = " join gpl on gse_gpl.gpl=gpl.gpl"
+goal = " where gse.title like '%pancreatic%cancer%'"
+quer = paste0("select ", vbls, req1, req2, goal)
+lkpc = dbGetQuery(lcon, quer)
+dim(lkpc)
+table(lkpc$bioc_package)
+```
+
