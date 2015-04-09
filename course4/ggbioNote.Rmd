@@ -1,0 +1,42 @@
+---
+layout: page
+title: "A note on visualization options"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+There are many interesting approaches to visualizing genome-scale data.
+Two major packages in Bioconductor are Gviz and ggbio.  Both represent
+significant efforts at bridging the gap between graphics facilities
+and various genomic data structures.
+
+ggbio's `autoplot` method can be very useful for broad overviews.
+For a GRanges instance, each range for which data exists can be
+depicted as a band on the chromosome.  The karyogram layout
+gives a genome-wide view, but it can be important to control
+the handling of extra-chromosomal sequence levels.
+
+```{r getl,echo=FALSE,results="hide"}
+library(ERBS)
+library(GenomeInfoDb)
+library(ggbio)
+```
+```{r lkd, fig=TRUE}
+library(ERBS)
+data(HepG2)
+library(GenomeInfoDb)  # trim all but autosomal chroms
+seqlevels(HepG2, force=TRUE) = paste0("chr", 1:22)
+data(GM12878)
+seqlevels(GM12878, force=TRUE) = paste0("chr", 1:22)
+library(ggbio)
+autoplot(HepG2, layout="karyogram", main="ESRRA binding on HepG2")
+```
+
+Notice that the title is not printed, currently a bug.
+
+```{r lkm,fig=TRUE}
+autoplot(GM12878, layout="karyogram", main="ESRRA binding on GM12878")
+```

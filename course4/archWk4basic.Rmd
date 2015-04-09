@@ -54,6 +54,7 @@ Our key topics will be:
 
 - How Bioconductor ensures reliable interoperability of project software and data assets
 
+
 ## What is an R package?
 
 Conceptually, an R package is a collection of functions, data
@@ -257,6 +258,10 @@ dbListTables(lcon)
 
 We will build a query that returns all the GEO GSE entries
 that have the phrase "pancreatic cancer" in their titles.
+Because GEO uses uninformative labels for array platforms,
+we will retrieve a field that records the Bioconductor array
+annotation package name so that we know what technology was
+in use.  We'll tabulate the various platforms used.
 
 ```{r doquer}
 vbls = "gse.gse, gse.title, gpl.gpl, gpl.bioc_package"
