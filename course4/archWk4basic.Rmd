@@ -242,13 +242,13 @@ very convenient.
 
 The NCBI Gene Expression Omnibus is a basic resource for
 integrative bioinformatics.  The Bioconductor GEOmetadb
-package helps with discovery and retrieval of tools for
-analyzing GEO datasets.
+package helps with discovery and characterization of
+GEO datasets.
 
 The GEOmetadb database is a 240MB download that decompresses to 3.6 GB
 of SQLite.  Once you have acquired the GEOmetadb.sqlite file using
 the `getSQLiteFile` function, you can create a connection
-and start interrogating.
+and start interrogating the database locally.
 
 ```{r dosq}
 library(RSQLite)
