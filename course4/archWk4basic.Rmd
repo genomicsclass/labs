@@ -341,19 +341,6 @@ have not entered into the assessment of statistical
 significance, but have focused on how the data
 types are brought together.
 
-Consider how the Bioconductor architecture facilitated
-this analysis.
-
-- Easily installed and highly self-descriptive packages provide the key experimental data
-
-- Conventional containers (ExpressionSets) are used
-for assay plus sample-level data (even when the experiment
-does not assess expression) so that it is easy
-to quickly isolate features and samples of interest
-
-- Immediate access to R's visualization and statistical
-analysis functions makes appraisal and inference
-very convenient.
 
 ### Harvesting GEO for families of microarray archives
 
@@ -418,4 +405,53 @@ mcols(gwrngs19[100])[,c(2,7,8,9,10,11)]
 ```
 
 This shows the complexity involved in recording information about
-a replicated genome-wide association finding.
+a replicated genome-wide association finding.  There are many
+fields recorded, by the key elements are the name and location of
+the SNP, and the phenotype to which it is apparently linked.
+In this case, we are talking about rheumatoid arthritis.
+
+We will now consider the relationship between ESRRA binding
+in B-cells and phenotypes for which GWAS associations
+have been reported.  
+
+```{r lkgml} 
+library(ERBS)
+data(GM12878)
+fo = findOverlaps(GM12878, gwrngs19)
+fo
+sort(table(gwrngs19$Disease.Trait[ 
+    subjectHits(fo) ]), decreasing=TRUE)[1:5]
+```
+
+What can explain this observation?  We see that there
+are commonly observed DNA variants in locations where ESRRA tends
+to bind.  Do individuals with particular genotypes
+of SNPs in these areas have higher risk of disease
+because the presence of the variant allele 
+interferes with ESRRA function and leads to
+arthritis or abnormal cholesterol levels?   Or is this
+observation consistent with the play of chance in our
+work with these data?  We will examine this in the exercises.
+
+## Summary of basic architectual considerations
+
+Let's review the aspects of Bioconductor architecture that facilitated
+the inquiries conducted here.  
+
+- Easily installed and highly self-descriptive packages provide the key experimental and annotation data.
+
+- Conventional containers (ExpressionSets) are used
+for assay plus sample-level data (even when the experiment
+does not assess expression) so that it is easy
+to quickly isolate features and samples of interest.
+
+- GRanges containers for genomic coordinates and arbitrary metadata
+are used to represent findings in genetic epidemiology as well
+as findings of genome-scale TF binding assays, allowing quick
+identification of coincidences of genetic lesions and recently
+assaysed genomic
+features.
+
+- Immediate access to R's visualization and statistical
+analysis functions makes appraisal and inference
+very convenient.
