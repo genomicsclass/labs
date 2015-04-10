@@ -147,11 +147,24 @@ bpparam()
 ```
 This identifies an object called `MulticoreParam` which is
 used to configure the behavior of `bplapply` and other utilities
-of the BiocParallel package.
+of the BiocParallel package.  There are various configuration
+object classes that can be used.
 
+```
+‘SnowParam’: distributed memory computing
 
-We always have to watch the memory
-consumption.  If process size is large, we may want to leave
+‘MulticoreParam’: shared memory computing
+
+‘BatchJobsParam’: scheduled cluster computing
+
+‘DoparParam’: foreach computing
+
+‘SerialParam’: non-parallel execution
+```
+We need to use `register` to determine the type of
+concurrent computation that will be performed.  
+
+If process size is large, we may want to leave
 some cores idle.  We can accomplish that by using `register`.
 ```{r lkbp}
 library(BiocParallel)
