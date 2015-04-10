@@ -8,6 +8,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 ```{r getpacksa,echo=FALSE,results="hide"}
+library(AnnotationDbi)
 library(ggbio)
 library(gwascat)
 library(GenomicRanges)
@@ -250,6 +251,30 @@ We will illustrate some of these ideas in the video.  An important
 bit of knowledge is that you can sort a bed file, on a unix system,
 with the command `sort -k1,1 -k2,2g -o ...`, and this is a necessary
 prelude to Tabix indexing.
+
+Here's how we carried out the activities of the video:
+```
+# check file
+head ENCFF001VEH.narrowPeak
+# sort
+sort -k1,1 -k2,2g -o bcell.narrowPeak ENCFF001VEH.narrowPeak
+# compress
+bgzip bcell.narrowPeak
+# index
+tabix -p bed bcell.narrowPeak.gz
+# generates the bcell.narrowPeak.gz.tbi
+tabix bcell.narrowPeak.gz chr22:1-20000000
+# yields only two records on chr22
+```
+In R we made use of the compressed and indexed version
+as follows:
+```{r dot,eval=FALSE}
+library(Rsamtools)
+library(rtracklayer)
+targ = import.bedGraph("bcell.narrowPeak.gz", which=GRanges("chr22", IRanges(1,2e7)))```
+This is a targeted import.  We do not import the contents of the entire
+file but just the records that reside in the `which` range.
+
 
 ## Integrative analysis concepts
  
