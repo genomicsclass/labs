@@ -135,12 +135,20 @@ and if it finds none, will check for multiple cores
 and make arrangements to use them if present.
 The "check" occurs via the function `bpparam`.
 
-The situation on a 4-core MacBook Air running MacOSX 10.9.5 is
+The default situation on a
+MacBook Air running MacOSX 10.9.5 with
+an Intel core i7 processor,
+(two physical cores with two logical cores each, allowing
+for four concurrent threads)
 as follows.
 ```{r lkbpp}
 library(BiocParallel)
 bpparam()
 ```
+This identifies an object called `MulticoreParam` which is
+used to configure the behavior of `bplapply` and other utilities
+of the BiocParallel package.
+
 
 We always have to watch the memory
 consumption.  If process size is large, we may want to leave
