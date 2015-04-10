@@ -40,11 +40,6 @@ We need the following libraries for counting BAM files.
 ```{r}
 library(Rsamtools)
 library(GenomicRanges)
-```
-
-Note: if you are using Bioconductor version 14, paired with R 3.1, you should also load this library. You do not need to load this library, and it will not be available to you, if you are using Bioconductor version 13, paired with R 3.0.x.
-
-```{r}
 library(GenomicAlignments)
 ```
 
@@ -71,7 +66,7 @@ head(assay(so1))
 colSums(assay(so1))
 ```
 
-The other parts of a `SummarizedExperiment`, as described in the lab in Week 2: Basic Bioconductor Infrastructure.
+The other parts of a `SummarizedExperiment`.
 
 ```{r}
 rowData(so1)
@@ -117,19 +112,13 @@ Bioconductor packages:
 
 - `summarizeOverlaps` in the `GenomicAlignments` package
 
-<http://www.bioconductor.org/packages/devel/bioc/html/GenomicAlignments.html>
+http://www.bioconductor.org/packages/release/bioc/html/GenomicAlignments.html
 
 - `featureCounts` in the `Rsubread` package
 
 Liao Y, Smyth GK, Shi W., "featureCounts: an efficient general purpose program for assigning sequence reads to genomic features." Bioinformatics. 2014
-<http://www.ncbi.nlm.nih.gov/pubmed/24227677>
-<http://bioinf.wehi.edu.au/featureCounts/>
-
-- `easyRNAseq` package
-
-Delhomme N1, Padioleau I, Furlong EE, Steinmetz LM. "easyRNASeq: a bioconductor package for processing RNA-Seq data." Bioinformatics. 2012.
-<http://www.ncbi.nlm.nih.gov/pubmed/22847932>
-<http://www.bioconductor.org/packages/release/bioc/html/easyRNASeq.html>
+http://www.ncbi.nlm.nih.gov/pubmed/24227677
+http://bioinf.wehi.edu.au/featureCounts/
 
 Command line tools: 
 
@@ -139,11 +128,9 @@ Simon Anders, Paul Theodor Pyl, Wolfgang Huber.
 HTSeq — A Python framework to work with high-throughput sequencing data
 bioRxiv preprint (2014), doi: [10.1101/002824](http://dx.doi.org/10.1101/002824)
 
-<http://www-huber.embl.de/users/anders/HTSeq/doc/count.html>
+http://www-huber.embl.de/users/anders/HTSeq/doc/count.html
 
 - `bedtools` <https://code.google.com/p/bedtools/>
 
 - `bedops` <https://code.google.com/p/bedops/>
-
-
 
