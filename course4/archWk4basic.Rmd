@@ -271,7 +271,8 @@ as follows:
 ```{r dot,eval=FALSE}
 library(Rsamtools)
 library(rtracklayer)
-targ = import.bedGraph("bcell.narrowPeak.gz", which=GRanges("chr22", IRanges(1,2e7)))```
+targ = import.bedGraph("bcell.narrowPeak.gz", which=GRanges("chr22", IRanges(1,2e7)))
+```
 This is a targeted import.  We do not import the contents of the entire
 file but just the records that reside in the `which` range.
 
