@@ -398,6 +398,9 @@ We will now consider the relationship between ESRRA binding
 in B-cells and phenotypes for which GWAS associations
 have been reported.  
 
+It is tempting to proceed as follows.  We simply
+compute overlaps between the binding peak regions
+and the catalog GRanges.
 ```{r lkgml} 
 library(ERBS)
 data(GM12878)
@@ -405,6 +408,26 @@ fo = findOverlaps(GM12878, gwrngs19)
 fo
 sort(table(gwrngs19$Disease.Trait[ 
     subjectHits(fo) ]), decreasing=TRUE)[1:5]
+```
+The problem with this is that `gwrngs19` is a set of *records* of
+GWAS hits.  There are cases of SNP that are associated
+with multiple phenotypes, and there are cases of multiple studies that find
+the same result for a given SNP.  It is easy to get 
+a sense of the magnitude of the problem using `reduce`.
+
+```{r lkresss}
+length(gwrngs19)-length(reduce(gwrngs19))
+```
+So our strategy will be to find overlaps with the
+reduced version of `gwrngs19` and then come back
+to enumerate phenotypes at unique SNPs occupying binding sites.
+```{r lkov}
+fo = findOverlaps(GM12878, reduce(gwrngs19))
+fo
+ovrngs = reduce(gwrngs19)[subjectHits(fo)]
+phset = lapply( ovrngs, function(x)
+  unique( gwrngs19[ which(gwrngs19 %over% x) ]$Disease.Trait ) )
+sort(table(unlist(phset)), decreasing=TRUE)[1:5]
 ```
 
 What can explain this observation?  We see that there
