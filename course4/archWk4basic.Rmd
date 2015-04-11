@@ -1,0 +1,505 @@
+---
+layout: page
+title: "Architecture: Overview of last of the four As"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+```{r getpacksa,echo=FALSE,results="hide"}
+library(AnnotationDbi)
+library(ggbio)
+library(gwascat)
+library(GenomicRanges)
+library(ERBS)
+library(OrganismDbi)
+library(harbChIP)
+library(yeastCC)
+```
+
+## Introduction to architectural concepts for Bioconductor
+
+The basic objective is to support an efficient and reliable flow of experimental
+and reference data.
+
+Start with
+
+- Assay outputs bound to sample-level data
+
+Pass to
+
+- Algorithms for preprocessing to remove technical artifacts
+
+Combine clean assay outputs with
+
+- Annotation on genome structure and function and on experimental design
+
+Continue with
+
+- Algorithms for inference on biological hypotheses
+
+Conclude with
+
+- Efficient and appropriate reporting, visualization and export
+
+As noted previously, your experiments and analyses may serve
+as data and annotation for future experiments in other labs.
+
+In this subunit we want to clarify some of the architectural
+principles underlying Bioconductor so that this objective of
+efficient and reliable data flow can be
+achieved *making good use of community collaboration and
+total commitment to open source*.
+
+Our key topics will be:
+
+- How to create R packages
+
+- How to support integrative analysis of multiple assay types
+
+- How to streamline access to curated institutional archives like GEO
+
+- How to make good use of parallel computing concepts on laptops and clusters
+
+- How Bioconductor ensures reliable interoperability of project software and data assets
+
+
+## What is an R package?
+
+Conceptually, an R package is a collection of functions, data
+objects, and documentation that coherently support a family
+of related data analysis operations.
+
+Concretely, an R package is a structured collection of folders,
+organized and populated according to the rules of
+[Writing R Extensions](http://cran.r-project.org/doc/manuals/r-release/R-exts.html).
+
+### A new software package with `package.skeleton`
+
+We can create our own packages using `package.skeleton`.  We'll illustrate that now
+with an enhancement to the ERBS package that was created for the course.
+We'll create a new package that utilizes the peak data, defining
+a function `juxta` that allows us to compare binding peak patterns for the two cell
+types on a selected chromosome.  (I have commented out code that
+uses an alternative graphics engine, for optional exploration.)
+
+Here's a definition of `juxta`.  Add it to your R session.
+```{r makej}
+juxta = function (chrname="chr22", ...) 
+{
+    require(ERBS)
+    data(HepG2)
+    data(GM12878)
+    require(ggbio)
+    require(GenomicRanges)  # "subset" is overused, need import detail
+    ap1 = autoplot(GenomicRanges::subset(HepG2, seqnames==chrname))
+    ap2 = autoplot(GenomicRanges::subset(GM12878, seqnames==chrname))
+    tracks(HepG2 = ap1, Bcell = ap2, ...)
+# alternative code for Gviz below
+#    require(Gviz)
+#    ap1 = AnnotationTrack(GenomicRanges::subset(HepG2, seqnames==chrname))
+#    names(ap1) = "HepG2"
+#    ap2 = AnnotationTrack(GenomicRanges::subset(GM12878, seqnames==chrname))
+#    names(ap2) = "B-cell"
+#    ax = GenomeAxisTrack()
+#    plotTracks(list(ax, ap1, ap2))
+}
+```
+
+Now demonstrate it as follows.
+
+```{r doj,fig=TRUE}
+library(ERBS)
+juxta("chr22", main="ESRRA binding peaks on chr22")
+```
+
+In the video we will show how to use `package.skeleton` and the Rstudio
+editor to generate, document, and install this new package!  We will not
+streamline the code in `juxta` to make use of inter-package
+symbol transfer by properly writing the DESCRIPTION and NAMESPACE
+files for the package, but leave this for an advanced course in
+software development.
+
+### A new annotation package with OrganismDbi
+
+We have found the `Homo.sapiens` package to be quite convenient.
+We can get gene models, symbol to GO mappings, and so on, without
+remembering any more than `keytypes`, `columns`, `keys`, and `select`.
+At present there is no similar resource for *S. cerevisiae*.
+We can make one, following the OrganismDbi vignette.  This is
+a very lightweight integrative package.
+
+```{r doodb}
+library(OrganismDbi)
+gd = list( join1 = c(GO.db="GOID", org.Sc.sgd.db="GO"),
+           join2 = c(org.Sc.sgd.db="ENTREZID",
+              TxDb.Scerevisiae.UCSC.sacCer3.sgdGene="GENEID"))
+if (!file.exists("Sac.cer3")) # don't do twice...
+makeOrganismPackage(pkgname="Sac.cer3",  # simplify typing!
+  graphData=gd, organism="Saccharomyces cerevisiae",
+  version="1.0.0", maintainer="Student <ph525x@harvardx.edu>",
+  author="Student <ph525x@harvardx.edu>",
+  destDir=".",
+  license="Artistic-2.0")
+```
+
+At this point we have a folder structure in our
+working folder that can support an installation.
+```{r doinst}
+install.packages("Sac.cer3", repos=NULL, type="source")
+library(Sac.cer3)
+Sac.cer3
+columns(Sac.cer3)
+genes(Sac.cer3)
+```
+
+## Packages that provide access to data external to R
+
+In this subunit we have created two packages.  `erbsViz` was created to provide
+packaged access to an R function `juxta`, that we coded.
+`Sac.cer3` was created to provide access to an instance of the
+`OrganismDb` class, which is an S4 object.
+
+There are many examples of R packages that include or facilitate
+access to entities that are not R functions or data objects.  By far
+the most common examples of this approach are the annotation packages
+that employ relational databases to serve data to R sessions.
+Other examples provide access to other types of data, often
+as illustrations of how R-based infrastructure can be used
+to efficiently interact with non-R data.  We'll now illustrate
+two of these bridging package concepts.
+
+### SQLite as the back end
+
+SQL stands for Structured Query Language.  This is a highly
+regimented language used for working with relational databases.
+Knowledge of SQL permits us to work with databases in Microsoft Access,
+Oracle, Postgres, and other relational data stores.
+The basic idea of relational databases is that data we are interested
+in can be stored in rectangular tables, with rows thought of as records
+and columns thought of as attributes.  Our primary activities with
+a database are choosing attributes of interest (this is carried
+out with the SQL operation called "SELECT"), specifying the tables
+where these attributes should be looked up (with "FROM" or "USING" 
+clauses), and filtering records (with "WHERE" clauses).  We'll
+have an example below.
+
+SQLite is an open-source relational database system that
+requires no special configuration or infrastructure.  We can
+interact with SQLite databases and tables through R's database interface
+package (DBI) and the RSQLite package that implements the
+interface protocol for SQLite.  Here's an example.
+We'll look at the database underlying the GO.db annotation package.
+
+```{r lkgo}
+library(GO.db)
+```
+There is a file on disk containing all the annotation data.
+```{r lkconn}
+GO.db$conn@dbname
+```
+We can list the tables present in the database.  We pass
+the connection object to `dbListTables`.
+```{r lkm3}
+dbListTables( GO.db$conn )
+```
+
+Everything else that we are concerned with involves constructing
+SQL queries and executing them in the database.  You can
+have a look at the SQLite web page for background and details
+on valid query syntax.
+
+Here we sample records from the table that manages
+terms corresponding to GO categories using a limit clause.
+```{r  lkl}
+dbGetQuery( GO.db$conn, "select * from go_term limit 5")
+```
+
+The `dbGetQuery` function will return a data.frame instance.
+Why don't we just manage the annotation as a data.frame?  There
+are several reasons.  First, for very large data tables, just
+loading the data into an R session can be time consuming and
+interferes with interactivity.  Second, SQLite includes
+considerable infrastructure that optimizes query resolution, particularly
+when multiple tables are being joined.  It is better to capitalize
+on that investment than to add tools for query optimization to the
+R language.
+
+Fortunately, if you are not interested in direct interaction with
+the RDBMS, you can pretend it is not there, and just work with the
+high-level R annotation functions that we have described.
+
+### Tabix-indexed text or BAM as the back end
+
+Our example data for import (narrowPeak files in the ERBS package)
+was low volume and we have no problem importing the entire contents
+of each file into R.  In certain cases, very large quantities
+of data may be provided in narrowPeak or other genomic file formats
+like bed or bigWig, and it will be cumbersome to import the
+entire file.  
+
+The Tabix utilities for compressing and indexing textual files
+presenting data on genomic coordinates can be used through the
+Rsamtools and rtracklayer packages.  Once the records have been
+sorted and compressed, Tabix indexing allows us to make targeted
+queries of the data in the files.  We can traverse a file
+in chunks to keep our memory footprint small; we can even process
+multiple chunks in parallel in certain settings.
+
+We will illustrate some of these ideas in the video.  An important
+bit of knowledge is that you can sort a bed file, on a unix system,
+with the command `sort -k1,1 -k2,2g -o ...`, and this is a necessary
+prelude to Tabix indexing.
+
+Here's how we carried out the activities of the video:
+```
+# check file
+head ENCFF001VEH.narrowPeak
+# sort
+sort -k1,1 -k2,2g -o bcell.narrowPeak ENCFF001VEH.narrowPeak
+# compress
+bgzip bcell.narrowPeak
+# index
+tabix -p bed bcell.narrowPeak.gz
+# generates the bcell.narrowPeak.gz.tbi
+tabix bcell.narrowPeak.gz chr22:1-20000000
+# yields only two records on chr22
+```
+In R we made use of the compressed and indexed version
+as follows:
+```{r dot,eval=FALSE}
+library(Rsamtools)
+library(rtracklayer)
+targ = import.bedGraph("bcell.narrowPeak.gz", which=GRanges("chr22", IRanges(1,2e7)))
+```
+This is a targeted import.  We do not import the contents of the entire
+file but just the records that reside in the `which` range.
+
+
+## Integrative analysis concepts
+ 
+### TF binding and expression co-regulation in yeast
+
+An example of integrative analysis was given in the introductory
+lecture, in connection with the regulatory program of the yeast 
+cell cycle.  There are two key experimental components:
+
+- Protein binding patterns: based on ChIP-chip experiments, we can determine
+the gene promoter regions to which transcription factors bind.
+
+- Expression patterns: based on timed observations of gene expression in a yeast colony
+we can identify times at which groups of genes reach maximal expression.
+
+
+The diagram that we looked at indicated that the Mbp1 transcription
+factor played a role in regulating expression in the transition
+from G1 to S phases of the cell cycle.  The ChIP-chip data is
+in the `harbChIP` package.
+
+```{r lkh}
+library(harbChIP)
+data(harbChIP)
+harbChIP
+```
+This is a well-documented data object, and we can read the abstract
+of the paper directly.
+
+```{r lka}
+abstract(harbChIP)
+```
+
+Let's find MBP1 and assess the distribution of reported binding affinity
+measures.  The sample names of the ExpressionSet (structure
+used for convenience
+even though the data are not expression data)
+are the names of the proteins "chipped" onto the yeast
+promoter array.
+
+```{r lkm2,fig=TRUE}
+mind = which(sampleNames(harbChIP)=="MBP1")
+qqnorm(exprs(harbChIP)[,mind], main="MBP1 binding")
+```
+
+The shape of the qq-normal plot is indicative of
+a strong
+departure from Gaussianity in the distribution
+of binding scores, with a very long right tail.
+We'll focus on the top five genes.
+
+```{r lkfour}
+topb = featureNames(harbChIP)[ order(
+  exprs(harbChIP)[,mind], decreasing=TRUE)[1:5] ]
+topb
+library(org.Sc.sgd.db)
+select(org.Sc.sgd.db, keys=topb, keytype="ORF",
+  columns="COMMON")
+```
+
+Our conjecture is that these genes will exhibit
+similar expression trajectories, peaking well
+within the first half of cell cycle
+for the yeast strain studied.
+
+We will subset the cell cycle expression data from
+the `yeastCC` package to a colony whose cycling was
+synchronized using alpha pheromone.
+
+```{r doalp,fig=TRUE}
+library(yeastCC)
+data(spYCCES)
+alp = spYCCES[, spYCCES$syncmeth=="alpha"]
+par(mfrow=c(1,1))
+plot(exprs(alp)[ topb[1], ]~alp$time, lty=1,
+   type="l", ylim=c(-1.5,1.5), lwd=2, ylab="Expression",
+    xlab="Minutes elapsed")
+for (i in 2:5) lines(exprs(alp)[topb[i],]~alp$time, lty=i, lwd=2)
+legend(75,-.5, lty=1:10, legend=topb, lwd=2, cex=.6, seg.len=4)
+```
+
+We have the impression that at least three of these
+genes reach peak expression roughly together near times
+20 and 80 minutes.  There is considerable variability.
+A data filtering and visualization pattern is emerging
+by which genes bound by a given transcription factor
+can be assessed for coregulation of expression.  We
+have not entered into the assessment of statistical
+significance, but have focused on how the data
+types are brought together.
+
+### TF binding and genome-wide DNA-phenotype associations in humans
+
+Genetic epidemiology has taken advantage of high-throughput
+genotyping (mostly using genotyping arrays supplemented with
+model-based genotype imputation) to develop the concept of
+"genome-wide association study" (GWAS).  Here a cohort is assembled
+and individuals are distinguished in terms of disease status or
+phenotype measurement, and the genome is searched for variants
+exhibiting statistical association with disease status or phenotypic
+class or value.  An example of a GWAS result can be
+seen with the gwascat package, which includes selections from the [NHGRI
+GWAS catalog](https://www.genome.gov/26525384), which has recently
+moved to EBI-EMBL.
+
+```{r likgw}
+library(gwascat)
+data(gwrngs19)
+gwrngs19[100]
+mcols(gwrngs19[100])[,c(2,7,8,9,10,11)]
+```
+
+This shows the complexity involved in recording information about
+a replicated genome-wide association finding.  There are many
+fields recorded, by the key elements are the name and location of
+the SNP, and the phenotype to which it is apparently linked.
+In this case, we are talking about rheumatoid arthritis.
+
+We will now consider the relationship between ESRRA binding
+in B-cells and phenotypes for which GWAS associations
+have been reported.  
+
+It is tempting to proceed as follows.  We simply
+compute overlaps between the binding peak regions
+and the catalog GRanges.
+```{r lkgml} 
+library(ERBS)
+data(GM12878)
+fo = findOverlaps(GM12878, gwrngs19)
+fo
+sort(table(gwrngs19$Disease.Trait[ 
+    subjectHits(fo) ]), decreasing=TRUE)[1:5]
+```
+The problem with this is that `gwrngs19` is a set of *records* of
+GWAS hits.  There are cases of SNP that are associated
+with multiple phenotypes, and there are cases of multiple studies that find
+the same result for a given SNP.  It is easy to get 
+a sense of the magnitude of the problem using `reduce`.
+
+```{r lkresss}
+length(gwrngs19)-length(reduce(gwrngs19))
+```
+So our strategy will be to find overlaps with the
+reduced version of `gwrngs19` and then come back
+to enumerate phenotypes at unique SNPs occupying binding sites.
+```{r lkov}
+fo = findOverlaps(GM12878, reduce(gwrngs19))
+fo
+ovrngs = reduce(gwrngs19)[subjectHits(fo)]
+phset = lapply( ovrngs, function(x)
+  unique( gwrngs19[ which(gwrngs19 %over% x) ]$Disease.Trait ) )
+sort(table(unlist(phset)), decreasing=TRUE)[1:5]
+```
+
+What can explain this observation?  We see that there
+are commonly observed DNA variants in locations where ESRRA tends
+to bind.  Do individuals with particular genotypes
+of SNPs in these areas have higher risk of disease
+because the presence of the variant allele 
+interferes with ESRRA function and leads to
+arthritis or abnormal cholesterol levels?   Or is this
+observation consistent with the play of chance in our
+work with these data?  We will examine this in the exercises.
+
+### Harvesting GEO for families of microarray archives
+
+The NCBI Gene Expression Omnibus is a basic resource for
+integrative bioinformatics.  The Bioconductor GEOmetadb
+package helps with discovery and characterization of
+GEO datasets.
+
+The GEOmetadb database is a 240MB download that decompresses to 3.6 GB
+of SQLite.  Once you have acquired the GEOmetadb.sqlite file using
+the `getSQLiteFile` function, you can create a connection
+and start interrogating the database locally.
+
+```{r dosq}
+library(RSQLite)
+lcon = dbConnect(SQLite(), "GEOmetadb.sqlite")
+dbListTables(lcon)
+```
+
+We will build a query that returns all the GEO GSE entries
+that have the phrase "pancreatic cancer" in their titles.
+Because GEO uses uninformative labels for array platforms,
+we will retrieve a field that records the Bioconductor array
+annotation package name so that we know what technology was
+in use.  We'll tabulate the various platforms used.
+
+```{r doquer}
+vbls = "gse.gse, gse.title, gpl.gpl, gpl.bioc_package"
+req1 = " from gse join gse_gpl on gse.gse=gse_gpl.gse"
+req2 = " join gpl on gse_gpl.gpl=gpl.gpl"
+goal = " where gse.title like '%pancreatic%cancer%'"
+quer = paste0("select ", vbls, req1, req2, goal)
+lkpc = dbGetQuery(lcon, quer)
+dim(lkpc)
+table(lkpc$bioc_package)
+```
+
+We won't insist that you take the GEOmetadb.sqlite download/expansion,
+but if you do, variations on the query string constructed above
+can assist you with targeted identification of GEO datasets 
+for analysis and reinterpretation.
+
+## Summary of basic architectual considerations
+
+Let's review the aspects of Bioconductor architecture that facilitated
+the inquiries conducted here.  
+
+- Easily installed and highly self-descriptive packages provide the key experimental and annotation data.
+
+- Conventional containers (ExpressionSets) are used
+for assay plus sample-level data (even when the experiment
+does not assess expression) so that it is easy
+to quickly isolate features and samples of interest.
+
+- GRanges containers for genomic coordinates and arbitrary metadata
+are used to represent findings in genetic epidemiology as well
+as findings of genome-scale TF binding assays, allowing quick
+identification of coincidences of genetic lesions and recently
+assaysed genomic
+features.
+
+- Immediate access to R's visualization and statistical
+analysis functions makes appraisal and inference
+very convenient.

@@ -1,0 +1,187 @@
+---
+layout: page
+title: "Architecture: considerations on high performance computing with Bioconductor"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+```{r getpacksa,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(RNAseqData.HNRNPC.bam.chr14)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(Rsamtools)
+library(GenomicRanges)
+library(GenomicAlignments)
+library(parallel)
+library(BiocParallel)
+})
+```
+
+## Overview of performance enhancements
+
+There are two main approaches to achieving scalability of
+analytical workflows in Bioconductor.
+
+- Shared memory parallelism.  The R process is forked an
+arbitrary number of times with full copies of the memory
+image and computations proceed independently for each image.
+Selected results are returned to the master process.  This
+is often effective in multicore environments.
+
+- Distributed parallelism.  Independent processors, potentially
+running different operating systems, can run compatible instances
+of R.  Job control can be carried out by R or by a cluster scheduler.
+
+For tasks that are "embarrassingly parallel", that do not require
+communication between processes beyond starting, stopping, and
+returning results, either of these approaches can be used
+reasonably simply in R.
+
+### Simple illustration
+
+We can demonstrate the shared memory approach with our laptop.
+
+```{r lkm1}
+system.time( lapply(1:8, function(x)Sys.sleep(1) ) )
+library(parallel)
+detectCores()
+options(mc.cores=4)
+system.time( mclapply(1:8, function(x)Sys.sleep(1) ) )
+```
+
+For this meaningless computation, we achieved linear speedup:
+we cut the time for serial computation by a factor of four.
+
+### Detour: BAM files from an RNA-seq experiment
+
+We will be working with a set of BAM files
+created in the study of [Zarnack et al. 2013](http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3629564&tool=pmcentrez&rendertype=abstract).
+The hypothesis of this study is that a class of proteins,
+the heterogeneous nuclear ribonucleoproteins C1 and C2,
+referred to as hnRNP C, are responsible for preventing
+incorporation of Alu elements into mature RNA transcripts.
+Such incorporation may lead to protein dysfunction that could
+cause disease; see the references of the Zarnack paper for
+further background.
+
+The package that we will work with has 8 BAM files with
+reads aligned to chr14.  Four of the files are reads obtained from
+from HeLa cells (negative control) and four are obtained from
+HeLa cells in which hnRNP C has been "knocked down" with siRNA.
+```{r lkrnd}
+library(RNAseqData.HNRNPC.bam.chr14)
+dir(system.file("extdata", package="RNAseqData.HNRNPC.bam.chr14"))
+```
+These are Tabix-indexed BAM files.  In the alphabetic ordering, the
+first four are two pairs of replicates of HeLa cells
+that have undergone hnRNP C knockdown, and the second four are
+two pairs of control replicates.
+
+
+### Implicit parallelism through BiocParallel
+
+To foster harmonious development of reliably performant procedures,
+Bioconductor introduced the BiocParallel package.  Users
+benefit from autonomous (but optionally controllable) pursuit
+of parallel computing when feasible.  Consider the following
+example: we will count reads into bins defined by exon addresses
+in the HNRNPC example dataset.  
+The RNAseqData.HNRNPC.bam.chr14 package includes a vector
+of absolute pathnames of the BAM files, which we assign to `fns`.
+
+```{r lkbam}
+library(RNAseqData.HNRNPC.bam.chr14)
+fns = RNAseqData.HNRNPC.bam.chr14_BAMFILES
+length(fns)
+```
+
+Here we establish the exon bins into which we will count reads.
+```{r createtab}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
+seqlevels(txdb, force=TRUE) = "chr14"
+ebg = exonsBy(txdb, by="gene")
+```
+
+Now we use the `summarizeOverlaps` function from
+the GenomicAlignments package to count reads into the exon bins.
+We'll time the counting from a single file, and then time
+the counting from all files at once.
+```{r dosum}
+library(GenomicAlignments)
+# summarizeOverlaps uses bplapply to iterate over files
+s1 = system.time(i1 <- summarizeOverlaps( ebg, fns[3] ))
+s1
+# show implicit config
+BiocParallel::bpparam()
+s2 = system.time(i2 <- summarizeOverlaps( ebg, fns ))
+s2
+```
+This is not a thorough way of measuring speedup but it
+shows reasonable enhancement.  
+In the second computation, we did approximately 8 times as
+much computation, but the clock time elapsed increased only
+by a factor of (`r round(s2[3]/s1[3],2)`).  
+We did nothing by way of configuration
+or request.
+
+What happened?  The `summarizeOverlaps` function will iterate
+over the files using `bplapply` from the BiocParallel package.
+That function will check the R session 
+for specific parallelization configuration information,
+and if it finds none, will check for multiple cores
+and make arrangements to use them if present.
+The "check" occurs via the function `bpparam`.
+
+The default situation on a
+MacBook Air running MacOSX 10.9.5 with
+an Intel core i7 processor,
+(two physical cores with two logical cores each, allowing
+for four concurrent threads)
+as follows.
+```{r lkbpp}
+library(BiocParallel)
+bpparam()
+```
+This identifies an object called `MulticoreParam` which is
+used to configure the behavior of `bplapply` and other utilities
+of the BiocParallel package.  There are various configuration
+object classes that can be used.
+
+```
+‘SnowParam’: distributed memory computing
+
+‘MulticoreParam’: shared memory computing
+
+‘BatchJobsParam’: scheduled cluster computing
+
+‘DoparParam’: foreach computing
+
+‘SerialParam’: non-parallel execution
+```
+We need to use `register` to determine the type of
+concurrent computation that will be performed.  
+
+If process size is large, we may want to leave
+some cores idle.  We can accomplish that by using `register`.
+```{r lkbp}
+library(BiocParallel)
+register(MulticoreParam(workers=2))
+system.time(i3 <- summarizeOverlaps( ebg, fns ))
+all.equal(i3,i2)  # check that the results do not change
+```
+Note here that by reducing the number of CPUs by a factor of 2, we
+do not double run time.  This is because there are communication
+costs that are reduced by reducing the number of CPUs.
+
+In summary, it is very easy to perform embarrassignly parallel
+tasks with R, and this carries over to genomic data analysis
+thanks to BiocParallel.  There are some strategic considerations
+concerning control of memory consumption and communication costs,
+and full mastery of the topic involves attention to profiling and
+benchmarking methods that can be addressed in an advanced software
+development course.
+
+
