@@ -8,3 +8,105 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
+There are two main packages for working with NGS data in R: the *Rsamtools* package and the *GenomicAlignments* package. You can think of the difference as:
+
+* Rsamtools provides raw access to the information in NGS data files
+* GenomicAlignments uses the Rsamtools functions to provide NGS data in R as Bioconductor objects (based on *GRanges* for example). We will see more examples below.
+
+## Rsamtools
+
+The Rsamtools package has the description:
+
+> ... provides an interface to the 'samtools', 'bcftools', and 'tabix' utilities for manipulating SAM (Sequence Alignment / Map), FASTA, binary variant call (BCF) and compressed indexed tab-delimited (tabix) files.
+
+You might not be familiar with all these formats, but the ones we are interested in for now are SAM and it's compressed form BAM. We will refer here to BAM files, because these are the kind of files which are kept most often because they are smaller (there is a [SAMtools](http://samtools.sourceforge.net/) utility for converting SAM to BAM and BAM to SAM).
+
+SAM and BAM files contain information about the alignment of NGS reads to a reference genome. These files are produced by alignment software, which take as input:
+
+* the FASTQ files from the sequencing machine (either 1 file for a single-end sequencing sample, or 2 files for a paired-end sequencing sample).
+* an genomic index, which is typically produced by special software packaged with the alignment software. The genomic index is created from the reference genome. Sometimes the genomic index files for popular reference genomes can be downloaded.
+
+Note: alignment software is typically application specific. In particular, alignment programs for RNA-seq are different than those for genomic DNA sequencing, because in the case of the former, it is expected that reads might fall on exon-exon boundaries. The read will not contain intron sequence, because it is typically the mature, spliced mRNA which is converted to cDNA and sequenced, and the introns are already spliced out of this molecule. This is not a concern for genomic DNA sequencing.
+
+We will use example BAM files from the *pasillaBamSubset* package to examine the Rsamtools functions:
+
+```{r, message=FALSE}
+library(pasillaBamSubset)
+library(Rsamtools)
+filename <- untreated1_chr4()
+```
+
+We can create a `BamFile` object using the function `BamFile`, which allows other functions to know how to process the file.
+
+```{r}
+(bf <- BamFile(filename))
+```
+
+We can ask about information on the chromosomes which are declared in the header of the BAM file:
+
+```{r}
+seqinfo(bf)
+(sl <- seqlengths(bf))
+```
+
+A summary of the kind of alignments in the file can be generated:
+
+```{r}
+quickBamFlagSummary(bf)
+```
+
+A number of functions in Rsamtools take an argument `param`, which expects a `ScanBamParam` specification. There are full details available by looking up `?scanBamParam`, but two important options are:
+
+* what - what kind of information to extract?
+* which - which regions to pull from
+
+BAM files are often paired with an index file (if not they can be indexed from R with `indexBam`), and so we can quickly pull out information about reads from a particular genomic range. Here we count the number of records (reads) on chromosome 4:
+
+```{r}
+(gr <- GRanges("chr4",IRanges(1, sl["chr4"])))
+countBam(bf, param=ScanBamParam(which = gr))
+```
+
+We can pull out all the information with `scanBam`. Here, we specify a new `BamFile`, and use the `yieldSize` argument. This limits the number of reads which will be extracted to 5 at a time. Each time we call `scanBam` we will get 5 more reads, until there are no reads left.
+
+```{r}
+reads <- scanBam(BamFile(filename, yieldSize=5))
+```
+
+`reads` is a list of lists. The outer list indexes over the ranges in the `which` command. Since we didn't specify `which`, here it is a list of length 1. The inner list contains different pieces of information from the BAM file. Since we didn't specify `what` we get everything. See `?scanBam` for the possible kinds of information to specify for `what`.
+
+```{r}
+class(reads)
+names(reads[[1]])
+reads[[1]]$pos # the aligned start position
+reads[[1]]$rname # the chromosome
+reads[[1]]$strand # the strand
+reads[[1]]$qwidth # the width of the read
+reads[[1]]$seq # the sequence of the read
+```
+
+Here we give an example of specifying `what` and `which`:
+
+```{r}
+gr <- GRanges("chr4",IRanges(500000, 700000))
+reads <- scanBam(bf, param=ScanBamParam(what=c("pos","strand"), which=gr))
+```
+
+How are the start positions distributed:
+
+
+```{r}
+hist(reads[[1]]$pos)
+```
+
+A slightly more complicated picture: split positions by strand, tabulate in bins and make a stacked barplot:
+
+```{r}
+readsByStrand <- split(reads[[1]]$pos, reads[[1]]$strand)
+myHist <- function(x) table(cut(x, 50:70 * 10000 ))
+tab <- sapply(readsByStrand, myHist)
+barplot( t(tab) )
+```
+
+## GenomicAlignments
+
