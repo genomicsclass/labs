@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 The following lab will describe how to count NGS reads which fall into genomic features. We want to end up with a count matrix which has rows corresponding to genomic ranges and columns which correspond to different experiments or samples. As an example, we will use an RNA-Seq experiment, with files in the `pasillaBamSubset` Bioconductor data package. However, the same functions can be used for DNA-Seq, ChIP-Seq, etc.
 
-```{r}
+```{r, message=FALSE}
 #biocLite("pasillaBamSubset")
 #biocLite("TxDb.Dmelanogaster.UCSC.dm3.ensGene")
 library(pasillaBamSubset)
@@ -69,11 +69,11 @@ colSums(assay(so1))
 The other parts of a `SummarizedExperiment`.
 
 ```{r}
-rowData(so1)
+rowData(so1) # rowData will become rowRanges in the next release of Bioc
 colData(so1)
 colData(so1)$sample <- c("one","two")
 colData(so1)
-metadata(rowData(so1))
+metadata(rowData(so1)) 
 ```
 
 We can do some basic exploratory data analysis of the counts:

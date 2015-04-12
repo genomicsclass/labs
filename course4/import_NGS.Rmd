@@ -122,7 +122,7 @@ The GenomicAlignments package is described with:
 
 > Provides efficient containers for storing and manipulating short genomic alignments (typically obtained by aligning short reads to a reference genome). This includes read counting, computing the coverage, junction detection, and working with the nucleotide content of the alignments.
 
-This package defines the classes and functions which are used to represent genomic alignments in Bioconductor. Two of the most important functions in GenomicAlignments are:
+This package defines the classes and functions which are used to represent genomic alignments in Biopconductor. Two of the most important functions in GenomicAlignments are:
 
 * readGAlignments - this and other similarly named functions read data from BAM files
 * summarizeOverlaps - this function simplifies counting reads in genomic ranges across one or more files
