@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 The following lab will describe how to count NGS reads which fall into genomic features. We want to end up with a count matrix which has rows corresponding to genomic ranges and columns which correspond to different experiments or samples. As an example, we will use an RNA-Seq experiment, with files in the `pasillaBamSubset` Bioconductor data package. However, the same functions can be used for DNA-Seq, ChIP-Seq, etc.
 
-```{r}
+```{r, message=FALSE}
 #biocLite("pasillaBamSubset")
 #biocLite("TxDb.Dmelanogaster.UCSC.dm3.ensGene")
 library(pasillaBamSubset)
@@ -40,11 +40,6 @@ We need the following libraries for counting BAM files.
 ```{r}
 library(Rsamtools)
 library(GenomicRanges)
-```
-
-Note: if you are using Bioconductor version 14, paired with R 3.1, you should also load this library. You do not need to load this library, and it will not be available to you, if you are using Bioconductor version 13, paired with R 3.0.x.
-
-```{r}
 library(GenomicAlignments)
 ```
 
@@ -71,14 +66,14 @@ head(assay(so1))
 colSums(assay(so1))
 ```
 
-The other parts of a `SummarizedExperiment`, as described in the lab in Week 2: Basic Bioconductor Infrastructure.
+The other parts of a `SummarizedExperiment`.
 
 ```{r}
-rowData(so1)
+rowData(so1) # rowData will become rowRanges in the next release of Bioc
 colData(so1)
 colData(so1)$sample <- c("one","two")
 colData(so1)
-metadata(rowData(so1))
+metadata(rowData(so1)) 
 ```
 
 We can do some basic exploratory data analysis of the counts:
@@ -117,19 +112,13 @@ Bioconductor packages:
 
 - `summarizeOverlaps` in the `GenomicAlignments` package
 
-<http://www.bioconductor.org/packages/devel/bioc/html/GenomicAlignments.html>
+http://www.bioconductor.org/packages/release/bioc/html/GenomicAlignments.html
 
 - `featureCounts` in the `Rsubread` package
 
 Liao Y, Smyth GK, Shi W., "featureCounts: an efficient general purpose program for assigning sequence reads to genomic features." Bioinformatics. 2014
-<http://www.ncbi.nlm.nih.gov/pubmed/24227677>
-<http://bioinf.wehi.edu.au/featureCounts/>
-
-- `easyRNAseq` package
-
-Delhomme N1, Padioleau I, Furlong EE, Steinmetz LM. "easyRNASeq: a bioconductor package for processing RNA-Seq data." Bioinformatics. 2012.
-<http://www.ncbi.nlm.nih.gov/pubmed/22847932>
-<http://www.bioconductor.org/packages/release/bioc/html/easyRNASeq.html>
+http://www.ncbi.nlm.nih.gov/pubmed/24227677
+http://bioinf.wehi.edu.au/featureCounts/
 
 Command line tools: 
 
@@ -139,11 +128,9 @@ Simon Anders, Paul Theodor Pyl, Wolfgang Huber.
 HTSeq — A Python framework to work with high-throughput sequencing data
 bioRxiv preprint (2014), doi: [10.1101/002824](http://dx.doi.org/10.1101/002824)
 
-<http://www-huber.embl.de/users/anders/HTSeq/doc/count.html>
+http://www-huber.embl.de/users/anders/HTSeq/doc/count.html
 
 - `bedtools` <https://code.google.com/p/bedtools/>
 
 - `bedops` <https://code.google.com/p/bedops/>
-
-
 
