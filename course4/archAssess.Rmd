@@ -1,0 +1,84 @@
+
+Q 4.4.1  Elaborate the visualization of GM12878 ESRRA peaks as follows
+
+seqlevels(GM12878, force=TRUE) = paste0("chr", 1:22)
+autoplot(GM12878, layout="karyogram", aes(colour=log(peak)))
+
+what is the difference between the bars colored in light
+blue vs those colored in darker blue or black?
+
+( ) light blue bars are located where ESSRA peaks are relatively low
+( ) light blue bars are located where ESSRA peaks are relatively high
+( ) light blue bars correspond to genomic locations with higher probability of ESRRA binding
+( ) light blue bars correspond to genomic locations with lower probability of ESRRA binding
+
+Q 4.4.2 An integrative visualization.  The following code combines
+information on two cell lines and the measured peak values.
+
+```{r fig=TRUE}
+library(ERBS)
+data(HepG2)
+data(GM12878)
+HepG2$cell = "HepG2"
+GM12878$cell = "Bcell"
+tot = c(GM12878, HepG2)
+tot$peak10 = tot$peak/10 # copes with automatic scale of y axis
+seqlevels(tot, force=TRUE) = paste0("chr", 1:22)
+library(ggbio)
+p = autoplot(seqinfo(tot))
+p = p + layout_karyogram(tot, aes(fill=cell, colour=cell), geom="rect") + 
+    scale_colour_manual(values = alpha(c("green", "red"), .1))
+p + layout_karyogram(tot, aes(x=start, y=peak10), ylim=c(15,30), 
+    geom="point", color="blue", size=.8)
+```
+
+Q 4.4.3 One chromosome is distinguished in this visualization by exhibiting a
+unusually dense set of binding events.
+
+Perform the following computations after computing `tot` as in the
+previous problem.
+```
+stot = split(tot, as.character(seqnames(tot)))
+w = sapply(stot, function(x) sum(width(x))) 
+sort(w/seqlengths(tot)[names(w)])
+```
+
+Pick the chromosomes with the least and most dense binding patterns.
+
+( ) chr1
+( ) chr5
+( ) chr13
+( ) chr17
+( ) chr21
+
+Q 4.5.1  Use the erbsViz package as created
+during the video to perform the following computation:
+
+```{r do1}
+library(erbsViz)
+jdemo = juxta()
+```
+
+Q 4.5.1  What is the class of `jdemo`?
+A Tracks
+E class(jdemo)
+
+Q 4.5.2  What slot of the jdemo object can be altered to change the
+background color of the cell line label?
+A label.bg.color
+E getClass(class(jdemo))
+
+Q 4.5.3  Modify the juxta function to allow selection of the
+background color of the label and reinstall the package.
+How many warnings are emitted by R CMD check for the revised package?
+```
+
+Q 4.6.1  Create Cen.ele10
+
+
+Q 4.6.2  length(seqlevels(Cen.ele10))
+
+
+Q 4.7.1 result of select count(*) from go_term
+
+Q 4.7.2 

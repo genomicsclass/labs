@@ -122,7 +122,7 @@ regions (purple), downstream promoter regions (brown).
 ```{r dopr,fig=TRUE, out.height="1100px", out.width="1100px"}
 par(mfrow=c(4,1), mar=c(4,2,2,2))
 plotGRanges(gir, xlim=c(0,60))
-plotGRanges(resize(gir,1), xlim=c(0,60))
+plotGRanges(resize(gir,1), xlim=c(0,60),col="green")
 plotGRanges(flank(gir,3), xlim=c(0,60), col="purple")
 plotGRanges(flank(gir,2,start=FALSE), xlim=c(0,60), col="brown")
 ```

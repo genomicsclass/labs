@@ -92,7 +92,7 @@ plotir(resize(ir, 1), 12)
 text(rep(15,12), 1:12, c("ir","shift(ir,-2)","narrow(ir,start=2)",
                          "narrow(ir,end=5)",
                          "flank(ir, start=T, both=F)",
-                         "flank(ir, start=F, both=T)",
+                         "flank(ir, start=F, both=F)",
                          "flank(ir, start=T, both=T)",
                          "ir * 2","ir * -2","ir + 2","ir - 2",
                          "resize(ir, 1)"), pos=4)
