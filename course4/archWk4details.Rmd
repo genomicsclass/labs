@@ -1,0 +1,139 @@
+---
+layout: page
+title: "Architecture: Overview of last of the four As"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+## Introduction to architectural concepts for Bioconductor
+
+The basic objective is to support an efficient and reliable flow of experimental
+and reference data.
+
+Start with
+
+- Assay outputs bound to sample-level data
+
+Pass to
+
+- Algorithms for preprocessing to remove technical artifacts
+
+Combine clean assay outputs with
+
+- Annotation on genome structure and function and on experimental design
+
+Continue with
+
+- Algorithms for inference on biological hypotheses
+
+Conclude with
+
+- Efficient and appropriate reporting, visualization and export
+
+As noted previously, your experiments and analyses may serve
+as data and annotation for future experiments in other labs.
+
+In this subunit we want to clarify some of the architectural
+principles underlying Bioconductor so that this objective of
+efficient and reliable data flow can be
+achieved *making good use of community collaboration and
+total commitment to open source*.
+
+## High level modules of the architecture
+
+### Volume and complexity are often transient
+
+### Data container design: S4 object-oriented programming discipline
+
+We have seen that `ExpressionSet` and `SummarizedExperiment` containers
+provide coherent access to voluminous data archives on hundreds or
+thousands of samples assayed on thousands of features.  The designs
+of these containers depend on the object system known
+as `S4` devised by John M. Chambers, with infrastructure defined in
+R's *methods* package.
+
+We define new classes using the `setClass` function to define the
+representation of instances of new classes, and, optionally,
+validity checks for new instances.  We create new software
+that works directly with classes by using `setGeneric` to define
+function names and argument sets, and `setMethod` to define new
+procedures whose behaviors are determined by the classes of
+input arguments.  This is a way of managing the complexity of the
+overall software collection, by allowing reuse of generic
+procedure names whose implementations cater for specific features
+of inputs.  This also enforces a minimal level of self-description for
+data structures used in R, and allows rich self-description when such
+is desired.
+
+This is not the only way to design data structures and create software 
+that works with Bioconductor, but this is formally the preferred way to
+do so.  Advanced training in R programming will address these issues
+in detail.
+
+This part of the discipline has proven very effective
+for assay representation
+and algorithm deployment.  Algorithm
+inputs can be checked for validity at runtime without developer
+code.  For more details see the recent paper ["Object-Oriented Programming,
+Functional Programming, and R"](http://arxiv.org/abs/1409.3531).
+
+### Targeted retrieval of external data
+
+R's familiar all-in-memory programming model is infeasible for general
+genomic annotation and raw data (e.g., FASTQ or BAM) for
+sequencing experiments.
+
+Primary approaches to targeted access: 
+
+- package-mediated access to RDBMS (e.g., Homo.sapiens), 
+
+- indexed local or remote flat files (TabixFile)
+
+
+### Functional programming discipline
+
+A basic commitment of functional programming methods is that
+computation occurs only through evaluation of functions, and these
+functions do not alter their inputs.  Thus the code
+
+```{r eval=FALSE}
+y = f(x)
+```
+
+produces an object `y` whose value depends only on the instructions
+defining `f` executed on `x`.  The computation does not affect the
+value of `x` and no feature of the computational environment other
+than the values of `x` and the instructions comprising `f` have
+any effect on the value of `y`.
+
+This approach to programming adds to verifiability of program
+correctness, because one can check the correctness of the individual
+instructions of `f` without regard for other elements of the
+computing environment.
+
+Again, functional programming is not the only approach to software
+creation for Bioconductor, but when the discipline can be followed,
+it pays off.
+
+### Software containers: R packages
+
+These are structured collections of folders and files as prescribed
+in [Writing R Extensions](http://cran.r-project.org/doc/manuals/r-release/R-exts.html).
+
+### Experiment containers: R data packages
+
+### Environment containers: AMI and Docker containers
+
+
+## Illustrations of the basic principles
+
+### SummarizedExperiment: composing with S4
+
+### Homo.sapiens: External RDBMS
+
+### RNA-seq: BAM to SummarizedExperiment via GenomicFiles
+ 
+### Large-scale experiment access: GEOquery and SRAdb
