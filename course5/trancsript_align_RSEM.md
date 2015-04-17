@@ -1,6 +1,20 @@
 # RSEM transcript alignment
 
-RSEM expects a GTF file with only exons, which are each assigned to a `transcript_id`. 
+RSEM homepage:
+
+http://deweylab.biostat.wisc.edu/rsem/
+
+prepare-reference help:
+
+http://deweylab.biostat.wisc.edu/rsem/rsem-prepare-reference.html
+
+calculate-expression help:
+
+http://deweylab.biostat.wisc.edu/rsem/rsem-calculate-expression.html
+
+RSEM expects a GTF file with only exons, which are each assigned to a `transcript_id`.
+
+Note that we only align to chromosome 1 for demonstration purposes.
 
 ```
 awk '$3 == "exon"' gtf/Homo_sapiens.GRCh38.79.chrom1.gtf > gtf/Homo_sapiens.GRCh38.79.chrom1.exons.gtf
@@ -16,3 +30,4 @@ rsem-prepare-reference --gtf gtf/Homo_sapiens.GRCh38.79.chrom1.exons.gtf genome/
 ```
 rsem-calculate-expression -p 12 --paired-end fastq/SRR1039508_1.fastq fastq/SRR1039508_2.fastq rsemGenome/GRCh38.79.chrom1 SRR1039508
 ```
+
