@@ -1,198 +1,48 @@
-# Basic inference for microarray data
+---
+layout: page
+title: Inference with bioc
+---
 
-We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
 
-```{r}
+
+# Introduction
+
+In this section we will cover inference in the context of genomics experiments. We apply some of the concepts we have covered in previous sections including t-tests, multiple comparisons and standard deviation estimates from hierarchical models. 
+
+We start by loading the pooling experiment data 
+
+
+```{r,message=FALSE}
 library(Biobase)
-# library(devtools)
-# install_github("dagdata","genomicsclass")
-library(dagdata)
-data(maPooling)
-e <- maPooling
-head(pData(e))
-
-# install_github("rafalib","ririzarr")
-library(rafalib)
-mypar()
-flipt <- function(m) t(m[nrow(m):1,])
-myimage <- function(m,...) {
-  image(flipt(m),xaxt="n",yaxt="n",...)
-  }
-
-myimage(as.matrix(pData(e)),col=c("white","black"),
-        xlab="experiments",
-        ylab="individuals",
-        main="phenoData")
-
-individuals <- which(rowSums(pData(e)) == 1)
-individuals
-
-## remove replicates
-names(individuals)
-individuals <- individuals[-grep("tr",names(individuals))]
-
-es <- e[,individuals]
-myimage(as.matrix(pData(es)),col=c("white","black"))
-
-es$group <- factor(as.numeric(grepl("b",colnames(es))))
-es$group
-```
-
-## Plots of gene expression across group
-
-Let's look at 2 pre-selected genes for illustration, which are the same genes from the lecture.
-
-```{r, fig.height=3, fig.width=6}
-i=11425
-j=11878
-mypar(1,2)
-stripchart(split(exprs(es)[i,], es$group), vertical=TRUE, method="jitter", col=c(1,2), main="Gene 1", xlab="Group", pch=15)
-stripchart(split(exprs(es)[j,], es$group), vertical=TRUE, method="jitter", col=c(1,2), main="Gene 2", xlab="Group", pch=15)
-```
-
-## Compute a t-test for each gene (row)
-
-```{r}
-# biocLite("genefilter")
-library(genefilter)
-tt <- rowttests(exprs(es), es$group)
-head(tt)
-head(tt,1)
-
-mean(exprs(es)[1,es$group == 0]) - mean(exprs(es)[1,es$group == 1]) 
-
-simple.t <- t.test(exprs(es)[1,] ~ es$group, var.equal=TRUE)
-simple.t$p.value
-
-tt$p.value[i]
-tt$p.value[j]
-
-mypar(1,1)
-with(tt, plot(dm, -log10(p.value), 
-              xlab="difference in means",
-              main="'Volcano' plot"))
-tt[with(tt, identify(dm, -log10(p.value))),]
-```
-
-## Compare with non-parametric tests
-
-```{r}
-es2 <- es[,c(1,2,3,13,14,15)]
-mypar(1,1)
-stripchart(exprs(es2)[1,] ~ es2$group, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
-t.test(exprs(es2)[1,] ~ es2$group)
-wilcox.test(exprs(es2)[1,] ~ es2$group)
-
-y <- 1:6
-x <- es2$group
-stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
-t.test(y ~ x)
-wilcox.test(y ~ x)
-
-y <- c(1:3,11:13)
-stripchart(y ~ x, vertical=TRUE, method="jitter", col=c(1,2), main="three samples per group", xlab="Group", ylab="", pch=15)
-t.test(y ~ x)
-wilcox.test(y ~ x)
-```
-
-## Basic inference on microarray using lmFit from limma package
-
-```{r}
-# biocLite("limma")
-library(limma)
-?lmFit
-design <- model.matrix(~ es$group)
-design
-fit <- lmFit(es, design)
-names(fit)
-head(coef(fit))
-tt[1,]
-# we will introduce the eBayes() function
-# in a later module called 'hierarchical modeling'
-# but we call it now as it is standard in microarray analysis
-fit <- eBayes(fit)
-names(fit)
-fit$p.value[1,]
-fit$t[1,]
-tt[1,]
-plot(-1 * tt$statistic, fit$t[,2],
-     xlab="rowttests", 
-     ylab="eBayes t")
-abline(0,1,col="red",lwd=3)
-head(topTable(fit, coef=2, sort.by="p"),3)
-```
-
-We have data for two strains of mice which we will refer to as strain 0 and 1. We want to know which genes are differentially expressed.  We extracted RNA from 12 randomely selected mice from each strain [CITE POOLING PAPER]. In one experiment we pooled the RNA from all individuals from each strain and then created 4 replicate samples from this pool. 
-
-```{r}
-library(Biobase,quietly=TRUE,verbose=FALSE)
-library(genefilter)
 library(maPooling)
 data(maPooling)
-pd=pData(maPooling)
-pooled=which(rowSums(pd)==12)
-y2=exprs(maPooling[,pooled])
-group2=factor(as.numeric(grepl("b",names(pooled))))
+individuals=which(rowSums(pd)==1)
 ```
-If we compare the mean expression between groups for each gene we find several showing consistent differences.
 
-```{r, fig.height=3, fig.width=6}
-###look at 2 pre-selected samples for illustration
-i=11425;j=11878
-library(rafalib)
-mypar(1,2)
-stripchart(split(y2[i,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 1",xlab="Group",pch=15)
-stripchart(split(y2[j,],group2),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 2",xlab="Group",pch=15)
-```
-Note that if we compute a t-test from these values we obtain highly significant results
-```{r}
-library(genefilter)
-tt2=rowttests(y2,group2)
-tt2$p.value[i]
-tt2$p.value[j]
-```
-But would these results hold up if we selected another 24 mice? Note that the equation for the t-test we presented in the previous section include the population standard deviations. Are these quantities measured here? Note that it is being replicated here is the experimental protocol. We have created four _technical replicates_ for each pooled sample. Gene 1 may be a highly variable gene within straing of mice while  Gene 2 a stable one, but we have no way of seeing this. 
-
-It turns we also have microarray data for each individual mice. For each strain we have 12 _biological replicates_. 
+And extracting the individual mice as well as their strain
 
 ```{r}
 individuals=which(rowSums(pd)==1)
-##remove replicates
 individuals=individuals[-grep("tr",names(individuals))]
 y=exprs(maPooling)[,individuals]
-group=factor(as.numeric(grepl("b",names(individuals))))
+g=factor(as.numeric(grepl("b",names(individuals))))
 ```
 
-We can compute the sample variance for each gene and compare to the standard deviation obtained with the technical replicates.
-```{r}
-technicalsd <- rowSds(y2[,group2==0])
-biologicalsd <- rowSds(y[,group==0])
-LIM=range(c(technicalsd,biologicalsd))
-mypar(1,1)
-boxplot(technicalsd,biologicalsd,names=c("technical","biological"),ylab="standard deviation")
-```
 
-Note the biological variance is much larger than the technical one. And also that the variability of variances is also for biological variance. Here are the two genes we showed above but now for each individual mouse 
+# T-test
 
-```{r, }
-mypar(1,2)
-stripchart(split(y[i,],group),vertical=TRUE,method="jitter",col=c(1,2),xlab="Gene 1",pch=15)
-points(c(1,2),tapply(y[i,],group,mean),pch=4,cex=1.5)
-stripchart(split(y[j,],group),vertical=TRUE,method="jitter",col=c(1,2),xlab="Gene 2",pch=15)
-points(c(1,2),tapply(y[j,],group,mean),pch=4,cex=1.5)
-```
+We can now apply a t-test to each gene using the `rowttest` function in the `genefilter` package
 
-Note the p-value tell a different story
 ```{r}
 library(genefilter)
-tt=rowttests(y,group)
-tt$p.value[i]
-tt$p.value[j]
+tt=rowttests(y,g)
 ```
 
-Which of these two genes do we feel more confident reporting as being differentially expressed? If another investigator takes another random sample of mice and tries the same experiment, which one do you think will replicate? Measuring biological vairability is essential if we want our conclusions to be about the strain of mice in general as opposed to the specific mice we have. 
-
-Now which genes do we report as stastitically significant? For somewhat arbitrary reasons, in science p-values of 0.01 and 0.05 are used as cutoff. In this particular example we get 
+Now which genes do we report as statistically significant? For somewhat arbitrary reasons, in science p-values of 0.01 and 0.05 are used as cutoff. In this particular example we get 
 
 ```{r}
 sum(tt$p.value<0.01)
@@ -200,20 +50,34 @@ sum(tt$p.value<0.05)
 ```
 
 
-## Multiple testing
-But do we report all these genes? Let's explore what happens if we split the first group into two, forcing the null hypothesis to be true
+# Multiple testing
+We described multiple testing in detail in course 3. Here we provide a quick summary.
+
+Do we report all these genes? Let's explore what happens if we split the first group into two, forcing the null hypothesis to be true
 
 ```{r}
 set.seed(0)
-shuffledIndex <- factor(sample(c(0,1),sum(group==0),replace=TRUE ))
-nullt <- rowttests(y[,group==0],shuffledIndex)
-sum(nullt$p.value<0.01)
-sum(nullt$p.value<0.05)
+shuffledIndex <- factor(sample(c(0,1),sum(g==0),replace=TRUE ))
+nulltt <- rowttests(y[,g==0],shuffledIndex)
+sum(nulltt$p.value<0.01)
+sum(nulltt$p.value<0.05)
 ```
-If we use the 0.05 cutoff we will be reporting 840 false postives. That's a lot! In a later module we will learn about _multiple testing_ corrections. In the meantime now that p-values lose their meaning when we are combing through a long list of tests for the largest ones. An important statistical fact to know is that when the null hypothesis is true for independent tests and we compute the p-value for each, then the distribution of these p-values is uniform: any interval between 0 and 1 has the same proportion. 
+
+If we use the 0.05 cutoff we will be reporting 840 false positives. We have described several ways to adjust for this include the `qvalue` method available in the `qvalue` package. After this adjustment we include a smaller list of genes.
 
 ```{r}
-mypar(1,2)
-hist(tt$p.value,xlab="p-values",main="p-values from experiment",freq=FALSE,ylim=c(0,4),col=3)
-hist(nullt$p.value,xlab="p-values",main="p-values from shuffled data",freq=FALSE,ylim=c(0,4),col=3)
+library(qvalues)
+qvals = qvalue(tt$p.value)$qvalue
+sum(qvals<0.05)
+sum(qvals<0.01)
 ```
+
+And now the null case generates fewer false positives:
+
+```{r}
+library(qvalues)
+nullqvals = qvalue(nulltt$p.value)$qvalue
+sum(nullqvals<0.05)
+sum(nullqvals<0.01)
+```
+
