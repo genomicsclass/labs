@@ -18,6 +18,30 @@ In this lab, we will focus on comparing the expression levels of genes across di
 
 We will work with a count matrix, which has genes along the rows and samples along the columns. The numbers in the matrix are the number of reads which could be uniquely aligned to the exons of a given gene for a given sample. We will demonstrate how to build a count matrix for a subset of reads from an experiment, and then use a pre-made count matrix, to avoid having students download the multi-gigabyte BAM files containing the aligned reads. 
 
+```{r}
+library("airway")
+dir <- system.file("extdata", package="airway", mustWork=TRUE)
+
+csvfile <- file.path(dir,"sample_table.csv")
+filenames <- file.path(dir, paste0(sampleTable$Run, "_subset.bam"))
+library("Rsamtools")
+bamfiles <- BamFileList(filenames)
+
+library("GenomicFeatures")
+
+gtffile <- file.path(dir,"Homo_sapiens.GRCh37.75_subset.gtf")
+(txdb <- makeTranscriptDbFromGFF(gtffile, format="gtf"))
+(genes <- exonsBy(txdb, by="gene"))
+library("GenomicAlignments")
+
+se <- summarizeOverlaps(features=genes, reads=bamfiles,
+                                                mode="Union",
+                                                singleEnd=FALSE,
+                                                ignore.strand=TRUE,
+                                                fragments=TRUE )
+(colData(se) <- DataFrame(sampleTable))
+```
+
 ## Visualizing sample-sample distances
 
 ```{r, message=FALSE}
