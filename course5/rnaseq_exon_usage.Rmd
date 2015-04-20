@@ -1,6 +1,6 @@
 # RNA-seq differential exon usage
 
-The [DEXSeq](http://bioconductor.org/packages/release/bioc/html/DEXSeq.html) package offers differential testing of exon usage within each gene. Here we will explore the R code used in a *DEXSeq* analysis. We omit the python calls for preparing the annotation and count tables, but these can be found in the vignette at the above URL. The python calls are generally along the lines of:
+The [DEXSeq](http://bioconductor.org/packages/release/bioc/html/DEXSeq.html) package offers differential testing of exon usage within each gene. Here we will explore the R code used in a *DEXSeq* analysis. We omit the python calls for preparing the annotation and count tables, but these can be found in the vignette at the above link. The python calls are generally along the lines of:
 
 ```
 python dexseq_prepare_annotation.py gtffile.gtf dexseq.gff
