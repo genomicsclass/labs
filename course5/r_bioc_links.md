@@ -2,7 +2,7 @@
 
 * [Central R Archive Network](http://cran.rstudio.com/)
 * [RStudio](http://www.rstudio.com/)
-* [Bioconductor](http://bioconductor.org/)
+* [Bioconductor](http://bioconductor.org/install)
 
 We will allow either R 3.1.3 or R 3.2.0 for this class, as we have been using R 3.1.3 for previous classes and R 3.2.0 was just released before this class started.
 

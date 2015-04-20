@@ -16,7 +16,9 @@ In this lab, we will focus on comparing the expression levels of genes across di
 
 ## Counting reads in genes
 
-We will work with a count matrix, which has genes along the rows and samples along the columns. The numbers in the matrix are the number of reads which could be uniquely aligned to the exons of a given gene for a given sample. We will demonstrate how to build a count matrix for a subset of reads from an experiment, and then use a pre-made count matrix, to avoid having students download the multi-gigabyte BAM files containing the aligned reads. 
+In this lab we will examine 8 samples from the airway package, which are from the paper by [Himes et al](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4057123/): "RNA-Seq Transcriptome Profiling Identifies CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in Airway Smooth Muscle Cells".
+
+This lab will focus on a summarized version of an RNA-seq experiment: a count matrix, which has genes along the rows and samples along the columns. The values in the matrix are the number of reads which could be uniquely aligned to the exons of a given gene for a given sample. We will demonstrate how to build a count matrix for a subset of reads from an experiment, and then use a pre-made count matrix, to avoid having students download the multi-gigabyte BAM files containing the aligned reads. 
 
 ```{r}
 library(airway)
@@ -36,7 +38,7 @@ txdb <- makeTranscriptDbFromGFF(gtf.file, format="gtf")
 exons.by.gene <- exonsBy(txdb, by="gene")
 ```
 
-```{r}
+```{r cache=TRUE}
 library(GenomicAlignments)
 se <- summarizeOverlaps(exons.by.gene, bam.list,
                         mode="Union",
@@ -46,15 +48,22 @@ se <- summarizeOverlaps(exons.by.gene, bam.list,
 colData(se) <- DataFrame(sample.table)
 ```
 
-```{r}
+```{r cache=TRUE}
 library(Rsubread)
-fc <- featureCounts(bam.files, annot.ext=gtf.file, isGTFAnnotationFile=TRUE)
+fc <- featureCounts(bam.files, annot.ext=gtf.file,
+                    isGTFAnnotationFile=TRUE, 
+                    isPaired=TRUE)
 names(fc)
 fc$counts
 ```
 
-## Visualizing sample-sample distances
+```{r}
+plot(assay(se)[,1], 
+     fc$counts[match(rownames(se),rownames(fc$counts)),1])
+abline(0,1)
+```
 
+## Visualizing sample-sample distances
 
 ```{r, message=FALSE}
 library(airway)
@@ -86,7 +95,9 @@ dds <- DESeqDataSet(airway, design= ~ cell + dex)
 We can also make a *DESeqDataSet* from a count matrix and column data.
 
 ```{r}
-dds2 <- DESeqDataSetFromMatrix(fc$counts, colData=sample.table, design=~ cell + dex)
+dds2 <- DESeqDataSetFromMatrix(fc$counts, 
+                               colData=sample.table, 
+                               design=~ cell + dex)
 ```
 
 
@@ -102,7 +113,7 @@ mypar()
 
 ### Normalization for sequencing depth
 
-The following estimates size factors to account for differences in sequencing depth, and is only necessary to make the `logcounts` object below.
+The following estimates size factors to account for differences in sequencing depth, and is only necessary to make the `log.norm.counts` object below.
 
 ```{r}
 dds <- estimateSizeFactors(dds)
@@ -112,35 +123,58 @@ plot(sizeFactors(dds), colSums(counts(dds)))
 abline(lm(colSums(counts(dds)) ~ sizeFactors(dds) + 0))
 ```
 
+Size factors are calculated by the median ratio of samples to a pseudo-sample (the geometric mean of all samples). In other words, for each sample, we take the exponent of the median of the log ratios in this histogram.
+
 ```{r}
-logcounts <- log2(counts(dds, normalized=TRUE) + 1)
+loggeomeans <- rowMeans(log(counts(dds)))
+hist(log(counts(dds)[,1]) - loggeomeans, 
+     col="grey", main="", xlab="", breaks=40)
+```
+
+Make a matrix of log normalized counts:
+
+```{r}
+log.norm.counts <- log2(counts(dds, normalized=TRUE) + 1)
 ```
 
 ```{r}
-boxplot(logcounts)
+rs <- rowSums(counts(dds))
+mypar(1,2)
+boxplot(log2(counts(dds)[rs > 0,]+1)) # not normalized
+boxplot(log.norm.counts[rs > 0,]) # normalized
 ```
+
+```{r}
+plot(log.norm.counts[,1:2], cex=.1)
+```
+
 
 ### Stabilizing count variance
 
-Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the sample values for genes with low counts. 
-
+Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the values for genes with very low counts; for genes with medium and high counts, the `rlog` is very close to `log2`.
 
 ```{r}
 rld <- rlog(dds)
 ```
 
 ```{r}
+plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
+```
+
+```{r}
 library(vsn)
 mypar(1,2)
-meanSdPlot(logcounts, ranks=FALSE, ylim=c(0,3))
-meanSdPlot(assay(rld), ranks=FALSE, ylim=c(0,3))
+meanSdPlot(log.norm.counts, ranks=FALSE, ylim=c(0,3), main="log2")
+meanSdPlot(assay(rld), ranks=FALSE, ylim=c(0,3), main="rlog")
 ```
 
 Principal components plots:
 
 ```{r}
 mypar()
-pc <- prcomp(t(logcounts))
+rv <- apply(log.norm.counts, 1, var)
+topgenes <- head(order(rv, decreasing=TRUE),500)
+pc <- prcomp(t(log.norm.counts[topgenes,]))
 plot(pc$x[,1], pc$x[,2], 
      col = colData(dds)$dex, 
      pch = as.integer(colData(dds)$cell))
@@ -166,12 +200,9 @@ ggplot(data, aes(PC1,PC2,col=dex,shape=cell)) + geom_point() +
 ```
 
 ```{r}
-library(rafalib)
-mypar(2,2)
-plot(hclust(dist(t(logcounts))), labels=colData(dds)$dex)
-plot(logcounts[,1], logcounts[,2], cex=.1)
+mypar(1,2)
+plot(hclust(dist(t(log.norm.counts))), labels=colData(dds)$dex)
 plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$dex)
-plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
 ```
 
 ## Differential gene expression
