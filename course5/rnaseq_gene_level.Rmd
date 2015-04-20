@@ -75,22 +75,23 @@ rowData(airway)
 head(assay(airway))
 ```
 
-### Normalization
+### Creating a DESeqDataSet object
 
-We will use the `DESeq2` package to normalize the sample for sequencing depth. For now, don't worry about the `design` argument. The *DESeqDataSet* object is just an extension of the *SummarizedExperiment* object.
+We will use the `DESeq2` package to normalize the sample for sequencing depth. The *DESeqDataSet* object is just an extension of the *SummarizedExperiment* object. We specify an experimental *design* here, for later use, although for estimating size factors, we could just use `~ 1` as a default design. The variables are columns of the `colData`, and the `+` indicates that for differential expression analysis we want to compare levels of `dex` while controlling for the `cell` differences.
 
 ```{r}
-# biocLite("DESeq2")
 library(DESeq2)
 dds <- DESeqDataSet(airway, design= ~ cell + dex)
 ```
-We could also have built this object from the count matrix and column data.
+We can also make a *DESeqDataSet* from a count matrix and column data.
 
 ```{r}
 dds2 <- DESeqDataSetFromMatrix(fc$counts, colData=sample.table, design=~ cell + dex)
 ```
 
-This code chunk is not strictly necessary, but helps to make nicer plots below with large axis labels.
+
+
+This code chunk is not necessary, but helps to make nicer plots below with large axis labels (`mypar(1,2)` can be substituted with `par(mfrow=c(1,2))` below).
 
 ```{r}
 # library(devtools)
@@ -98,6 +99,8 @@ This code chunk is not strictly necessary, but helps to make nicer plots below w
 library(rafalib)
 mypar()
 ```
+
+### Normalization for sequencing depth
 
 The following estimates size factors to account for differences in sequencing depth, and is only necessary to make the `logcounts` object below.
 
@@ -113,7 +116,13 @@ abline(lm(colSums(counts(dds)) ~ sizeFactors(dds) + 0))
 logcounts <- log2(counts(dds, normalized=TRUE) + 1)
 ```
 
-Now we will use a normalization method, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the sample values for genes with low counts. 
+```{r}
+boxplot(logcounts)
+```
+
+### Stabilizing count variance
+
+Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the sample values for genes with low counts. 
 
 
 ```{r}
