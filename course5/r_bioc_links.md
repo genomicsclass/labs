@@ -27,3 +27,10 @@ biocLite(c("pasilla","DEXSeq"))
 
 We will provide a list of all packages we will use [here]().
 
+If you want to see what version of Biocondutor you are using and whether your packages are up to date:
+
+```
+library(BiocInstaller)
+biocVersion()
+biocValid()
+```
