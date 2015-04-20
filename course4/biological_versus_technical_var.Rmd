@@ -23,19 +23,18 @@ It is important not to confuse biological and technical variability when perform
 The dataset we will study includes data from gene expression arrays. In this experiment, RNA was extract from 12 randomly selected mice from two strain. All 24 samples were hybridized to micro arrays but we also formed pools, including two pools from with the RNA from all twelve mice from each of the two strains. Other pools were also created, as we will see below, but we will ignore these here.
 
 We will need the following library which you need to install if you have not done so already:
-```{r}
+```{r,eval=FALSE}
 library(devtools)
 install_github("genomicsclass/maPooling")
 ```
 
  We can see the experimental design using the `pData` function. Each row represents a sample and the column are the mice. A 1 in cell $i,j$ indicates that RNA from mouse $j$ was included in sample $i$. The strain can be identified from the row names (not a recommended approach)
  
-```{r}
+```{r,message=FALSE}
 library(Biobase)
 library(maPooling)
 data(maPooling)
-e <- maPooling
-head(pData(e))
+head(pData(maPooling))
 ```
 
 Below we use create an image to illustrate which mice were included in which samples:
@@ -47,7 +46,7 @@ myimage <- function(m,...) {
   image(flipt(m),xaxt="n",yaxt="n",...)
   }
 
-myimage(as.matrix(pData(e)),col=c("white","black"),
+myimage(as.matrix(pData(maPooling)),col=c("white","black"),
         xlab="experiments",
         ylab="individuals",
         main="phenoData")
@@ -70,7 +69,6 @@ If we compare the mean expression between groups for each gene we find several s
 ```{r, fig.height=3, fig.width=6}
 ###look at 2 pre-selected samples for illustration
 i=11425;j=11878
-library(rafalib)
 pooled_y=exprs(maPooling[,pooled])
 pooled_g=factor(as.numeric(grepl("b",names(pooled))))
 mypar2(1,2)

@@ -7,6 +7,9 @@ title: Gene set analysis
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
+
+<a name="genesetanalysis"></a>
+
 # Gene Set Analysis
 
 In these units we learn the statistics behind gene set analysis. Throughout the unit you should keep three important steps in mind that are all important yet can be kept separated from each other. These are
@@ -24,38 +27,32 @@ source("http://www.bioconductor.org/biocLite.R")
 biocLite("GSEABase")
 ```
 
-```{r}
+We will need these packages:
+```{r,message=FALSE}
 library(rafalib)
 library(GSEABase)
 ```
 
-In a previous unit we constructed a dataset to demonstrate batch effect adjustment methods. One of the methods we applied was SVA which produces estimates and standard errors for our measurements of interest. 
+In previous sections we have used a dataset comparing males and females. 
+We will need the following package which is available from the class github repo:
+```{r,eval=FALSE}
+library(devtools)
+install_github("genomicsclass/GSE5859Subset")
+```
 
-Let's construct the data set again (we won't show the code)
+We constructed this data to include batch effect so we 
+correct for them using SVA:
 
-```{r, echo=FALSE}
-library(hgfocus.db) ##get the gene chromosome
-library(dagdata)
-data("GSE5859")
-chr<-mget(featureNames(e),hgfocusCHRLOC)
-chr <- sapply(chr,function(x){ tmp<-names(x[1]); ifelse(is.null(tmp),NA,paste0("chr",tmp))})
-y<- colMeans(exprs(e)[which(chr=="chrY"),])
-batch <- format(pData(e)$date,"%y%m")
-sex <- ifelse(y<4.5,"F","M")
-set.seed(1)
-N <- 12; N1 <-3; M<-12; M1<-9
-ind <- c(sample(which(batch=="0506" & sex=="F"),N1),
-sample(which(batch=="0510" & sex=="F"),N-N1),
-sample(which(batch=="0506" & sex=="M"),M1),
-sample(which(batch=="0510" & sex=="M"),M-M1))
-dat <- exprs(e)[,ind]
-X <- sex[ind] ## the covariate
+```{r,message=FALSE}
+library(GSE5859Subset)
+data(GSE5859Subset)
 library(sva)
 library(limma)
+X = sampleInfo$group
 mod<-model.matrix(~X)
-svafit <- sva(dat,mod)
+svafit <- sva(geneExpression,mod)
 svaX<-model.matrix(~X+svafit$sv)
-lmfit <- lmFit(dat,svaX)
+lmfit <- lmFit(geneExpression,svaX)
 tt<-lmfit$coef[,2]*sqrt(lmfit$df.residual)/(2*lmfit$sigma)
 pval<-2*(1-pt(abs(tt),lmfit$df.residual[1]))
 qval <- p.adjust(pval,"BH")
@@ -90,7 +87,7 @@ and we can access the ENTREZ ids in the following way:
 head(geneIds(gsets[["chryq11"]]))
 ```
 
-Now to apply this to our data we have to map these IDS to Affymetrix IDs. We will write a simple function that takes a expressionSet and 
+Now to apply this to our data we have to map these IDS to Affymetrix IDs. We will write a simple function that takes a Expression Set and 
 
 ```{r}
 mapGMT2Affy <- function(object,gsets){
@@ -109,7 +106,13 @@ mapGMT2Affy <- function(object,gsets){
   names(indexes)<-names(gsets)
   return(indexes)
 }
-gsids<-mapGMT2Affy(e,gsets) ##can safely ignore the warning
+##create an Expression Set
+rownames(sampleInfo)<- colnames(geneExpression)
+e=ExpressionSet(assay=geneExpression,
+                phenoData=AnnotatedDataFrame(sampleInfo),
+                annotation="hgfocus")
+##can safely ignore the warning
+gsids<-mapGMT2Affy(e,gsets) 
 ```
 
 ## Approaches based on association tests
@@ -127,7 +130,7 @@ A problem here is that an FDR of 0.25 is an arbitrary cutoff. Why not 0.05 or 0.
 
 ```{r}
 library(rafalib)
-mypar(1,1)
+mypar2(1,1)
 qs<-seq(0,1,len=length(tt)+1)-1/(2*length(tt));qs<-qs[-1]
 qqplot(qt(qs,lmfit$df.resid),tt,ylim=c(-10,10),xlab="Theoretical quantiles",ylab="Observed") ##note we leave some of the obvious ones out
 abline(0,1)
@@ -136,13 +139,15 @@ abline(0,1)
 A summary of this approach to gene set analysis is provided by 
 [Goeman and Bühlmann 2006](#foot).
 
+<a name="summaries"></a>
+
 ## Gene set summary statistics
 
 Most current approaches to gene sets analysis do not divide genes into differentially and non-differentially expressed. Instead, we make use of a statistic such as the t-test. To see how this is more powerful that dichotomizing the gene list, suppose we ask the question: do some genes escape X inactivation? Instead of creating a table as we did above, instead we look at the distribution of t-statistics for the first group in the X chromosome
 
 ```{r}
 ind <- gsids[["chrxp11"]]
-mypar(1,1)
+mypar2(1,1)
 plot(density(tt[-ind]),xlim=c(-7,7),main="",xlab="t-stat",sub="",lwd=4)
 lines(density(tt[ind],bw=.7),col=2,lty=2,lwd=4)
 rug(tt[ind],col=2)
@@ -165,7 +170,7 @@ wilcox <- t(sapply(gsids,function(i){
   return(c(z,tmp$p.value))
   } else return(rep(NA,2))  
   }))
-mypar(1,1)
+mypar2(1,1)
 cols <- rep(1,nrow(wilcox))
 cols[grep("chrx",rownames(wilcox))]<-2
 cols[grep("chry",rownames(wilcox))]<-3
@@ -200,6 +205,8 @@ Several methods are based on summaries designed to test shifts in means: for exa
 
 Note that we can construct other scores to test other alternative hypothesis. For example, we can test for [changes in variances](http://www.ncbi.nlm.nih.gov/pubmed/?term=20048385) and general changes in distribution [[1](http://www.ncbi.nlm.nih.gov/pubmed/12808457)], [[2](http://www.ncbi.nlm.nih.gov/pubmed/16199517)].
 
+<a name="testing"></a>
+
 ## Hypothesis testing for gene sets
 
 The normal approximation stated above for $\sqrt{N} \bar{t}$ that the t-statistics are independent and identically distributed. For example, the second equality here: 
@@ -212,16 +219,17 @@ assumes independence. However, even under the null we may expect gene sets to co
 
 ```{r}
 N <- sapply(gsids,length)
-ind1<-which(X=="F")
-ind2<-which(X=="M")
+ind1<-which(X==0)
+ind2<-which(X==1)
 corrs <- t(sapply(gsids,function(ind){
   if(length(ind)>=2){
-    cc1<-cor(t(dat[ind,ind1]))
-    cc2<-cor(t(dat[ind,ind2]))
+    cc1<-cor(t(geneExpression[ind,ind1]))
+    cc2<-cor(t(geneExpression[ind,ind2]))
   return(c(median(cc1[lower.tri(cc1)]),
     median(cc2[lower.tri(cc2)])))
   } else return(c(NA,NA))
 }))
+mypar2(1,1)
 plot(corrs[N>10,],xlim=c(-1,1),ylim=c(-1,1),xlab="Correlation within females",ylab="Correlation within males")
 abline(h=0,v=0,lty=2)
 ```
@@ -279,6 +287,7 @@ In this unit we have used the average t-statistic as a simple example of a summa
 
 Even after adjusting the average t-statistic with the inflation factor, the null distribution may not hold. For example, the original sample size and gene set size may be too small for the assumption that the average t-statistics are normal. In the next unit we demonstrate how we can use permutations to estimate the null distribution without parametric assumptions.
 
+<a name="permutations"></a>
 
 ## Permutations 
 When outcome of interest permits it and enough samples and are available an alternative to parametric tests is to perform gene set specific permutation test. This approach is implemented in several methods [[1](http://www.ncbi.nlm.nih.gov/pubmed/16199517)], [[2](http://www.ncbi.nlm.nih.gov/pubmed/16174746)]. For most enrichment scores one can create null distributions using permutations. For example, here we perform a permutation test for the simple average t-statistic summary:
@@ -290,7 +299,7 @@ B <- 10000 ##takes a few minutes
 null <- sapply(1:B,function(b){
  nullX<- sample(X)
  nullsvaX<-model.matrix(~nullX+svafit$sv) ##note that we are not recomupting the surrogate values. 
- nulllmfit <- lmFit(dat,nullsvaX)
+ nulllmfit <- lmFit(geneExpression,nullsvaX)
  nulltt<-nulllmfit$coef[,2]*sqrt(nulllmfit$df.residual)/(2*nulllmfit$sigma)
  nullavgt <- sapply(gsids,function(i) sqrt(length(i))*mean(nulltt[i]))
  return(nullavgt)
