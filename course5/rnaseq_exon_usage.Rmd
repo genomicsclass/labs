@@ -7,7 +7,11 @@ python dexseq_prepare_annotation.py gtffile.gtf dexseq.gff
 python dexseq_count.py dexseq.gff sample1.sam sample1.txt
 ```
 
-Once we have repeated the `dexseq_count` script for each sample, we can read the data into R using the code chunks below. As we are working with pre-prepared data, we first point to these files which live within the *pasilla* package. We will run DEXSeq on a subset of the genes, for demonstration purposes.
+Once we have repeated the `dexseq_count` script for each sample, we can read the data into R using the code chunks below. As we are working with pre-prepared data, we first point to these files which live within the *pasilla* package. 
+
+The *pasilla* package contains counts from an experiment by [Brooks et al](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3032923/)
+
+We will run DEXSeq on a subset of the genes, for demonstration purposes.
 
 ```{r}
 library("pasilla")
