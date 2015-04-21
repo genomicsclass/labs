@@ -1,4 +1,4 @@
-# Exploring cufflinks output with cummeRbund
+# Exploring Cufflinks output with cummeRbund
 
 Here we show the exploratory plots offered by the [cummeRbund](http://www.bioconductor.org/packages/release/bioc/html/cummeRbund.html) package. These plots require loading in a directory in which results from a [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/) analysis has been run. Follow the vignette in the above link in order in order to perform a Cufflinks gene- and isoform-level analysis. From the vignette:
 
@@ -27,8 +27,8 @@ csScatterMatrix(isoforms(cuff))
 ```
 
 ```{r}
-csDendro(genes(cuff),replicates=T)
-csDendro(isoforms(cuff),replicates=T)
+csDendro(genes(cuff),replicates=TRUE)
+csDendro(isoforms(cuff),replicates=TRUE)
 ```
 
 ```{r}
