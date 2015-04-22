@@ -252,7 +252,7 @@ We will illustrate some of these ideas in the video.  An important
 bit of knowledge is that you can sort a bed file, on a unix system,
 with the command `sort -k1,1 -k2,2g -o ...`, and this is a necessary
 prelude to Tabix indexing.  Some details on the sort utility for
-unix systems are available in (Wikipedia)[http://en.wikipedia.org/wiki/Sort_(Unix)]; you can also use `man sort`
+unix systems are available in [Wikipedia](http://en.wikipedia.org/wiki/Sort_(Unix)); you can also use `man sort`
 on most unix systems for details.
 
 Here's how we carried out the activities of the video:
