@@ -207,7 +207,7 @@ dbListTables( GO.db$conn )
 
 Everything else that we are concerned with involves constructing
 SQL queries and executing them in the database.  You can
-have a look at the SQLite web page for background and details
+have a look at the [SQLite web page](http://www.sqlite.org) for background and details
 on valid query syntax.
 
 Here we sample records from the table that manages
