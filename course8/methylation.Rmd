@@ -13,7 +13,7 @@ In this unit we will show an example of analyzing methylation data. We will use 
 
 Let's begin by loading the data
 ```{r}
-# devtools::install_github("coloncancermeth","genomicsclass")
+# devtools::install_github("coloncancermeth/genomicsclass")
 library(coloncancermeth)
 data(coloncancermeth)
 ```
