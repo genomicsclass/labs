@@ -16,36 +16,56 @@ In this lab, we will focus on comparing the expression levels of genes across di
 
 ## Counting reads in genes
 
-We will work with a count matrix, which has genes along the rows and samples along the columns. The numbers in the matrix are the number of reads which could be uniquely aligned to the exons of a given gene for a given sample. We will demonstrate how to build a count matrix for a subset of reads from an experiment, and then use a pre-made count matrix, to avoid having students download the multi-gigabyte BAM files containing the aligned reads. 
+In this lab we will examine 8 samples from the airway package, which are from the paper by [Himes et al](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4057123/): "RNA-Seq Transcriptome Profiling Identifies CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in Airway Smooth Muscle Cells".
+
+This lab will focus on a summarized version of an RNA-seq experiment: a count matrix, which has genes along the rows and samples along the columns. The values in the matrix are the number of reads which could be uniquely aligned to the exons of a given gene for a given sample. We will demonstrate how to build a count matrix for a subset of reads from an experiment, and then use a pre-made count matrix, to avoid having students download the multi-gigabyte BAM files containing the aligned reads. 
 
 ```{r}
-library("airway")
+library(airway)
 dir <- system.file("extdata", package="airway", mustWork=TRUE)
+csv.file <- file.path(dir, "sample_table.csv")
+sample.table <- read.csv(csv.file, row.names=1)
+bam.files <- file.path(dir, paste0(sample.table$Run, "_subset.bam"))
+gtf.file <- file.path(dir, "Homo_sapiens.GRCh37.75_subset.gtf")
+```
 
-csvfile <- file.path(dir,"sample_table.csv")
-filenames <- file.path(dir, paste0(sampleTable$Run, "_subset.bam"))
-library("Rsamtools")
-bamfiles <- BamFileList(filenames)
+```{r}
+library(Rsamtools)
+bam.list <- BamFileList(bam.files)
+library(GenomicFeatures)
+# this will be renamed makeTxDb... in Bioc 3.1
+txdb <- makeTranscriptDbFromGFF(gtf.file, format="gtf")
+exons.by.gene <- exonsBy(txdb, by="gene")
+```
 
-library("GenomicFeatures")
+```{r cache=TRUE}
+library(GenomicAlignments)
+se <- summarizeOverlaps(exons.by.gene, bam.list,
+                        mode="Union",
+                        singleEnd=FALSE,
+                        ignore.strand=TRUE,
+                        fragments=TRUE)
+colData(se) <- DataFrame(sample.table)
+```
 
-gtffile <- file.path(dir,"Homo_sapiens.GRCh37.75_subset.gtf")
-(txdb <- makeTranscriptDbFromGFF(gtffile, format="gtf"))
-(genes <- exonsBy(txdb, by="gene"))
-library("GenomicAlignments")
+```{r cache=TRUE}
+library(Rsubread)
+fc <- featureCounts(bam.files, annot.ext=gtf.file,
+                    isGTFAnnotationFile=TRUE, 
+                    isPaired=TRUE)
+names(fc)
+fc$counts
+```
 
-se <- summarizeOverlaps(features=genes, reads=bamfiles,
-                                                mode="Union",
-                                                singleEnd=FALSE,
-                                                ignore.strand=TRUE,
-                                                fragments=TRUE )
-(colData(se) <- DataFrame(sampleTable))
+```{r}
+plot(assay(se)[,1], 
+     fc$counts[match(rownames(se),rownames(fc$counts)),1])
+abline(0,1)
 ```
 
 ## Visualizing sample-sample distances
 
 ```{r, message=FALSE}
-# biocLite("airway")
 library(airway)
 data(airway)
 airway
@@ -64,32 +84,41 @@ rowData(airway)
 head(assay(airway))
 ```
 
-### Normalization
-
-We will use the `DESeq2` package to normalize the sample for sequencing depth. For now, don't worry about the `design` argument. The *DESeqDataSet* object is just an extension of the *SummarizedExperiment* object.
+This code chunk is not necessary, but helps to make nicer plots below with large axis labels (`mypar(1,2)` can be substituted with `par(mfrow=c(1,2))` below).
 
 ```{r}
-# biocLite("DESeq2")
+# library(devtools)
+# install_github("ririzarr/rafalib")
+library(rafalib)
+mypar()
+```
+
+Note that, on the un-transformed scale, the high count genes have high variance. That is, in the following scatter plot, the points start out in a tight cone and then fan out toward the top right. This is a general property of counts, that the variance typically increases with the expected value. We will explore different scaling and transformations options below.
+
+```{r}
+plot(assay(airway)[,1:2], cex=.1)
+```
+
+### Creating a DESeqDataSet object
+
+We will use the `DESeq2` package to normalize the sample for sequencing depth. The *DESeqDataSet* object is just an extension of the *SummarizedExperiment* object. We specify an experimental *design* here, for later use, although for estimating size factors, we could just use `~ 1` as a default design. The variables are columns of the `colData`, and the `+` indicates that for differential expression analysis we want to compare levels of `dex` while controlling for the `cell` differences.
+
+```{r}
 library(DESeq2)
-dds <- DESeqDataSet(airway, design = ~ cell + dex)
+dds <- DESeqDataSet(airway, design= ~ cell + dex)
 ```
-
-We could also have built this object from the count matrix and column data, but this deconstructing and re-constructing is unnecessary when we have a *SummarizedExperiment* object.
-
-```{r, eval=FALSE}
-countdata <- assay(airway)
-coldata <- colData(airway) 
-dds <- DESeqDataSetFromMatrix(countdata, coldata, ~ cell + dex)
-```
-
-Remove the rows with one read or less:
+We can also make a *DESeqDataSet* from a count matrix and column data.
 
 ```{r}
-rs <- rowSums(counts(dds))
-dds <- dds[rs > 1,]
+dds2 <- DESeqDataSetFromMatrix(fc$counts, 
+                               colData=sample.table, 
+                               design=~ cell + dex)
 ```
 
-The following estimates size factors to account for differences in sequencing depth.
+
+### Normalization for sequencing depth
+
+The following estimates size factors to account for differences in sequencing depth, and is only necessary to make the `log.norm.counts` object below.
 
 ```{r}
 dds <- estimateSizeFactors(dds)
@@ -99,72 +128,183 @@ plot(sizeFactors(dds), colSums(counts(dds)))
 abline(lm(colSums(counts(dds)) ~ sizeFactors(dds) + 0))
 ```
 
-Now we can divide the columns by the size factor and take the log2 of these normalized counts plus a pseudocount of 1. We transpose in order to run PCA.
+Size factors are calculated by the median ratio of samples to a pseudo-sample (the geometric mean of all samples). In other words, for each sample, we take the exponent of the median of the log ratios in this histogram.
 
 ```{r}
-logcounts <- log2(counts(dds, normalized=TRUE) + 1)
-rld <- rlog(dds)
+loggeomeans <- rowMeans(log(counts(dds)))
+hist(log(counts(dds)[,1]) - loggeomeans, 
+     col="grey", main="", xlab="", breaks=40)
+```
+
+Make a matrix of log normalized counts:
+
+```{r}
+log.norm.counts <- log2(counts(dds, normalized=TRUE) + 1)
 ```
 
 ```{r}
-biocLite("vsn")
+rs <- rowSums(counts(dds))
+mypar(1,2)
+boxplot(log2(counts(dds)[rs > 0,]+1)) # not normalized
+boxplot(log.norm.counts[rs > 0,]) # normalized
+```
+
+```{r}
+plot(log.norm.counts[,1:2], cex=.1)
+```
+
+
+### Stabilizing count variance
+
+Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the log-transformed counts for genes with very low counts. For genes with medium and high counts, the `rlog` is very close to `log2`. For further details, see the section in the [DESeq2 paper](#foot).
+
+```{r}
+rld <- rlog(dds)
+plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
+```
+
+```{r}
 library(vsn)
 mypar(1,2)
-meanSdPlot(logcounts, ranks=FALSE, ylim=c(0,3))
-meanSdPlot(assay(rld), ranks=FALSE, ylim=c(0,3))
+meanSdPlot(log.norm.counts, ranks=FALSE, ylim=c(0,3), main="log2")
+meanSdPlot(assay(rld), ranks=FALSE, ylim=c(0,3), main="rlog")
 ```
 
-```{r}
-pc <- prcomp(t(logcounts))
-pc2 <- prcomp(t(assay(rld)))
-```
-
-A couple EDA plots:
+Principal components plots:
 
 ```{r}
-library(rafalib)
-mypar(1,3)
+mypar()
+rv <- apply(log.norm.counts, 1, var)
+topgenes <- head(order(rv, decreasing=TRUE),500)
+pc <- prcomp(t(log.norm.counts[topgenes,]))
 plot(pc$x[,1], pc$x[,2], 
-     col=colData(dds)$dex, 
-     pch=as.numeric(colData(dds)$cell)+15)
-plot(hclust(dist(t(logcounts))), labels=colData(dds)$dex)
-plot(logcounts[,1], logcounts[,2], cex=.1)
+     col = colData(dds)$dex, 
+     pch = as.integer(colData(dds)$cell))
 ```
 
-Now we will use a normalization method, which is similar to the variance stablizing normalization method mentioned in Week 5. It uses the variance model to shrink together the sample values for lowly expressed genes with high variance. 
+```{r}
+plotPCA(rld, intgroup="dex")
+plotPCA(rld, intgroup=c("dex","cell"))
+```
 
-The data is in the `assay` slot, and needs to be transposed as before to run PCA.
-
-We can look at the same plots now using this transformed data.
+We can make this plot even nicer using custom code from the *ggplot2* library:
 
 ```{r}
-mypar(1,3)
-plot(pc2$x[,1], pc2$x[,2],
-     col=colData(rld)$dex, 
-     pch=as.numeric(colData(rld)$cell)+15)
+library(ggplot2)
+(data <- plotPCA(rld, intgroup=c("dex","cell"), returnData=TRUE))
+(percentVar <- 100*round(attr(data, "percentVar"),2))
+```
+
+```{r}
+makeLab <- function(x,pc) paste0("PC",pc,": ",x,"% variance")
+ggplot(data, aes(PC1,PC2,col=dex,shape=cell)) + geom_point() +
+  xlab(makeLab(percentVar[1],1)) + ylab(makeLab(percentVar[2],2))
+```
+
+```{r}
+mypar(1,2)
+plot(hclust(dist(t(log.norm.counts))), labels=colData(dds)$dex)
 plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$dex)
-plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
 ```
 
 ## Differential gene expression
 
-A number of methods for assessing differential gene expression from RNA-Seq counts use the Negative Binomial distribution to make probabilistic statements about the differences seen in an experiment. A few such methods are [edgeR](#foot), [DESeq](#foot), [DSS](#foot) and *many* others. A very incomplete list of other methods is provided in the [footnotes](#foot).
+### Modeling raw counts with normalization
 
-We will use `DESeq2` to perform differential gene expression on the counts. This also uses a Negative Binomial distribution to model the counts. It performs a similar step to `limma`, in using the variance of all the genes to improve the variance estimate for each individual gene. In addition, it shrinks the high variance fold changes, which will be seen in the resulting MA-plot.
+We will now perform *differential gene expression* on the counts, to try to find genes in which the differences in expected counts across samples due to the condition of interest rises above the biological and technical variance we observe. 
 
-First, we setup the `design` of the experiment, so that differences will be considered across time and protocol variables. The last variable is used for the default results tables and plots, and we make sure the "control" level is the first level, such that log fold changes will be treatment over control, and not control over treatment.
+We will use an overdispersed Poisson distribution -- called the negative binomial -- to model the *raw counts* in the count matrix. The model will include the *size factors* into account to adjust for sequencing depth. The formula will look like:
+
+$$ K_{ij} \sim \text{NB}(s_{ij} q_{ij}, \alpha_i ) $$
+
+where $K_{ij}$ is a single raw count in our count table, $s_{ij}$ is a size factor or more generally a normalization factor, $q_{ij}$ is proportional to gene expression (what we want to model with our design variables), and $\alpha_i$ is a *dispersion parameter*.
+
+Why bother modeling *raw counts*, rather than dividing out the sequencing depth and working with the normalized counts? In other words, why put the $s_{ij}$ on the right side of the equation above, rather than dividing out on the left side and modeling $K_{ij} / s_{ij}$. The reason is that, with the raw count, we have knowledge about the link between the expected value and its variance. So we prefer the first equation below to the second equation, because with the first equation, we have some additional information about the variance of the quantity on the left hand side.
+
+$$ K_{ij} &\sim \text{NB}(\mu_{ij} = s_{ij} q_{ij} ) $$
+
+$$ \frac{K_{ij}}{s_{ij}} &\sim \mathcal{L}(\mu_{ij} = q_{ij}) $$
+
+When we sample cDNA fragments from a pool in a sequencing library, we can model the count of cDNA fragments which originated from a given gene with a binomial distribution, with a certain probability of picking a fragment for that gene which relates to factors such as the expression of that gene (the abundance of mRNA in the original population of cells), its length and technical factors in the production of the library. When we have many genes, and the rate for each gene is low, while the total number of fragments is high, we know that the Poisson is a good model for the binomial. And for the binomial and the Poisson, there is an explicit link between on observed count and its expected variance.
+
+Below is an example of what happens when we divide or multiply a raw count. Here we show three distributions which all have the expected value of 100, although they have different variances. The first is a raw count with mean 100, the second and third are raw counts with mean 1000 and 10, which were then scaled by 1/10 and 10, respectively. 
+
+```{r}
+mypar(3,1)
+n <- 10000
+brks <- 0:300
+hist(rpois(n,100),main="",xlab="",breaks=brks,col="black")
+hist(rpois(n,1000)/10,main="",xlab="",breaks=brks,col="black")
+hist(rpois(n,10)*10,main="",xlab="",breaks=brks,col="black")
+```
+
+So, when we scale a raw count, we break the implicit link between the mean and the variance. This is not necessarily a problem, if we have 100s of samples over which to observe within-group variance, however RNA-seq samples can often have only 3 samples per group, in which case, we can get a benefit of information from using raw counts, and incorporating normalization factors on the right side of the equation above.
+
+### Counts across biological replicates and over-dispersion
+
+For the negative binomial, the variance parameter is called *disperison*, and it links the mean value with the expected variance. The reason we see more dispersion than in a Poisson is mostly due to changes in the proportions of genes across biological replicates -- which we would expect due to natural differences in gene expression. 
+
+```{r}
+mypar(3,1)
+n <- 10000
+brks <- 0:400
+hist(rpois(n,lambda=100),
+     main="Poisson / NB, disp=0",xlab="",breaks=brks,col="black")
+hist(rnbinom(n,mu=100,size=1/.01),
+     main="NB, disp = 0.01",xlab="",breaks=brks,col="black")
+hist(rnbinom(n,mu=100,size=1/.1),
+     main="NB, disp = 0.1",xlab="",breaks=brks,col="black")
+```
+
+The square root of the dispersion is the coefficient of variation -- SD/mean -- after subtracting the variance we expect due to Poisson sampling.
+
+```{r}
+disp <- 0.5
+mu <- 100
+v <- mu + disp * mu^2
+sqrt(v)/mu
+sqrt(v - mu)/mu
+sqrt(disp)
+```
+
+A number of methods for assessing differential gene expression from RNA-Seq counts use the negative binomial distribution to make probabilistic statements about the differences seen in an experiment. A few such methods are *edgeR*, *DESeq2*, and *DSS*. Other methods, such as *limma+voom* find other ways to explicitly model the mean of log counts and the observed variance of log counts. A very incomplete list of statistical methods for RNA-seq differential expression is provided in the [footnotes](#foot).
+
+*DESeq2* performs a similar step to *limma* as discussed in PH525x Course 3, in using the variance of all the genes to improve the variance estimate for each individual gene. In addition, *DESeq2* shrinks the unreliable fold changes from genes with low counts, which will be seen in the resulting MA-plot.
+
+### Experimental design and running DESeq2
+
+Remember, we had created the *DESeqDataSet* object earlier using the following line of code (or alternatively using *DESeqDataSetFromMatrix*)
+
+```{r}
+dds <- DESeqDataSet(airway, design= ~ cell + dex)
+```
+
+First, we setup the `design` of the experiment, so that differences will be considered across time and protocol variables. We can read and if necessary reset the design using the following code.
+
+```{r}
+design(dds)
+design(dds) <- ~ cell + dex
+```
+
+The last variable in the design is used by default for building results tables (although arguments to `results` can be used to customize the results table), and we make sure the "control" or "untreated" level is the first level, such that log fold changes will be treated over control, and not control over treated.
+
 
 ```{r}
 levels(dds$dex)
 dds$dex <- relevel(dds$dex, "untrt")
-design(dds) <- ~ cell + dex
+levels(dds$dex)
 ```
 
-The following line runs the model, and then we can extract a results table for all genes:
+The following line runs the *DESeq2* model. After this step, we can build a results table, which by default will compare the levels in the last variable in the design, so the *dex* treatment in our case:
 
 ```{r}
 dds <- DESeq(dds)
 res <- results(dds)
+```
+
+### Examining results tables
+
+```{r}
 head(res)
 table(res$padj < 0.1)
 ```
@@ -174,44 +314,107 @@ summary(res)
 ```
 
 ```{r}
-res2 <- results(dds, alpha=0.01)
-table(res$padj < 0.01)
+res2 <- results(dds, alpha=0.05)
+table(res2$padj < 0.05)
+```
+
+### Visualizing results
+
+```{r}
+plotMA(res, ylim=c(-4,4))
 ```
 
 ```{r}
-plotMA(res)
+res.thr <- results(dds, lfcThreshold=1)
+plotMA(res.thr, ylim=c(-4,4))
+```
+
+```{r}
+hist(res$pvalue[res$baseMean > 1], 
+     col="grey", border="white", xlab="", ylab="", main="")
 ```
 
 Sorted results table:
 
 ```{r}
-resSort <- res[order(res$pvalue),]
+resSort <- res[order(res$padj),]
 head(resSort)
 ```
 
 Let's examine the top gene, sorting by p-value:
 
 ```{r}
-plotCounts(dds, gene=which.min(res$pvalue), intgroup="dex")
+plotCounts(dds, gene=which.min(res$padj), intgroup="dex")
 ```
+
+```{r}
+library(ggplot2)
+data <- plotCounts(dds, gene=which.min(res$padj), intgroup=c("dex","cell"), returnData=TRUE)
+ggplot(data, aes(x=dex, y=count, col=cell)) +
+  geom_point(position=position_jitter(width=.1,height=0)) +
+  scale_y_log10()
+```
+
+```{r}
+ggplot(data, aes(x=dex, y=count, col=cell, group=cell)) +
+  geom_point() + geom_line() + scale_y_log10() 
+```
+
+```{r}
+library(pheatmap)
+topgenes <- head(rownames(resSort),20)
+mat <- assay(rld)[topgenes,]
+mat <- mat - rowMeans(mat)
+df <- as.data.frame(colData(dds)[,c("dex","cell")])
+pheatmap(mat, annotation_col=df)
+```
+
+### Getting alternate annotations
 
 We can then check the annotation of these highly significant genes:
 
 ```{r}
-# biocLite("org.Hs.eg.db")
 library(org.Hs.eg.db)
 keytypes(org.Hs.eg.db)
-head(rownames(dds))
-anno <- select(org.Hs.eg.db, keys=rownames(resSort)[1:20],
-               columns=c("ENSEMBL","SYMBOL","GENENAME"), 
+anno <- select(org.Hs.eg.db, keys=topgenes,
+               columns=c("SYMBOL","GENENAME"), 
                keytype="ENSEMBL")
-anno
-sum(duplicated(anno[,1]))
+anno[match(topgenes, anno$ENSEMBL),]
+# for Bioconductor >= 3.1, easier to use mapIds() function
+```
+
+### Looking up different results tables
+
+```{r}
+results(dds, contrast=c("cell","N61311","N052611"))
+```
+
+### Surrogate variable analysis for RNA-seq
+
+```{r}
+library(sva)
+idx <- rowMeans(counts(dds)) > 1
+dat <- counts(dds)[idx,]
+mod <- model.matrix(~ dex, colData(dds))
+mod0 <- model.matrix(~ 1, colData(dds))
+svseq <- svaseq(dat, mod, mod0, n.sv=2)
+```
+
+```{r}
+plot(svseq$sv[,1], svseq$sv[,2], col=dds$cell, pch=16)
+```
+
+```{r}
+dds.sva <- dds
+dds.sva$SV1 <- svseq$sv[,1]
+dds.sva$SV2 <- svseq$sv[,2]
+design(dds.sva) <- ~ SV1 + SV2 + dex
+dds.sva <- DESeq(dds.sva)
 ```
 
 ## Footnotes <a name="foot"></a>
 
-### Introduction
+### RNA-seq introductory papers
 
 Mortazavi A, Williams BA, McCue K, Schaeffer L, Wold B., "Mapping and quantifying mammalian transcriptomes by RNA-Seq", Nat Methods. 2008.
 <http://www.nature.com/nmeth/journal/v5/n7/full/nmeth.1226.html>
@@ -235,14 +438,15 @@ All the following methods are available on Bioconductor:
 Mark D. Robinson, Davis J. McCarthy, and Gordon K. Smyth, "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data" Bioinformatics 2010.
 http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/
 
-- `DESeq` (the latest version is a separate package, `DESeq2`)
+- `DESeq` of which the latest version is a separate package, `DESeq2`. The paper for the latest version *DESeq2* is from 2014:
 
 Michael I Love, Simon Anders, Wolfgang Huber, "Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2"
 http://genomebiology.com/2014/15/12/550
 
+The original *DESeq* paper from 2010:
+
 Simon Anders and Wolfgang Huber, "Differential expression analysis for sequence count data", Genome Biology 2010.
 http://genomebiology.com/2010/11/10/r106
-
 
 - `DSS`
 
@@ -251,7 +455,7 @@ http://biostatistics.oxfordjournals.org/content/14/2/232
 
 ### Transformation followed by linear model methods
 
-`voom` in the `limma` Bioconductor package
+`voom` in the `limma` Bioconductor package. Limma also contains gene-set testing methods (see ROAST for example in the Reference Manual)
 
 Charity W Law, Yunshun Chen, Wei Shi and Gordon K Smyth, "voom: precision weights unlock linear model analysis tools for RNA-seq read counts", Genome Biology. 2014.
 http://genomebiology.com/2014/15/2/R29
@@ -265,12 +469,12 @@ http://smm.sagepub.com/content/22/5/519.short
 
 ### Incorporating isoform-abundance
 
-- `Cuffdiff` (the latest version is `Cuffdiff2`)
+- `Cuffdiff` (the latest version is `Cuffdiff2`) with `cummeRbund` the accompanying Bioconductor visualization package.
 
 Trapnell C, Hendrickson DG, Sauvageau M, Goff L, Rinn JL, Pachter L., "Differential analysis of gene regulation at transcript resolution with RNA-seq" Nat Biotechnol. 2013.
 http://www.ncbi.nlm.nih.gov/pubmed/23222703
 
-- `BitSeq`
+- `BitSeq` (Bioconductor)
 
 Peter Glaus, Antti Honkela, and Magnus Rattray, "Identifying differentially expressed transcripts from RNA-seq data with biological variation", Bioinformatics. 2012.
 http://bioinformatics.oxfordjournals.org/content/28/13/1721

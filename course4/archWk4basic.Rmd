@@ -207,7 +207,7 @@ dbListTables( GO.db$conn )
 
 Everything else that we are concerned with involves constructing
 SQL queries and executing them in the database.  You can
-have a look at the SQLite web page for background and details
+have a look at the [SQLite web page](http://www.sqlite.org) for background and details
 on valid query syntax.
 
 Here we sample records from the table that manages
@@ -239,7 +239,8 @@ of data may be provided in narrowPeak or other genomic file formats
 like bed or bigWig, and it will be cumbersome to import the
 entire file.  
 
-The Tabix utilities for compressing and indexing textual files
+The [Tabix utilities](http://samtools.sourceforge.net/tabix.shtml) 
+for compressing and indexing textual files
 presenting data on genomic coordinates can be used through the
 Rsamtools and rtracklayer packages.  Once the records have been
 sorted and compressed, Tabix indexing allows us to make targeted
@@ -250,7 +251,9 @@ multiple chunks in parallel in certain settings.
 We will illustrate some of these ideas in the video.  An important
 bit of knowledge is that you can sort a bed file, on a unix system,
 with the command `sort -k1,1 -k2,2g -o ...`, and this is a necessary
-prelude to Tabix indexing.
+prelude to Tabix indexing.  Some details on the sort utility for
+unix systems are available in [Wikipedia](http://en.wikipedia.org/wiki/Sort_(Unix)); you can also use `man sort`
+on most unix systems for details.
 
 Here's how we carried out the activities of the video:
 ```

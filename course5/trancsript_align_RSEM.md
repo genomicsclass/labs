@@ -4,6 +4,10 @@ RSEM homepage:
 
 http://deweylab.biostat.wisc.edu/rsem/
 
+RSEM paper:
+
+http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3163565/
+
 prepare-reference help:
 
 http://deweylab.biostat.wisc.edu/rsem/rsem-prepare-reference.html

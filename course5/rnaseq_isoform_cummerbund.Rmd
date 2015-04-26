@@ -1,0 +1,42 @@
+# Exploring Cufflinks output with cummeRbund
+
+Here we show the exploratory plots offered by the [cummeRbund](http://www.bioconductor.org/packages/release/bioc/html/cummeRbund.html) package. These plots require loading in a directory in which results from a [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/) analysis has been run. Follow the vignette in the above link in order in order to perform a Cufflinks gene- and isoform-level analysis. From the vignette:
+
+> CummeRbund begins by re-organizing output files of a cuffdiff analysis, and storing these data in a local SQLite database. CummeRbund indexes the data to speed up access to specific feature data (genes, isoforms, TSS, CDS, etc.), and preserves the various relationships between these features. 
+
+```{r}
+library(cummeRbund)
+myDir <- system.file("extdata", package="cummeRbund") 
+gtfFile <- system.file("extdata/chr1_snippet.gtf",package="cummeRbund")
+```
+
+```{r warning=FALSE}
+cuff <- readCufflinks(dir=myDir,gtfFile=gtfFile,genome="hg19",rebuild=TRUE)
+```
+
+
+```{r}
+csBoxplot(genes(cuff))
+csBoxplot(genes(cuff),replicates=TRUE)
+csBoxplot(isoforms(cuff),replicates=TRUE)
+```
+
+```{r}
+csScatterMatrix(genes(cuff))
+csScatterMatrix(isoforms(cuff))
+```
+
+```{r}
+csDendro(genes(cuff),replicates=TRUE)
+csDendro(isoforms(cuff),replicates=TRUE)
+```
+
+```{r}
+MAplot(genes(cuff),"hESC","Fibroblasts")
+MAplot(isoforms(cuff),"hESC","Fibroblasts")
+```
+
+```{r}
+csVolcanoMatrix(genes(cuff))
+csVolcanoMatrix(isoforms(cuff))
+```

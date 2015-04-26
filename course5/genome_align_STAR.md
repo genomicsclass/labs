@@ -4,6 +4,10 @@ The STAR homepage:
 
 https://github.com/alexdobin/STAR
 
+The STAR paper:
+
+http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3530905/
+
 The STAR manual:
 
 https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf

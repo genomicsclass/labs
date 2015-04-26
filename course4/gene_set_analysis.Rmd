@@ -332,7 +332,7 @@ tab
 
 One limitation of the permutation test approach is that to estimate very small p-values we need many permutations. For example, to distinguish between a p-value of $10^{-5}$ and $10^{-6}$ we would need to run 1,000,000 permutations. For those interested in applying conservative multiple comparison correction (such as the Bonferonni correction), it would be necessary to run many simulations. 
 
-Another limitation is that in more complicated designed, for example an experiment with many factor and continuous covariates, deciphering how to permute is not straight forward.
+Another limitation is that in more complicated designs, for example an experiment with many factor and continuous covariates, deciphering how to permute is not straight forward.
 
 ## Footnotes <a name="foot"></a>
 

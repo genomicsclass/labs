@@ -20,6 +20,7 @@ We start by loading the pooling experiment data
 library(Biobase)
 library(maPooling)
 data(maPooling)
+pd=pData(maPooling)
 individuals=which(rowSums(pd)==1)
 ```
 
@@ -66,7 +67,7 @@ sum(nulltt$p.value<0.05)
 If we use the 0.05 cutoff we will be reporting 840 false positives. We have described several ways to adjust for this include the `qvalue` method available in the `qvalue` package. After this adjustment we include a smaller list of genes.
 
 ```{r}
-library(qvalues)
+library(qvalue)
 qvals = qvalue(tt$p.value)$qvalue
 sum(qvals<0.05)
 sum(qvals<0.01)
@@ -75,7 +76,7 @@ sum(qvals<0.01)
 And now the null case generates fewer false positives:
 
 ```{r}
-library(qvalues)
+library(qvalue)
 nullqvals = qvalue(nulltt$p.value)$qvalue
 sum(nullqvals<0.05)
 sum(nullqvals<0.01)
