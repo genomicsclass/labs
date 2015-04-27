@@ -22,7 +22,7 @@ Generating the genome:
 
 Note the `sjdbOverhang` is used for constructing the splice junction database. It should be set to (read length - 1), and according to the manual a general value of 100 will work as well.
 
-For this limited demonstrate, I am only going to align to the genes on chromosome 1, so I subset the GTF file:
+For this limited demonstration, I am only going to align to the genes on chromosome 1, so I subset the GTF file:
 
 ```
 grep -P '^1\t' Homo_sapiens.GRCh38.79.gtf > Homo_sapiens.GRCh38.79.chrom1.gtf
