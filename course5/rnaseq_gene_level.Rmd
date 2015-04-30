@@ -22,7 +22,7 @@ This lab will focus on a summarized version of an RNA-seq experiment: a count ma
 
 First, make variables for the different BAM files and GTF file. Use the `sample.table` to contruct the BAM file vector, so that the count matrix will be in the same order as the `sample.table`.
 
-```{r}
+```{r messages=FALSE}
 library(airway)
 dir <- system.file("extdata", package="airway", mustWork=TRUE)
 csv.file <- file.path(dir, "sample_table.csv")
@@ -33,7 +33,7 @@ gtf.file <- file.path(dir, "Homo_sapiens.GRCh37.75_subset.gtf")
 
 Next we create an *Rsamtools* variable which wraps our BAM files, and create a transcript database from the GTF file. We can ignore the warning about `matchCircularity`. Finally, we make a *GRangesList* which contains the exons for each gene.
 
-```{r}
+```{r messages=FALSE}
 library(Rsamtools)
 bam.list <- BamFileList(bam.files)
 library(GenomicFeatures)
@@ -59,11 +59,12 @@ A similar function in the *Rsubread* library can be used to construct a count ma
 
 ```{r cache=TRUE}
 library(Rsubread)
-fc <- featureCounts(bam.files, annot.ext=gtf.file,
+# just run on the first two samples for demonstration
+fc <- featureCounts(bam.files[1:2], annot.ext=gtf.file,
                     isGTFAnnotationFile=TRUE, 
                     isPaired=TRUE)
 names(fc)
-fc$counts
+unname(fc$counts) # hide the colnames
 ```
 
 Plot the first column from each function against each other (after matching the rows of the *featureCounts* matrix to the one returned by *summarizeOverlaps*.
@@ -182,7 +183,7 @@ plot(log.norm.counts[,1:2], cex=.1)
 
 ### Stabilizing count variance
 
-Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the log-transformed counts for genes with very low counts. For genes with medium and high counts, the `rlog` is very close to `log2`. For further details, see the section in the [DESeq2 paper](#foot). Another transformation for stabilizing variance in the *DESeq2* package is the appropriately named `varianceStabilizingTransformation`. These two tranformations are similar, although the *rlog* might perform better when the size factors vary widely.
+Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the log-transformed counts for genes with very low counts. For genes with medium and high counts, the `rlog` is very close to `log2`. For further details, see the section in the DESeq2 [paper](#foot). Another transformation for stabilizing variance in the *DESeq2* package is the appropriately named `varianceStabilizingTransformation`. These two tranformations are similar, although the *rlog* might perform better when the size factors vary widely.
 
 ```{r}
 rld <- rlog(dds)
@@ -191,7 +192,7 @@ plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
 
 We can examine the standard deviation of rows over the mean for the *log plus pseudocount* and the *rlog*. Note that the genes with high variance for the *log* come from the genes with lowest mean. If these genes were included in a distance calculation, the high variance at the low count range might overwhelm the signal at the higher count range.
 
-```{r}
+```{r fig.width=10, fig.height=5}
 library(vsn)
 mypar(1,2)
 meanSdPlot(log.norm.counts, ranks=FALSE, ylim=c(0,3), main="log2")
@@ -233,7 +234,7 @@ ggplot(data, aes(PC1,PC2,col=dex,shape=cell)) + geom_point() +
 
 In addition, we can plot a hierarchical clustering based on Euclidean distance matrix:
 
-```{r}
+```{r fig.width=10, fig.height=5}
 mypar(1,2)
 plot(hclust(dist(t(log.norm.counts))), labels=colData(dds)$dex)
 plot(hclust(dist(t(assay(rld)))), labels=colData(rld)$dex)
@@ -253,9 +254,9 @@ where $K_{ij}$ is a single raw count in our count table, $s_{ij}$ is a size fact
 
 Why bother modeling *raw counts*, rather than dividing out the sequencing depth and working with the normalized counts? In other words, why put the $s_{ij}$ on the right side of the equation above, rather than dividing out on the left side and modeling $K_{ij} / s_{ij}$. The reason is that, with the raw count, we have knowledge about the link between the expected value and its variance. So we prefer the first equation below to the second equation, because with the first equation, we have some additional information about the variance of the quantity on the left hand side.
 
-$$ K_{ij} &\sim \text{NB}(\mu_{ij} = s_{ij} q_{ij} ) $$
+$$ K_{ij} \sim \text{NB}(\mu_{ij} = s_{ij} q_{ij} ) $$
 
-$$ \frac{K_{ij}}{s_{ij}} &\sim \mathcal{L}(\mu_{ij} = q_{ij}) $$
+$$ \frac{K_{ij}}{s_{ij}} \sim \mathcal{L}(\mu_{ij} = q_{ij}) $$
 
 When we sample cDNA fragments from a pool in a sequencing library, we can model the count of cDNA fragments which originated from a given gene with a binomial distribution, with a certain probability of picking a fragment for that gene which relates to factors such as the expression of that gene (the abundance of mRNA in the original population of cells), its length and technical factors in the production of the library. When we have many genes, and the rate for each gene is low, while the total number of fragments is high, we know that the Poisson is a good model for the binomial. And for the binomial and the Poisson, there is an explicit link between on observed count and its expected variance.
 
@@ -468,6 +469,12 @@ design(dds.sva) <- ~ SV1 + SV2 + dex
 dds.sva <- DESeq(dds.sva)
 ```
 
+## Session info
+
+```{r}
+sessionInfo()
+```
+
 ## Footnotes <a name="foot"></a>
 
 ### RNA-seq introductory papers
@@ -485,52 +492,49 @@ http://www.nature.com/nbt/journal/v28/n5/full/nbt.1621.html
 
 Frazee AC, Langmead B, Leek JT. "ReCount: a multi-experiment resource of analysis-ready RNA-seq gene count datasets". BMC Bioinformatics 12:449 http://www.ncbi.nlm.nih.gov/pubmed/22087737
 
-### Negative Binomial methods for differential expression of count data
+The following sections give just a few examples of the many RNA-seq differential expression software packages:
 
-All the following methods are available on Bioconductor:
+### Negative binomial count methods
 
-- `edgeR`
+The following methods are available on Bioconductor:
 
-Mark D. Robinson, Davis J. McCarthy, and Gordon K. Smyth, "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data" Bioinformatics 2010.
-http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/
-
-- `DESeq` of which the latest version is a separate package, `DESeq2`. The paper for the latest version *DESeq2* is from 2014:
+- **DESeq2**
 
 Michael I Love, Simon Anders, Wolfgang Huber, "Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2"
 http://genomebiology.com/2014/15/12/550
 
-The original *DESeq* paper from 2010:
+- **edgeR**
 
-Simon Anders and Wolfgang Huber, "Differential expression analysis for sequence count data", Genome Biology 2010.
-http://genomebiology.com/2010/11/10/r106
+Mark D. Robinson, Davis J. McCarthy, and Gordon K. Smyth, "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data" Bioinformatics 2010.
+http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/
 
-- `DSS`
+- **DSS**
 
 Hao Wu, Chi Wang, Zhijin Wu, "A new shrinkage estimator for dispersion improves differential expression detection in RNA-seq data" Biostatistics 2013.
 http://biostatistics.oxfordjournals.org/content/14/2/232
 
-### Transformation followed by linear model methods
+### Variance-mean modeling followed by linear model
 
-`voom` in the `limma` Bioconductor package. Limma also contains gene-set testing methods (see ROAST for example in the Reference Manual)
+- **voom+limma** in the *limma* Bioconductor package. Limma also contains gene-set testing methods (see ROAST for example in the Reference Manual)
 
 Charity W Law, Yunshun Chen, Wei Shi and Gordon K Smyth, "voom: precision weights unlock linear model analysis tools for RNA-seq read counts", Genome Biology. 2014.
 http://genomebiology.com/2014/15/2/R29
 
 ### Resampling-based methods
 
-`SAMseq` in the `samr` package on CRAN
+- **SAMseq** in the `samr` package on CRAN
 
 Jun Li and Robert Tibshirani, "Finding consistent patterns: A nonparametric approach for identifying differential expression in RNA-seq data", Stat Methods Med Res. 2013.
 http://smm.sagepub.com/content/22/5/519.short
 
 ### Incorporating isoform-abundance
 
-- `Cuffdiff` (the latest version is `Cuffdiff2`) with `cummeRbund` the accompanying Bioconductor visualization package.
+- **Cuffdiff** (the latest version is `Cuffdiff2`) with `cummeRbund` the accompanying Bioconductor visualization package.
 
 Trapnell C, Hendrickson DG, Sauvageau M, Goff L, Rinn JL, Pachter L., "Differential analysis of gene regulation at transcript resolution with RNA-seq" Nat Biotechnol. 2013.
 http://www.ncbi.nlm.nih.gov/pubmed/23222703
 
-- `BitSeq` (Bioconductor)
+- **BitSeq** (Bioconductor)
 
 Peter Glaus, Antti Honkela, and Magnus Rattray, "Identifying differentially expressed transcripts from RNA-seq data with biological variation", Bioinformatics. 2012.
 http://bioinformatics.oxfordjournals.org/content/28/13/1721
