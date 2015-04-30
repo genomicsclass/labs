@@ -60,7 +60,7 @@ A similar function in the *Rsubread* library can be used to construct a count ma
 ```{r cache=TRUE}
 library(Rsubread)
 # just run on the first two samples for demonstration
-fc <- featureCounts(bam.files[1:2], annot.ext=gtf.file,
+fc <- featureCounts(bam.files, annot.ext=gtf.file,
                     isGTFAnnotationFile=TRUE, 
                     isPaired=TRUE)
 names(fc)
@@ -128,9 +128,9 @@ dds <- DESeqDataSet(airway, design= ~ cell + dex)
 We can also make a *DESeqDataSet* from a count matrix and column data.
 
 ```{r}
-dds2 <- DESeqDataSetFromMatrix(fc$counts, 
-                               colData=sample.table, 
-                               design=~ cell + dex)
+dds.fc <- DESeqDataSetFromMatrix(fc$counts, 
+                                 colData=sample.table, 
+                                 design=~ cell + dex)
 ```
 
 ### Normalization for sequencing depth
