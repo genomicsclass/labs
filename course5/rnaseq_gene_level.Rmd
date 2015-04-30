@@ -341,9 +341,13 @@ head(res)
 table(res$padj < 0.1)
 ```
 
+A summary of the results can be generated:
+
 ```{r}
 summary(res)
 ```
+
+For testing at a different threshold, we provide the `alpha` to *results*, so that the mean filtering is optimal for our new FDR threshold.
 
 ```{r}
 res2 <- results(dds, alpha=0.05)
@@ -352,32 +356,40 @@ table(res2$padj < 0.05)
 
 ### Visualizing results
 
+The MA-plot provides a global view of the differential genes, with the log2 fold change on the y-axis over the mean of normalized counts:
+
 ```{r}
 plotMA(res, ylim=c(-4,4))
 ```
+
+We can also test against a different null hypothesis. For example, to test for genes which have fold change more than doubling or less than halving:
 
 ```{r}
 res.thr <- results(dds, lfcThreshold=1)
 plotMA(res.thr, ylim=c(-4,4))
 ```
 
+A p-value histogram:
+
 ```{r}
 hist(res$pvalue[res$baseMean > 1], 
      col="grey", border="white", xlab="", ylab="", main="")
 ```
 
-Sorted results table:
+A sorted results table:
 
 ```{r}
 resSort <- res[order(res$padj),]
 head(resSort)
 ```
 
-Let's examine the top gene, sorting by p-value:
+Examine the counts for the top gene, sorting by p-value:
 
 ```{r}
 plotCounts(dds, gene=which.min(res$padj), intgroup="dex")
 ```
+
+A more sophisticated plot of counts:
 
 ```{r}
 library(ggplot2)
@@ -387,10 +399,14 @@ ggplot(data, aes(x=dex, y=count, col=cell)) +
   scale_y_log10()
 ```
 
+Connecting by lines shows the differences which are actually being tested by *results* given that our design includes `cell + dex`
+
 ```{r}
 ggplot(data, aes(x=dex, y=count, col=cell, group=cell)) +
   geom_point() + geom_line() + scale_y_log10() 
 ```
+
+A heatmap of the top genes:
 
 ```{r}
 library(pheatmap)
@@ -417,11 +433,15 @@ anno[match(topgenes, anno$ENSEMBL),]
 
 ### Looking up different results tables
 
+The `contrast` argument allows users to specify what results table should be built. See the help and examples in `?results` for more details:
+
 ```{r}
 results(dds, contrast=c("cell","N61311","N052611"))
 ```
 
 ### Surrogate variable analysis for RNA-seq
+
+If we suppose that we didn't know about the different cell-lines in the experiment, but noticed some structure in the counts, we could use surrograte variable analysis (SVA) to detect this hidden structure (see PH525x Course 3 for details on the algorithm).
 
 ```{r}
 library(sva)
@@ -432,9 +452,13 @@ mod0 <- model.matrix(~ 1, colData(dds))
 svseq <- svaseq(dat, mod, mod0, n.sv=2)
 ```
 
+Do the surrogate variables capture the cell difference?
+
 ```{r}
 plot(svseq$sv[,1], svseq$sv[,2], col=dds$cell, pch=16)
 ```
+
+Using the surrogate variables in a *DESeq2* analysis:
 
 ```{r}
 dds.sva <- dds
