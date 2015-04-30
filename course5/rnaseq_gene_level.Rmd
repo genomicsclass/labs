@@ -10,15 +10,17 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Introduction
 
-RNA-Seq is a valuable experiment for quantifying both the types and the amount of RNA molecules in a sample. We've covered the basic idea of the protocol in lectures, but some early references for RNA-Seq include [Mortazavi (2008)](#foot) and [Marioni (2008)](#foot).
+RNA-seq is a valuable experiment for quantifying both the types and the amount of RNA molecules in a sample. We've covered the basic idea of the protocol in lectures, but some early references for RNA-seq include [Mortazavi (2008)](#foot) and [Marioni (2008)](#foot).
 
 In this lab, we will focus on comparing the expression levels of genes across different samples, by counting the number of reads which overlap the exons of genes defined by a known annotation. As described in the lecture, this analysis sets aside the task of estimating the different kinds of RNA molecules, and the different isoforms for genes with multiple isoforms. One advantage of looking at these matrices of raw counts is that we can use statistical distributions to model how the variance of counts will change when the counts are low vs high. We will explore the relationship of the variance of counts to the mean later in this lab.
 
 ## Counting reads in genes
 
-In this lab we will examine 8 samples from the airway package, which are from the paper by [Himes et al](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4057123/): "RNA-Seq Transcriptome Profiling Identifies CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in Airway Smooth Muscle Cells".
+In this lab we will examine 8 samples from the airway package, which are from the paper by [Himes et al](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4057123/): "RNA-seq Transcriptome Profiling Identifies CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in Airway Smooth Muscle Cells".
 
 This lab will focus on a summarized version of an RNA-seq experiment: a count matrix, which has genes along the rows and samples along the columns. The values in the matrix are the number of reads which could be uniquely aligned to the exons of a given gene for a given sample. We will demonstrate how to build a count matrix for a subset of reads from an experiment, and then use a pre-made count matrix, to avoid having students download the multi-gigabyte BAM files containing the aligned reads. 
+
+First, make variables for the different BAM files and GTF file. Use the `sample.table` to contruct the BAM file vector, so that the count matrix will be in the same order as the `sample.table`.
 
 ```{r}
 library(airway)
@@ -29,14 +31,19 @@ bam.files <- file.path(dir, paste0(sample.table$Run, "_subset.bam"))
 gtf.file <- file.path(dir, "Homo_sapiens.GRCh37.75_subset.gtf")
 ```
 
+Next we create an *Rsamtools* variable which wraps our BAM files, and create a transcript database from the GTF file. We can ignore the warning about `matchCircularity`. Finally, we make a *GRangesList* which contains the exons for each gene.
+
 ```{r}
 library(Rsamtools)
 bam.list <- BamFileList(bam.files)
 library(GenomicFeatures)
-# this will be renamed makeTxDb... in Bioc 3.1
-txdb <- makeTranscriptDbFromGFF(gtf.file, format="gtf")
+# for Bioc 3.0 use the commented out line
+# txdb <- makeTranscriptDbFromGFF(gtf.file, format="gtf")
+txdb <- makeTxDbFromGFF(gtf.file, format="gtf")
 exons.by.gene <- exonsBy(txdb, by="gene")
 ```
+
+The following code chunk creates a *SummarizedExperiment* containing the counts for the reads in each BAM file (columns) for each gene in `exons.by.gene` (the rows). We add the `sample.table` as column data. Remember, we know the order is correct, because the `bam.list` was constructed from a column of `sample.table`.
 
 ```{r cache=TRUE}
 library(GenomicAlignments)
@@ -48,6 +55,8 @@ se <- summarizeOverlaps(exons.by.gene, bam.list,
 colData(se) <- DataFrame(sample.table)
 ```
 
+A similar function in the *Rsubread* library can be used to construct a count matrix:
+
 ```{r cache=TRUE}
 library(Rsubread)
 fc <- featureCounts(bam.files, annot.ext=gtf.file,
@@ -57,6 +66,8 @@ names(fc)
 fc$counts
 ```
 
+Plot the first column from each function against each other (after matching the rows of the *featureCounts* matrix to the one returned by *summarizeOverlaps*.
+
 ```{r}
 plot(assay(se)[,1], 
      fc$counts[match(rownames(se),rownames(fc$counts)),1])
@@ -64,6 +75,8 @@ abline(0,1)
 ```
 
 ## Visualizing sample-sample distances
+
+We now load the full *SummarizedExperiment* object, counting reads over all the genes.
 
 ```{r, message=FALSE}
 library(airway)
@@ -76,9 +89,11 @@ colData(airway)
 ```
 
 ```{r}
-# rowRanges for Bioc >= 3.1
-rowData(airway)
+# rowData for Bioc 3.0
+rowRanges(airway)
 ```
+
+The counts matrix is stored in `assay` of a *SummarizedExperiment*.
 
 ```{r}
 head(assay(airway))
@@ -93,7 +108,7 @@ library(rafalib)
 mypar()
 ```
 
-Note that, on the un-transformed scale, the high count genes have high variance. That is, in the following scatter plot, the points start out in a tight cone and then fan out toward the top right. This is a general property of counts, that the variance typically increases with the expected value. We will explore different scaling and transformations options below.
+Note that, on the un-transformed scale, the high count genes have high variance. That is, in the following scatter plot, the points start out in a tight cone and then fan out toward the top right. This is a general property of counts generated from sampling processes, that the variance typically increases with the expected value. We will explore different scaling and transformations options below.
 
 ```{r}
 plot(assay(airway)[,1:2], cex=.1)
@@ -101,7 +116,9 @@ plot(assay(airway)[,1:2], cex=.1)
 
 ### Creating a DESeqDataSet object
 
-We will use the `DESeq2` package to normalize the sample for sequencing depth. The *DESeqDataSet* object is just an extension of the *SummarizedExperiment* object. We specify an experimental *design* here, for later use, although for estimating size factors, we could just use `~ 1` as a default design. The variables are columns of the `colData`, and the `+` indicates that for differential expression analysis we want to compare levels of `dex` while controlling for the `cell` differences.
+We will use the `DESeq2` package to normalize the sample for sequencing depth. The *DESeqDataSet* object is just an extension of the *SummarizedExperiment* object, with a few changes. The matrix in `assay` is now accessed with `counts` and the elements of this matrix are required to be non-negative integers (0,1,2,...).
+
+We specify an experimental *design* here, for later use, although for estimating size factors, we could just use `~ 1` as a default design. The variables are columns of the `colData`, and the `+` indicates that for differential expression analysis we want to compare levels of `dex` while controlling for the `cell` differences.
 
 ```{r}
 library(DESeq2)
@@ -114,7 +131,6 @@ dds2 <- DESeqDataSetFromMatrix(fc$counts,
                                colData=sample.table, 
                                design=~ cell + dex)
 ```
-
 
 ### Normalization for sequencing depth
 
@@ -136,11 +152,20 @@ hist(log(counts(dds)[,1]) - loggeomeans,
      col="grey", main="", xlab="", breaks=40)
 ```
 
-Make a matrix of log normalized counts:
+The size factor for the first sample:
+
+```{r}
+exp(median((log(counts(dds)[,1]) - loggeomeans)[is.finite(loggeomeans)]))
+sizeFactors(dds)[1]
+```
+
+Make a matrix of log normalized counts (plus a pseudocount):
 
 ```{r}
 log.norm.counts <- log2(counts(dds, normalized=TRUE) + 1)
 ```
+
+Examine the log counts and the log normalized counts (plus a pseudocount).
 
 ```{r}
 rs <- rowSums(counts(dds))
@@ -149,19 +174,22 @@ boxplot(log2(counts(dds)[rs > 0,]+1)) # not normalized
 boxplot(log.norm.counts[rs > 0,]) # normalized
 ```
 
+Make a scatterplot of log normalized counts against each other. Note the fanning out of the points in the lower left corner, for points less than $2^5 = 32$.
+
 ```{r}
 plot(log.norm.counts[,1:2], cex=.1)
 ```
 
-
 ### Stabilizing count variance
 
-Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the log-transformed counts for genes with very low counts. For genes with medium and high counts, the `rlog` is very close to `log2`. For further details, see the section in the [DESeq2 paper](#foot).
+Now we will use a more sophisticated transformation, which is similar to the variance stablizing normalization method taught in Week 3 of Course 4: Introduction to Bioconductor. It uses the variance model for count data to shrink together the log-transformed counts for genes with very low counts. For genes with medium and high counts, the `rlog` is very close to `log2`. For further details, see the section in the [DESeq2 paper](#foot). Another transformation for stabilizing variance in the *DESeq2* package is the appropriately named `varianceStabilizingTransformation`. These two tranformations are similar, although the *rlog* might perform better when the size factors vary widely.
 
 ```{r}
 rld <- rlog(dds)
 plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
 ```
+
+We can examine the standard deviation of rows over the mean for the *log plus pseudocount* and the *rlog*. Note that the genes with high variance for the *log* come from the genes with lowest mean. If these genes were included in a distance calculation, the high variance at the low count range might overwhelm the signal at the higher count range.
 
 ```{r}
 library(vsn)
@@ -170,7 +198,7 @@ meanSdPlot(log.norm.counts, ranks=FALSE, ylim=c(0,3), main="log2")
 meanSdPlot(assay(rld), ranks=FALSE, ylim=c(0,3), main="rlog")
 ```
 
-Principal components plots:
+The principal components (PCA) plot is a useful diagnostic for examining relationships between samples:
 
 ```{r}
 mypar()
@@ -181,6 +209,8 @@ plot(pc$x[,1], pc$x[,2],
      col = colData(dds)$dex, 
      pch = as.integer(colData(dds)$cell))
 ```
+
+Using the rlog:
 
 ```{r}
 plotPCA(rld, intgroup="dex")
@@ -200,6 +230,8 @@ makeLab <- function(x,pc) paste0("PC",pc,": ",x,"% variance")
 ggplot(data, aes(PC1,PC2,col=dex,shape=cell)) + geom_point() +
   xlab(makeLab(percentVar[1],1)) + ylab(makeLab(percentVar[2],2))
 ```
+
+In addition, we can plot a hierarchical clustering based on Euclidean distance matrix:
 
 ```{r}
 mypar(1,2)
@@ -267,7 +299,7 @@ sqrt(v - mu)/mu
 sqrt(disp)
 ```
 
-A number of methods for assessing differential gene expression from RNA-Seq counts use the negative binomial distribution to make probabilistic statements about the differences seen in an experiment. A few such methods are *edgeR*, *DESeq2*, and *DSS*. Other methods, such as *limma+voom* find other ways to explicitly model the mean of log counts and the observed variance of log counts. A very incomplete list of statistical methods for RNA-seq differential expression is provided in the [footnotes](#foot).
+A number of methods for assessing differential gene expression from RNA-seq counts use the negative binomial distribution to make probabilistic statements about the differences seen in an experiment. A few such methods are *edgeR*, *DESeq2*, and *DSS*. Other methods, such as *limma+voom* find other ways to explicitly model the mean of log counts and the observed variance of log counts. A very incomplete list of statistical methods for RNA-seq differential expression is provided in the [footnotes](#foot).
 
 *DESeq2* performs a similar step to *limma* as discussed in PH525x Course 3, in using the variance of all the genes to improve the variance estimate for each individual gene. In addition, *DESeq2* shrinks the unreliable fold changes from genes with low counts, which will be seen in the resulting MA-plot.
 
@@ -416,13 +448,13 @@ dds.sva <- DESeq(dds.sva)
 
 ### RNA-seq introductory papers
 
-Mortazavi A, Williams BA, McCue K, Schaeffer L, Wold B., "Mapping and quantifying mammalian transcriptomes by RNA-Seq", Nat Methods. 2008.
+Mortazavi A, Williams BA, McCue K, Schaeffer L, Wold B., "Mapping and quantifying mammalian transcriptomes by RNA-seq", Nat Methods. 2008.
 <http://www.nature.com/nmeth/journal/v5/n7/full/nmeth.1226.html>
 
 John C. Marioni, Christopher E. Mason, Shrikant M. Mane, Matthew Stephens, and Yoav Gilad, "RNA-seq: An assessment of technical reproducibility and comparison with gene expression arrays" Genome Res. 2008.
 <http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2527709/>
 
-Trapnell C, Williams BA, Pertea G, Mortazavi AM, Kwan G, van Baren MJ, Salzberg SL, Wold B, Pachter L.,  "Transcript assembly and quantification by RNA-Seq reveals unannotated transcripts and isoform switching during cell differentiation", Nature Biotechnology, 2010.
+Trapnell C, Williams BA, Pertea G, Mortazavi AM, Kwan G, van Baren MJ, Salzberg SL, Wold B, Pachter L.,  "Transcript assembly and quantification by RNA-seq reveals unannotated transcripts and isoform switching during cell differentiation", Nature Biotechnology, 2010.
 http://www.nature.com/nbt/journal/v28/n5/full/nbt.1621.html
 
 ### ReCount
@@ -464,7 +496,7 @@ http://genomebiology.com/2014/15/2/R29
 
 `SAMseq` in the `samr` package on CRAN
 
-Jun Li and Robert Tibshirani, "Finding consistent patterns: A nonparametric approach for identifying differential expression in RNA-Seq data", Stat Methods Med Res. 2013.
+Jun Li and Robert Tibshirani, "Finding consistent patterns: A nonparametric approach for identifying differential expression in RNA-seq data", Stat Methods Med Res. 2013.
 http://smm.sagepub.com/content/22/5/519.short
 
 ### Incorporating isoform-abundance
