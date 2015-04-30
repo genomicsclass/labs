@@ -486,11 +486,12 @@ John C. Marioni, Christopher E. Mason, Shrikant M. Mane, Matthew Stephens, and Y
 <http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2527709/>
 
 Trapnell C, Williams BA, Pertea G, Mortazavi AM, Kwan G, van Baren MJ, Salzberg SL, Wold B, Pachter L.,  "Transcript assembly and quantification by RNA-seq reveals unannotated transcripts and isoform switching during cell differentiation", Nature Biotechnology, 2010.
-http://www.nature.com/nbt/journal/v28/n5/full/nbt.1621.html
+<http://www.nature.com/nbt/journal/v28/n5/full/nbt.1621.html>
 
 ### ReCount
 
-Frazee AC, Langmead B, Leek JT. "ReCount: a multi-experiment resource of analysis-ready RNA-seq gene count datasets". BMC Bioinformatics 12:449 http://www.ncbi.nlm.nih.gov/pubmed/22087737
+Frazee AC, Langmead B, Leek JT. "ReCount: a multi-experiment resource of analysis-ready RNA-seq gene count datasets". BMC Bioinformatics 12:449
+<http://www.ncbi.nlm.nih.gov/pubmed/22087737>
 
 The following sections give just a few examples of the many RNA-seq differential expression software packages:
 
@@ -500,42 +501,42 @@ The following methods are available on Bioconductor:
 
 - **DESeq2**
 
-Michael I Love, Simon Anders, Wolfgang Huber, "Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2"
-http://genomebiology.com/2014/15/12/550
+Michael I Love, Simon Anders, Wolfgang Huber, "Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2" Genome Biology 2014.
+<http://genomebiology.com/2014/15/12/550>
 
 - **edgeR**
 
 Mark D. Robinson, Davis J. McCarthy, and Gordon K. Smyth, "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data" Bioinformatics 2010.
-http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/
+<http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/>
 
 - **DSS**
 
 Hao Wu, Chi Wang, Zhijin Wu, "A new shrinkage estimator for dispersion improves differential expression detection in RNA-seq data" Biostatistics 2013.
-http://biostatistics.oxfordjournals.org/content/14/2/232
+<http://biostatistics.oxfordjournals.org/content/14/2/232>
 
 ### Variance-mean modeling followed by linear model
 
 - **voom+limma** in the *limma* Bioconductor package. Limma also contains gene-set testing methods (see ROAST for example in the Reference Manual)
 
 Charity W Law, Yunshun Chen, Wei Shi and Gordon K Smyth, "voom: precision weights unlock linear model analysis tools for RNA-seq read counts", Genome Biology. 2014.
-http://genomebiology.com/2014/15/2/R29
+<http://genomebiology.com/2014/15/2/R29>
 
 ### Resampling-based methods
 
 - **SAMseq** in the `samr` package on CRAN
 
 Jun Li and Robert Tibshirani, "Finding consistent patterns: A nonparametric approach for identifying differential expression in RNA-seq data", Stat Methods Med Res. 2013.
-http://smm.sagepub.com/content/22/5/519.short
+<http://smm.sagepub.com/content/22/5/519.short>
 
 ### Incorporating isoform-abundance
 
 - **Cuffdiff** (the latest version is `Cuffdiff2`) with `cummeRbund` the accompanying Bioconductor visualization package.
 
 Trapnell C, Hendrickson DG, Sauvageau M, Goff L, Rinn JL, Pachter L., "Differential analysis of gene regulation at transcript resolution with RNA-seq" Nat Biotechnol. 2013.
-http://www.ncbi.nlm.nih.gov/pubmed/23222703
+<http://www.ncbi.nlm.nih.gov/pubmed/23222703>
 
 - **BitSeq** (Bioconductor)
 
 Peter Glaus, Antti Honkela, and Magnus Rattray, "Identifying differentially expressed transcripts from RNA-seq data with biological variation", Bioinformatics. 2012.
-http://bioinformatics.oxfordjournals.org/content/28/13/1721
+<http://bioinformatics.oxfordjournals.org/content/28/13/1721>
 
