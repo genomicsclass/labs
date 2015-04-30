@@ -19,7 +19,9 @@ biocpkgs <- c("Rsamtools",
               "vsn",
               "sva",
               "org.Hs.eg.db",
-              "cummeRbund")
+              "cummeRbund",
+              "pasillaBamSubset",
+              "TxDb.Dmelanogaster.UCSC.dm3.ensGene")
 source("http://bioconductor.org/biocLite.R")
 biocLite(biocpkgs)
 
