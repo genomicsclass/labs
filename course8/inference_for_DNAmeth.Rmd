@@ -47,7 +47,7 @@ X= model.matrix(~tissue)
 index = which(seqnames(dat)=="chr22")
 dat = dat[index,] ## for illustrative purposes
 res=bumphunter(dat,X,cutoff=0.1,B=1000)
-head(res)
+head(res$tab)
 ```
 
 
@@ -62,7 +62,7 @@ tab = res$tab[res$tab$fwer <= 0.05,]
 tab = makeGRangesFromDataFrame(tab,keep.extra.columns = TRUE)
 
 map=distanceToNearest(tab,cgi)
-d = mcols(map)$dist?
+d = mcols(map)$dist
 prop.table( table( cut(d,c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
 
 null =  granges(dat)
@@ -71,8 +71,6 @@ nulltab = makeGRangesFromDataFrame(null,keep.extra.columns = TRUE)
 nullmap=distanceToNearest(nulltab,cgi)
 nulld = mcols(nullmap)$dist
 prop.table( table( cut(nulld,c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
-
-  
 ```
 
 ```{r}
@@ -99,7 +97,6 @@ plot(pos,res$fitted[dataIndex],xlim=xlim,ylim=c(-0.4,0.4))
 abline(h=0)
 apply(cbind(start(thecgi),end(thecgi)),1,function(x) segments(x[1],0,x[2],0,lwd=4,col=3))
 
-}
 ```
 
 ```{r}
