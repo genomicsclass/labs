@@ -1,0 +1,113 @@
+---
+layout: page
+title: Inference for DNA methylation data
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r}
+library(minfi) ##Bioc
+library(IlluminaHumanMethylation450kmanifest) ##Bioc
+library(doParallel) ##CRAN
+library(pkgmaker)
+```
+
+```{r}
+path="/Users/ririzarr/myDocuments/teaching/HarvardX/tcgaMethylationSubset"
+targets=read.delim(file.path (path,"targets.txt"),as.is=TRUE)
+table(targets$Tissue,targets$Status)
+```
+
+For illustration we will read in the normal colon and lung
+
+```{r}
+index = which( targets$Status=="normal" & targets$Tissue%in%c("colon","lung") )
+targets = targets[index,]
+```
+
+```{r}
+dat = read.450k.exp(base=path,targets = targets, verbose=TRUE)
+dat = preprocessIllumina(dat)
+dat = mapToGenome(dat)
+dat = ratioConvert(dat,type="Illumina")
+```
+
+```{r}
+library(doParallel)
+detectCores()
+registerDoParallel(cores = 4)
+```
+
+```{r}
+tissue =pData(dat)$Tissue
+X= model.matrix(~tissue)
+index = which(seqnames(dat)=="chr22")
+dat = dat[index,] ## for illustrative purposes
+res=bumphunter(dat,X,cutoff=0.1,B=1000)
+head(res)
+```
+
+
+```{r,message=FALSE}
+library(rafalib)
+library(AnnotationHub)
+cgi = AnnotationHub()[["AH5086"]]
+```
+
+```{r}
+tab = res$tab[res$tab$fwer <= 0.05,]
+tab = makeGRangesFromDataFrame(tab,keep.extra.columns = TRUE)
+
+map=distanceToNearest(tab,cgi)
+d = mcols(map)$dist?
+prop.table( table( cut(d,c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
+
+null =  granges(dat)
+nulltab = makeGRangesFromDataFrame(null,keep.extra.columns = TRUE)
+
+nullmap=distanceToNearest(nulltab,cgi)
+nulld = mcols(nullmap)$dist
+prop.table( table( cut(nulld,c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
+
+  
+```
+
+```{r}
+beta = getBeta(dat)
+cols = as.factor(pData(dat)$Tissue)
+
+tab = tab[order(-mcols(tab)$area)]
+tab = tab+3000 ##add 3000 to each side
+mypar2(1,1)
+i=17
+dataIndex = which(granges(dat)%over%tab[i])
+cgiIndex = which(cgi%over%tab[i])
+thecgi = cgi[cgiIndex]
+    
+pos = start(dat)[dataIndex]
+xlim=range(c(pos,start(thecgi),end(thecgi)) )
+  
+y = beta[dataIndex,]
+  
+matplot(pos,y,col=as.numeric(cols) , xlim=xlim, ylim=c(0,1),ylab="Methylation")  
+apply(cbind(start(thecgi),end(thecgi)),1,function(x) segments(x[1],0,x[2],0,lwd=4,col=3))
+
+plot(pos,res$fitted[dataIndex],xlim=xlim,ylim=c(-0.4,0.4))
+abline(h=0)
+apply(cbind(start(thecgi),end(thecgi)),1,function(x) segments(x[1],0,x[2],0,lwd=4,col=3))
+
+}
+```
+
+```{r}
+table(getIslandStatus(dat))
+```
+
+
+
+
+
+

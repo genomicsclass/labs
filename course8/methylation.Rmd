@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 In this unit we will show an example of analyzing methylation data. We will use colon cancer data from TCGA. The data was created with the Illumina 450K array and we have already processed the raw data to create matrix with methylation measurements. The script that creates these ojects is here: https://github.com/genomicsclass/labs/blob/master/Rscripts/read_tcga_meth.R
 
 Let's begin by loading the data
-```{r}
+```{r,message=FALSE}
 # devtools::install_github("coloncancermeth/genomicsclass")
 library(coloncancermeth)
 data(coloncancermeth)
@@ -52,7 +52,7 @@ for(i in cancerlIndex){
 
 We are interested in finding regions of the genome that are different between cancer and normal samples. Furthermore, we want regions that are consistenly different therefore we can treat this as an inference problem. We can compute a t-statistic for each CpG
 
-```{r}
+```{r,message=FALSE}
 library(limma)
 X<-model.matrix(~pd$Status)
 fit<-lmFit(meth,X)
@@ -68,7 +68,7 @@ splot(fit$coef[,2],-log10(eb$p.value[,2]),xlab="Effect size",ylab="-log10 p-valu
 
 If we have reason to believe for DNA methylation to have an effect on gene expression a region of the genome needs to be affected, not just a single CpG, we should look beyond. Here is plot of the region surrounding the top hit
 
-```{r}
+```{r,message=FALSE}
 library(GenomicRanges)
 i <- which.min(eb$p.value[,2])
 middle <- gr[i,]
@@ -92,7 +92,7 @@ hist(log10(diff(pos[chr1Index])),main="",xlab="log 10 method")
 
 We can create groups in the following way.
 
-```{r}
+```{r,message=FALSE}
 # biocLite("bumphunter")
 library(bumphunter)
 cl=clusterMaker(chr,pos,maxGap=500)
@@ -127,6 +127,8 @@ plot(x2,y2,xlab="genomic location",ylab="Methylation difference",ylim=c(-1,1))
 abline(h=0,lty=2)
 abline(h=c(-.1,.1),lty=2)
 ```
+
+<a name="DMR"></a>
 
 If we are interested in prioritizing regions over single points, we need an alternative approach. If we assume that the real signal is smooth, we could use statistical smoothing techniques such as loess. Here is an example two regions above
 
