@@ -41,7 +41,7 @@ tab = matrix(c(menYes,womenYes,menNo,womenNo),2,2)
 print(chisq.test(tab)$p.val)
 ```
 
-But closer inspection shows a paradoxical results. Here are the percent admissions by Major:
+But closer inspection shows a paradoxical result. Here are the percent admissions by Major:
 ```{r}
 y=cbind(admissions[1:6,c(1,3)],admissions[7:12,3])
 colnames(y)[2:3]=c("Male","Female")
@@ -50,16 +50,17 @@ y
 
 **Optional homework**: Run the `chisq.test` in each major.
 
+Here are the absolute number of admissions by Major:
 ```{r}
 y=cbind(admissions[1:6,c(1,2)],admissions[7:12,2])
 colnames(y)[2:3]=c("Male","Female")
 y
 ```
 
-What's going? 
+The chi-square test we performed above suggests a dependence between admission and gender.  Yet when the data is grouped by Major, this dependence doesn't seem borne out.  What's going on? 
 
 This is called _Simpson's paradox_ 
-Note that males were much more likely to apply to "easy" majors. 
+As we will see, males were much more likely to apply to "easy" majors. 
 
 Male and easy majors are confounded. 
 ```{r}
@@ -121,7 +122,7 @@ abline(v=NC+NC/20)
 axis(side=3,c(NC/2,NC+NC/2),c("Male","Female"),tick=FALSE,line=-1)
 ```
 
-Now we stratify the data by major. The key point here is that most of the men denoted with green com from majors E and F which are the ones with the highest acceptance rate. 
+Now we stratify the data by major. The key point here is that most of the men denoted with green come from majors A and B which are the ones with the highest acceptance rate. 
 
 
 ```{r,echo=FALSE,fig.width=14,fig.height=7}
