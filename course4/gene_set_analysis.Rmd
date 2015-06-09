@@ -28,6 +28,7 @@ biocLite("GSEABase")
 ```
 
 We will need these packages:
+
 ```{r,message=FALSE}
 library(rafalib)
 library(GSEABase)
@@ -35,6 +36,7 @@ library(GSEABase)
 
 In previous sections we have used a dataset comparing males and females. 
 We will need the following package which is available from the class github repo:
+
 ```{r,eval=FALSE}
 library(devtools)
 install_github("genomicsclass/GSE5859Subset")
@@ -112,7 +114,7 @@ e=ExpressionSet(assay=geneExpression,
                 phenoData=AnnotatedDataFrame(sampleInfo),
                 annotation="hgfocus")
 ##can safely ignore the warning
-gsids<-mapGMT2Affy(e,gsets) 
+gsids <- mapGMT2Affy(e,gsets) 
 ```
 
 ## Approaches based on association tests
@@ -155,8 +157,7 @@ rug(tt[ind],col=2)
 
 Note that the gene set distribution shifts a bit to the left providing evidence that the distribution of the t-statistics in this gene set is different from the distribution for all genes. So how do we quantify this observation? How do we assess uncertainty.
 
-The first published approach to performing gene set analysis [Virtaneva 2001](#foot) used the Wilcox Mann-Whitney tests discussed in a previous unit. The basic idea was to test if the difference between cases and controls was generally bigger in a given gene set compared to the rest of the genes. The Wilcox compares the ranks in the gene sets are generally above the 
-median. 
+The first published approach to performing gene set analysis [Virtaneva 2001](#foot) used the Wilcox Mann-Whitney tests discussed in a previous unit. The basic idea was to test if the difference between cases and controls was generally bigger in a given gene set compared to the rest of the genes. The Wilcox compares the ranks in the gene sets are generally above the median. 
 
 Here we compute the Wilcoxon test for each gene set. We then standardize the Wilcoxon statistic to have mean 0 and standard deviation 1. Note that the central limit theorem tell us that if the gene sets are large enough and the effect size for each gene are independent of each other then these statistics will follow a normal distribution. 
 
@@ -181,13 +182,14 @@ legend("topleft",c("Autosome","chrX","chrY"),pch=16,col=1:3,box.lwd=0)
 
 Note that the top ten does not show the X and Y chromosomes as highly expressed as we expected. The logic for using a rank based (robust) test was that we do not want one or two very highly expressed genes to dominate the gene set analysis.  However, although low rank based tests are very useful at protecting us from false positive they come at the cost of low low sensitive (power). Below we consider less robust, yet generally more powerful approaches.
 
-If we are interested in gene sets with distributions that shift to the left (generally more under expressed genes) or the right (generally more over expressed genes) then the simplest test we can construct simply compares the average between the two groups. A very simple summary we can construct to test for mean shits is to average the t-statistic in gene set [http://www.ncbi.nlm.nih.gov/pubmed/?term=20048385]. Basically for let G be the index of genes in the gene sets and define:
+If we are interested in gene sets with distributions that shift to the left (generally more under expressed genes) or the right (generally more over expressed genes) then the simplest test we can construct simply compares the average between the two groups. A very simple summary we can construct to test for mean shits is to average the t-statistic in gene set <http://www.ncbi.nlm.nih.gov/pubmed/?term=20048385>. Basically for let G be the index of genes in the gene sets and define:
 
 $$
 \bar{t}=\frac{1}{N} \sum_{i \in G} t_i
 $$
 
-Note that under the null hypothesis that the genes in the gene set are not differentially expressed, then these $t$s have mean 0. If they t-statistics are independent of each other (later we will learn approaches that avoid this assumption) then $\bar{t}$ has standard deviation 1 and are approximately normal:
+Note that under the null hypothesis that the genes in the gene set are not differentially expressed, then these $t$ have mean 0. If they t-statistics are independent of each other (later we will learn approaches that avoid this assumption) then $\bar{t}$ has standard deviation 1 and are approximately normal:
+
 $$
 \sqrt{N} \bar{t} \sim N(0,1)
 $$
@@ -238,21 +240,22 @@ Note that in the case that genes in a gene set have correlation $\rho$ the varia
 
 $$
 \begin{eqnarray}
-Var(\bar{t}) &=& \frac{1}{N^2} \mbox{var}((1 \dots 1]) (t_1 \dots
-t_N)' (1 \dots 1)')) \\\\
+Var(\bar{t}) &=& \frac{1}{N^2} \mbox{var}( (1 \dots 1) (t_1 \dots
+t_N)' ) \\
 &=& \frac{1}{N^2}(1 \dots 1)
 \begin{pmatrix}
-1 & \rho & \dots & \rho & \rho \\\\
-\rho & 1 & \rho & \dots  & \rho \\\\
-\dots & \dots & \dots & \dots & \dots \\\\
-\rho &  \rho & \dots & \rho & 1 \\\\
+1 & \rho & \dots & \rho & \rho \\
+\rho & 1 & \rho & \dots  & \rho \\
+\dots & \dots & \dots & \dots & \dots \\
+\rho &  \rho & \dots & \rho & 1 \\
 \end{pmatrix}
-(1 \dots 1) ' \\\\
-&=& \frac{1}{N}\{1 + (N-1) \rho N\}
+(1 \dots 1) ' \\
+&=& \frac{1}{N^2}\{N + (N-1) N \rho \} \\
+&=& \frac{1}{N}\{1 + (N-1) \rho \} \\
 \end{eqnarray}
 $$
 
-Note that when $\rho$ is positive, the variance is inflated by $\{1 + (N-1) \rho N\}$. Although in general we don't expect all the $\rho$ to be the same within a gene set, a correction factor can still be computed for each gene set that depends on the average $\rho$ in the gene set. The formula can been seen on page 295 [here] (http://dx.doi.org/10.1214/07-AOAS146). The formula for the correction for the Wald statistic is also included. 
+Note that when $\rho$ is positive, the variance is inflated by $\{1 + (N-1) \rho \}$. Although in general we don't expect all the $\rho$ to be the same within a gene set, a correction factor can still be computed for each gene set that depends on the average $\rho$ in the gene set. The formula can been seen on page 295 [here] (http://dx.doi.org/10.1214/07-AOAS146). The formula for the correction for the Wald statistic is also included. 
 
 These correction factor can be used to adapt the simple summary statistics described above. In fact, several methods have been published that are based on the simple mean shift approach but take correlation into account to develop summary statistics and statistical inference based on asymptotic approximations [ROAST](http://www.ncbi.nlm.nih.gov/pubmed/?term=20610611), [CAMERA](http://www.ncbi.nlm.nih.gov/pubmed/22638577). In the computer labs we will demonstrate one of these pieces of software. For simplicity, here we
 create approximation based on $\sqrt{N} \bar{t}$ and use the correction factor. Here compare the original $\sqrt{N} \bar{t}$ to the corrected version:
@@ -295,7 +298,7 @@ When outcome of interest permits it and enough samples and are available an alte
 ```{r, cache=TRUE}
 library(matrixStats)
 set.seed(1)
-B <- 10000 ##takes a few minutes
+B <- 400 ##takes a few minutes
 null <- sapply(1:B,function(b){
  nullX<- sample(X)
  nullsvaX<-model.matrix(~nullX+svafit$sv) ##note that we are not recomupting the surrogate values. 

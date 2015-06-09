@@ -1,19 +1,31 @@
-# Exploring Cufflinks output with cummeRbund
+---
+layout: page
+title: Exploring Cufflinks output with cummeRbund
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 
 Here we show the exploratory plots offered by the [cummeRbund](http://www.bioconductor.org/packages/release/bioc/html/cummeRbund.html) package. These plots require loading in a directory in which results from a [Cufflinks](http://cole-trapnell-lab.github.io/cufflinks/) analysis has been run. Follow the vignette in the above link in order in order to perform a Cufflinks gene- and isoform-level analysis. From the vignette:
 
 > CummeRbund begins by re-organizing output files of a cuffdiff analysis, and storing these data in a local SQLite database. CummeRbund indexes the data to speed up access to specific feature data (genes, isoforms, TSS, CDS, etc.), and preserves the various relationships between these features. 
 
-```{r}
+```{r message=FALSE}
 library(cummeRbund)
 myDir <- system.file("extdata", package="cummeRbund") 
 gtfFile <- system.file("extdata/chr1_snippet.gtf",package="cummeRbund")
 ```
 
+Read in the prepared Cufflinks files from the directory:
+
 ```{r warning=FALSE}
 cuff <- readCufflinks(dir=myDir,gtfFile=gtfFile,genome="hg19",rebuild=TRUE)
 ```
 
+Boxplots of expression (FPKM) at the gene and isoform level:
 
 ```{r}
 csBoxplot(genes(cuff))
@@ -21,22 +33,36 @@ csBoxplot(genes(cuff),replicates=TRUE)
 csBoxplot(isoforms(cuff),replicates=TRUE)
 ```
 
+Scatterplot matrix of gene and isoform level expression:
+
 ```{r}
 csScatterMatrix(genes(cuff))
 csScatterMatrix(isoforms(cuff))
 ```
+
+Sample dendrograms using Jensen-Shannon distances:
 
 ```{r}
 csDendro(genes(cuff),replicates=TRUE)
 csDendro(isoforms(cuff),replicates=TRUE)
 ```
 
+MA-plot comparing two conditions:
+
 ```{r}
 MAplot(genes(cuff),"hESC","Fibroblasts")
 MAplot(isoforms(cuff),"hESC","Fibroblasts")
 ```
 
+A "volcano plot" matrix. Each volcano plot is the -log10(p-value) over the log fold change.
+
 ```{r}
 csVolcanoMatrix(genes(cuff))
 csVolcanoMatrix(isoforms(cuff))
+```
+
+For all of these functions, see the help pages in the *cummeRbund* package for more details, and check the vignette for a sample workflow. The [Cufflinks homepage](http://cole-trapnell-lab.github.io/cufflinks/) has details about running the pipeline upstream of producing these figures.
+
+```{r eval=FALSE}
+browseVignettes("cummeRbund")
 ```
