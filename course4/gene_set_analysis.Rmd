@@ -188,7 +188,7 @@ $$
 \bar{t}=\frac{1}{N} \sum_{i \in G} t_i
 $$
 
-Note that under the null hypothesis that the genes in the gene set are not differentially expressed, then these $t$ have mean 0. If they t-statistics are independent of each other (later we will learn approaches that avoid this assumption) then $\bar{t}$ has standard deviation 1 and are approximately normal:
+Note that under the null hypothesis that the genes in the gene set are not differentially expressed, then these $t$ have mean 0. If they t-statistics are independent of each other (later we will learn approaches that avoid this assumption) then $\sqrt{N} \bar{t}$ has standard deviation 1 and are approximately normal:
 
 $$
 \sqrt{N} \bar{t} \sim N(0,1)
