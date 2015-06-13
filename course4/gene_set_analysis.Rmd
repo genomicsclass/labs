@@ -236,7 +236,7 @@ plot(corrs[N>10,],xlim=c(-1,1),ylim=c(-1,1),xlab="Correlation within females",yl
 abline(h=0,v=0,lty=2)
 ```
 
-Note that in the case that genes in a gene set have correlation $\rho$ the variance is of the average t-statistics can be computed to be:
+Note that in the case that the test statistics for the genes in a gene set have correlation $\rho$, the variance of the average t-statistics will be:
 
 $$
 \begin{eqnarray}
