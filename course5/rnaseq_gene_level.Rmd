@@ -445,8 +445,9 @@ If we suppose that we didn't know about the different cell-lines in the experime
 
 ```{r}
 library(sva)
-idx <- rowMeans(counts(dds)) > 1
-dat <- counts(dds)[idx,]
+dat <- counts(dds, normalized=TRUE)
+idx <- rowMeans(dat) > 1
+dat <- dat[idx,]
 mod <- model.matrix(~ dex, colData(dds))
 mod0 <- model.matrix(~ 1, colData(dds))
 svseq <- svaseq(dat, mod, mod0, n.sv=2)
