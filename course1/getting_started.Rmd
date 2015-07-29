@@ -7,9 +7,6 @@ title: Getting Started
 
 In this book we will be using the [R](https://cran.r-project.org/) programming language for all our analysis. You will learn R and statistics simultaneusly. However, we assume you have some basic programming skills and knowledge of R syntax. If you don't, the first homework, below, is to complete a tutorial. Here we give step-by-step instructions on how to get set up to follow along.
 
-X> ## This is an exercise
-X> whats 1+1?
-
 ## Installing R
 
 The first step is to install R. You can downloand and install R from the (Comprehensive R Archive Network)[https://cran.r-project.org/] (CRAN). It is relatively straight forward but if you need furthter help you can try the following resources:
