@@ -195,15 +195,15 @@ abline(h=0,col=2,lwd=2)
 These are referred to as Bland-Altman plots or MA plots in the genomics literature and will say more later. In this plot we see that the typical difference in the log (base 2) scale between two replicated measures is about 1. This means that when measurements should be the same we will, on average, observe 2 fold difference. We can now compare this variability to the differences we want to detect and decide if this technology is precise enough for our purposes.
 
 
-#  Barpots for paired data
+#  Barplots for paired data
 
-A common task in data analysis is the comparison of two groups. When the dataset is small and  data are paired, for example outcomes before and after a treatment, an unfortunate display that is used is the barplot with two colors:
+A common task in data analysis is the comparison of two groups. When the dataset is small and data are paired, for example outcomes before and after a treatment, an unfortunate display that is used is the barplot with two colors:
 
 <center>
 <img src="https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig6r_e.png" width="400">
 </center>
 
-There are various better ways of showing these data to illustrate there is an increase after treatment. One is to simply make a scatterplot and which shows that most points are above the identity line. Another alternative is plot the differences against the before values.
+There are various better ways of showing these data to illustrate there is an increase after treatment. One is to simply make a scatterplot which shows that most points are above the identity line. Another alternative is plot the differences against the before values.
 ```{r,fig.align='center',fig.width=7,fig.height=4}
 set.seed(12201970)
 before <- runif(6, 5, 8)
