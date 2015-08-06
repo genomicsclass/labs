@@ -442,7 +442,7 @@ for(k in c(1,200)){
 
 Note that when $k=1$ we make no mistakes in the training test since every point is it's closes neighbor and it is equal to itself. Note that the we some islands of blue in the red area that once we move to the test set are more error prone. In the case $k=100$ we do not have this problem and we also see that we improve over linear regression
 
-Here is a comparison of the test and train set errors for various values of $k$. We also include the error rate that we would make if we actually knew $\mobx{E}(Y \mid X_1=x1,X_2=x_2)$ referred to as _Bayes Rule_
+Here is a comparison of the test and train set errors for various values of $k$. We also include the error rate that we would make if we actually knew $\mbox{E}(Y \mid X_1=x1,X_2=x_2)$ referred to as _Bayes Rule_
 ```{r}
 ###Bayes Rule
 yhat <- apply(test,1,p)
