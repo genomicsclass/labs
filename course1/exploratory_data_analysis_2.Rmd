@@ -13,13 +13,57 @@ set.seed(1)
 library(rafalib)
 ```
 
-# Introduction 
+# Data Visualization
 
-We introduce EDA for _univariate_ data. Here we describe EDA and summary statistics for paired data. 
+Biases, systematic errors and unexpected variability are common in data from the life sciences. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines, such as the t.test function in R, are designed to detect these. Yet, these pipelines still give you an answer. Furthermore, it may be hard or impossible to notice an error was made just from the reported results.
+
+Graphing data is a powerful approach to detecting these problems. We refer to this as _exploratory data analyis_ (EDA). Many important methodological contributions to existing data analysis techniques in data analysis were initiated by discoveries made via EDA. Through this book we make use of exploratory plots to motivate the analyses we choose. Here we present a general introduction to EDA using height data.
+
+We have already introduce some EDA approaches for _univariate_ data. Namely the histograms.  Here we describe the qq-plot in more detail ans how some EDA and summary statistics for paired data. We also give a demonstration of commonly used figures that we recommend against.
+
+
+### Quantile Quantile Plots
+
+To corroborate that the normal distribution is in fact a good approximation we can use quantile-quantile plots (QQ-plots). Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number q that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list and for the normal distribution
+```{r}
+ps <- seq(0.01,0.99,0.01)
+qs <- quantile(x,ps)
+normalqs <- qnorm(ps,mean(x),popsd(x))
+plot(normalqs,qs,xlab="Normal percentiles",ylab="Height percentiles")
+abline(0,1) ##identity line
+```
+Note how close these values are. Also note that we can see these qqplots with less code
+```{r}
+qqnorm(x)
+qqline(x) 
+```
+However, the `qqnorm` function plots against a standard normal distribution. This is why the line has slope `popsd(x)` and intercept `mean(x)`
+
+In the example above the points match the line very well. In fact we can run Monte Carlo simulations to see that we see plots like this for data known to be normally distributed
+
+
+```{r}
+n <-1000
+x <- rnorm(n)
+qqnorm(x)
+qqline(x)
+```
+
+We can also get a sense for how non-normally distributed data looks. Here we generate data from the t-distribution with different degrees of freedom. Note that the smaller the degrees of freedoms the fatter the tails.
+
+```{r}
+dfs <- c(3,6,12,30)
+mypar2(2,2)
+for(df in dfs){
+  x <- rt(1000,df)
+  qqnorm(x,xlab="t quantiles",main=paste0("d.f=",df),ylim=c(-6,6))
+  qqline(x)
+}
+```
 
 <a name="scatterplots"></a>
 
-# Scatterplots and correlation
+### Scatterplots and correlation
 
 The methods described above relate to _univariate_ variables. In the biomedical sciences it is common to be interested in the relationship between two or more variables. A classic examples is the father/son height data used by Galton to understand heredity. Were we to summarize these data we could use the two averages and two standard deviations as both distributions are well approximated by the normal distribution. This summary, however, fails to describe an important characteristic of the data.
 
@@ -34,7 +78,7 @@ plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=pas
 
 The scatter plot shows a general trend: the taller the father the taller to son. A summary of this trend is the correlation coefficient which in this cases is 0.5. We motivate this statistic by trying to predict son's height using the father's. 
 
-# Stratification
+### Stratification
 
 Suppose we are asked to guess the height of randomly select sons. The average height, 68.7 inches, is the value with the highest proportion (see histogram) and would be our prediction. But what if we are told that the father is 72 inches tall, do we sill guess 68.7?
 
@@ -46,7 +90,7 @@ print(mean(y[ round(x) == 72]))
 ```
 Stratification followed by boxplots lets us see the distribution of each group. The average height of sons with fathers that are 72 is 70.7. We also see that the means of the strata appear to follow a straight line. This line is refereed to the regression line and it's slope is related to the correlation. 
 
-# Bi-variate normal distribution
+### Bi-variate normal distribution
 
 A pair of random variable $(X,y)$ is considered to be approximated by bivariate normal when the proportion of values below, say $x$ and $y$ is approximated by this expression:
 
@@ -103,7 +147,7 @@ plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fath
 abline(0,cor(x,y))
 ```
 
-# Spearman's correlation
+### Spearman's correlation
 
 Just like the average and standard deviation are not good summaries when the data is not well approximated by the normal distribution, the correlation is not a good summary when pairs of lists are not approximated by the bivariate normal distribution. Examples include cases in which on variable is related to another by a parabolic function. Another, more common example are caused by outliers or extreme values.
 
@@ -114,3 +158,5 @@ plot(a,b,main=paste("correlation =",signif(cor(a,b),2)))
 ```
 In the example above the data are not associated but for one pair both values are very large. The correlation here is about 0.5. This is driven by just that one point as taking it out lowers to correlation to about 0. An alternative summary for cases with outliers or extreme values is Spearman's correlation which is based on ranks instead of the values themselves. 
 
+
+### Misunderstanding Correlation 

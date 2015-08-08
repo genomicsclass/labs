@@ -8,6 +8,8 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
+<a name="roast"></a>
+
 # Gene set testing
 
 Here, we will explore software for testing differential expression in a set of genes. These tests differ from the gene-by-gene tests we saw previously. Again, the gene set testing software we will use lives in the `limma` package.
@@ -73,6 +75,7 @@ r1 <- roast(es, idx, design)
 r1
 ```
 
+<a name="mroast"></a>
 
 ## Testing multiple gene sets
 

@@ -11,7 +11,6 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-
 # Installing Bioconductor
 
 Many of the datasets we will use in this chapter require packages made available via the Bioconductor project. Bioconductor is similar to CRAN but uses a different set of functions for downloads. It also includes many more data packages as well as _annotation_ packages that store information about either high-throughout products or information about molecular endpoints such as genes. We will need to some of these packages in this chapter. Here we show how to install the Biobase package. 
@@ -55,7 +54,7 @@ A final table, which we will cover in much more detail in the Bioconductor chapt
  
 ```{r}
 library(hgfocus.db)
-annot <- elect(hgfocus.db, keys=featureNames(e), keytype="PROBEID", columns=c("CHR", "CHRLOC", "SYMBOL"))
+annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID", columns=c("CHR", "CHRLOC", "SYMBOL"))
 ##pick one
 annot <-annot[match(featureNames(e),annot$PROBEID),]
 head(annot)

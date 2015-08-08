@@ -13,19 +13,19 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 set.seed(1)
 ```
 
-# Introduction
+## Association Tests
 
-The statistical tests we have covered up to know leave out a substantial portion of life science projects. Specifically, we are referring to data that is binary, categorical and ordinal. To give a very specific example, consider genetic data where you have two genotypes (AA/Aa or aa) for cases and controls for a given disease. The statistical question is if genotype and disease are associated. Note that as in the examples we have been studying we have two populations: AA/Aa and aa and  numeric data for each. So why can't we perform a t-test? Note that the data is either 0 (control) or 1 (cases). It is pretty clear that this data is not normally distributed so the t-distribution approximation is for sure out of the question. We could use CLT if the sample size is large enough, but instead we can use association tests.
+The statistical tests we have covered up to now leave out a substantial portion of life science projects. Specifically, we are referring to data that is binary, categorical and ordinal. To give a very specific example, consider genetic data where you have two genotypes (AA/Aa or aa) for cases and controls for a given disease. The statistical question is if genotype and disease are associated. Note that as in the examples we have been studying we have two populations: AA/Aa and aa and  numeric data for each. So why can't we perform a t-test? Note that the data is either 0 (control) or 1 (cases). It is pretty clear that this data is not normally distributed so the t-distribution approximation is for sure out of the question. We could use CLT if the sample size is large enough, but instead we can use association tests.
 
-# Association tests
+### Lady Tasting Tea
 
-One of the most famous examples of hypothesis testing was performed by RA Fisher on a lady that claimed could tell if milk was added before or after the tea was poured. Fisher gave the lady four pairs of cups of tea: one with milk poured first, the other after. The order was randomized. Say the lady picked 3 out 4 correctly, do we believe she has a special ability? Hypothesis testing helps answer this question by quantifying what happens by chance.
+One of the most famous examples of hypothesis testing was performed by RA Fisher. A person he knew claimed she could tell if milk was added before or after the tea was poured. Fisher gave the lady four pairs of cups of tea: one with milk poured first, the other after. The order was randomized. Say the lady picked 3 out 4 correctly, do we believe she has a special ability? Hypothesis testing helps answer this question by quantifying what happens by chance.
 
-The basic question we ask is: if the lady is just guessing, what are the chances that she gets 3 or more correct? Just as we have done before we can compute a probability under the null that hypothesis that she is just guessing. If we assume the lady is just guessing randomly, we can think of this particular examples as picking 4 balls out of an urn with 4 green (correct answer) and 4 red (incorrect answer) balls. 
+The basic question we ask is: if the lady is just guessing, what are the chances that she gets 3 or more correct? Just as we have done before we can compute a probability under the null hypothesis that she is just guessing four of each. If we assume this null hypothesis, we can think of this particular examples as picking 4 balls out of an urn with 4 green (correct answer) and 4 red (incorrect answer) balls. 
 
 Under the null hypothesis that the lady is just guessing each ball has the same chance of being picked. We can then use combinatorics to figure out the probability. The probability of picking 3 is ${4 \choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of picking all correct is ${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$. Thus the chance of observing a 3 or something more extreme, under the null hypothesis, is 0.24. This is called a p-value. This is called Fisher's exact test and it uses the hyper geometric distribution.
 
-## Two by two tables
+### Two by two tables
 
 Note that the data from the experiment above can be summarized by a 2 by 2 tables:
 
@@ -42,7 +42,7 @@ The function `fisher.test` performs the calculations above and can be obtained l
 fisher.test(tab,alternative="greater")
 ```
 
-## Chi-square test
+### Chi-square test
 
 Genome-wide association studies (GWAS) have become ubiquitous in Biology. One of the main statistical summaries used in these studies are Manhattan plots. The y-axis of a Manhattan plot typically represents the negative of log (base 10) of the p-values obtained for association tests applied at millions of single nucleotide polymorphisms (SNP). These p-values are obtained in a similar way to the test performed on the tea tasting lady. However in that example the number of green and red balls is experimentally fixed and the number of answers given for each category is also fixed. Another way to say this is that the sum of the rows and the sum of the columns are fixed. This defines constraints on the possible ways we can fill the 2 by 2 table and also permits us to use the hypergeometric distribution. In general, this is not the case. But there is another approach which is the Chi-squared test described here.
 
@@ -104,7 +104,7 @@ The Chi-square test uses an asymptotic result (similar to CLT) about the sums of
 chisq.test(tab)$p.value
 ```
 
-## Large samples, small p-values
+### Large samples, small p-values
 
 As we mentioned earlier reporting only p-values is not an appropriate way to report the results of your experiment. Many genetic association studies seem to over emphasize p-values. They have large sample sizes, report impressively small p-values, yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
 
@@ -115,7 +115,7 @@ tab<-tab*10
 chisq.test(tab)$p.value
 ```
 
-## Confidence intervals for the odd ratio
+### Confidence intervals for the odd ratio
 
 Computing confidence intervals for the OR is not mathematically straightforward. Unlike other statistics for which we have found approximations for their distributions, the OR is not only a ratio, but a ratio of ratio and there is not simple way of using, for example, the CLT.
  
