@@ -24,7 +24,7 @@ The next step is to install RStudio. Technically you can run all the code shown 
 
 The first homework assignment is to complete an R tutorial to familiarize yourself with the basics of programming and R syntax. If you are already familiar you can skip to the next section.
 
-*Homework 0*:  Go through the [swirl](http://swirlstats.com/) tutorial, which teaches you R programming and data science interactively, at your own pace, and right in the R console”. Once you have R installed you can install swirl and run it this way:
+*Homework 0*:  Go through the [swirl](http://swirlstats.com/) tutorial, which teaches you R programming and data science interactively, at your own pace, and right in the R console. Once you have R installed you can install swirl and run it this way:
 
 ```{r, eval=FALSE}
 install.packages("swirl")
