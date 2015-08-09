@@ -13,15 +13,15 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ### Introduction
 
-Below we will discuss the Central Limit Theorem and the t-distribution, which help us to calculate probabilities of observing events. Both are often used in science to test statistical hypotheses. To use these we have to make different assumptions, but both results are similar in that through mathematical formula, we are able to calculate exact probabilities of events, if we think that certain assumptions about the data hold true.
+Below we will discuss the Central Limit Theorem (CLT) and the t-distribution, both of which help us make important calculations related to probabilities. Both are frequently used in science to test statistical hypotheses. To use these, we have to make assumptions, different ones for the CLT and the t-distribution. However, what's common to both is that these assumptions are true, then we are able to calculate exact probabilities of events through the use of mathematical formula.
 
 ### Central Limit Theorem 
 
-The Central Limit Theorem (or CLT) is one of the most used mathematical results in science. It tells us that when the sample size is large the average $\bar{Y}$ of a random sample follows a normal distribution centered at the population average $\mu_Y$ and with standard deviation equal to the population standard deviation $\sigma_Y$, divided by the square root of the sample size $N$. 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large the average $\bar{Y}$ of a random sample follows a normal distribution centered at the population average $\mu_Y$ and with standard deviation equal to the population standard deviation $\sigma_Y$, divided by the square root of the sample size $N$. 
 
-Two important mathematical results you need to know are that if we subtract a constant from a random variable, the mean of the new random variable shifts by that constant. Mathematically, if $X$ is a random variable with mean $\mu$ and $a$ is a constant, the mean of $X - a$ is $\mu-a$. A similarly intuitive result holds for the standard deviation if $X$ is a random variable with mean $\mu$ and SD $\sigma$, and $a$ is a constant, then the mean and SD of $aX$ are $a \mu$ and $\|a\| \sigma$ respectively. To see how intuitive this is, imagine we subtract 10 grams from each of the mice weights, the average should also drop by that much. Similarly, we change the units from grams to milligrams by multiplying by 1000 then the spread of the numbers becomes larger.
+Please note that if we subtract a constant from a random variable, the mean of the new random variable shifts by that constant. Mathematically, if $X$ is a random variable with mean $\mu$ and $a$ is a constant, the mean of $X - a$ is $\mu-a$. A similarly intuitive result holds for the standard deviation if $X$ is a random variable with mean $\mu$ and SD $\sigma$, and $a$ is a constant. Then the mean and SD of $aX$ are $a \mu$ and $\|a\| \sigma$ respectively. To see how intuitive this is, imagine that we subtract 10 grams from each of the mice weights, the average should also drop by that much. Similarly, if we change the units from grams to milligrams by multiplying by 1000, then the spread of the numbers becomes larger.
 
-This implies that if we take many samples of size $N$ then the quantity 
+This implies that if we take many samples of size $N$, then the quantity: 
 
 $$
 \frac{\bar{Y} - \mu}{\sigma_Y/\sqrt{N}}
@@ -29,7 +29,7 @@ $$
 
 is approximated with a normal distribution centered at 0 and with standard deviation 1.
 
-Now we are interested in the difference of two sample averages. Here again a mathematical result helps. If we have two random variables $X$ and $Y$ with means $\mu_X$ and $\mu_Y$ and variance $\sigma_X$ and $\sigma_Y$ respectively, then we have the following results. The mean of the sum $Y + X$ is the sum of the means $\mu_Y + \mu_X$. Using one of the facts we mentioned earlier, this implies that the mean of $Y - X = Y + aX$ with $a = -1$ which means the mean of $Y - X$ is $\mu_Y - \mu_X$. This is intuitive. However, the next result is perhaps not as intuitive.  If $X$ and $Y$ are independent of each other, as they are in our mouse example, then the variance (SD squared) of $Y + X$ is the sum of the variances $\sigma_Y^2 + \sigma_X^2$. This implies that variance of the difference $Y - X$ is the variance of $Y - aX$ with $a = -1$ which is $\sigma^2_Y + a^2 \sigma_X^2 = \sigma^2_Y + \sigma_X^2$. So the variance of the difference is also the sum of the variances. If this seems like a counter intuitive result, think that if $X$ and $Y$ are independent of each other, the sign does not really matter, it can be considered random: if $X$ is normal with certain variance, for example, so is $-X$.  Finally, another useful result is that the sum of normal variables is again normal.
+Now we are interested in the difference between two sample averages. Here again a mathematical result helps. If we have two random variables $X$ and $Y$ with means $\mu_X$ and $\mu_Y$ and variance $\sigma_X$ and $\sigma_Y$ respectively, then we have the following results. The mean of the sum $Y + X$ is the sum of the means $\mu_Y + \mu_X$. Using one of the facts we mentioned earlier, this implies that the mean of $Y - X = Y + aX$ with $a = -1$ which implies that the mean of $Y - X$ is $\mu_Y - \mu_X$. This is intuitive. However, the next result is perhaps not as intuitive.  If $X$ and $Y$ are independent of each other, as they are in our mouse example, then the variance (SD squared) of $Y + X$ is the sum of the variances $\sigma_Y^2 + \sigma_X^2$. This implies that variance of the difference $Y - X$ is the variance of $Y - aX$ with $a = -1$ which is $\sigma^2_Y + a^2 \sigma_X^2 = \sigma^2_Y + \sigma_X^2$. So the variance of the difference is also the sum of the variances. If this seems like a counterintuitive result, remember that if $X$ and $Y$ are independent of each other, the sign does not really matter, it can be considered random: if $X$ is normal with certain variance, for example, so is $-X$.  Finally, another useful result is that the sum of normal variables is again normal.
 
 All this math is very useful for the purposes of our study because we have two sample averages and are interested in the difference. Because both are normal the difference is normal as well, and the variance (the standard deviation squared) is the sum of the two variance.
 Under the null hypothesis that there is no difference between the population averages, the difference between the sample averages $\hat{Y}-\hat{X}$, with $\hat{X}$ and $\hat{Y}$ the sample average for the two diets respectively, is approximated by a normal distribution centered at 0 (there is no difference) and with standard deviation $\sqrt{\sigma_X^2 +\sigma_Y^2}/\sqrt{N}$. 
@@ -76,7 +76,7 @@ $$
 
 Note that this is the ratio of two random variables so it is not necessarily normal. The fact that the denominator can be small by chance increases the probability of observing large values. [William Sealy Gosset](http://en.wikipedia.org/wiki/William_Sealy_Gosset), an employ of Guinness, deciphered the distribution of this random variable and published a paper under the pseudonym "student". The distribution is therefore called Student's t-distribution. Later we will learn more about how this result is used.
 
-Here we will use the mice phenotypes data as example. We start by creating two vectors 
+Here we will use the mice phenotype data as example. We start by creating two vectors 
 
 ```{r}
 library(dplyr)
@@ -88,7 +88,7 @@ controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodywei
 hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  select(Bodyweight) %>% unlist
 ```
 
-It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$ not the random variable $\bar{Y}$. Although we do not get to do this in practice, in this illustrative example we get to see this distribution for both controls and high fat diet mice:
+It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$ not the random variable $\bar{Y}$. Although we can't do this in practice, in this illustrative example we get to see this distribution for both controls and high fat diet mice:
 
 ```{r, fig.height=3.5}
 library(rafalib)
