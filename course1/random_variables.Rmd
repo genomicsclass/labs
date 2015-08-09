@@ -223,7 +223,7 @@ $$
 \mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\left( \frac{-(x-\mu)^2}{2 \sigma^2} \right)} \, dx
 $$
 
-Here $\mu$ and $\sigma$ are referred to as the mean and standard deviation of the population (we explain these in more detail in another section). If this approximation holds for our list, then the population mean and variance of our list can be used in the formula above. (RAFA: An example of this would be when we noted above that?)To see this with an example remember that above we noted that only 1.5% of values on the null distribution were above `obsdiff`. We can compute the proportion of values below a value `x` with `pnorm(x,mu,sigma)` without knowing all the values. The normal approximation works very well here:
+Here $\mu$ and $\sigma$ are referred to as the mean and standard deviation of the population (we explain these in more detail in another section). If this approximation holds for our list, then the population mean and variance of our list can be used in the formula above. An example of this would be when we noted above that only 1.5% of values on the null distribution were above `obsdiff`. We can compute the proportion of values below a value `x` with `pnorm(x,mu,sigma)` without knowing all the values. The normal approximation works very well here:
 
 ```{r}
 1-pnorm(obsdiff,mean(null),sd(null)) 
