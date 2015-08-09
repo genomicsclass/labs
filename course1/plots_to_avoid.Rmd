@@ -157,7 +157,10 @@ In the plot on the left we see the original data which shows very high correlati
 
 ```{r,message=FALSE}
 library(Biobase)
-library(SpikeInSubset)
+##install SpikeInSubset with:
+##library(rafalib)
+##install_bioc("SpikeInSubset")
+library(SpikeInSubset) 
 ```
 ```{r, fig.width=7.5 , fig.height=4, fig.align='center'}
 data(mas95)
@@ -371,7 +374,7 @@ $$\frac{1}{n} \sum_{i=1}^n (x_i - y_i)^2 = 2 + (\mu_x-\mu_y)^2 - 2\rho$$
 
 with $\rho$ the correlation. So we see the direct relationship between distance and correlation. However, an important difference is that the distance contains the term $$(\mu_x-\mu_y)^2$$ thus can detect cases that are not reproducible due to large average changes. 
 
-Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this we use a formula the relates the correlation of a variable with the correlation of that variable plus what is interpreted here as deviation:$x$ and $y=x+d$. The larger the variance of $d$ the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibitly. However, correlation depends on the variance of $x$ as well:
+Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this we use a formula the relates the correlation of a variable with the correlation of that variable plus what is interpreted here as deviation: $x$ and $y=x+d$. The larger the variance of $d$ the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibitly. However, correlation depends on the variance of $x$ as well:
 
 $$
 cor(x,x+d) = \frac{1}{\sqrt{1+\mbox{var}(d)/\mbox{var}(x)}}

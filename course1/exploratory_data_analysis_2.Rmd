@@ -155,16 +155,3 @@ mypar(1,1)
 plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fatherheights))
 abline(0,cor(x,y))
 ```
-
-## Spearman's correlation
-
-Just like the average and standard deviation are not good summaries when the data is not well approximated by the normal distribution, the correlation is not a good summary when pairs of lists are not approximated by the bivariate normal distribution. Examples include cases in which on variable is related to another by a parabolic function. Another, more common example are caused by outliers or extreme values.
-
-```{r fig.width=3, fig.height=3}
-a=rnorm(100);a[1]=10
-b=rnorm(100);b[1]=11
-plot(a,b,main=paste("correlation =",signif(cor(a,b),2)))
-```
-In the example above the data are not associated but for one pair both values are very large. The correlation here is about 0.5. This is driven by just that one point as taking it out lowers to correlation to about 0. An alternative summary for cases with outliers or extreme values is Spearman's correlation which is based on ranks instead of the values themselves. 
-
-

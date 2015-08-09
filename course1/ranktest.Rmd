@@ -8,7 +8,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Wilcoxon signed-rank test
+## Wilcoxon signed-rank test
 
 We learned how the sample mean and sd  are susceptible to outliers. The t-test is based on these measures and is susceptible as well. The Wilcox signed-rank test provides and alternative. In the code below we perform a t-test on data for which the null is true but we change one observation by mistakes in each sample and the values incorrectly entered are different. Here we see that the t-test results in a small p-value while the Wilcoxon test does not.
 

@@ -32,6 +32,8 @@ library(swirl)
 swirl()
 ```
 
+To follow this book you should be familiar with the difference betwee lists (including data frames) and numeric vectors, for loops, how to create functions, and how to use the `sapply` and `replicate` functions.
+
 Alternatively you can take the [try R](http://tryr.codeschool.com/) interactive class from Code School. 
 
 Note that there are also many open and free resources and reference guides for R. Two examples are
@@ -53,9 +55,10 @@ and that the hashtag symbol represents comments and are not interpreted:
 
 ## Installing packages
 
-The first R command we will run is `install.packages`. If you took the swirl tutorial you already did this! R only includes a basic set of functions. There is much more it can do than this, but not everybody needs everything so we instead make some functions via packages. Many of these function are stored in CRAN. Note that these packages are vetted. You can install easily from within R if you know the name of the function. As an example, we are going to install the package `downloader` which we use in our first data analysis examples:
+The first R command we will run is `install.packages`. If you took the swirl tutorial you already did this! R only includes a basic set of functions. There is much more it can do than this, but not everybody needs everything so we instead make some functions via packages. Many of these function are stored in CRAN. Note that these packages are vetted. You can install easily from within R if you know the name of the function. As an example, we are going to install the packages `rafalib` and `downloader` which we use in our first data analysis examples:
 
 ```{r,eval=FALSE}
+install.packages("rafalib")
 install.packages("downloader")
 ```
 
@@ -131,7 +134,7 @@ Many of the dataset we include in this book are avaialbe insider packages that a
 
 To install packages from GitHub you will need to install the `devtools` package:
 
-```{r}
+```{r,eval=FALSE}
 install.packages("devtools")
 ```
 
@@ -139,7 +142,7 @@ Note to Windows users: To use devtools you will have to also install `Rtools`. I
 
 Now we are ready to install from GitHub. Note that we now use a different function:
 
-```{r}
+```{r,message=FALSE,eval=FALSE}
 library(devtools)
 install_github("genomicsclass/dagdata")
 ```
@@ -166,22 +169,22 @@ The learning curve for R sytax is slow. One of the harder aspects that requires 
 Take a look at the dataset we read in:
 ```{r}
 dat <- read.csv(filename)
-View(dat)
+head(dat) ##In R Studio use View(dat)
 ```
 
 Note that there are two types of diets and that this is denoted in the first column. Note also that if we want just the weights, we only need the second column. So if we want to weights for mice on the `chow` diet we subset and filter like this:
 
-```{r}
+```{r,message=FALSE}
 library(dplyr) 
 chow <- filter(dat, Diet=="chow") ##keep only the ones with chow diet
-View(chow)
+head(chow)
 ```
 
 And now we can select just the column with the values
 
 ```{r}
 chowVals <- select(chow,Bodyweight)
-chowVals
+head(chowVals)
 ```
 
 A nice feature of the dplyr function is that you can perform consectutive tasks of the form do this and then to that do this other thing using this character a "pipe". We use this symbol to say "then to that do this": `%>%`. So the above can be done in just one line:
@@ -190,7 +193,21 @@ A nice feature of the dplyr function is that you can perform consectutive tasks 
 chowVals <- filter(dat, Diet=="chow") %>% select(Bodyweight)
 ```
 
-Note that in the second task we now longer have to specific that object we are editing since it is whatever comes from the previous call.
+Note that in the second task we now longer have to specific that object we are editing since it is whatever comes from the previous call. 
+
+Also note that if `dplyr` receives a data.frame it will returns a data.frame. 
+```{r}
+class(dat)
+class(chowVals)
+```
+
+For the pedagogical reasons we will many times want to have the final resulte be a simple `numeric` vector. To obtain such a vector with dplyr we can apply the `unlist` function which turns `lists` such as `data.frames` into `numeric` vectors:
+
+```{r}
+chowVals <- filter(dat, Diet=="chow") %>% select(Bodyweight) %>% unlist
+class( chowVals )
+```
+
 
 So that you can see the way we would do this in R without dplyr this is the code:
 
