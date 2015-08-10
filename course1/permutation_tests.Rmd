@@ -13,7 +13,7 @@ set.seed(1)
 ```
 
 ## Permutation Tests
-Suppose we have a situation in which none of the standard mathematical statistical approximation apply. We have computed a summary statisitic, such as the difference in mean, but do not have a useful approximation such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation can be useful in these scenarios. 
+Suppose we have a situation in which none of the standard mathematical statistical approximation apply. We have computed a summary statistic, such as the difference in mean, but do not have a useful approximation such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation can be useful in these scenarios. 
 
 We are back to the scenario were we only have 10 measurements for each group.
 
@@ -27,7 +27,7 @@ treatment <- filter(dat,Diet=="hf") %>% select(Bodyweight) %>% unlist
 obsdiff <- mean(treatment)-mean(control)
 ```
 
-In previous sections we have shown parametric approaches that help determin if the observed difference significant. Permutations tests take advantege of the fact that if randomly shuffle of the cases and control labels then the null is true. So we shuffle the case and control labels, and assume that the ensuing distribution approximates the null distribution. Here is how we generate a null distribution by shuffling the data 1,000 times.
+In previous sections we have shown parametric approaches that help determine if the observed difference significant. Permutations tests take advantage of the fact that if randomly shuffle of the cases and control labels then the null is true. So we shuffle the case and control labels, and assume that the ensuing distribution approximates the null distribution. Here is how we generate a null distribution by shuffling the data 1,000 times.
 
 ```{r}
 avgdiff <- replicate(1000, {
@@ -54,7 +54,7 @@ control <- sample(control,5)
 treatment <- sample(treatment,5)
 obsdiff <- mean(treatment,control)
 ```
-and repear the exercise
+and repeat the exercise
 
 
 ```{r}

@@ -43,7 +43,7 @@ diff <- mean(treatment)-mean(control)
 print(diff)
 ```
 
-We are asked to report a p-value. What do we do? We learned that `diff`, refered to as the _observed effect size_ is a random variable. Under the null hypothesis what is the distribution of this random variable? Let's use what we learned.
+We are asked to report a p-value. What do we do? We learned that `diff`, referred to as the _observed effect size_ is a random variable. Under the null hypothesis what is the distribution of this random variable? Let's use what we learned.
 
 Under the null, the mean of the distribution of `diff` is 0. What about the standard deviation? 
 
@@ -136,4 +136,4 @@ treatment <- filter(dat,Diet=="hf") %>% select(Bodyweight)
 t.test(treatment,control)
 ```
 
-Note that the arguments to `t.test` can be data.frames thuse we do not need unlist them into numeric objects.
+Note that the arguments to `t.test` can be data.frames thus we do not need to unlist them into numeric objects.

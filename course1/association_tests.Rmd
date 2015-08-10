@@ -74,7 +74,7 @@ tab <- table(genotype,disease)
 tab
 ```
 
-Note that you can feed `table` $n$ factors and it will tabulate all $n$-tubles.
+Note that you can feed `table` $n$ factors and it will tabulate all $n$-tables.
 
 The typical statistics we use to summarize these results is the odds ratio (OR). We compute the odds of having the disease if you are an "aa": 10/40, the odds of having the disease if you are an "AA/Aa": 20/180, and take the ration: $(10/40) / (20/180)$ 
 
@@ -127,7 +127,7 @@ coeftab<- summary(fit)$coef
 coeftab
 ```
 
-The second row of the table shown above gives you the estimate and SE of the log odds ratio and mathematical theory tells us the this estiamte is approximately normally distributed. We can therefore form a confidence interval and then exponentiate to provide a confidence interval for the OR.
+The second row of the table shown above gives you the estimate and SE of the log odds ratio and mathematical theory tells us the this estimate is approximately normally distributed. We can therefore form a confidence interval and then exponentiate to provide a confidence interval for the OR.
 
 ```{r}
 ci <- coeftab[2,1] + c(-2,2)*coeftab[2,2]

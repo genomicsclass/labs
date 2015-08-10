@@ -159,7 +159,7 @@ which makes the intervals larger and thus cover $\mu_X$ more frequently. In fact
 
 # Connection between confidence intervals and p-values
 
-We recommend that in practice confidence intervals be reported instead of p-values. If for some reason you are required to provide p-values, or required that you results are significant at the 0.05 of 0.01 leves, confidence intervals to provide this information. 
+We recommend that in practice confidence intervals be reported instead of p-values. If for some reason you are required to provide p-values, or required that your results are significant at the 0.05 of 0.01 levels, confidence intervals to provide this information. 
 
 If we are talking about a t-test p-value, we are asking if the difference we observe $\bar{X} - \bar{Y}$ is actually equal to zero. So we can form a confidence interval for this difference. Instead of writing $\bar{X} - \bar{Y}$ over and over again, let's define this difference as a new variable $\Delta \equiv \bar{X} - \bar{Y}$. The symbol $\Delta$ is often used for the difference between two variables in math and physics. 
 

@@ -19,7 +19,7 @@ Computers can be used to generate pseudo-random numbers. For practical purposes 
 
 Simulations can also be used to check theoretical or analytical results. Also, many of the theoretical results we use in statistics are based on asymptotics: they hold when the sample size goes to infinity. In practice we never have an infinite number of samples so we may want to know how well the theory works with our actual sample size. Sometimes we can answer this question analytically, but not always. Simulations are extremely useful in these cases.
 
-As an example, let's use a Monte Carlo simualation to see compare the CLT to the t-distribution approximation for different sample sizes.
+As an example, let's use a Monte Carlo simulation to see compare the CLT to the t-distribution approximation for different sample sizes.
 
 ```{r,message=FALSE}
 library(downloader)
@@ -46,13 +46,13 @@ ttestgenerator <- function(n) {
 ttests <- replicate(1000, ttestgenerator(10))
 ```
 
-With 1,000 Monte Carlo simulated ocurrences of this random variable we can now get a gimplse of it's distribution
+With 1,000 Monte Carlo simulated occurrences of this random variable we can now get a glimpse of its distribution
 
 ```{r}
 hist(ttests)
 ```
 
-So is the distribution of this t-statistic well approximated by the normal distribution? In the next chapter we will introduce quantile-quantile plots which provide a useful visual inspection of how well one distribution approximates another. As we will explain later, if points fall on the identiy line, it means the approximation is a good one.
+So is the distribution of this t-statistic well approximated by the normal distribution? In the next chapter we will introduce quantile-quantile plots which provide a useful visual inspection of how well one distribution approximates another. As we will explain later, if points fall on the identity line, it means the approximation is a good one.
 
 ```{r}
 qqnorm(ttests)
@@ -67,7 +67,7 @@ qqnorm(ttests)
 abline(0,1)
 ```
 
-Now we see that the large quantiles (refered to by statisticians as the _tails_) are large than expected. In the previous module we explained that when the sample size is not large enough and the *population values* follow a normal distribution then the t-distribution is a better approximation. Our simulation results seem to confirm this:
+Now we see that the large quantiles (referred to by statisticians as the _tails_) are large than expected. In the previous module we explained that when the sample size is not large enough and the *population values* follow a normal distribution then the t-distribution is a better approximation. Our simulation results seem to confirm this:
 
 ```{r}
 qs <- (seq(0,999)+0.5)/1000
@@ -85,16 +85,16 @@ qqline(controlPopulation)
 
 ### Parametric simulations for the observations
 
-The technique we used to motivate random variables and null distribution was a type of Monte Carlo simulation. We had access to population data and generated samples at random. In practice, we do not have access to the entire population. The reason for using the approach here was for educational purpsoses. But when we want to use Monte Carlo simulations in practice it is much more typical to assume a parametric distribution and generate a population from this. Instead, we can simulate the populaton data as well, using what is called a "parametric simulation". This means that we take parameters from the real data (here the mean and the standard deviation), and plug these into a model (here the normal distribution).  This is acually the most common form of Monte Carlo simulation.
+The technique we used to motivate random variables and null distribution was a type of Monte Carlo simulation. We had access to population data and generated samples at random. In practice, we do not have access to the entire population. The reason for using the approach here was for educational purposes. But when we want to use Monte Carlo simulations in practice it is much more typical to assume a parametric distribution and generate a population from this. Instead, we can simulate the population data as well, using what is called a "parametric simulation". This means that we take parameters from the real data (here the mean and the standard deviation), and plug these into a model (here the normal distribution).  This is actually the most common form of Monte Carlo simulation.
 
-For the case of wieghts we could use our knowledge that mice are typically 24 ounces in weigth with and SD of about 3.5 and that their weight distribution is roughly normal to generate population data:
+For the case of weights we could use our knowledge that mice are typically 24 ounces in weight with and SD of about 3.5 and that their weight distribution is roughly normal to generate population data:
 
 
 ```{r}
 controls<- rnorm(5000, mean=24, sd=3.5) 
 ```
 
-and repeat the entire excercise. We can then repeat the exercise above. Note that we no longer have to use the `sample` function since we can re-generate random normal numbers. So the `ttestgenerator` function can be written like this: 
+and repeat the entire exercise. We can then repeat the exercise above. Note that we no longer have to use the `sample` function since we can re-generate random normal numbers. So the `ttestgenerator` function can be written like this: 
 
 ```{r}
 ttestgenerator <- function(n, mean=24, sd=3.5) {

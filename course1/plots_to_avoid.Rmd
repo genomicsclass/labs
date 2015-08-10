@@ -39,7 +39,7 @@ The aims of good data graphics is to display data accurately and clearly. Some r
 browsers <- c(Opera=1,Safari=9,Firefox=20,IE=26,Chrome=44)
 ```
 
-Say we want the report the results from a poll asking about browser preference (taken in August 2013). The standard way of displaying these is with a piechart:
+Say we want the report the results from a poll asking about browser preference (taken in August 2013). The standard way of displaying these is with a pie chart:
 
 ```{r, fig.align='center', fig.width=4}
 pie(browsers,main="Browser Usage (August 2013)")
@@ -67,7 +67,7 @@ Note that we can now pretty easily determine the percentages by following a hori
 <img src="https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig2b.png" width="400">
 </center>
 
-Note that even worse that piecharts are donut plots.
+Note that even worse that pie charts are donut plots.
 
 <center>
 <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Donut-Chart.svg/360px-Donut-Chart.svg.png" width="200" align="middle">
