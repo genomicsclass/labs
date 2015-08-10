@@ -11,17 +11,17 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+## Matrix Notation
 
-Here we introduce the basics of matrix notation. At first this will all seem over-complicated but once we get to the examples you will start to appreciate its power of using this notation to both explain and derive solutions as well as implement them as R code. 
+Here we introduce the basics of matrix notation. At first this will all seem over-complicated but once we get to the examples you will start to appreciate the power of using this notation to both explain and derive solutions as well as implement them as R code. 
 
-# The language of linear models
+### The language of linear models
 
 Linear algebra notation actually  simplifies the mathematical descriptions and manipulations of linear models as well are coding in R. We will show you the basics of this notation and then show some example in R.
 
 The main point of this entire exercise is to show how we can write the models above using matrix notation and then explain how this is useful for solving the least squares equation. We start by simply defining notation and matrix multiplication, but bare with us, we eventually get back to the practical application.
 
-## Motivation
+## The Original Application: Solving System of Equations
 
 Linear algebra was created by mathematicians to solve systems of linear equations such as this:
 
@@ -36,8 +36,7 @@ $$
 It provides very useful machinery to solve these problems generally. We will learn how we can write and solve this system using matrix algebra notation:
 
 
-$$
-\begin{pmatrix}
+$$\begin{pmatrix}
 1&1&1\\
 3&-2&1\\
 2&1&-1
@@ -71,9 +70,6 @@ c
 $$
 
 This section explains the notation used above. It turns that we can borrow this notation for linear models in statistics as well.
-
-
-
 
 ## Vectors, Matrices and Scalars
 

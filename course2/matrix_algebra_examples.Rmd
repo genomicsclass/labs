@@ -11,12 +11,12 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
- 
+## Examples 
+
 Now we are ready to see how matrix algebra can be useful when analyzing data. We start with some simple example and eventually get to the main one: how to write linear models with matrix algebra notation and solve the least squares problem.
 
 
-# The average
+### The Average
 
 To compute the sample average and variance of our data we use these formulas $\bar{Y}=\frac{1}{N} Y_i$ and $\mbox{var}(Y)=\frac{1}{N} \sum_{i=1}^N (Y_i - \bar{Y})^2$. We can represent these with matrix multiplication. First define this $N \times 1$ matrix made just of 1s
 
@@ -60,6 +60,8 @@ barY=t(A)%*%Y / N
 print(barY)
 ```
 
+### The Variance
+
 As we will see later, multiplying the transpose of a matrix with another is very common in statistics. So common there is a function in R
 
 ```{r}
@@ -97,7 +99,7 @@ var(y) * (N-1) / N
 ```
 gives us the same answer as our matrix multiplication example.
 
-# Linear models
+### Linear Models
 
 Now we are ready to put all this to use. Let's start with Galton's example. If we define these matrix 
 
@@ -263,7 +265,7 @@ summary(fit)
 Note that we obtain the same values as above.
 
 
-# Summary
+### Summary
 
 We have shown how write linear models using linear algebra. We are going to do this for several examples many of which are related to designed experiments. We showed how to obtain least squares estimates. But keep in mind the because $y$ is a random variable, these estimates are random as well. In a later section we will learn how to compute standard error for this estimates and use this to perform inference.
 
