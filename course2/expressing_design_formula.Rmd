@@ -121,7 +121,18 @@ model.matrix(~ group)
 
 ```
 
-## Numeric variables
+### Where does model.matrix look for the data
+
+Finally, notice that the `model.matrix` function will grab the variable from the R environment, unless the data is explicitly provided as a dataframe to the `data` argument:
+
+```{r}
+group <- 1:4
+model.matrix(~ group)
+model.matrix(~ group, data=data.frame(group=5:8))
+```
+
+
+## Continuous variables
 
 In the beginning of this lab, we assumed that we didn't want to encode the  variable as a numeric, but in certain designs we might be interested in using numeric variables in the design formula, not converting them to a factor first. For example, we could be interested in testing various dosage of a treatment, where we expect a  specific relationship between a measured quantity and the dosage, e.g. 0 mg, 10mg, 20mg. 
 
@@ -135,14 +146,3 @@ model.matrix(~ z + I(z^2))
 ```
 
 The `I` function above is necessary to specify a mathematical transformation of a variable. See `?I` for more information.
-
-## Where does model.matrix look for the data
-
-Finally, notice that the `model.matrix` function will grab the variable from the R environment, unless the data is explicitly provided as a dataframe to the `data` argument:
-
-```{r}
-group <- 1:4
-model.matrix(~ group)
-model.matrix(~ group, data=data.frame(group=5:8))
-```
-

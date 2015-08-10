@@ -8,7 +8,11 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-We will be examining the weights of mice on a control diet and a high fat diet. We read in the data and make a quick stripchart:
+## Linear Models in Practice
+
+We will be demonstrate how we can analyze the high fat diet data using linear models instead of directly applying a t-test. We will see that ultimtely, these two approaches are equivalent. 
+
+We start by reading in the data and make a creating a quick stripchart:
 
 ```{r}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
@@ -22,7 +26,7 @@ stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
 
 We can see that the high fat diet group appear to have higher weights on average, although there is overlap between the two samples.
 
-## A linear model with one variable
+### A linear model with one variable
 
 We will build for demonstration purposes the design matrix $\mathbf{X}$ using the formula `~ Diet`. Note that the group with the 1's in the second column is determined by the level of `Diet` which comes second, that is, the non-reference level. 
 
@@ -73,7 +77,7 @@ summary(fit)
 (coefs <- coef(fit))
 ```
 
-## Examining the coefficients
+### Examining the coefficients
 
 The following large and clunky piece of code allows us to visualize the meaning of the coefficients with colored arrows:
 

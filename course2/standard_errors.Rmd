@@ -11,13 +11,12 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+## Standard Errors
 
-We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute their standard errors. Linear algebra also provides powerful approach for this task. 
+We have shown how to find the least squares estimates with matrix algebra. These estimates are random variables as they are linear combinations of the data. For these estimates to be useful we also need to compute their standard errors. Linear algebra also provides powerful approach for this task. We provide several examples.
 
-# Examples
 
-## Falling object
+### Falling object
 
 It is useful to think about where randomness comes from. In our falling object example, randomness was introduced through measurement errors. Every time we rerun the experiment a new set of measurement errors will be made which implies our data will change randomly which implies our estimates will change randomly. This implies that our estimate of, for example, the gravitational constant will change every time we perform the experiment. The constant is fixed, but our estimates are not. To see this we can run a Monte Carlo simulation. Specifically we will generate the data repeatedly and compute the estimate for the quadratic term each time.
 
@@ -41,29 +40,30 @@ betahat<-replicate(B,{
 head(betahat)
 ```
 
-Note that, as expected, the estimate is different every time. It is a random variable and it has a distribution:
+Note that, as expected, the estimate is different every time. This is because $\hat{\beta}$ is a random variable. It therefore  has a distribution:
+
 ```{r,message=FALSE}
 library(rafalib)
-mypar2(1,2)
+mypar(1,2)
 hist(betahat)
 qqnorm(betahat)
 qqline(betahat)
 ```
 
-Because $\hat{\beta}$ is a linear combination of the data, which we made normal in our simulation, it is also normal as seen in the qq-plot above. Note also that the mean of the distribution is 
+Because $\hat{\beta}$ is a linear combination of the data, which we made normal in our simulation, it is also normal as seen in the qq-plot above. Note also that the mean of the distribution is the true parameter $-0.5g$, as confirmed by the Monte Carlo simulation performed above
 
 ```{r}
 round(mean(betahat),1)
 ```
 
-the true parameter $-0.5g$. But we won't see this value when we estimate because the standard error of our estimate is approximately:
+But we won't see this value when we estimate because the standard error of our estimate is approximately:
 ```{r}
 sd(betahat) 
 ```
 
 Here we will show how we can compute their standard error without a Monte Carlo simulation. Note that in practice we do not know exactly how the errors are generated so we can't use the Monte Carlo approach.
 
-## Father and son heights
+### Father and son heights
 
 In the father and son height examples we have randomness because we have a random sample of father and son pairs. For the sake of illustration let's assume that this is the entire population:
 
@@ -88,6 +88,7 @@ betahat <- replicate(B,{
   })
 betahat <- t(betahat) ## have estimates in two columns
 ```
+
 By making qq-plots, we see that our estimates are approximately normal random variables:
 
 ```{r}
@@ -117,7 +118,7 @@ Other than that, this quantity does not have a useful interpretation in practice
 
 <a name="varcov"></a>
 
-# Variance covariance matrix
+### Variance covariance matrix
 
 As a first step we need to define the *variance-covariance matrix*, $\boldsymbol{\Sigma}$. For a vector of random variables, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
 
@@ -133,7 +134,7 @@ which implies that $\boldsymbol{\Sigma} = \sigma^2 \mathbf{I}$ with $\mathbf{I}$
 
 Later, we will see a case, specifically the estimate coefficients of a linear model, $\hat{\boldsymbol{\beta}}$, that has non-zero entries in the off diagonal elements of $\boldsymbol{\Sigma}$. Furthermore, the diagonal elements will not be equal to a single value $\sigma^2$.
 
-## Technical note
+### Technical note
 
 The standard approach to writing linear models either assume the $X$ are fixed or that we are conditioning on them. Thus  $X\beta$ has no variance as the $X$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following: 
 ```{r}
@@ -151,7 +152,7 @@ Again, this is because we are not fixing `tt`.
 
 
 
-# Variance of a linear combination 
+### Variance of a linear combination 
 
 A useful result that linear algebra gives is that the variance covariance-matrix of a linear combination $\mathbf{AY}$ of $\mathbf{Y}$ can be computed like this
 
@@ -168,7 +169,7 @@ $$ =\begin{pmatrix}1&1\end{pmatrix} \sigma^2 \mathbf{I}\begin{pmatrix} 1\\1\\ \e
 
 as we expect. We use this result to obtain the standard errors of the LSE (least squares estimate).
 
-# LSE standard errors
+### LSE standard errors
 
 Note that $\boldsymbol{\hat{\beta}}$ is a linear combination of $\mathbf{Y}$: $\mathbf{AY}$ with  $\mathbf{A}=\mathbf{(X^\top X)^{-1}X}^\top$ so we can use the equation above to derive the variance of our estimates:
 
@@ -184,7 +185,7 @@ $$\sigma^2\mathbf{(X^\top X)^{-1}}$$
 
 The diagonal of the square root of this matrix contains the standard error of our estimates. 
 
-## Estimating $\sigma^2$
+### Estimating $\sigma^2$
 
 To obtain an actual estimate in practice from the formulas above we need to estimate $\sigma^2$. Note that previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
 
@@ -254,7 +255,7 @@ $$\hat{\beta}_2 - \hat{\beta}_1 =
 Using the above, we know how to compute the variance covariance matrix of $\hat{\boldsymbol{\beta}}$.
 
 
-# CLT and t-distribution
+## CLT and t-distribution
 
 We have shown how we can obtain standard errors for our estimates. But, as we learned in the first chapter to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed then the $\hat{\beta}-\beta$ follow a t-distribution. Proving this mathematically is rather advanced, but the results are extremely useful as it is how we construct p-values and confidence intervals in the context of linear models.
 
