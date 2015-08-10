@@ -78,7 +78,7 @@ Note that this is the ratio of two random variables so it is not necessarily nor
 
 Here we will use the mice phenotype data as example. We start by creating two vectors 
 
-```{r}
+```{r,message=FALSE}
 library(dplyr)
 
 dat <- read.csv("mice_pheno.csv") ## We downloaded this file in a previous section
