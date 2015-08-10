@@ -16,11 +16,11 @@ library(rafalib)
 
 ## Plots to Avoid 
 
-This section is based on talk by [Karl W. Broman](http://kbroman.org/) titled "How to Display Data Badly" in which he described how the default plots offered by Microsoft Excel "obscure your data and annoy your readers" ([here](http://kbroman.org/pages/talks.html) is a link to a collection of Karl Broman's talks). His lecture was inspired by the 1984 paper by H Wainer: How to display data badly. American Statistician 38(2): 137--147. Dr. Wainer was the first to elucidate the principles of the bad display of data. But according to Karl, "The now widespread use of Microsoft Excel has resulted in remarkable advances in the field." Here we show examples of "bad plots" and how to improve them in R.
+This section is based on talk by [Karl W. Broman](http://kbroman.org/) titled "How to Display Data Badly" in which he described how the default plots offered by Microsoft Excel "obscure your data and annoy your readers" ([here](http://kbroman.org/pages/talks.html) is a link to a collection of Karl Broman's talks). His lecture was inspired by the 1984 paper by H. Wainer: How to display data badly. American Statistician 38(2): 137--147. Dr. Wainer was the first to elucidate the principles of the bad display of data. But according to Karl, "The now widespread use of Microsoft Excel has resulted in remarkable advances in the field." Here we show examples of "bad plots" and how to improve them in R.
 
 ### General Principles
 
-General principles
+General Principles
 
 The aims of good data graphics is to display data accurately and clearly. Some rules for displaying data badly:
 
@@ -32,7 +32,7 @@ The aims of good data graphics is to display data accurately and clearly. Some r
 *  Ignore significant figures.
 
 
-### Piecharts
+### Pie charts
 
 ```{r,include=FALSE}
 browsers <- c(Opera=1,Safari=9,Firefox=20,IE=26,Chrome=44)
@@ -40,7 +40,7 @@ browsers <- c(Opera=1,Safari=9,Firefox=20,IE=26,Chrome=44)
 
 Say we want the report the results from a poll asking about browser preference (taken in August 2013). The standard way of displaying these is with a pie chart:
 
-```{r, fig.width=4, fig.cap="Piechart of browser usage"}
+```{r, fig.width=4, fig.cap="Pie chart of browser usage"}
 pie(browsers,main="Browser Usage (August 2013)")
 ```
 
@@ -197,7 +197,7 @@ A common task in data analysis is the comparison of two groups. When the dataset
 
 ![Barplot for two variables](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig6r_e.png)
 
-There are various better ways of showing these data to illustrate there is an increase after treatment. One is to simply make a scatterplot which shows that most points are above the identity line. Another alternative is plot the differences against the before values.
+There are better ways of showing these data to illustrate that there is an increase after treatment. One is to simply make a scatterplot which shows that most points are above the identity line. Another alternative is plot the differences against the before values.
 ```{r,fig.width=7,fig.height=4}
 set.seed(12201970)
 before <- runif(6, 5, 8)
@@ -347,7 +347,7 @@ $$
 \sum_{i=1}^n d_i^2} \mbox{ with } d_i=x_i - y_i
 $$
 
-Note that this metric decreases as reproducibility improves and it is 0 when the reproducibility is perfect. Another advantage of this metric is that if we divide the sum by N, we can interpret the resulting quantity as the standard deviation of the $d_1,\dots,d_N$ if we assume the $d$ average out to 0. Furthermore, this quantity will have the same units as our measurements resulting in a more interpretable metric. Another limitation of the correlation is that it does not detect cases that are not reproducible due to average changes. The distance metric does detect these differences. Notet that we can rewrite
+Note that this metric decreases as reproducibility improves and it is 0 when the reproducibility is perfect. Another advantage of this metric is that if we divide the sum by N, we can interpret the resulting quantity as the standard deviation of the $d_1,\dots,d_N$ if we assume the $d$ average out to 0. Furthermore, this quantity will have the same units as our measurements resulting in a more interpretable metric. Another limitation of the correlation is that it does not detect cases that are not reproducible due to average changes. The distance metric does detect these differences. Note that we can rewrite
 
 $$\frac{1}{n} \sum_{i=1}^n (x_i - y_i)^2 = \frac{1}{n} \sum_{i=1}^n [(x_i-\mu_x) - (y_i - \mu_y)^2 + (\mu_x-\mu_y)]^2$$
 
@@ -362,7 +362,7 @@ $$\frac{1}{n} \sum_{i=1}^n (x_i - y_i)^2 = 2 + (\mu_x-\mu_y)^2 - 2\rho$$
 
 with $\rho$ the correlation. So we see the direct relationship between distance and correlation. However, an important difference is that the distance contains the term $$(\mu_x-\mu_y)^2$$ thus can detect cases that are not reproducible due to large average changes. 
 
-Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this we use a formula the relates the correlation of a variable with the correlation of that variable plus what is interpreted here as deviation: $x$ and $y=x+d$. The larger the variance of $d$ the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibitly. However, correlation depends on the variance of $x$ as well:
+Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this we use a formula the relates the correlation of a variable with the correlation of that variable plus what is interpreted here as deviation: $x$ and $y=x+d$. The larger the variance of $d$ the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibility. However, correlation depends on the variance of $x$ as well:
 
 $$
 cor(x,x+d) = \frac{1}{\sqrt{1+\mbox{var}(d)/\mbox{var}(x)}}

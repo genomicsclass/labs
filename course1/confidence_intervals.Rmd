@@ -74,7 +74,7 @@ $$\bar{X}-2 s_X/\sqrt{N} \leq \mu_X \leq \bar{X}+2s_X/\sqrt{N}$$
 
 has probability 95%. 
 
-Note: it is important to note that it is the edges of the interval $\bar{X} \pm 2 s_X/\sqrt{N}$, not $\mu_X$, that are random. 
+Note: be aware that it is the edges of the interval $\bar{X} \pm 2 s_X/\sqrt{N}$, not $\mu_X$, that are random. 
 
 
 What does this mean? We can construct this interval with R relatively easily:
@@ -84,7 +84,7 @@ interval <- c(mean(hf)-Q*se, mean(hf)+Q*se )
 interval
 ```
 
-Which covers $\mu_X$ or `mean(chowPopulation)`. However, we can take another sample and we might not be as lucky. In fact the theory tells us that we will cover $\mu_X$ 95% of the time. Because we have access to the population data we can confirm this by taking several new samples:
+Which covers $\mu_X$ or `mean(chowPopulation)`. However, we can take another sample and we might not be as lucky. In fact, the theory tells us that we will cover $\mu_X$ 95% of the time. Because we have access to the population data, we can confirm this by taking several new samples:
 
 ```{r,fig.height=6}
 library(rafalib)
