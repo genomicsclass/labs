@@ -11,12 +11,12 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+## The QR factorization (Advanced)
 
 We have seen that to calculate the LSE we need to invert a marix. We have shown how to use solve. It turns out that solve is not a stable solution. When coding LSE computation we use the QR decomposition.
 
 
-# Inverting $\mathbf{X^\top X}$
+### Inverting $\mathbf{X^\top X}$
 
 
 To miminize the RSS: 
@@ -40,7 +40,7 @@ $$
 
 Thus  we need to compute $(\mathbf{X}^\top \mathbf{X})^{-1}$
 
-# `solve` is unstable
+### `solve` is unstable
 
 Here we construct an extreme case 
 
@@ -70,9 +70,9 @@ log10(crossprod(X))
 
 Note the difference of several orders of magnitude. On a digitial computer we have a limited range of numbers which makes some numbers seem like 0 which leads to division by 0 errors.
 
-# The QR Factorization 
+### The Factorization 
 
-The QR factorization is based on a mathematical result that tells us that for a full rank $N\times p$ matrix $\mathbf{X}$ we can decompose as
+The QR factorization is based on a mathematical result that tells us that we can decompose any  full rank $N\times p$ matrix $\mathbf{X}$  as
 
 $$
 \mathbf{X = QR}
@@ -85,12 +85,14 @@ with
 
 Upper triangular matrices are very convinient for solving system of equations.
 
-## Example of Upper Triangular Matrix
+### Example of Upper Triangular Matrix
 
 In the example below, the matrix on the left is upper triangular: It only has 0s below the diagonal.
 Note that this facilitates solving the system of equations greatly:
 
-$$\begin{pmatrix}
+$$
+\,
+\begin{pmatrix}
 1&2&-1\\
 0&1&2\\
 0&0&1\\
@@ -110,7 +112,7 @@ $$
 
 We immediately know that $c=1$ which implies that $b+2=4$ which implies  $b=2$ and thuse $a+4-1=6$ so $a = 3$. Writing an algorithm to do this is straigh-forward for any upper triangular matrix.
 
-# Finding LSE with QR 
+### Finding LSE with QR 
 
 If we rewrite the equations of the LSE using $\mathbf{QR}$ instead of $\mathbf{X}$ we have:
 
@@ -149,7 +151,7 @@ QR <- qr(X)
 
 
 
-# Fitted values
+### Fitted values
 
 This factorization also simplifies the calculation for fitted values:
 
@@ -166,7 +168,7 @@ fitted <- tcrossprod(Q)%*%y
 lines(x,fitted,col=2)
 ```
 
-# Standard Errors
+### Standard Errors
 
 To obtain the standard errors of the LSE we note that
 

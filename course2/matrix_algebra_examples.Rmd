@@ -101,21 +101,23 @@ gives us the same answer as our matrix multiplication example.
 
 ### Linear Models
 
-Now we are ready to put all this to use. Let's start with Galton's example. If we define these matrix 
-
+Now we are ready to put all this to use. Let's start with Galton's example. If we define these matrices
+ 
 $$
 \mathbf{Y} = \begin{pmatrix}
 Y_1\\
 Y_2\\
 \vdots\\
 Y_N
-\end{pmatrix},
+\end{pmatrix}
+,
 \mathbf{X} = \begin{pmatrix}
 1&x_1\\
 1&x_2\\
 \vdots\\
 1&x_N
-\end{pmatrix},
+\end{pmatrix}
+,
 \mathbf{\beta} = \begin{pmatrix}
 \beta_0\\
 \beta_1
@@ -128,6 +130,8 @@ Y_N
 \end{pmatrix}
 $$
 
+
+
 Then we can write the model 
 
 $$ 
@@ -136,7 +140,9 @@ $$
 
 as 
 
+
 $$
+\,
 \begin{pmatrix}
 Y_1\\
 Y_2\\
@@ -169,6 +175,7 @@ $$
 
 which is a much simpler way to write it. 
 
+
 **Optional homework**: write out the matrices multiplication convince yourself that this this is the case.
 
 The least squares equation becomes simpler as well as it is the following cross-product:
@@ -179,7 +186,6 @@ $$
 $$
 
 So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. By equating the derivative to 0 and solving for the $\beta$ we will have our solution. The only one we need here tells us that the derivative of the above equation is:
-
 
 $$
 2 \mathbf{X}^\top (\mathbf{Y} - \mathbf{X} \boldsymbol{\hat{\beta}})=0
@@ -196,7 +202,7 @@ $$
 
 and we have our solution. We usually put a hat on the $\beta$ that solves this, $\hat{\beta}$ as it is an estimate of the "real" $\beta$ that generated the data.
 
-Note: that the least squares are like a square (multiply something by itself) and that this formula is similar to the derivative of $f(x)^2$ being $2f(x)f'(x)$. 
+Note: that the least squares are like a square (multiply something by itself) and that this formula is similar to the derivative of $f(x)^2$ being $2f(x)f\prime (x)$. 
 
 Let's see how it works in R
 
@@ -268,5 +274,7 @@ Note that we obtain the same values as above.
 ### Summary
 
 We have shown how write linear models using linear algebra. We are going to do this for several examples many of which are related to designed experiments. We showed how to obtain least squares estimates. But keep in mind the because $y$ is a random variable, these estimates are random as well. In a later section we will learn how to compute standard error for this estimates and use this to perform inference.
+
+
 
 

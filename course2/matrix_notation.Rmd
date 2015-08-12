@@ -21,22 +21,23 @@ Linear algebra notation actually  simplifies the mathematical descriptions and m
 
 The main point of this entire exercise is to show how we can write the models above using matrix notation and then explain how this is useful for solving the least squares equation. We start by simply defining notation and matrix multiplication, but bare with us, we eventually get back to the practical application.
 
-## The Original Application: Solving System of Equations
+## Solving System of Equations
 
 Linear algebra was created by mathematicians to solve systems of linear equations such as this:
 
 $$
-\begin{aligned}
+\begin{align*}
 a + b + c &= 6\\
 3a - 2b + c &= 2\\
 2a + b  - c &= 1
-\end{aligned}
+\end{align*}
 $$
 
 It provides very useful machinery to solve these problems generally. We will learn how we can write and solve this system using matrix algebra notation:
 
-
-$$\begin{pmatrix}
+$$ 
+\,
+\begin{pmatrix}
 1&1&1\\
 3&-2&1\\
 2&1&-1
@@ -89,6 +90,7 @@ Y_2\\\
 Y_N
 \end{pmatrix}
 $$
+
 
 For reasons that will become clear soon, default representation of data vectors have dimension $N\times 1$ as opposed to $1 \times N$ .
 

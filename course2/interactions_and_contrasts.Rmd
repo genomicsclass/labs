@@ -8,7 +8,9 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-For learning about linear models, we will be using a datasest which compares the different frictional coefficients on the different legs on a spider, and whether more friction comes from a pushing or pulling motion of the leg. The original paper from which the data was provided is:
+## Interactions and Contrasts
+
+As a running example to learn about more complex linear models, we will be using a datasest which compares the different frictional coefficients on the different legs on a spider, and whether more friction comes from a pushing or pulling motion of the leg. The original paper from which the data was provided is:
 
 Jonas O. Wolff  & Stanislav N. Gorb, [Radial arrangement of Janus-like setae permits friction control in spiders](http://dx.doi.org/10.1038/srep01101), Scientific Reports, 22 January 2013.
 
@@ -16,7 +18,7 @@ The abstract of the paper says,
 
 > The hunting spider Cupiennius salei (Arachnida, Ctenidae) possesses hairy attachment pads (claw tufts) at its distal legs, consisting of directional branched setae... Friction of claw tufts on smooth glass was measured to reveal the functional effect of seta arrangement within the pad.
 
-Figure 1 includes some pretty cool electron microscope images of the tufts. We are intereseted in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). We can recreate Figure 4 of the paper, by loading the data and calling boxplot():
+Figure 1 includes some pretty cool electron microscope images of the tufts. We are intereseted in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). We can recreate Figure 4 of the paper, by loading the data and calling `boxplot`:
 
 ```{r}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/spider_wolff_gorb_2013.csv"
@@ -29,7 +31,7 @@ boxplot(spider$friction ~ spider$type * spider$leg,
         main="Comparison of friction coefficients of different leg pairs ")
 ```
 
-## Initial visual inspection of the data
+### Initial visual inspection of the data
 
 What we can see immediately, are two trends: 
 
@@ -44,7 +46,7 @@ Alternative tests for comparing groups without transforming the values first are
 
 However, we will continue, and show the different kinds of linear models using this dataset, setting aside the issue of different within-group variances.
 
-## A linear model with one variable
+### A linear model with one variable
 
 Just to remind ourselves about the simple two-group linear model, let's subset to the L1 leg pair, and run `lm`:
 
@@ -99,7 +101,7 @@ abline(h=coefs[1]+coefs[2],col=cols[2])
 legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 ```
 
-## A linear model with two variables
+### A linear model with two variables
 
 Now, we'll continue and examine the full dataset, including the observations from all leg pairs. In order to model both the leg pair differences and the push vs pull difference, we need to include both terms in the formula. Let's see what kind of design matrix will be formed with two variables in the formula:
 
@@ -121,11 +123,11 @@ summary(fitTL)
 (coefs <- coef(fitTL))
 ```
 
-### Reminder: the matrix algebra
+### Matrix algebra reminder
 
 We can do some quick matrix algebra to remind ourselves that the coefficients returned by `lm` are obtained with the following formula:
 
-$$ \hat{\boldsymbol{\beta}} = (\mathbf{X}^t \mathbf{X})^{-1} \mathbf{X}^t \mathbf{Y} $$
+$$ \hat{\boldsymbol{\beta}} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y} $$
 
 ```{r}
 Y <- spider$friction
@@ -170,7 +172,7 @@ mean(s[["L1push"]])
 coefs[1] + coefs[2]
 ```
 
-We can demonstrate, though, that the push vs pull coefficient, `coefs[2]`, is now a weighted mean of the difference of means for each group. And the weighting is determined by the sample size of each group. Note that the math works out so simply here because the sample size is equal for the push and pull subgroups within each leg pair. If the sample sizes were not equal for push and pull within each leg pair, the weighting is uniquely determined by a formula involving the sample size of each subgroup, the total sample size, and the number of coefficients. This can be worked out from $(\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T$.
+We can demonstrate, though, that the push vs pull coefficient, `coefs[2]`, is now a weighted mean of the difference of means for each group. And the weighting is determined by the sample size of each group. Note that the math works out so simply here because the sample size is equal for the push and pull subgroups within each leg pair. If the sample sizes were not equal for push and pull within each leg pair, the weighting is uniquely determined by a formula involving the sample size of each subgroup, the total sample size, and the number of coefficients. This can be worked out from $(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top$.
 
 ```{r}
 means <- sapply(s, mean)
@@ -181,7 +183,7 @@ sum(w * (means[c(2,4,6,8)] - means[c(1,3,5,7)]))
 coefs[2]
 ```
 
-### Contrasting the coefficients
+### Contrasting coefficients
 
 To introduce the concept of *contrasts*, first consider the comparisons which we can read off from the linear model summary:
 
@@ -191,7 +193,7 @@ coefs
 
 We have the push vs pull effect across all leg pairs, and and the L2 vs L1 effect, the L3 vs L1 effect, and the L4 vs L1 effect. What if we want to compare two groups, and one of the groups is not L1? The solution to this question is to use *contrasts*. 
 
-A *contrast* is a combination of coefficients: $\mathbf{c^T} \hat{\boldsymbol{\beta}}$, where $\mathbf{c}$ is a column vector with as many rows as the number of coefficients in the linear model. If $\mathbf{c}$ has a 0 then the coefficients are not involved in the contrast.
+A *contrast* is a combination of coefficients: $\mathbf{c^\top} \hat{\boldsymbol{\beta}}$, where $\mathbf{c}$ is a column vector with as many rows as the number of coefficients in the linear model. If $\mathbf{c}$ has a 0 then the coefficients are not involved in the contrast.
 
 If we want to compare L3 and L2, this is equivalent to contrasting two coefficents from the linear model, because in this contrast, the comparison to the reference level *L1* cancels out:
 
@@ -216,11 +218,11 @@ cT %*% beta
 
 What about the standard error, and t-statistic? As before, the t-statistic is the estimate (`Contrast`) divided by the standard error (`S.E.`). The standard error of the contrast estimate is formed by multiplying the contrast vector $\mathbf{c}$ on either side of the estimated covariance matrix, $\Sigma \equiv \mathrm{Var}(\hat{\boldsymbol{\beta}})$:
 
-$$ \sqrt{\mathbf{c^T} \mathbf{\Sigma} \mathbf{c}} $$
+$$ \sqrt{\mathbf{c^\top} \mathbf{\Sigma} \mathbf{c}} $$
 
 where we saw the covariance of the coefficients earlier:
 
-$$ \mathbf{\Sigma} = \hat{\sigma}^2 (\mathbf{X}^T \mathbf{X})^{-1}$$
+$$ \mathbf{\Sigma} = \hat{\sigma}^2 (\mathbf{X}^\top \mathbf{X})^{-1}$$
 
 ```{r}
 (Sigma <- sum(fitTL$residuals^2)/(nrow(X) - ncol(X)) * solve(t(X) %*% X))
@@ -372,7 +374,7 @@ Finally, there is a column which lists the *F value*. The F value is the *mean o
 
 $$ r_i = Y_i - \hat{Y}_i $$
 
-$$ Mean Sq Residuals = \frac{1}{N - p} \sum_{i=1}^N r_i^2 $$
+$$ \mbox{Mean Sq Residuals} = \frac{1}{N - p} \sum_{i=1}^N r_i^2 $$
 
 where $p$ is the sum of all the terms in the model (here 8, including the intercept term).
 
@@ -382,7 +384,7 @@ The p-value in the last column for the `type:leg` row can be interpreted as foll
 
 The [F distribution](http://en.wikipedia.org/wiki/F-distribution) has two parameters: one for the degrees of freedom of the numerator (the terms of interest) and one for the denominator (the residuals). In the case of the interactions row, this is 3, the number of interaction terms divided by 274, the number of samples minus the total number of coefficients.
 
-## A different specification of the same model
+### A different specification of the same model
 
 In this last section, we show an alternate way to specify the model where we suppose that each group has its own mean (that the push vs pull effect is not the same for each leg pair). This specification is in some ways simpler, but it does not allow us to build the ANOVA table as above, because it does not split interaction terms out in the same way. Here we simply include a term for each unique combination of `type` and `leg`. We include a `0 +` in the formula because we do not want to include an intercept:
 

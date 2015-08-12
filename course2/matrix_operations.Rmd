@@ -15,16 +15,19 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 In the previous section we motivated the use of matrix algebra with this system of equations:
 
-$$\begin{eqnarray}
-a + b + c &=& 6\\
-3a - 2b + c &=& 2\\
-2a + b  - c &=& 1
-\end{eqnarray}
+
+$$
+\begin{align*}
+a + b + c &= 6\\
+3a - 2b + c &= 2\\
+2a + b  - c &= 1
+\end{align*}
 $$
 
 We described how this system can be rewritten and solved using matrix algebra:
 
 $$
+\,
 \begin{pmatrix}
 1&1&1\\
 3&-2&1\\
@@ -86,7 +89,7 @@ print(a*X)
 
 ### The Transpose
 
-The transpose is an operation that simply changes columns to rows. We use either a $\top$ or $'$ to denote transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
+The transpose is an operation that simply changes columns to rows. We use either a $\top$ to denote transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
 
 
 $$
@@ -94,13 +97,13 @@ $$
   x_{1,1}&\dots & x_{1,p} \\
   x_{2,1}&\dots & x_{2,p} \\
    & \vdots & \\
-  x_{N,1}&\dots & x_{N,p} \\
+  x_{N,1}&\dots & x_{N,p} 
   \end{pmatrix} \implies
 \mathbf{X}^\top = \begin{pmatrix}
   x_{1,1}&\dots & x_{p,1} \\
   x_{1,2}&\dots & x_{p,2} \\
    & \vdots & \\
-  x_{1,N}&\dots & x_{p,N} \\
+  x_{1,N}&\dots & x_{p,N} 
   \end{pmatrix}
 $$
 
@@ -117,16 +120,17 @@ t(X)
 We start by describing the matrix multiplication shown in the original system of equations example:
 
 $$
-\begin{aligned}
+\begin{align*}
 a + b + c &=6\\
 3a - 2b + c &= 2\\
 2a + b  - c &= 1
-\end{aligned}
+\end{align*}
 $$
 
 What we are doing is multiplying the rows of the first matrix by the columns of the second. The second matrix only has one column so to perform this multiplication we can do the following:
 
 $$
+\,
 \begin{pmatrix}
 1&1&1\\
 3&-2&1\\
@@ -212,9 +216,9 @@ If you follow the matrix multiplication rule above you notice this works out:
 $$
 \mathbf{XI} = 
 \begin{pmatrix}
-  a x_{1,1} & \dots & a x_{1,p}\\
+   x_{1,1} & \dots &  x_{1,p}\\
   & \vdots & \\
-  a x_{N,1} & \dots & a  x_{N,p}
+   x_{N,1} & \dots &   x_{N,p}
 \end{pmatrix}
 \begin{pmatrix}
 1&0&0&\dots&0&0\\
