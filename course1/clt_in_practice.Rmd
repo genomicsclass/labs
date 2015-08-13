@@ -81,7 +81,7 @@ res <-  sapply(Ns,function(n){
 })
 ```
 
-Now we can use qq-plots to see how well CLT approximationsworks for these. If in fact the normal distribution is a good approximation the points should fall on a straight line when compared to normal quantiles. The more it deviates, the worse the approximation.  We also show, in the title, the average and SD of the observed distribution showing how the SD decreases with $\sqrt{N}$ as predicted. 
+Now we can use qq-plots to see how well CLT approximations works for these. If in fact the normal distribution is a good approximation, the points should fall on a straight line when compared to normal quantiles. The more it deviates, the worse the approximation. We also show, in the title, the average and SD of the observed distribution which demonstrates how the SD decreases with $\sqrt{N}$ as predicted. 
 ```{r}
 library(rafalib)
 mypar2(2,2)

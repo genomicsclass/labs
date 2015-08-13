@@ -1,5 +1,5 @@
 ---
-title: "t-tests in practice"
+title: "t-tests in Practice"
 layout: page
 ---
 
@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ### Introduction
 
-We will now demonstrate how to obtain a p-value in practice. We will load experimental data and walk you through the steps used to form a t-statistics and compute a p-value. Note that we can perform this task with just a few lines of code (go to end of section to see them). However, to understand the concepts, we will construct a t-statistic from "scratch".
+We will now demonstrate how to obtain a p-value in practice. We begin by loading experimental data and walking you through the steps used to form a t-statistics and compute a p-value. We can perform this task with just a few lines of code (go to end of section to see them). However, to understand the concepts, we will construct a t-statistic from "scratch".
 
 
 ### Setting The Random Seed
@@ -72,7 +72,7 @@ Statistical theory tells us that if we divide a random variable by its SE, we ge
 tstat <- diff/se 
 ```
 
-This ratio is what we call the t-statistics. It's the ratio of two random variables, thus a random variable. Once we know the distribution of this random variable then we can easily compute a p-value.
+This ratio is what we call the t-statistics. It's the ratio of two random variables and thus a random variable. Once we know the distribution of this random variable, we can then easily compute a p-value.
 
 As explained in the previous section, the CLT tells us that for large sample sizes both sample averages `mean(treatment)` and `mean(control)` are normal. Statistical theory tells us that the difference of two normally distributed random variables is again normal, so CLT tells us that `tstat` is approximately normal with mean 0 (the null hypothesis) and SD 1 (we divided by its SE). 
 
@@ -136,4 +136,4 @@ treatment <- filter(dat,Diet=="hf") %>% select(Bodyweight)
 t.test(treatment,control)
 ```
 
-The arguments to `t.test` can be data.frames, thus we do not need to unlist them into numeric objects.
+The arguments to `t.test` can be data.frames and thus we do not need to unlist them into numeric objects.
