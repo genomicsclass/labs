@@ -15,16 +15,16 @@ library(rafalib)
 
 # Exploratory Data Analysis
 
-Biases, systematic errors and unexpected variability are common in data from the life sciences. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines, such as the t.test function in R, are designed to detect these. Yet, these pipelines still give you an answer. Furthermore, it may be hard or impossible to notice an error was made just from the reported results.
+Biases, systematic errors and unexpected variability are common in data from the life sciences. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines, such as the t.test function in R, are designed to detect these. Yet, these pipelines still give you an answer. Furthermore, it may be hard or even impossible to notice that an error was made just from the reported results.
 
 Summarizing and, especially, visualizing data are powerful approaches to detecting these problems. We refer to this as _exploratory data analyis_ (EDA). Many important methodological contributions to existing data analysis techniques in data analysis were initiated by discoveries made via EDA. Through this book we make use of exploratory plots to motivate the analyses we choose. Here we present a general introduction to EDA using height data.
 
-We have already introduce some EDA approaches for _univariate_ data. Namely the histograms.  Here we describe the qq-plot in more detail ans how some EDA and summary statistics for paired data. We also give a demonstration of commonly used figures that we recommend against.
+We have already introduced some EDA approaches for _univariate_ data, namely the histograms. Here we describe the qq-plot in more detail and how some EDA and summary statistics for paired data. We also give a demonstration of commonly used figures that we recommend against.
 
 
 ## Quantile Quantile Plots
 
-To corroborate that the normal distribution is in fact a good approximation we can use quantile-quantile plots (QQ-plots). Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number q that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list of heights
+To corroborate that the normal distribution is in fact a good approximation, we can use quantile-quantile plots (QQ-plots). Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number q that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list of heights
 
 
 ```{r definingHeights, message=FALSE}
@@ -32,7 +32,7 @@ library(UsingR)
 x=father.son$fheight
 ```
 
-and for the normal distribution
+and for the normal distribution:
 
 ```{r}
 ps <- seq(0.01,0.99,0.01)
@@ -41,14 +41,14 @@ normalqs <- qnorm(ps,mean(x),popsd(x))
 plot(normalqs,qs,xlab="Normal percentiles",ylab="Height percentiles")
 abline(0,1) ##identity line
 ```
-Note how close these values are. Also note that we can see these qqplots with less code
+Note how close these values are. Also, note that we can see these qqplots with less code:
 ```{r}
 qqnorm(x)
 qqline(x) 
 ```
-However, the `qqnorm` function plots against a standard normal distribution. This is why the line has slope `popsd(x)` and intercept `mean(x)`
+However, the `qqnorm` function plots against a standard normal distribution. This is why the line has slope `popsd(x)` and intercept `mean(x)`.
 
-In the example above the points match the line very well. In fact we can run Monte Carlo simulations to see that we see plots like this for data known to be normally distributed
+In the example above, the points match the line very well. In fact, we can run Monte Carlo simulations to see that we see plots like this for data known to be normally distributed.
 
 
 ```{r}
@@ -58,7 +58,7 @@ qqnorm(x)
 qqline(x)
 ```
 
-We can also get a sense for how non-normally distributed data looks. Here we generate data from the t-distribution with different degrees of freedom. Note that the smaller the degrees of freedoms the fatter the tails.
+We can also get a sense for how non-normally distributed data looks. Here we generate data from the t-distribution with different degrees of freedom. Note that the smaller the degrees of freedoms, the fatter the tails.
 
 ```{r}
 dfs <- c(3,6,12,30)
@@ -72,9 +72,9 @@ for(df in dfs){
 
 <a name="scatterplots"></a>
 
-## Scatterplots and correlation
+## Scatterplots and Correlation
 
-The methods described above relate to _univariate_ variables. In the biomedical sciences it is common to be interested in the relationship between two or more variables. A classic examples is the father/son height data used by Galton to understand heredity. Were we to summarize these data we could use the two averages and two standard deviations as both distributions are well approximated by the normal distribution. This summary, however, fails to describe an important characteristic of the data.
+The methods described above relate to _univariate_ variables. In the biomedical sciences, it is common to be interested in the relationship between two or more variables. A classic examples is the father/son height data used by Galton to understand heredity. If we were to summarize these data, we could use the two averages and two standard deviations as both distributions are well approximated by the normal distribution. This summary, however, fails to describe an important characteristic of the data.
 
 ```{r fig.width=4, fig.height=4}
 # install.packages("UsingR")
@@ -85,23 +85,23 @@ y=father.son$sheight
 plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=paste("correlation =",signif(cor(x,y),2)))
 ```
 
-The scatter plot shows a general trend: the taller the father the taller to son. A summary of this trend is the correlation coefficient which in this cases is 0.5. We motivate this statistic by trying to predict son's height using the father's. 
+The scatter plot shows a general trend: the taller the father, the taller to son. A summary of this trend is the correlation coefficient which in this cases is 0.5. We motivate this statistic by trying to predict the son's height using the father's height. 
 
 ## Stratification
 
 Suppose we are asked to guess the height of randomly select sons. The average height, 68.7 inches, is the value with the highest proportion (see histogram) and would be our prediction. But what if we are told that the father is 72 inches tall, do we sill guess 68.7?
 
-Note that the father is taller than average. He is 1.7 standard deviations taller than the average father. So should we predict that the son is also 1.75 standard deviations taller? Turns out this is an overestimate. To see this we look at all the sons with fathers who are about 72 inches. We do this by _stratifying_ the son heights.
+Note that the father is taller than average. Specifically, he is 1.7 standard deviations taller than the average father. So should we predict that the son is also 1.75 standard deviations taller? It turns out this would be an overestimate. To see this we look at all the sons with fathers who are about 72 inches. We do this by _stratifying_ the son heights.
 ```{r fig.width=6, fig.height=3}
 groups <- split(y,round(x)) 
 boxplot(groups)
 print(mean(y[ round(x) == 72]))
 ```
-Stratification followed by boxplots lets us see the distribution of each group. The average height of sons with fathers that are 72 is 70.7. We also see that the means of the strata appear to follow a straight line. This line is refereed to the regression line and it's slope is related to the correlation. 
+Stratification followed by boxplots lets us see the distribution of each group. The average height of sons with fathers that are 72 inches tall is 70.7 inches. We also see that the means of the strata appear to follow a straight line. This line is referred to as the regression line and its slope is related to the correlation. 
 
-## Bi-variate normal distribution
+## Bi-variate Normal Distribution
 
-A pair of random variable $(X,y)$ is considered to be approximated by bivariate normal when the proportion of values below, say $x$ and $y$ is approximated by this expression:
+A pair of random variables $(X,y)$ is considered to be approximated by bivariate normal when the proportion of values below, for example, $x$ and $y$ is approximated by this expression:
 
 $$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
 \exp{ \left(
@@ -114,7 +114,7 @@ $$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sig
 }
 $$
 
-A definition that is more intuitive is the following. Fix a value $x$ and look at all the pairs $(X,Y)$ for which $X=x$. Generally, in Statistics we call this exercise _conditionion_. We are conditioning $Y$ on $X$. If a pair of random variables is approximated by a bivariate normal distribution then the distribution of $Y$ condition on $X=x$ is approximated with a normal distribution for all $x$. Let's see if this happens here. We take 4 different strata to demonstrate this:
+A definition that is more intuitive is the following: fix a value $x$ and look at all the pairs $(X,Y)$ for which $X=x$. Generally, in Statistics we call this exercise _conditionion_. We are conditioning $Y$ on $X$. If a pair of random variables is approximated by a bivariate normal distribution, then the distribution of $Y$ condition on $X=x$ is approximated with a normal distribution for all $x$. Let's see if this happens here. We take 4 different strata to demonstrate this:
 
 ```{r}
 groups <- split(y,round(x)) 
@@ -127,13 +127,13 @@ for(i in c(5,8,11,14)){
 ```
 
 
-Now we come back to defining correlation. Mathematical statistics tells us that when two variables follow a bivariate normal distribution then for any given value of $x$ the average of the $Y$ in pairs for which $X=x$ is
+Now we come back to defining correlation. Mathematical statistics tells us that when two variables follow a bivariate normal distribution, then for any given value of $x$, the average of the $Y$ in pairs for which $X=x$ is:
 
 $$ 
 \mu_Y +  r \frac{X-\mu_X}{\sigma_X}\sigma_Y
 $$
 
-Note that this is a line with slope $r \frac{\sigma_Y}{\sigma_X}$. This is referred to as the _regression line_. Note also that if the SDs are the same, then the slope of the regression line is the correlation $r$. Therefore, if we standardize $X$ and $Y$ the correlation is the slope of the regression line.
+Note that this is a line with slope $r \frac{\sigma_Y}{\sigma_X}$. This is referred to as the _regression line_. If the SDs are the same, then the slope of the regression line is the correlation $r$. Therefore, if we standardize $X$ and $Y$, the correlation is the slope of the regression line.
 
 Another way to see this is that to form a prediction $\hat{Y}$, for every SD away from the mean in $x$, we predict $r$ SDs away for $Y$: 
 
@@ -141,10 +141,10 @@ $$
 \frac{\hat{Y} - \mu_Y}{\sigma_Y} = r \frac{x-\mu_X}{\sigma_X}
 $$
 
-with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. So if there is perfect correlation we predict the same number of SDs, if there is 0 correlation then we don't use $x$ at all, and for values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
+with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. So, if there is perfect correlation, we predict the same number of SDs.If there is 0 correlation, then we don't use $x$ at all.  For values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
 
 
-To confirm that the above approximations hold here, let's compare the mean of each strata to the identity line and the regression line
+To confirm that the above approximations hold in this case, let's compare the mean of each strata to the identity line and the regression line:
 
 ```{r fig.width=4, fig.height=4}
 x=(x-mean(x))/sd(x)
