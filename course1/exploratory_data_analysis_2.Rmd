@@ -114,7 +114,7 @@ $$ Pr(X<a,Y<b) = \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sig
 }
 $$
 
-A definition that is more intuitive is the following: fix a value $x$ and look at all the pairs $(X,Y)$ for which $X=x$. Generally, in Statistics we call this exercise _conditionion_. We are conditioning $Y$ on $X$. If a pair of random variables is approximated by a bivariate normal distribution, then the distribution of $Y$ condition on $X=x$ is approximated with a normal distribution for all $x$. Let's see if this happens here. We take 4 different strata to demonstrate this:
+A definition that is more intuitive is the following: fix a value $x$ and look at all the pairs $(X,Y)$ for which $X=x$. Generally, in Statistics we call this exercise _conditioning_. We are conditioning $Y$ on $X$. If a pair of random variables is approximated by a bivariate normal distribution, then the distribution of $Y$ condition on $X=x$ is approximated with a normal distribution for all $x$. Let's see if this happens here. We take 4 different strata to demonstrate this:
 
 ```{r}
 groups <- split(y,round(x)) 
