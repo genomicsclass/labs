@@ -12,9 +12,56 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 library(rafalib)
 ```
 
+
+EXPLAIN WHAT A FEATURE IS
+
 ## Inference in practice
 
 Suppose we were given highthroughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if, instead thousands of genes, we were handed data from just one gene we could simply apply  the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+
+### p-values are random variables
+
+An important concept to understand to grasp the concepts presented in this chapter is that p-values are random variables. To see this  consider the example in which we define a p-value from a t-test with a large enough sample size to use the CLT approximation. Then our p-value is defined as the probability that a normally distributed random variable than the observed t-test, call it  $Z$. So for a two sided test 
+
+$$
+p = 2 \{ 1 - \Phi(Z)\}
+$$
+
+In R we write:
+```{r,eval=FALSE}
+2*(1-pnorm(Z))
+```
+
+Now because $Z$ is a random variable ($\Phi$ is simply a deterministic function) $p$ is also a random variable. Here is a Monte Carlo simulation showing 
+how the values of $p$ change:
+
+
+```{r}
+set.seed(1)
+population = unlist( read.csv("femaleControlsPopulation.csv") )
+N <- 12
+B <- 10000
+pvals <- replicate(B,{
+  control = sample(population,N)
+  treatment = sample(population,N)
+  t.test(treatment,control)$p.val 
+  })
+hist(pvals)
+```
+As implied by the histogram, in this case, the distribution of the p-value is uniformly distributed. In fact we can show theoretically, that when the null hypothesis is true, this is always the case. For the case in which we use the CLT we have that the null hypothesis $H_0$ implies our test statistic $Z$ is follows a normal distribution with mean 0 and SD 1 thus:
+
+$$
+p_a = \mbox{Pr}(Z < a | H_0) = \Phi(a)
+$$
+This implies that 
+$$
+\begin{align*}
+\mbox{Pr}(p < p_a) &= \mbox{Pr}(\Phi(p) < \Phi(p_a)) \\
+  & = \mbox{Pr}(Z < a) = p_a
+\end{align*}
+$$
+
+which is the definition of a uniform distribution.
 
 ### Thousands of tests
 
@@ -30,7 +77,7 @@ If we were interested in a particular gene, let's arbitrarily pick the one on th
 
 ```{r}
 e <- geneExpression[25,]
-mypar2(1,2)
+mypar(1,2)
 qqnorm(e[g==1])
 qqline(e[g==1])
 qqnorm(e[g==0])
