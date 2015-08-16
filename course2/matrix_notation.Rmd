@@ -13,13 +13,13 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Matrix Notation
 
-Here we introduce the basics of matrix notation. At first this will all seem over-complicated but once we get to the examples you will start to appreciate the power of using this notation to both explain and derive solutions as well as implement them as R code. 
+Here we introduce the basics of matrix notation. Initially this may seem over-complicated, but once we get to the examples you will start to appreciate the power of using this notation to both explain and derive solutions, as well as implement them as R code. 
 
-### The language of linear models
+### The Language of Linear Models
 
-Linear algebra notation actually  simplifies the mathematical descriptions and manipulations of linear models as well are coding in R. We will show you the basics of this notation and then show some example in R.
+Linear algebra notation actually simplifies the mathematical descriptions and manipulations of linear models, as well as coding in R. We will show you the basics of this notation and then show some examples in R.
 
-The main point of this entire exercise is to show how we can write the models above using matrix notation and then explain how this is useful for solving the least squares equation. We start by simply defining notation and matrix multiplication, but bare with us, we eventually get back to the practical application.
+The main point of this entire exercise is to show how we can write the models above using matrix notation and then explain how this is useful for solving the least squares equation. We start by simply defining notation and matrix multiplication, but bear with us since we eventually get back to the practical application.
 
 ## Solving System of Equations
 
@@ -92,11 +92,11 @@ Y_N
 $$
 
 
-For reasons that will become clear soon, default representation of data vectors have dimension $N\times 1$ as opposed to $1 \times N$ .
+For reasons that will soon become clear, default representation of data vectors have dimension $N\times 1$ as opposed to $1 \times N$ .
 
-Note: we don't always use bold because commonly one can tell what is a matrix from the context.
+Here we don't always use bold because normally one can tell what is a matrix from the context.
 
-Similarly we can use math notation to represent the covariates or predictors. In the case of the two, with the second one just being the square of the first.
+Similarly, we can use math notation to represent the covariates or predictors. In the case of the two, the second one is just the square of the first.
 
 $$ 
 \mathbf{X}_1 = \begin{pmatrix}
@@ -111,9 +111,9 @@ x_{N,2}
 \end{pmatrix}
 $$
 
-Note that, for the object falling example $x_{1,1}= t_i$ and $x_{i,1}=t_i^2$ with $t_i$ the time of the i-th observation. Also note that vectors can be thought of as $N\times 1$ matrices 
+Note that for the object falling example $x_{1,1}= t_i$ and $x_{i,1}=t_i^2$ with $t_i$ the time of the i-th observation. Also keep in mind that vectors can be thought of as $N\times 1$ matrices.
 
-For reasons that will become clear soon, it is convenient to representing  these in matrices:
+For reasons that will soon become apparent, it is convenient to represent these in matrices:
 
 $$ 
 \mathbf{X} = [ \mathbf{X}_1 \mathbf{X}_2 ] = \begin{pmatrix}
@@ -123,7 +123,7 @@ x_{N,1}&x_{N,2}
 \end{pmatrix}
 $$
 
-This matrix has dimension $N \times 2$ . We can create this matrix in R this way
+This matrix has dimension $N \times 2$ . We can create this matrix in R this way:
 
 ```{r}
 n <- 25
@@ -153,7 +153,7 @@ head(X)
 dim(X)
 ```
 
-Note that the columns are filled by column. The `byrow=TRUE` argument let's us change that:
+The columns are filled by column. The `byrow=TRUE` argument lets us change that:
 
 ```{r}
 N <- 100; p <- 5

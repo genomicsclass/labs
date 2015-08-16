@@ -64,9 +64,9 @@ $$
 Having described matrix notation, here we will explain the operation we perform with them. For example, above we have matrix multiplication and we also have a symbol representing the inverse of a matrix. The importance of these operations and others will become clear once we present specific examples related to data analysis.
  
 
-### Multiplying by a scalar
+### Multiplying by a Scalar
 
-We start with one of the simplest operation: scalar multiplication. If $a$ is scalar and $\mathbf{X}$ is a matrix then:
+We start with one of the simplest operations: scalar multiplication. If $a$ is scalar and $\mathbf{X}$ is a matrix, then:
 
 $$
 a \mathbf{X} = 
@@ -77,7 +77,7 @@ a \mathbf{X} =
 \end{pmatrix}
 $$
 
-Note that R automatically follows this rule when we multiple a number by a matrix using `*`:
+R automatically follows this rule when we multiply a number by a matrix using `*`:
 
 ```{r}
 X <- matrix(1:12,4,3)
@@ -89,7 +89,7 @@ print(a*X)
 
 ### The Transpose
 
-The transpose is an operation that simply changes columns to rows. We use either a $\top$ to denote transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
+The transpose is an operation that simply changes columns to rows. We use either a $\top$ to denote a transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
 
 
 $$
@@ -115,7 +115,7 @@ X
 t(X)
 ```
 
-### Matrix multiplication
+### Matrix Multiplication
 
 We start by describing the matrix multiplication shown in the original system of equations example:
 
@@ -127,7 +127,7 @@ a + b + c &=6\\
 \end{align*}
 $$
 
-What we are doing is multiplying the rows of the first matrix by the columns of the second. The second matrix only has one column so to perform this multiplication we can do the following:
+What we are doing is multiplying the rows of the first matrix by the columns of the second. Since the second matrix only has one column, to perform this multiplication we can do the following:
 
 $$
 \,
@@ -156,7 +156,7 @@ abc <- c(3,2,1) ## use as an example
 rbind( sum(X[1,]*abc), sum(X[2,]*abc), sum(X[3,]%*%abc))
 ```
 
-We can use the `%*%` to perform the matrix multiplication and make this much more compact
+We can use the `%*%` to perform the matrix multiplication and make this much more compact:
 
 ```{r}
 X%*%abc
@@ -165,7 +165,7 @@ X%*%abc
 
 We can see that `c(3,2,1)` is not a solution as the answer here is not the required `c(6,2,1)`
 
-To get the solution we will need to invert the matrix on the left; a concept we learn about below.
+To get the solution we will need to invert the matrix on the left, a concept we learn about below.
 
 Here is the general definition of matrix multiplication of matrices $A$ and $X$:
 
@@ -191,12 +191,12 @@ $$  = \begin{pmatrix}
 \end{pmatrix}
 $$
 
-Note that you can only take the produce if the number of columns of the first matrix $A$ equals the number of rows of the second one $X$, and that the final matrix has the same row numbers as the first $A$ and the same column numbers as the second $X$. 
-After you study the example below you may want to come back and re-read the sections above.
+You can only take the product if the number of columns of the first matrix $A$ equals the number of rows of the second one $X$. Also, the final matrix has the same row numbers as the first $A$ and the same column numbers as the second $X$. 
+After you study the example below, you may want to come back and re-read the sections above.
 
-### The identity matrix
+### The Identity Matrix
 
-The identity matrix is analogous to the number 1: if you multiply the identity matrix by another matrix you get the same matrix. For this top happen we need it to be like this:
+The identity matrix is analogous to the number 1: if you multiply the identity matrix by another matrix, you get the same matrix. For this to happen we need it to be like this:
 
 $$
 \mathbf{I} = \begin{pmatrix}
@@ -209,9 +209,9 @@ $$
 \end{pmatrix}
 $$
 
-Note that by this definition the identity always has to have the same number of rows as columns or what we call a square matrix.
+By this definition the identity always has to have the same number of rows as columns or be what we call a square matrix.
 
-If you follow the matrix multiplication rule above you notice this works out:
+If you follow the matrix multiplication rule above, you notice this works out:
 
 $$
 \mathbf{XI} = 
@@ -236,7 +236,7 @@ $$
 $$
 
 
-**Optional homework**: use what you know about matrix multiplication to convince yourself that the above is correct.
+**Optional Homework**: use what you know about matrix multiplication to convince yourself that the above is correct.
 
 In R you can form an identity matrix this way:
 ```{r}
@@ -244,11 +244,11 @@ n <- 5 ##pick dimensions
 diag(n)
 ```
 
-### The inverse
+### The Inverse
 
-The inverse of matrix of $X$, denoted with $X^{-1}$ has the property that when multiplied give you the identity $X^{-1}X=I$. Note that not all matrices have inverses. For example a $2\times 2$ matrix with 1s in all it's entries does not have an inverse. 
+The inverse of matrix of $X$, denoted with $X^{-1}$ has the property that, when multiplied, gives you the identity $X^{-1}X=I$. Keep in mind that not all matrices have inverses. For example, a $2\times 2$ matrix with 1s in all its entries does not have an inverse. 
 
-As we will see when we get to the applications to linear models, being able to compute the inverse of a matrix is quite useful. A very convenient aspect of R is that it includes a predefined function `solve` to do this. Here is how would use it to solve the linear of equations.
+As we will see when we get to the section on applications to linear models, being able to compute the inverse of a matrix is quite useful. A very convenient aspect of R is that it includes a predefined function `solve` to do this. Here is how would use it to solve the linear of equations.
 
 ```{r}
 X <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
