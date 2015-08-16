@@ -8,9 +8,9 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## Wilcoxon signed-rank test
+## Wilcoxon Signed-Rank Test
 
-We learned how the sample mean and sd  are susceptible to outliers. The t-test is based on these measures and is susceptible as well. The Wilcox signed-rank test provides and alternative. In the code below we perform a t-test on data for which the null is true but we change one observation by mistakes in each sample and the values incorrectly entered are different. Here we see that the t-test results in a small p-value while the Wilcoxon test does not.
+We learned how the sample mean and SD are susceptible to outliers. The t-test is based on these measures and is susceptible as well. The Wilcox signed-rank test provides and alternative. In the code below we perform a t-test on data for which the null is true. However, we change one observation by mistakes in each sample and the values incorrectly entered are different.Here we see that the t-test results in a small p-value, while the Wilcoxon test does not:
 
 ```{r}
 set.seed(779) ##for illustration
@@ -36,7 +36,7 @@ text(rep(1.05,length(ws)),xrank,ws)
 W <-sum(ws) 
 ```
 
-`W` is the sum of the ranks for the first group. Statistical theory (based on CLT) tells us that this statistic is approximated by the normal distribution. In fact we can construct a z-score as follows:
+`W` is the sum of the ranks for the first group. Statistical theory (based on CLT) tells us that this statistic is approximated by the normal distribution. In fact, we can construct a z-score as follows:
 
 ```{r}
 n1<-length(x);n2<-length(y)
