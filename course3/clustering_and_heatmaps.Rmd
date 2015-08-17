@@ -10,14 +10,14 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduction
 
-We load the tissue gene expression data:
+We begin by loading the tissue gene expression data:
 
 ```{r}
 library(tissuesGeneExpression)
 data(tissuesGeneExpression)
 ```
 
-Let's act as if we don't know these are different tissues and are interested in clustering. The first step is to compute the distance between each sample:
+Now pretend that we don't know these are different tissues and are interested in clustering. The first step is to compute the distance between each sample:
 
 ```{r}
 d <- dist(t(e))
@@ -27,8 +27,7 @@ d <- dist(t(e))
 
 # Hierarchical Clustering
 
-We can perform hierarchical clustering based on the
-distances defined above, using the `hclust` function.
+We can perform hierarchical clustering based on the distances defined above, using the `hclust` function.
 The `plot` method will make a plot of the tree that results from `hclust`. 
 
 ```{r}
@@ -75,7 +74,7 @@ plot(e[1,], e[2,], col=as.fumeric(tissue), pch=16)
 table(true=tissue,cluster=km$cluster)
 ```
 
-We can instead perform k-means clustering using all of the genes. And to visualize this, we can use an MDS plot:
+We can instead perform k-means clustering using all of the genes. To visualize this, we can use an MDS plot:
 
 
 ```{r}

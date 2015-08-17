@@ -10,11 +10,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduction
 
-"Correlation is not causation" is one of the most important lessons you should take from this or any other data analysis course. A common example for why this statement is so often true is confounding. Simply stated confounding occurs when we observe a correlation or association between $X$ and $Y$ but  this is strictly the result of both $X$ and $Y$ depending on an extraneous variable $Z$. Here we describe Simpson's paradox, perhaps the most famous case of confounding and then show an example of confounding in high throughput biology.
+"Correlation is not causation" is one of the most important lessons you should take from this or any other data analysis course. A common example for why this statement is so often true is confounding. Simply stated confounding occurs when we observe a correlation or association between $X$ and $Y$, but  this is strictly the result of both $X$ and $Y$ depending on an extraneous variable $Z$. Here we describe Simpson's paradox, perhaps the most famous case of confounding, and then show an example of confounding in high throughput biology.
 
-# Simpson's paradox
+# Simpson's Paradox
 
-Admission data from Berkeley 1973 showed more men were being admitted than women: 44\% men admitted compared to 30\% women. This actually led to a [lawsuit](http://en.wikipedia.org/wiki/Simpson%27s_paradox#Berkeley_gender_bias_case). See: PJ Bickel, EA Hammel, and JW O'Connell. Science (1975)
+Admission data from U.C. Berkeley 1973 showed that more men were being admitted than women: 44\% men admitted compared to 30\% women. This actually led to a [lawsuit](http://en.wikipedia.org/wiki/Simpson%27s_paradox#Berkeley_gender_bias_case). See: PJ Bickel, EA Hammel, and JW O'Connell. Science (1975)
 
 
 ```{r}
@@ -27,7 +27,7 @@ sum(admissions$total[admissions$Gender==1]/sum(admissions$Number[admissions$Gend
 sum(admissions$total[admissions$Gender==0]/sum(admissions$Number[admissions$Gender==0]))
 ```
 
-A chi-square test clearly rejects they hypothesis that gender and admission are independent:
+A chi-square test clearly rejects the hypothesis that gender and admission are independent:
 ```{r}
 ##let's make a 2 x 2
 index = admissions$Gender==1
@@ -48,9 +48,9 @@ colnames(y)[2:3]=c("Male","Female")
 y
 ```
 
-**Optional homework**: Run the `chisq.test` in each major.
+**Optional Homework**: Run the `chisq.test` in each major.
 
-Here are the absolute number of admissions by Major:
+Here are the absolute numbers of admissions by major:
 ```{r}
 y=cbind(admissions[1:6,c(1,2)],admissions[7:12,2])
 colnames(y)[2:3]=c("Male","Female")
@@ -59,10 +59,10 @@ y
 
 The chi-square test we performed above suggests a dependence between admission and gender.  Yet when the data is grouped by Major, this dependence doesn't seem borne out.  What's going on? 
 
-This is called _Simpson's paradox_ 
+This is called _Simpson's paradox_ .
 As we will see, males were much more likely to apply to "easy" majors. 
 
-Male and easy majors are confounded. 
+Male and "easy"" majors are confounded. 
 ```{r}
 y=cbind(admissions[1:6,5],admissions[7:12,5])
 y=sweep(y,2,colSums(y),"/")*100
@@ -75,10 +75,10 @@ legend("topleft",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0
 ```
 
 
-## Confounding explained graphically
+## Confounding Explained Graphically
 
 
-In the plots below each letter represents a person. Accepted individuals are denoted with green and not admitted in orange. The letter denotes the major. In this plot we group all the patients together and notice that the proportion of green is larger for men.
+In the plots below each letter represents a person. Accepted individuals are denoted in green and not admitted in orange. The letter indicates the major. In this plot we group all the students together and notice that the proportion of green is larger for men.
 
 
 ```{r,echo=FALSE,fig.width=14,fig.height=7}
@@ -122,7 +122,7 @@ abline(v=NC+NC/20)
 axis(side=3,c(NC/2,NC+NC/2),c("Male","Female"),tick=FALSE,line=-1)
 ```
 
-Now we stratify the data by major. The key point here is that most of the men denoted with green come from majors A and B which are the ones with the highest acceptance rate. 
+Now we stratify the data by major. The key point here is that most of the men denoted with green come from majors A and B, which are the ones with the highest acceptance rate. 
 
 
 ```{r,echo=FALSE,fig.width=14,fig.height=7}
@@ -163,7 +163,7 @@ axis(side=2,ADDY[-1]/2+ADDY[-length(ADDY)]/2,LETTERS[1:N],tick=FALSE,las=1)
 
 
 
-## Average after stratifying
+## Average After Stratifying
 
 So if we condition or stratify by major this goes away. 
 ```{r}
@@ -178,9 +178,9 @@ The average difference by Major is 3.5% higher for women.
 mean(y[,1]-y[,2])
 ```
 
-## Simpson's paradox in baseball
+## Simpson's Paradox In Baseball
 
-We see this in Baseball often:
+We see this often in baseball:
 
 |               | 1995           | 1996           | Combined        |
 | ------------- | -------------- | -------------- | --------------- |
@@ -190,9 +190,9 @@ We see this in Baseball often:
 
 <a name="genomics"></a>
 
-# Confounding in genomics
+# Confounding In Genomics
 
-Here are the p-values from comparing CEU to ASN
+Here are the p-values from comparing CEU to ASN:
 ```{r,message=FALSE}
 library(Biobase)
 library(genefilter)
@@ -200,7 +200,7 @@ library(GSE5859)
 data(GSE5859)
 ```
 
-Note that this is the original dataset from which we selected the subset used in `GSE5859Subset`. We can extract the gene expression data and sample information table using the Bio conductor functions `exprs` and `pData` like this:
+This is the original dataset from which we selected the subset used in `GSE5859Subset`. We can extract the gene expression data and sample information table using the Bioconductor functions `exprs` and `pData` like this:
 
 ```{r}
 geneExpression = exprs(e)
@@ -213,7 +213,7 @@ Note that some samples were processed at different times.
 head(sampleInfo$date)
 ```
 
-This is an extraneous variable and should not affect the values in `geneExpression`. However, as we have seen in previous analyses it does appear to have an effect so we will explore this here.
+This is an extraneous variable and should not affect the values in `geneExpression`. However, as we have seen in previous analyses, it does appear to have an effect.  As a result, we will explore this here.
 
 We can immediately see that year and ethnicity are almost completely confounded:
 
@@ -223,7 +223,7 @@ tab = table(year,sampleInfo$ethnicity)
 print(tab)
 ```
 
-By running a t-test and creating a volcano plot we note that thousands of genes appear to be differentially expressed. But when we perform a similar comparison between 2002 and 2003 only on the CEU population we again obtain thousands of diferentially expressed genes:
+By running a t-test and creating a volcano plot, we note that thousands of genes appear to be differentially expressed. Yet when we perform a similar comparison only on the CEU population between the years 2002 and 2003, we again obtain thousands of diferentially expressed genes:
 
 
 ```{r}
