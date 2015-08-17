@@ -10,14 +10,14 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduction
 
-We load the tissue gene expression data
+We load the tissue gene expression data:
 
 ```{r}
 library(tissuesGeneExpression)
 data(tissuesGeneExpression)
 ```
 
-Let's act as if we don't know these are different tissues and are interested in clustering. The first step is to compute the distance between each sample
+Let's act as if we don't know these are different tissues and are interested in clustering. The first step is to compute the distance between each sample:
 
 ```{r}
 d <- dist(t(e))
@@ -25,7 +25,7 @@ d <- dist(t(e))
 
 <a name="hierarchical"></a>
 
-# Hierarchical clustering
+# Hierarchical Clustering
 
 We can perform hierarchical clustering based on the
 distances defined above, using the `hclust` function.
@@ -45,7 +45,7 @@ Does this technique "discover" the clusters defined by the different tissues? In
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
 ```
 
-Note that hierarchical clustering does not define specific clusters but rather defines a dendrogram. To define clusters we need to "cut the tree" at some height and group all samples that are within that split into different groups below that line. We use 120 as an example:
+Keep in mind that hierarchical clustering does not define specific clusters, but rather defines a dendrogram. To define clusters we need to "cut the tree" at some height and group all samples that are within that split into different groups below that line. We use 120 as an example:
 
 ```{r}
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
@@ -75,7 +75,7 @@ plot(e[1,], e[2,], col=as.fumeric(tissue), pch=16)
 table(true=tissue,cluster=km$cluster)
 ```
 
-We can instead perform k-means clustering using all of the genes. And to visualize this, we can use an MDS plot
+We can instead perform k-means clustering using all of the genes. And to visualize this, we can use an MDS plot:
 
 
 ```{r}
@@ -91,8 +91,7 @@ table(true=tissue,cluster=km$cluster)
 
 # Heatmaps
 
-Heatmaps are useful plots for visualizing the measurements  for a subset of rows over all the samples. A *dendrogram* is added on top and on the side is a hierarchical clustering as we saw before. First we will
-use the `heatmap` available in base R. First define a color palette.
+Heatmaps are useful plots for visualizing the measurements for a subset of rows over all the samples. A *dendrogram* is added on top and on the side is a hierarchical clustering as we saw before. First we will use the `heatmap` available in base R. Let's begin by defining a color palette:
 
 ```{r}
 # install.packages("RColorBrewer")
@@ -115,7 +114,7 @@ heatmap(e[idx,], col=hmcol)
 ```
 
 The `heatmap.2` function in the `gplots` package on CRAN is a bit more
-customization. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
+customized. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
 
 ```{r}
 # install.packages("gplots")
