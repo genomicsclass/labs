@@ -10,14 +10,14 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Introduction
 
-To illustrate how we can adjust for batch effects using statistical methods, we continue to use our subset example with sex as the outcome of interest and with months purposely somewhat confounded with sex. 
+To illustrate how we can adjust for batch effects using statistical methods, we continue to use our subset example with sex as the outcome of interest, and with months purposely somewhat confounded with sex. 
 
 ```{r}
 library(GSE5859Subset)
 data(GSE5859Subset)
 ```
 
-Here is an image we showed earlier with a subset of genes showing both the sex effect and time effects along with sample to sample correlations (computed on all genes) showing the complex structure of the data:
+Here is an image we showed earlier with a subset of genes showing both the sex effect and time effects, along with sample to sample correlations (computed on all genes) showing the complex structure of the data:
 
 ```{r,message=FALSE,fig.width=12}
 library(rafalib)
@@ -52,11 +52,11 @@ axis(1,1:ncol(y),sex,las=2)
 
 
 
-We have seen how approaches that assume month explains the batch an use linear models perform relatively well. However, there was still room for improvement. This is most likely due that month is only a surrogate for some other variable that actually induces structure or between sample correlation.
+We have seen how approaches that assume month explains the batch and use linear models perform relatively well. However, there was still room for improvement. This is most likely due to the fact that month is only a surrogate for some other variable that actually induces structure or between sample correlation.
 
-# What is a batch?
+# What Is A Batch?
 
-Here are is a plot of dates for each sample, with color representing month:
+Here is a plot of dates for each sample, with color representing month:
 
 ```{r}
 times <-sampleInfo$date 
@@ -66,7 +66,7 @@ plot(times[o],pch=21,bg=as.fumeric(batch)[o],ylab="date")
 o=order(times)
 plot(times[o],pch=21,bg=as.fumeric(batch)[o],ylab="date")
 ```
-Note there is more than one day per month. Could day have an effects as well?
+There is more than one day per month. Could day have an effects as well?
 
 
 # PCA
@@ -88,7 +88,7 @@ mypar(1,1)
 plot(s$d^2/sum(s$d^2),ylab="% variance explained",xlab="Principal component")
 ```
 
-In fact the first six or so PC seem to be at least partially driven by date:
+In fact, the first six or so PC seem to be at least partially driven by date:
 ```{r}
 mypar2(3,4)
 for(i in 1:12)
@@ -104,7 +104,7 @@ cleandat <- sweep(s$u,2,D,"*")%*%t(s$v)
 res <-rowttests(cleandat,factor(sex))
 ```
 
-This does remove the batch effect but it seems we have also removed much of the biological effect we are interested in. In fact no genes have q-value <0.1 anymore.
+This does remove the batch effect, but it seems we have also removed much of the biological effect we are interested in. In fact, no genes have q-value <0.1 anymore.
 
 
 ```{r}
@@ -120,10 +120,10 @@ legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 <a name="sva"></a>
 # Factor Analysis
 
-An alternative is to fit models with both the covariate of interest as well as those believed to be batches. An example of an approach that does this is Surrogate Variable Analysis (SVA).
+An alternative is to fit models with both the covariate of interest, as well as those believed to be batches. An example of an approach that does this is Surrogate Variable Analysis (SVA).
 
 
-The basic idea of SVA is to first estimate the factors but taking care not to include the outcome of interest. To do this an interactive approach is used in which each row is given a weight and then these weights are used in the SVD calculation with higher weights given to  rows not associated with the outcome of interest and associated with batches. Here is a demonstration of two iterations. The three images are the data (for a subset of genes), the weights, and the estimated first factor
+The basic idea of SVA is to first estimate the factors, but taking care not to include the outcome of interest. To do this, an interactive approach is used in which each row is given a weight and then these weights are used in the SVD calculation with higher weights given to rows not associated with the outcome of interest and associated with batches. Below is a demonstration of two iterations. The three images are the data (for a subset of genes), the weights, and the estimated first factor.
 
 
 ```{r,fig.height=10,fig.width=7}
@@ -157,7 +157,7 @@ for(b in 1:2){
 ```
 
 
-The above is an illustration of the algorithm. To actually run SVA  we follow the this code. In this case SVA picks the number of surragate values or factors for us.
+The above is an illustration of the algorithm. To actually run SVA we follow the this code. In this case, SVA picks the number of surrogate values or factors for us.
 
 
 ```{r}
@@ -168,7 +168,7 @@ lmfit <- lmFit(geneExpression,svaX)
 tt<- lmfit$coef[,2]*sqrt(lmfit$df.residual)/(2*lmfit$sigma)
 ```
 
-Note we observe an improvement over all other approaches:
+There is an observable improvement over all other approaches:
 
 ```{r}
 res <- data.frame(dm= -lmfit$coef[,2],
@@ -183,7 +183,7 @@ legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 ```
 
 
-And here is a decompose the data into sex effects, surrogate variables, and independent noise:
+And here is a decompose of the data into sex effects, surrogate variables, and independent noise:
 
 ```{r}
 Batch<- lmfit$coef[geneindex,3:7]%*%t(svaX[,3:7])
