@@ -1,0 +1,283 @@
+---
+layout: page
+title: Multiple testing
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r}
+library(rafalib)
+```
+
+## Procedures
+
+In the previous section learned how p-values are no longer
+a useful quantity to use as a cut-off when you're looking at high-dimensional data and you are testing many units at the same time. This is referred to as the _multiple comparison_ or _multiple testing_ or _multiplicity_ problem. The definition of a p-value does not provide a useful quantification here. Again, because when we test many hypotheses simultaneusly, a list just based on a small p-values cut-off of, say 0.01, can result in many false positives. Here we define terms that are more appropriat
+
+The most widely used approach to the multiplicity problem is to define a _procedure_ and the estimate an informative _error rate_ for this procedure. The procuedures are typically flexible through parameters or cutoffs that let us control specificity and sensitivity. An example of a procedure is: 
+
+* Compute a p-value for each gene
+* Call signficant all genes with p-values smaller than $\alpha$
+
+Note that changing the $\alpha$ permits us to adjust specificity and sensitivity. 
+
+Next we define the _error rates_  that we will try to estimate and control.
+
+## Error Rates
+
+Throughout this section we will be using the type I error and a type II error terminology. Note that in the context of high-throughput data we can have several type I erros and several type II erros, as opposed to one or the other. In this table we summarize the possibilities using the notation from the seminal paper by Benjamini-Hochberg:
+
+|   | Called significant   | Not called significant   | Total  |  
+|---|---|---|---|
+|Null True   |$V$   | $m_0-V$  | $m_0$  |
+|Alternative True   | $S$  | $m_1-S$    | $m_1$    |   
+|True   | $R$  |  $m-R$ | $m$  |
+
+To describe the entries in the table let's use as an example an dataset with 20,000 genes which means that the total number of tests that we are conducting is: $m=20,000$. The number of genes for which the null hypothesis is true, representing the genes we are not intereted in, is $m_0$ while the number of genes for which the null hypothesis is not ture is $m_1$ For most high-throughput experiments, we assume that $m_0$ is much greater than $m_1$. You test 20,000 and maybe 10 are of interest, so $m_1=10$ and 
+and $m_0=19,990$. We have several genes and $R$ represents the total number of genes that whatever procedure we are evaulating calls significant. $m-R$ is therefore is the total number of genes we don't call significant. The rest of the table contains important quantities that are unknown. 
+
+* $V$ represents the number of genes
+that we call significant where the null hypothesis is true. So $V$ is the total number of type I errors. 
+* $S$ represents the number of genes that are
+called significant where the alternative is true also called _true positives_.
+
+This implies that there are $m_1-S$ type II errors or _false negatives_ and $m_0-V$ true negatives. 
+
+Note that if we only ran one test,
+a p-value is simply the probability that $V=1$. Power is the probability of $S=1$. In this very simple case, we wouldn't bother making tables. Below we will how defining the terms in the table helps in the high-dimensional context.
+
+  
+### Data Example
+
+Let's compute these quantities with a data example. We will use a Monte Carlo simulation using our mice data to immitate a situation in which we perform tests for 1000 diets, all of them having no effects. The null hypothesis is true for all of them thus $m=100, m_0=100,$ and $m_1=0$. Let's run the tests with a sample size of $N=12$ and compute $R$. Our procedure will declare any diet achieving a p-value smaller than $\alpha=0.05$ as significant. 
+
+
+```{r}
+set.seed(1)
+population = unlist( read.csv("femaleControlsPopulation.csv") )
+alpha <- 0.05
+N <- 12
+m <- 1000
+calls <- replicate(m,{
+  control = sample(population,N)
+  treatment = sample(population,N)
+  t.test(treatment,control)$p.val < alpha
+})
+```
+
+Although in practice we do not know the truth, in this simulation we do so we can actually compute $V$ and $S$. Because all null hypotheses are true, we know $V=R$ which is 
+
+```{r}
+sum(calls) ##This is R
+```
+These many false positives is not acceptable in most contexts.
+
+Here is more complicated code showing results where 10% of the diets are effective with an average effect size of $\Delta=0.5$ ounce. 
+Studying this code carefully will help undertand the meaning of the table above.
+
+```{r}
+alpha <- 0.05
+N <- 12
+m <- 1000
+nullHypothesis <- c( rep(TRUE,900), rep(FALSE,100))
+delta <- 1
+calls <- sapply(1:m, function(i){
+  control <- sample(population,N)
+  treatment <- sample(population,N)
+  if(!nullHypothesis[i]) treatment <- treatment + delta
+  ifelse( t.test(treatment,control)$p.val < alpha, "Called Significant","Not Called Significant")
+})
+nullHypothesis <- factor( nullHypothesis, levels=c("TRUE","FALSE"))
+table(nullHypothesis,calls)
+```
+
+The first column of the table above shows us $V$ and $S$.
+
+Note that $V$ and $S$ are random variables. If we run the simulation over and over again, these values change. Here is a quick example:
+```{r}
+alpha <- 0.05
+N <- 12
+m <- 1000
+nullHypothesis <- c( rep(TRUE,900), rep(FALSE,100))
+delta <- 1
+B <- 10 ## number of simulations
+VandS <- replicate(B,{
+  calls <- sapply(1:m, function(i){
+    control <- sample(population,N)
+    treatment <- sample(population,N)
+    if(!nullHypothesis[i]) treatment <- treatment + delta
+    t.test(treatment,control)$p.val < alpha
+  })
+  cat("V =",sum(nullHypothesis & calls), "S =",sum(!nullHypothesis & calls),"\n")
+  c(sum(nullHypothesis & calls),sum(!nullHypothesis & calls))
+  })
+```
+
+This motivates the definition of error rates. We can, for example, estimate probability that $V$ is larger than 0. This is intepreted as the probability of making at least one type I error among the 1000 tests. In the example we made many more than 1 in every single simulation so we suspect this probability is very close to 1. When $m=1$, this probability is equivalent to the p-value. When we have a multiple tests situation, we call it the Family Wide Error Rate (FWER) and it relates to technique that is widely used: The Bonferroni correction.
+
+
+## The Sidak's procedure
+
+In the previous section we saw how the probability of incorrectly rejecting the null for at least one of the 1,000 null experiments was well over 0.05. We can actually compute that probability:
+
+Let $p_1,\dots,p_{1000}$ be the the p-values (random variables). Then 
+
+$$
+\begin{align*}
+\mbox{Pr}(\mbox{at least one rejection}) &= 1 -\mbox{Pr}(\mbox{no rejections}) \\
+&= 1 - \prod_{i=1}^{1000} \mbox{Pr}(p_i>0.05) \\
+&= 1-0.95^{1000} \approx 1
+\end{align*}
+$$
+
+Or if you want to use a simulations:
+
+```{r}
+B<-1000
+minpval <- replicate(B, min(runif(10000,0,1))<0.05)
+mean(minpval>=1)
+```
+
+
+So what do we need to do to make the probability of a mistake very small, say 5%? Using the derivation above we can  change the procedure by selecting a more sringent cutoff, previously 0.05, to lower our probability of at least one mistake to be 5%. Namely, by noting that 
+
+$$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{1000}$$
+
+and solving for $k$ we get $1-(1-k)^{100}=0.05 \implies k = 1-0.95^{1/100} \approx 0.0005$
+
+These derivation and simulation should help us undertand what we meant by procedures above and what it means to control error rates.  You can think of it as defnining a set of instructions, such as "reject all the null hypothesis for  for which p-values < 0.0005". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, will we make if we follow this procedure. More precisely we compute bounds on these rates, meaning that we show that they are smaller than some predermined value (there is a preference in the life sciences to err on the side of being conservative)
+
+
+## Bonferonni correction
+
+So we have learned about the family wide error rate FWER. This is the probability of incorrectly rejecting the null at least once. Using the notation in the video this probability is written like this: $\mbox{Pr}(V>0)$. 
+
+What we want to do in practice is choose a _procedure_ that guarantees this probability is smaller than a predetermined value such as 0.05. Here we keep it general and instead of 0.05 we use $\alpha$. We have already learned that the procedure "reject all the hypotheses with p-value <0.05" fails  miserably as we have seen that $Pr(V>0) \approx 1$. So what else can we do?
+
+The Bonferroni procedure assumes we have computed p-values for each test and asks what constant $k$ should we pick so that the procedure "reject all hypotheses with p-value less than $k$" has $\mbox{Pr}(V>0) = 0.05$. And we typically want to be conservative rather than lenient, so we accept a procedure that has $\mbox{Pr}(V>0) \leq 0.05$. 
+
+So the first result we rely on is that this probability is largest when all the null hypotheses are true:
+
+$$\mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid \mbox{all nulls are true})$$
+
+or using the notation from the table above:
+
+$$\mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid m_1=0)$$
+
+Because these tests are independent we know that :
+
+$$\mbox{Pr}(V>0 \mid m_1=0) = 1-(1-k)^m$$
+
+And we pick $k$ so that $1-(1-k)^m = \alpha \implies k = 1-(1-\alpha)^{1/m}$. This cutoff defines  Sidak's procedure.
+
+Now, this requires the tests to be independent. The Bonferroni procedure does not make this assumption. Instead we  set $k=\alpha/m$ and shows that with this for this procedure $Pr(V>0) \leq \alpha$:
+
+$$
+\begin{align*}
+\mbox{Pr}(V>0 \,\mid \, m_1=0) &= \mbox{Pr}\left( \min_i \{p_i\} \leq \frac{\alpha}{m} \mid m_1=0 \right)\\
+ &\leq \sum_{i=1}^m\leq \left(p_i \leq \frac{\alpha}{m} \right)\\
+ &= m \frac{\alpha}{m}=\alpha
+\end{align*}
+$$
+
+
+Monte Carlo simulation. To simulate the p-value results of, say a 8,792 t-tests for which the null is true we don't actual have to generate the original data. As we learned in class we can generate p-values for a uniform distribution like this:
+
+```{r}
+pvals <- runif(1000,0,1)
+```
+
+Using what we have learned set the cutoff using the Bonferroni correction and report back the FWER. Set the seed at 1 and run 10,000 simulation.
+
+
+```{r}
+set.seed(1)
+B <- 10000
+m <- 1000
+alpha <- 0.05
+pvals <- matrix(runif(B*m,0,1),B,m)
+
+##Bonferroni
+k <- alpha/m
+mistakes <- rowSums(pvals<k) 
+mean(mistakes>0)
+
+##Sidak's
+k <- (1-(1-alpha)^(1/m))
+mistakes <- rowSums(pvals<k) 
+mean(mistakes>0)
+```
+
+
+## False Discovery Rate and q-values
+
+There are many situations for which requiring an FWER of 0.05 does not make sense from scientificly. For example, consider the very common exercise of running a preliminary study to determine candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow up studies on the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a success. Note that with a small sample size, a procedure with a FWER $\leq$ 0.05 will very likely result in an empty list.
+
+A widely used alternative to the FWER is the false discover rate (FDR). Note that  after applying a procedure to data, $V/R$ (an unkonwn quantity) represents the proportion of false positives among the features called significant. Although this quantity is unknown, it is a random variable and we can try to estimate its expected value: $\mbox{E}(V/R)$. Here is a simulation computing this for an example presented above:
+
+```{r}
+alpha <- 0.05
+N <- 12
+m <- 100
+nullHypothesis <- c( rep(TRUE,90), rep(FALSE,10))
+delta <- 1
+B <- 1000 ## number of simulations
+VandS <- replicate(B,{
+  calls <- sapply(1:m, function(i){
+    control <- sample(population,N)
+    treatment <- sample(population,N)
+    if(!nullHypothesis[i]]) treatment <- treatment + delta
+    t.test(treatment,control)$p.val < alpha
+  })
+ c(sum(nullHypothesis & calls),sum(!nullHypothesis & calls))
+})
+FDR=mean(VandS[,1]/(VandS[,1]+VandS[,2]))
+print(FDR)
+```
+
+The simulation above is only used to illustrate and the code would not be useful in practice because in practice we do know to know the truth encoded in the `nullHypothesis` variable.
+
+For any given $\alpah$, the Benjamini-Hochberg (1995) procedure takes a series of p-values and determines the cut-off required to guarantee an FDR smaller than $\alpha$. 
+
+### Benjamini-Hochberg  (Advanced)
+The idea is to first order the p-values in increasing order: $p_{(1)},\dots,p_{(m)}. Then define $k$ to be the largest $i$ for which
+
+$$p_{(i)} \leq \frac{i}{m}\alpha$$
+
+We then reject tests with p-values larger than $p_{(k)}$. Here is an examplew ith code:
+
+```{r}
+alpha <- 0.25
+N <- 12
+m <- 100
+nullHypothesis <- c( rep(TRUE,90), rep(FALSE,10))
+delta <- 3
+pvals <- sapply(1:m, function(i){
+    control <- sample(population,N)
+    treatment <- sample(population,N)
+    if(!nullHypothesis[i]) treatment <- treatment + delta
+    t.test(treatment,control)$p.val
+  })
+min(pvals)
+mypar(1,1)
+i = seq(along=pvals)
+mypar(1,2)
+plot(i,sort(pvals))
+abline(0,i/m*alpha)
+##close-up
+plot(i[1:15],sort(pvals)[1:15],main="Close-up")
+abline(0,i/m*alpha)
+k <- max( which( sort(pvals) < i/m*alpha) )
+cutoff <- sort(pvals)[k]
+print(k)
+```
+We can see that a list with $k$ features would have an FDR of 25%
+
+### q-values
+
+  
+
+
