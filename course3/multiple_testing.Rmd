@@ -15,7 +15,7 @@ library(rafalib)
 ## Procedures
 
 In the previous section we learned how p-values are no longer
-a useful quantity to use as a cut-off when you're looking at high-dimensional data and you are testing many units at the same time. This is referred to as the _multiple comparison_ or _multiple testing_ or _multiplicity_ problem. The definition of a p-value does not provide a useful quantification here. Again, because when we test many hypotheses simultaneusly, a list just based on a small p-values cut-off of, say 0.01, can result in many false positives. Here we define terms that are more appropriat
+a useful quantity to interprete when dealing with high-dimensional data. This is because we are testing many _features_ at the same time. We refer to this  as the _multiple comparison_ or _multiple testing_ or _multiplicity_ problem. The definition of a p-value does not provide a useful quantification here. Again, because when we test many hypotheses simultaneusly, a list just based on a small p-values cut-off of, say 0.01, can result in many false positives with high probability. Here we define terms that are more appropriate in the context of high-throughput data.
 
 The most widely used approach to the multiplicity problem is to define a _procedure_ and the estimate an informative _error rate_ for this procedure. The procuedures are typically flexible through parameters or cutoffs that let us control specificity and sensitivity. An example of a procedure is: 
 
