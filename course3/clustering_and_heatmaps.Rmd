@@ -33,7 +33,7 @@ We can perform hierarchical clustering based on the distances defined above, usi
 
 ```{r}
 library(rafalib)
-mypar2(1,1)
+mypar(1,1)
 hc <- hclust(d)
 hc
 plot(hc,labels=tissue)
@@ -60,9 +60,16 @@ hclusters <- cutree(hc, h=120)
 table(true=tissue, cluster=hclusters)
 ```
 
+Note that we can also ask `cutree` to give us back a given number of clusters. The function then automatically finds the height that results in the requested number of clusters:
+
+```{r}
+hclusters <- cutree(hc, k=8)
+table(true=tissue, cluster=hclusters)
+```
+
 <a name="kmeans"></a>
 
-# K-means
+### K-means
 
 We can also cluster with the `kmeans` function to perform k-means clustering. As an example, let's run k-means on the samples in the space of the first two genes:
 
