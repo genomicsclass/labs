@@ -14,7 +14,7 @@ library(rafalib)
 
 ## Procedures
 
-In the previous section learned how p-values are no longer
+In the previous section we learned how p-values are no longer
 a useful quantity to use as a cut-off when you're looking at high-dimensional data and you are testing many units at the same time. This is referred to as the _multiple comparison_ or _multiple testing_ or _multiplicity_ problem. The definition of a p-value does not provide a useful quantification here. Again, because when we test many hypotheses simultaneusly, a list just based on a small p-values cut-off of, say 0.01, can result in many false positives. Here we define terms that are more appropriat
 
 The most widely used approach to the multiplicity problem is to define a _procedure_ and the estimate an informative _error rate_ for this procedure. The procuedures are typically flexible through parameters or cutoffs that let us control specificity and sensitivity. An example of a procedure is: 
@@ -68,7 +68,7 @@ calls <- replicate(m,{
 })
 ```
 
-Although in practice we do not know the truth, in this simulation we do so we can actually compute $V$ and $S$. Because all null hypotheses are true, we know $V=R$ which is 
+Although in practice we do not know the truth, in this simulation we do, so we can actually compute $V$ and $S$. Because all null hypotheses are true, we know $V=R$, a 
 
 ```{r}
 sum(calls) ##This is R
@@ -367,18 +367,18 @@ Here we review the results described by John D. Storey in
 J. R. Statist. Soc. B (2002). One major distinction between this approach the Benjamni and Hochberg's is that we are no longer going to set a $\alpha$ level a-priori. Because in many high-throughput we are interested in obtaining some list for validation, we can instead decide before hand that we will consdier all tests with $p-values$ smaller than 0.01. We then want to attach an estimate of an error rate. Using this approach we then we are guaranteed to have $R>0$. Note that in the FDR definition above we assigned $Q=0$ in the case that $R=V=0$. We are therefore computing 
 
 $$
-\mbox{FDR} = E\left( \frac{V}{R} | R>0\right) \mbox{Pr}(R>0)
+\mbox{FDR} = E\left( \frac{V}{R} \mid R>0\right) \mbox{Pr}(R>0)
 $$
 
 In the approach proposed by Storey we are conditioning on $R>0$ and he suggests that we instead compute the _positive FDR_ 
 
 $$
-\mbox{pFDR} = E\left( \frac{V}{R} | R>0\right) 
+\mbox{pFDR} = E\left( \frac{V}{R} \mid R>0\right) 
 $$
 
 A second distinction is that while Benjamin and Hochberg's procedure controls under the worse case scenario in which all null hypotheses are true ($m=m_0$), Storey proposes we actually try to estimate $m_0$ from the data. Because in high-througput experiment we have so much data, this is certainly posible. The general idea is to pick a $\lamba$ and assume that tests obtaining p-values $>\lamba$ are moslty from true null hypothesis. We can then estimate $\pi_0 = m_0/m$ as: 
 $$
-\hat{\pi}_0 = \frac{#\{p_i > \lambda\right}}{(1-\lambda)m}
+\hat{\pi}_0 = \frac{\#\left\{p_i > \lambda \right\} }{ (1-\lambda) m }
 $$
 Here is an example setting $\lamba=0.1$:
 
@@ -405,3 +405,18 @@ With this estimate in place we can, for example, alter the Benjamini and Hochber
 $$\hat{\pi}_0 p_{(i)} \leq \frac{i}{m}\alpha$$
 
 However, instead of doing this we compute a _q-value_ for each test. If a feature resulted in a p-value of $p$, the q-value is the estimated pFDR for a list of all the features with a p-value at least as small as $p$.
+
+In R this can be computed with the `qvalue` function in the `qvalue` package:
+
+```{r}
+library(qvalue)
+res <- qvalue(pvals)
+qvals <- res$qvalues
+plot(pvals,qvals)
+```
+we also obtain the estimate of $\hat{\pi}_0$:
+
+```{r}
+res$pi0
+```
+
