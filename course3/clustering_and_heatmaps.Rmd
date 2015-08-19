@@ -8,9 +8,9 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+## Clustering 
 
-We begin by loading the tissue gene expression data:
+We will demonstrate the concepts and code needed to perform clusturing analysis with the tissue gene expression data:
 
 ```{r}
 library(tissuesGeneExpression)
@@ -20,15 +20,16 @@ data(tissuesGeneExpression)
 Now pretend that we don't know these are different tissues and are interested in clustering. The first step is to compute the distance between each sample:
 
 ```{r}
-d <- dist(t(e))
+d <- dist( t(e) )
 ```
 
 <a name="hierarchical"></a>
 
-# Hierarchical Clustering
+### Hierarchical Clustering
 
-We can perform hierarchical clustering based on the distances defined above, using the `hclust` function.
-The `plot` method will make a plot of the tree that results from `hclust`. 
+With the distance between each pari of samples computed, we need a clustering algorithms to join them into groups. Hierarchical clustering is one of the many clustering algorithms available to do this. The each sample is assigned to its own group and then the algorithm continues iteratively, joining the two most similar clusters at each step, and continuing until there is just one groups. Note that while we have defined distances between samples, we have not yet defined distances between groups. There are various ways this can be done and they all rely on the individual pairwise distances. The helpfile for `hclust` includes detailed informtion. 
+
+We can perform hierarchical clustering based on the distances defined above, using the `hclust` function. This function returns an `hclust` object that describes the groupings that were created using the algorithm described above. The `plot` method represents these relationships with a tree or dendrogram: 
 
 ```{r}
 library(rafalib)
@@ -38,13 +39,14 @@ hc
 plot(hc,labels=tissue)
 ```
 
-Does this technique "discover" the clusters defined by the different tissues? In this case it is not easy to see the different tissues so we add colors.
+Does this technique "discover" the clusters defined by the different tissues? In this case it is not easy to see the different tissues so we add colors by using the `mypclust` function from the `rafalib` package. 
  
 ```{r}
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
 ```
 
-Keep in mind that hierarchical clustering does not define specific clusters, but rather defines a dendrogram. To define clusters we need to "cut the tree" at some height and group all samples that are within that split into different groups below that line. We use 120 as an example:
+Keep in mind that hierarchical clustering does not define specific clusters, but rather defines the dendrogram above. From the dendogram we can decipher the distance between any two groups by looking at the height at which the two groups split into two. To define clusters we need to "cut the tree" at some distance  and group all samples that are within that distance into  groups below. To visualize this, we draw a horizontal line a the height we wish to cut and this defines the 
+that line. We use 120 as an example:
 
 ```{r}
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))

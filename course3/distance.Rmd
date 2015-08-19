@@ -8,27 +8,31 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+# Distance, clustering and dimension reduction
 
-The concept of distance can be generalized from  physical distance. For example, we cluster animals into groups. When we do this, we put animals that "close" in the same group:
+## Introduction
+
+Many of the analysis we perform with high-dimensional data relate directly or inderictly to distance. For example many clustering and machine learning techniques rely on being able to define distance using features or predictors. The concept of distance can be generalized from  physical distance. For example, we cluster animals into groups. When we do this, we put animals that are "close" in the same group:
 
 <img src="images/animals.png" align="middle" width="300">
 
 Any time we cluster individuals into separate groups we are, explicitely or implicitely computing a distance. 
 
-Do create _heatmaps_ a distance is computed explicitely. Heatmaps are widely used in genomics and other highthroughput fields:
+to create _heatmaps_ a distance is computed explicitely. Heatmaps are widely used in genomics and other highthroughput fields:
 
 <img src="images/Heatmap.png" align="middle" width="300">
-Image Source: Heatmap, Gaeddal, 01.28.2007, http://commons.wikimedia.org/wiki/File:Heatmap.png, PD
 
-In these plots the measurements, which are stored in a matrix, are represented with colors after the columns and rows have been clustered. Here we will learn the necessary mathematics and computing skill to understand and create heatmaps. We start by reviewing the mathematical definition of distance. 
+[Image Source: Heatmap, Gaeddal, 01.28.2007](http://commons.wikimedia.org/wiki/File:Heatmap.png) 
+
+In these plots the measurements, which are stored in a matrix, are represented with colors after the columns and rows have been clustered. 
+Here we will learn the necessary mathematics and computing skill to understand and create heatmaps. We start by reviewing the mathematical definition of distance. 
 
 
-# Euclidean Distance
+## Euclidean Distance
 
 As a review, let's define the distance between two points, $A$ and $B$, on a cartesian plane.
 
-```{r,echo=FALSE,fig.align='center',fig.height=4}
+```{r,echo=FALSE,fig.height=4}
 library(rafalib)
 mypar(1,1)
 plot(c(0,1,1),c(0,0,1),pch=16,cex=2,xaxt="n",yaxt="n",xlab="",ylab="",bty="n",xlim=c(-0.25,1.25),ylim=c(-0.25,1.25))
@@ -39,13 +43,14 @@ text(-0.1,0,"A",cex=2)
 text(1.1,1,"B",cex=2)
 ```
 
-The euclidean distance between A and B is simply
+The euclidean distance between $A$ and $B$ is simply
 
 $$\sqrt{ (A_x-B_x)^2 + (A_y-B_y)^2}$$
 
-# High dimensional Data
 
-In this chapter we focus on high-dimensional data. We introduce a data set with gene expression measurements for 22215 genes from 189 samples. The R ojects can be downloaded like this:
+## Distance in high dimensions
+
+We introduce a data set with gene expression measurements for 22,215 genes from 189 samples. The R ojects can be downloaded like this:
 
 ```{r,eval=FALSE}
 library(devtools)
@@ -57,14 +62,13 @@ The data represent RNA expression levels for eight tissues, each with several in
 ```{r}
 library(tissuesGeneExpression)
 data(tissuesGeneExpression)
-table(tissue)
+dim(e) ##e contains the expression data
+table(tissue) ## tissue[i] tells us what tissue is represented by e[,i]
 ```
 
-# Distance in high dimensions
+We are interested in describing distance between samples in the context of this dataset. We might also be interested in finding genes that _behave similarly_ across samples.
 
-We are interested in describing distance in the context of this dataset. We might also be interested in finding genes that _behave similarly_ across samples.
-
-To define distance we need to know what points are since distance is computed between points. With high dimensional data, points are no longer on the cartesian plan. Instead they are in higher dimensions. For exampe, sample $i$ is defined by the point in 22215 dimesions $(Y_{1,i},\dots,Y_{22215,i})'$. Feature $g$ feature $g$ is defined by the point in 189 dimensions $(Y_{g,189},\dots,Y_{g,189})'$
+To define distance we need to know what points are since mathematical distance is computed between points. With high dimensional data, points are no longer on the cartesian plan. Instead they are in higher dimensions. For example, sample $i$ is defined by a point in 22,215 dimesional space: $(Y_{1,i},\dots,Y_{22215,i})^\top$. Feature $g$ is defined by a point in 189 dimensions $(Y_{g,189},\dots,Y_{g,189})^\top$
 
 Once we define points, the Euclidean distance is defined in a very similar way as it is defined for two dimensions. For example, the  distance between two samples $i$ and $j$ is
 
@@ -78,17 +82,15 @@ d(h,g) = \sqrt{ \sum_{i=1}^{189} (Y_{h,i}-Y_{g,i})^2 }
 $$
 
 
-# Distance with Matrix Algebra
+### Distance with Matrix Algebra
 
 The distance between samples $i$ and $j$ can be written as
 
-
 $$ d(i,j) = (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j)$$
 
-With $\mathbf{Y}_i$ and $\mathbf{Y}_j$ coliumns $i$ and $j$
+With $\mathbf{Y}_i$ and $\mathbf{Y}_j$ coliumns $i$ and $j$. This result can be very convinient in practice as computations can be made much faster using matrix multiplication.
 
-
-# Examples
+### Examples
 
 We can now use the formulas above to compute distance. Let's compute distance between samples 1 and 2, both kidneys, and then to 87, a colon.
 
