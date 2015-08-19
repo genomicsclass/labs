@@ -183,7 +183,6 @@ $$
 \end{align*}
 $$
 
-
 Monte Carlo simulation. To simulate the p-value results of, say a 8,792 t-tests for which the null is true we don't actual have to generate the original data. As we learned in class we can generate p-values for a uniform distribution like this:
 
 ```{r}
@@ -212,42 +211,76 @@ mean(mistakes>0)
 ```
 
 
-## False Discovery Rate and q-values
+## False Discovery Rate 
 
-There are many situations for which requiring an FWER of 0.05 does not make sense from scientificly. For example, consider the very common exercise of running a preliminary study to determine candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow up studies on the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a success. Note that with a small sample size, a procedure with a FWER $\leq$ 0.05 will very likely result in an empty list.
+There are many situations for which requiring an FWER of 0.05 does not make sense as it is much to strict. For example, consider the very common exercise of running a preliminary small study to determine a handful of candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow up studies with many more samples on just the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a resounding success. Note that with a small sample size, the only way to achiev a FWER $\leq$ 0.05 is with an empty list of genes. 
 
-A widely used alternative to the FWER is the false discover rate (FDR). Note that  after applying a procedure to data, $V/R$ (an unkonwn quantity) represents the proportion of false positives among the features called significant. Although this quantity is unknown, it is a random variable and we can try to estimate its expected value: $\mbox{E}(V/R)$. Here is a simulation computing this for an example presented above:
+Note that by requiring a FWER $\leq$ 0.05 we are practically assuring 0 power (sensitivy) and that the specifcity reqruiement is over-kill. A widely used alternative to the FWER is the false discover rate (FDR). The idea behind FDR is to cosider the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept. Here we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
+
 
 ```{r}
 alpha <- 0.05
 N <- 12
 m <- 100
-nullHypothesis <- c( rep(TRUE,90), rep(FALSE,10))
+m1 <- m*.9
+m0 <- m*.1
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1))
 delta <- 1
 B <- 1000 ## number of simulations
-VandS <- replicate(B,{
+Qs <- replicate(B,{
   calls <- sapply(1:m, function(i){
     control <- sample(population,N)
     treatment <- sample(population,N)
-    if(!nullHypothesis[i]]) treatment <- treatment + delta
+    if(!nullHypothesis[i]) treatment <- treatment + delta
     t.test(treatment,control)$p.val < alpha
   })
- c(sum(nullHypothesis & calls),sum(!nullHypothesis & calls))
+ R=sum(calls)
+ Q=ifelse(R>0,sum(nullHypothesis & calls)/R,0)
+ return(Q)
 })
-FDR=mean(VandS[,1]/(VandS[,1]+VandS[,2]))
+mypar(1,1)
+hist(Qs) ##Q is a random variable, this is its distribution
+FDR=mean(Qs)
 print(FDR)
 ```
 
-The simulation above is only used to illustrate and the code would not be useful in practice because in practice we do know to know the truth encoded in the `nullHypothesis` variable.
+The FDR is relatively high here. This is because for 90% of the tests the null hypotheses is true. Thi implies that with a 0.05 p-value cut-off, out of the 100 tests we incorrectly call between 4 and 5 significant on average. This combined with the fact that we don't "catch" all the cases where the alternative is true, gives us a relatively high FDR. So how can we control this? What if we want lower FDR, say 25%.
 
-For any given $\alpah$, the Benjamini-Hochberg (1995) procedure takes a series of p-values and determines the cut-off required to guarantee an FDR smaller than $\alpha$. 
+To visually see why the FDR is high, we can make a histogram of the p-values. We use a higher value of `m` to have more data from the histogram. We draw a horizontal line representing the uniform distribution one gets for the `m0` cases for which the null is true. 
 
-### Benjamini-Hochberg  (Advanced)
+
+```{r}
+m <- 10000
+m0 <- m*.9 
+m1 <- m-m0
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1))
+delta <- 3
+pvals <- sapply(1:m, function(i){
+    control <- sample(population,N)
+    treatment <- sample(population,N)
+    if(!nullHypothesis[i]) treatment <- treatment + delta
+    t.test(treatment,control)$p.val 
+  })
+hist(pvals,breaks=seq(0,1,0.05))
+abline(h=m0/20)
+```
+The first bar on the left represents cases with p-values smaller than 0.05. Note that from the horizontal line we can infer that about 1/2 are false positives. This is in agreement with an FDR of 0.50. If we look at the bar for 0.01 we see can infer a lower FDR, as expected, but would call less features significant.
+
+```{r}
+hist(pvals,breaks=seq(0,1,0.01))
+abline(h=m0/100)
+```
+
+
+### Benjamini-Hochberg (Advanced)
+
+We want to construct a procedure that guarantees the FDR to be below a certain level $\alpha$. For any given $\alpah$, the Benjamini-Hochberg (1995) is very practicaly because it simply requires we compute p-values for each of the individual tests. With these p-values in hand, we define the procedure.
+
 The idea is to first order the p-values in increasing order: $p_{(1)},\dots,p_{(m)}. Then define $k$ to be the largest $i$ for which
 
 $$p_{(i)} \leq \frac{i}{m}\alpha$$
 
-We then reject tests with p-values larger than $p_{(k)}$. Here is an examplew ith code:
+The procedure is to reject tests with p-values larger than $p_{(k)}$. Here is an example of how we would select the $k$ with code:
 
 ```{r}
 alpha <- 0.25
@@ -272,12 +305,103 @@ plot(i[1:15],sort(pvals)[1:15],main="Close-up")
 abline(0,i/m*alpha)
 k <- max( which( sort(pvals) < i/m*alpha) )
 cutoff <- sort(pvals)[k]
-print(k)
+cat("k =",k,"p-value cutoff=",cutoff)
 ```
-We can see that a list with $k$ features would have an FDR of 25%
+We can show, mathematically, that this procedure has FDR lower than 25%. Please see Benjamini-Hochberg (1995) for details. 
 
-### q-values
+Note, we don't have to run the complicated code above as we have functions to do this. For example, using the p-values `pvals` computed above
+we simply type the following:
+```{r}
+fdr <- p.adjust(pvals, method="fdr")
+mypar(1,1)
+plot(pvals,fdr)
+abline(h=0.25,v=cutoff) ##cutoff was computed above
+```
 
-  
+We can run a Monte-carlo simulation to confirm that the FDR is in fact lower than .25. Note that we compute all p-values first, and the uses these to decide which get called.
 
+```{r}
+alpha <- 0.25
+N <- 12
+m <- 100
+nullHypothesis <- c( rep(TRUE,100), rep(FALSE,0))
+delta <- 1
+B <- 1000 ## number of simulations
+Qs <- replicate(B,{
+  ##Compute all p-values first!
+  pvals <- sapply(1:m, function(i){
+    control <- sample(population,N)
+    treatment <- sample(population,N)
+    if(!nullHypothesis[i]) treatment <- treatment + delta
+    pvals <- t.test(treatment,control)$p.val 
+  })
+  ## then the FDR
+  calls <- p.adjust(pvals,method="fdr") < alpha
+  R=sum(calls)
+  Q=ifelse(R>0,sum(nullHypothesis & calls)/R,0)
+  return(Q)
+})
+mypar(1,1)
+hist(Qs) ##Q is a random variable, this is its distribution
+FDR=mean(Qs)
+print(FDR)
+```
 
+The FDR is lower than 0.25. This is to be expceted because we need to be conservative to assure the FDR $\leq$ 0.25 for any value of $m_0$, for example for the extreme case where every hypothesis tested is null: $m=m_0$. If you re-do the simulation above for this case you will find that the FDR increases. 
+
+Finally, note that the `p.adjust`function has several options for error rate controling procedures:
+```{r}
+p.adjust.methods
+```
+It is important to keep in mind that these options differ not just different approaches to estimating error rates but also that different error rates are estimated: namely FWER and FDR. This is important distinction. More information is available from 
+
+```{r,eval=FALSE}
+?p.adjust
+```
+
+In summary, requiring that  FDR $leq$ 0.25 is a much more lineant requirement FWER $leq$ 0.05. Although we will end up with many more false positives, FDR gives us much more power. This makes it particularly appropriate for discovery phase experiments.
+
+## Direct approach to FDR  and q-values (Advanced)
+
+Here we review the results described by John D. Storey in
+J. R. Statist. Soc. B (2002). One major distinction between this approach the Benjamni and Hochberg's is that we are no longer going to set a $\alpha$ level a-priori. Because in many high-throughput we are interested in obtaining some list for validation, we can instead decide before hand that we will consdier all tests with $p-values$ smaller than 0.01. We then want to attach an estimate of an error rate. Using this approach we then we are guaranteed to have $R>0$. Note that in the FDR definition above we assigned $Q=0$ in the case that $R=V=0$. We are therefore computing 
+
+$$
+\mbox{FDR} = E\left( \frac{V}{R} | R>0\right) \mbox{Pr}(R>0)
+$$
+
+In the approach proposed by Storey we are conditioning on $R>0$ and he suggests that we instead compute the _positive FDR_ 
+
+$$
+\mbox{pFDR} = E\left( \frac{V}{R} | R>0\right) 
+$$
+
+A second distinction is that while Benjamin and Hochberg's procedure controls under the worse case scenario in which all null hypotheses are true ($m=m_0$), Storey proposes we actually try to estimate $m_0$ from the data. Because in high-througput experiment we have so much data, this is certainly posible. The general idea is to pick a $\lamba$ and assume that tests obtaining p-values $>\lamba$ are moslty from true null hypothesis. We can then estimate $\pi_0 = m_0/m$ as: 
+$$
+\hat{\pi}_0 = \frac{#\{p_i > \lambda\right}}{(1-\lambda)m}
+$$
+Here is an example setting $\lamba=0.1$:
+
+```{r}
+m <- 10000
+m0 <- m*.9 
+m1 <- m-m0
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1))
+delta <- 3
+pvals <- sapply(1:m, function(i){
+    control <- sample(population,N)
+    treatment <- sample(population,N)
+    if(!nullHypothesis[i]) treatment <- treatment + delta
+    t.test(treatment,control)$p.val 
+  })
+hist(pvals,breaks=seq(0,1,0.05),freq=FALSE)
+lambda = 0.1
+pi0=sum(pvals> lambda) /((1-lambda)*m)
+abline(h= pi0)
+```
+
+With this estimate in place we can, for example, alter the Benjamini and Hochberg procedure to select the $k$ to be the largest value so that 
+
+$$\hat{\pi}_0 p_{(i)} \leq \frac{i}{m}\alpha$$
+
+However, instead of doing this we compute a _q-value_ for each test. If a feature resulted in a p-value of $p$, the q-value is the estimated pFDR for a list of all the features with a p-value at least as small as $p$.
