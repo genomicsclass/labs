@@ -4,7 +4,7 @@ title: R refresher
 ---
 
 
-## Data summaries: summary, str
+## Data Summaries: Summary, str
 
 First we load an example data frame:
 
@@ -24,9 +24,9 @@ summary(rats$weight)
 str(rats)
 ```
 
-## Aligning two objects: match, merge
+## Aligning Two Objects: Match, Merge
 
-We load another example data frame, with the original ID and another secretID. Suppose we want to sort the original data frame by the secretID.
+We load another example data frame, with the original ID and another secret ID. Suppose we want to sort the original data frame by the secret ID.
 
 ```{r}
 ratsTable <- data.frame(id = paste0("rat",c(6,9,7,3,5,1,10,4,8,2)),
@@ -36,7 +36,7 @@ ratsTable
 cbind(rats, ratsTable)
 ```
 
-`match` is a very useful function in R, which can give us this order, but it's easy to get its arguments mixed up. Remember that `match` gives you, for each element in the first vector, the index of the first match in the second vector. So typically the data.frame or vector you are reordering would appear as the second argument to `match`. It's always a good idea to check that you got it right, which you can do by using `cbind` to line up both data frames.
+`match` is a very useful function in R. It can give us this order, but it's also easy to get its arguments mixed up. Remember that `match` gives you, for each element in the first vector, the index of the first match in the second vector. So typically the data.frame or vector you are reordering would appear as the second argument to `match`. It's always a good idea to check that you got it right, which you can do by using `cbind` to line up both data frames.
 
 ```{r}
 match(ratsTable$id, rats$id)
@@ -51,7 +51,7 @@ ratsMerged <- merge(rats, ratsTable, by.x="id", by.y="id")
 ratsMerged[order(ratsMerged$secretID),]
 ```
 
-## Analysis over groups: split, tapply, and dplyr libary
+## Analysis Over Groups: split, tapply, and dplyr libary
 
 Suppose we need to calculate the average rat weight for each sex. We could start by splitting the weight vector into a list of weight vectors divided by sex. `split` is a useful function for breaking up a vector into groups defined by a second vector, typically a factor. We can then use the `lapply` function to calculate the average of each element of the list, which are vectors of weights.
 
@@ -61,13 +61,13 @@ sp
 lapply(sp, mean)
 ```
 
-A shortcut for this is to use `tapply` and give the function which should run on each element of the list as a third argument:
+A shortcut for this is to use `tapply` and give the function, which should run on each element of the list, as a third argument:
 
 ```{r}
 tapply(rats$weight, rats$sex, mean)
 ```
 
-R is constantly being developed in the form of add-on packages, which can sometimes greatly simplify basic analysis tasks. A new library "dplyr" can accomplish the same task as above, and can be extended to many other more complicated operations. The "d" in the name is for data.frame, and the "ply" is because the library attempts to simplify tasks typically used by the set of functions: `sapply`, `lapply`, `tapply`, etc. Here is the same task as before done with the dplyr functions `group_by` and `summarise`:
+R is constantly being developed in the form of add-on packages, which can sometimes greatly simplify basic analysis tasks. A new library "dplyr" can accomplish the same task as above, and can be extended to many other, more complicated operations. The "d" in the name is for data.frame, and the "ply" is because the library attempts to simplify tasks typically used by the set of functions: `sapply`, `lapply`, `tapply`, etc. Here is the same task as before done with the dplyr functions `group_by` and `summarise`:
 
 ```{r}
 library(dplyr)

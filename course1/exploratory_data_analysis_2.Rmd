@@ -141,7 +141,7 @@ $$
 \frac{\hat{Y} - \mu_Y}{\sigma_Y} = r \frac{x-\mu_X}{\sigma_X}
 $$
 
-with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. So, if there is perfect correlation, we predict the same number of SDs.If there is 0 correlation, then we don't use $x$ at all.  For values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
+with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. So, if there is perfect correlation, we predict the same number of SDs. If there is 0 correlation, then we don't use $x$ at all.  For values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
 
 
 To confirm that the above approximations hold in this case, let's compare the mean of each strata to the identity line and the regression line:

@@ -13,16 +13,16 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Matrix Algebra
 
-We are going to describe three examples from the life sciences. One from physics, one related to genetics, and one from a mouse experiment. They are very different, yet we end up using the same statistical technique: fitting linear models. Linear models are typically taught and described in the language of matrix algebra. 
+We are going to describe three examples from the life sciences: one from physics, one related to genetics, and one from a mouse experiment. They are very different, yet we end up using the same statistical technique: fitting linear models. Linear models are typically taught and described in the language of matrix algebra. 
 
 ```{r prep}
 library(rafalib)
 ```
 ## Motivating Examples
 
-### Objects falling
+### Objects Falling
 
-Imagine you are Galileo in the 16th century trying to describe the velocity of a falling object. An assistant climbs the Tower of Pisa and drops a ball while several others record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
+Imagine you are Galileo in the 16th century trying to describe the velocity of a falling object. An assistant climbs the Tower of Pisa and drops a ball, while several others record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
 
 ```{r}
 set.seed(1)
@@ -66,7 +66,7 @@ $$ Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N $$
 
 This is also a linear model. Here $x_i$ and $Y_i$ the father and son heights respectively for the $i$-th pair and $\varepsilon$ a term to account for the extra variability. Here we think of the fathers' height as the predictor and being fixed (not random) so we use lower case. Note that measurement error alone can't explain all the variability seen in $\varepsilon$. This makes sense as there are other variables not in the model, for example, mothers' height, genetic randomness, and environmental factors.
 
-### Random Samples from Multiple Populations
+### Random Samples From Multiple Populations
 
 Here we read-in mouse body weight data from mice that were fed two different diets: high fat and control (chow). We have a random sample of 12 mice for each. We are interested in determining if the diet has an effect on weight. Here is the data:
 
@@ -129,7 +129,7 @@ plot(tt,y,ylab="Distance in meters",xlab="Time in seconds")
 lines(tt,f,col=2)
 ```
 
-But we were pretending to be Galileo and so we don't know the parameters in the model. The data does suggest it is a parabola so we model as such:
+But we were pretending to be Galileo and so we don't know the parameters in the model. The data does suggest it is a parabola, so we model as such:
 
 $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
 
@@ -173,7 +173,7 @@ lines(Beta2s,sapply(Beta2s,rss,Beta0=65,Beta1=0),col=2)
 Trial and error here is not going to work. Instead we can use calculus: take the partial derivatives, set them to 0 and solve. Of course, if we have many parameters, these equations can get rather complex. Linear algebra provides a compact and general way of solving this problem. 
 
 
-### More on Galton (Advanced)
+### More On Galton (Advanced)
 When studying the father-son data, Galton made a fascinating discovery using exploratory analysis.
 
 ![Galton's plot](http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg)

@@ -11,7 +11,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 
 
-## Power calculations 
+## Power Calculations 
 
 ### Introduction
 
