@@ -47,7 +47,7 @@ How many of the null means are bigger than the observed value? That proportion w
 mean(abs(avgdiff) > abs(obsdiff))
 ```
 
-Now let's repeat this experiment for smaller dataset. We create a smaller dataset by sampling:
+Now let's repeat this experiment for a smaller dataset. We create a smaller dataset by sampling:
 
 ```{r}
 control <- sample(control,5)

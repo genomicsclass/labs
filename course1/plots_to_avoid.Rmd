@@ -14,7 +14,7 @@ set.seed(1)
 library(rafalib)
 ```
 
-## Plots to Avoid 
+## Plots To Avoid 
 
 This section is based on a talk by [Karl W. Broman](http://kbroman.org/) titled "How to Display Data Badly" in which he described how the default plots offered by Microsoft Excel "obscure your data and annoy your readers" ([here](http://kbroman.org/pages/talks.html) is a link to a collection of Karl Broman's talks). His lecture was inspired by the 1984 paper by H. Wainer: How to display data badly. American Statistician 38(2): 137--147. Dr. Wainer was the first to elucidate the principles of the bad display of data. However, according to Karl, "The now widespread use of Microsoft Excel has resulted in remarkable advances in the field." Here we show examples of "bad plots" and how to improve them in R.
 
@@ -32,7 +32,7 @@ The aims of good data graphics is to display data accurately and clearly. Some r
 *  Ignore significant figures.
 
 
-### Pie charts
+### Pie Charts
 
 ```{r,include=FALSE}
 browsers <- c(Opera=1,Safari=9,Firefox=20,IE=26,Chrome=44)
@@ -73,7 +73,7 @@ Even worse than pie charts are donut plots.
 
 The reason is that by removing the center, we remove one of the visual cues for determining the different areas: the angles. There is no reason to ever use a donut to display data.
 
-###  Barplots as Data Summaries
+###  Barplots As Data Summaries
 
 While barplots are useful for showing percentages, they are incorrectly used to display data from two groups being compared. Specifically, barplots are created with height equal to the group means; an antenna is added at the top to represent standard errors. This plot is simply showing two numbers per groups and the plot adds nothing:
 
@@ -118,7 +118,7 @@ stripchart(dat,vertical=TRUE,method="jitter",pch=16,add=TRUE,col=1)
 ```
 
 
-### Show the Scatterplot
+### Show The Scatterplot
 
 The purpose of many statistical analyses is to determine relationships between two variables. Sample correlations are typically reported and sometimes plots are displayed to show this. However, showing just the regression line is one way to display your data badly as it hides the scatter. Surprisingly, plots such as the following are commonly seen:
 
@@ -147,7 +147,7 @@ abline(fit$coef,lwd=2)
 
 When new technologies or laboratory techniques are introduced, we are often shown scatter plots and correlations from replicated samples. High correlations are used to demonstrate that the new technique is reproducible. Correlation, however, can be very misleading. Below is a scatter plot showing data from replicated samples run on a high throughput technology. This technology outputs 12,626 simultaneously measurements.
 
-In the plot on the left, we see the original data which shows very high correlation. Yet the data follows a distribution with very fat tails. Furthermore, 95% of the data is below the green line. The plot on the right is in the log scale. 
+In the plot on the left, we see the original data which shows very high correlation. Yet the data follows a distribution with very fat tails. Furthermore, 95% of the data is below the green line. The plot on the right is in the log scale:
 
 ```{r,message=FALSE}
 library(Biobase)
@@ -231,9 +231,9 @@ segments(rep(0,6), before, rep(1,6), after, col=1)
 boxplot(before,after,names=c("Before","After"),ylab="Response")
 ```
 
-###  Gratuitous  3D
+###  Gratuitous 3D
 
-The following figure shows three curves. Pseudo 3D is used, but it is not clear why? Maybe to separate the three curves? Notice how difficult it is to determine the values of the curves at any given point:
+The figure below shows three curves. Pseudo 3D is used, but it is not clear why. Maybe to separate the three curves? Notice how difficult it is to determine the values of the curves at any given point:
 
 ![Gratuitous 3-D](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig8b.png)
 
