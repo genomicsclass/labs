@@ -106,7 +106,7 @@ chisq.test(tab)$p.value
 
 ### Large Samples, Small p-values
 
-As we mentioned earlier, reporting only p-values is not an appropriate way to report the results of your experiment. Many genetic association studies seem to over emphasize p-values. They have large sample sizes and report impressively small p-values.  Yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
+As mentioned earlier, reporting only p-values is not an appropriate way to report the results of your experiment. Many genetic association studies seem to over emphasize p-values. They have large sample sizes and report impressively small p-values.  Yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
 
 There is not a one-to-one relationship between the odds ratio and the p-value. To demonstrate, we recalculate the p-value keeping all the proportions identical, but increasing the sample size by 10, which reduces the p-value substantially:
 
