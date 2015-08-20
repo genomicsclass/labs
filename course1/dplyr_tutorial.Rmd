@@ -12,33 +12,33 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 dplyr is a powerful R-package to transform and summarize tabular data with rows and columns. For another explanation of dplyr see the dplyr package vignette: [Introduction to dplyr](http://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
 
-### Why is it useful?
+### Why Is It Useful?
 
 The package contains a set of functions (or "verbs") that perform common data manipulation operations such as filtering for rows, selecting specific columns, re-ordering rows, adding new columns and summarizing data. 
 
 In addition, dplyr contains a useful function to perform another common task which is the "split-apply-combine" concept.  We will discuss that in a little bit. 
 
-### How does it compare to using base functions R?
+### How Does It Compare To Using Base Functions R?
 
-If you are familiar with R, you are probably familiar with base R functions such as split(), subset(), apply(), sapply(), lapply(), tapply() and aggregate(). Compared to base functions in R, the functions in dplyr are easier to work with, are more consistent in the syntax and are targeted for data analysis around data frames instead of just vectors. 
+If you are familiar with R, you are probably familiar with base R functions such as split(), subset(), apply(), sapply(), lapply(), tapply() and aggregate(). Compared to base functions in R, the functions in dplyr are easier to work with, are more consistent in the syntax and are targeted for data analysis around data frames, instead of just vectors. 
 
-### How do I get dplyr? 
+### How Do I Get dplyr? 
 
-To install dplyr
+To install dplyr:
 
 ```{r, eval=FALSE}
 install.packages("dplyr")
 ```
 
-To load dplyr
+To load dplyr:
 
 ```{r, message=FALSE}
 library(dplyr)
 ```
 
-# Data: mammals sleep
+# Data: Mammals Sleep
 
-The msleep (mammals sleep) data set contains the sleeptimes and weights for a set of mammals and is available in the dagdata repository on github. This data set contains 83 rows and 11 variables.  
+The msleep (mammals sleep) data set contains the sleep times and weights for a set of mammals and is available in the dagdata repository on github. This data set contains 83 rows and 11 variables.  
 
 Download the msleep data set in CSV format from [here](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv), and then load into R:
 
@@ -68,7 +68,7 @@ brainwt | brain weight in kilograms
 bodywt | body weight in kilograms
 
 
-# Important dplyr verbs to remember
+# Important dplyr Verbs To Remember
 
 dplyr verbs | Description
 --- | ---
@@ -80,11 +80,11 @@ dplyr verbs | Description
 `group_by()` | allows for group operations in the "split-apply-combine" concept
 
 
-# dplyr verbs in action
+# dplyr Verbs In Action
 
-The two most basic functions are `select()` and `filter()` which selects columns and filters rows, respectively. 
+The two most basic functions are `select()` and `filter()`, which selects columns and filters rows respectively. 
 
-### Selecting columns using `select()`
+### Selecting Columns Using `select()`
 
 Select a set of columns: the name and the sleep\_total columns. 
 
@@ -93,34 +93,34 @@ sleepData <- select(msleep, name, sleep_total)
 head(sleepData)
 ```
 
-To select all the columns *except* a specific column, use the "-" (subtraction) operator (also known as negative indexing)
+To select all the columns *except* a specific column, use the "-" (subtraction) operator (also known as negative indexing):
 
 ```{r}
 head(select(msleep, -name))
 ```
 
-To select a range of columns by name, use the ":" (colon) operator
+To select a range of columns by name, use the ":" (colon) operator:
 
 ```{r}
 head(select(msleep, name:order))
 ```
 
-To select all columns that start with the character string "sl", use the function `starts_with()`
+To select all columns that start with the character string "sl", use the function `starts_with()`:
 
 ```{r}
 head(select(msleep, starts_with("sl")))
 ```
 
-Some additional options to select columns based on a specific criteria include
+Some additional options to select columns based on a specific criteria include:
 
 1. `ends_with()` = Select columns that end with a character string
 2. `contains()` = Select columns that contain a character string
 3. `matches()` = Select columns that match a regular expression
-4. `one_of()` = Select columns names that are from a group of names
+4. `one_of()` = Select column names that are from a group of names
 
 
 
-### Selecting rows using `filter()`
+### Selecting Rows Using `filter()`
 
 Filter the rows for mammals that sleep a total of more than 16 hours. 
 
@@ -142,9 +142,9 @@ filter(msleep, order %in% c("Perissodactyla", "Primates"))
 
 You can use the boolean operators (e.g. >, <, >=, <=, !=, %in%) to create the logical tests. 
 
-# Pipe operator: %>%
+# Pipe Operator: %>%
 
-Before we go any futher, let's introduce the pipe operator: %>%. dplyr imports this operator from another package (magrittr).  This operator allows you to pipe the output from one function to the input of another function. Instead of nesting functions (reading from the inside to the outside), the idea of of piping is to read the functions from left to right. 
+Before we go any further, let's introduce the pipe operator: %>%. dplyr imports this operator from another package (magrittr).This operator allows you to pipe the output from one function to the input of another function. Instead of nesting functions (reading from the inside to the outside), the idea of piping is to read the functions from left to right. 
 
 Here's an example you have seen:
 
@@ -152,7 +152,7 @@ Here's an example you have seen:
 head(select(msleep, name, sleep_total))
 ```
 
-Now in this case, we will pipe the msleep data frame to the function that will select two columns (name and sleep\_total) and then pipe the new data frame to the function `head()` which will return the head of the new data frame. 
+Now in this case, we will pipe the msleep data frame to the function that will select two columns (name and sleep\_total) and then pipe the new data frame to the function `head()`, which will return the head of the new data frame. 
 
 ```{r}
 msleep %>% 
@@ -162,20 +162,20 @@ msleep %>%
 
 You will soon see how useful the pipe operator is when we start to combine many functions.  
 
-# Back to dplyr verbs in action
+# Back To dplyr Verbs In Action
 
 Now that you know about the pipe operator (%>%), we will use it throughout the rest of this tutorial. 
 
 
-### Arrange or re-order rows using `arrange()`
+### Arrange Or Re-order Rows Using `arrange()`
 
-To arrange (or re-order) rows by a particular column such as the taxonomic order, list the name of the column you want to arrange the rows by
+To arrange (or re-order) rows by a particular column, such as the taxonomic order, list the name of the column you want to arrange the rows by:
 
 ```{r}
 msleep %>% arrange(order) %>% head
 ```
 
-Now, we will select three columns from msleep, arrange the rows by the taxonomic order and then arrange the rows by sleep\_total. Finally show the head of the final data frame
+Now we will select three columns from msleep, arrange the rows by the taxonomic order and then arrange the rows by sleep\_total. Finally, show the head of the final data frame:
 
 ```{r}
 msleep %>% 
@@ -184,7 +184,7 @@ msleep %>%
     head
 ```
 
-Same as above, except here we filter the rows for mammals that sleep for 16 or more hours instead of showing the head of the final data frame
+Same as above, except here we filter the rows for mammals that sleep for 16 or more hours, instead of showing the head of the final data frame:
 
 ```{r}
 msleep %>% 
@@ -203,9 +203,9 @@ msleep %>%
 ```
 
 
-### Create new columns using `mutate()`
+### Create New Columns Using `mutate()`
 
-The `mutate()` function will add new columns to the data frame. Create a new column called rem_proportion which is the ratio of rem sleep to total amount of sleep. 
+The `mutate()` function will add new columns to the data frame. Create a new column called rem_proportion, which is the ratio of rem sleep to total amount of sleep. 
 
 
 ```{r}
