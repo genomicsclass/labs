@@ -25,7 +25,7 @@ The basic question we ask is: if the lady is actually guessing, what are the cha
 
 Under the null hypothesis that the lady is simply guessing, each ball has the same chance of being picked. We can then use combinatorics to figure out the probability. The probability of picking 3 is ${4 \choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of picking all correct is ${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$. Thus the chance of observing a 3 or something more extreme, under the null hypothesis, is 0.24. This is called a p-value. The procedure that produced this p-value is called Fisher's exact test and it uses the hypergeometric distribution.
 
-### Two by Two Tables
+### Two By Two Tables
 
 The data from the experiment above can be summarized by a 2 by 2 table:
 
@@ -117,7 +117,7 @@ chisq.test(tab)$p.value
 
 ### Confidence Intervals For The Odd Ratio
 
-Computing confidence intervals for the OR is not mathematically straightforward. Unlike other statistics, for which we can derive useful approximations of their distributions, the OR is not only a ratio, but a ratio of ratios. There is therefore no simple way of using, for example, the CLT.
+Computing confidence intervals for the OR is not mathematically straightforward. Unlike other statistics, for which we can derive useful approximations of their distributions, the OR is not only a ratio, but a ratio of ratios. Therefore there is no simple way of using, for example, the CLT.
  
 One approach is to use the theory of generalized linear models which provides estimates of the log odds ratio, rather than the OR itself, that can be shown to be asymptotically normal. Here we provide R code without presenting the theoretical details (for further details please see [CITE]:
   
