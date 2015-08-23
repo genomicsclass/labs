@@ -61,10 +61,10 @@ c
 \end{pmatrix}
 $$
 
-Having described matrix notation, here we will explain the operation we perform with them. For example, above we have matrix multiplication and we also have a symbol representing the inverse of a matrix. The importance of these operations and others will become clear once we present specific examples related to data analysis.
+Having described matrix notation, we will explain the operation we perform with them. For example, above we have matrix multiplication and we also have a symbol representing the inverse of a matrix. The importance of these operations and others will become clear once we present specific examples related to data analysis.
  
 
-### Multiplying by a Scalar
+### Multiplying By A Scalar
 
 We start with one of the simplest operations: scalar multiplication. If $a$ is scalar and $\mathbf{X}$ is a matrix, then:
 
@@ -89,7 +89,7 @@ print(a*X)
 
 ### The Transpose
 
-The transpose is an operation that simply changes columns to rows. We use either a $\top$ to denote a transpose.  Here is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
+The transpose is an operation that simply changes columns to rows. We use either a $\top$ to denote a transpose.He re is the technical definition. If X is as we defined it above, here is the transpose which will be $p\times N$:
 
 
 $$
@@ -107,7 +107,7 @@ $$
   \end{pmatrix}
 $$
 
-In R we simply use `t`
+In R we simply use `t`:
 
 ```{r}
 X <- matrix(1:12,4,3)
@@ -163,7 +163,7 @@ X%*%abc
 ```
 
 
-We can see that `c(3,2,1)` is not a solution as the answer here is not the required `c(6,2,1)`
+We can see that `c(3,2,1)` is not a solution as the answer here is not the required `c(6,2,1)`.
 
 To get the solution we will need to invert the matrix on the left, a concept we learn about below.
 
@@ -248,7 +248,7 @@ diag(n)
 
 The inverse of matrix of $X$, denoted with $X^{-1}$ has the property that, when multiplied, gives you the identity $X^{-1}X=I$. Keep in mind that not all matrices have inverses. For example, a $2\times 2$ matrix with 1s in all its entries does not have an inverse. 
 
-As we will see when we get to the section on applications to linear models, being able to compute the inverse of a matrix is quite useful. A very convenient aspect of R is that it includes a predefined function `solve` to do this. Here is how would use it to solve the linear of equations.
+As we will see when we get to the section on applications to linear models, being able to compute the inverse of a matrix is quite useful. A very convenient aspect of R is that it includes a predefined function `solve` to do this. Here is how we would use it to solve the linear of equations:
 
 ```{r}
 X <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
@@ -256,4 +256,4 @@ y <- matrix(c(6,2,1),3,1)
 solve(X)%*%y ##equivalent to solve(X,y)
 ```
 
-Note: `solve` is a function that should be used with caution as it is not generally numerically stable. We explain this in much more detail in the QR factorization section. 
+Please note that `solve` is a function that should be used with caution as it is not generally numerically stable. We explain this in much more detail in the QR factorization section. 

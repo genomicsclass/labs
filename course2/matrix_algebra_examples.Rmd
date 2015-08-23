@@ -45,7 +45,7 @@ Y_N
 = \bar{Y}
 $$
 
-Note that we are multiplying by the scalar $1/N$. In R, we multiply matrix using `%*%`
+Note that we are multiplying by the scalar $1/N$. In R, we multiply matrix using `%*%`:
 
 ```{r,message=FALSE}
 library(UsingR)
@@ -62,14 +62,14 @@ print(barY)
 
 ### The Variance
 
-As we will see later, multiplying the transpose of a matrix with another is very common in statistics. So common, in fact, that there is a function in R:
+As we will see later, multiplying the transpose of a matrix with another is very common in statistics. In fact, it is so common that there is a function in R:
 
 ```{r}
 barY=crossprod(A,Y) / N
 print(barY)
 ```
 
-For the variance we note that if
+For the variance we note that if:
 
 $$
 \mathbf{r}\equiv \begin{pmatrix}
@@ -88,11 +88,11 @@ r <- y - barY
 crossprod(r)/N
 ```
 
-Which is almost equivalent to 
+Which is almost equivalent to:
 ```{r}
 var(y) 
 ```
-The difference is due to the fact that `var` is for the sample estimate which divides by $N-1$, so this
+The difference is due to the fact that `var` is for the sample estimate which divides by $N-1$, so this:
 
 ```{r}
 var(y) * (N-1) / N
@@ -138,7 +138,7 @@ $$
 Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N 
 $$
 
-as 
+as: 
 
 
 $$
@@ -185,7 +185,7 @@ $$
 (\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})
 $$
 
-So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. By equating the derivative to 0 and solving for the $\beta$ we will have our solution. The only one we need here tells us that the derivative of the above equation is:
+So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. By equating the derivative to 0 and solving for the $\beta$, we will have our solution. The only one we need here tells us that the derivative of the above equation is:
 
 $$
 2 \mathbf{X}^\top (\mathbf{Y} - \mathbf{X} \boldsymbol{\hat{\beta}})=0
@@ -273,7 +273,7 @@ We obtain the same values as above.
 
 ### Summary
 
-We have shown how to write linear models using linear algebra. We are going to do this for several examples, many of which are related to designed experiments. We showed how to obtain least squares estimates. But keep in mind that because $y$ is a random variable, these estimates are random as well. In a later section, we will learn how to compute standard error for these estimates and use this to perform inference.
+We have shown how to write linear models using linear algebra. We are going to do this for several examples, many of which are related to designed experiments. We showed how to obtain least squares estimates. Keep in mind, however, that because $y$ is a random variable, these estimates are random as well. In a later section, we will learn how to compute standard error for these estimates and use this to perform inference.
 
 
 
