@@ -25,11 +25,11 @@ For fitting linear models in R, we will directly provide a *formula* to the `lm`
 
 The choice of design matrix is a critical step in linear modeling as it encodes which coefficients will be fit in the model, as well as the inter-relationship between the samples. 
 
-The very simplest design matrix is a column of 1's, where a single coefficient is fit for all the samples. We refer to this term as _itercept_. For standard linear modeling, this fitted coefficient will simply be the average of the observed values ($\mathbf{Y}$). However, this is not our typical use of linear models.
+The very simplest design matrix is a column of 1's, where a single coefficient is fit for all the samples. We refer to this term as _intercept_. For standard linear modeling, this fitted coefficient will simply be the average of the observed values ($\mathbf{Y}$). However, this is not our typical use of linear models.
 
-We typically use linear models to make comparisons between different groups. Hence the design matrices that we ultimately work with, will have at least two columns: an intercept column, which consists of a column of 1's, and a second column, which specifies which samples are in a second group. In this case, two coefficients are fit in the linear model: the intercept, which captures the average of the first group, and a second coefficient, which captures the difference between the average of the second group and the first group. This is typically the coefficient we are interested in when we are performing statistical tests: we want to know if the difference between the two groups is zero or not.
+We typically use linear models to make comparisons between different groups. Hence, the design matrices that we ultimately work with will have at least two columns: an intercept column, which consists of a column of 1's, and a second column, which specifies which samples are in a second group. In this case, two coefficients are fit in the linear model: the intercept, which captures the average of the first group, and a second coefficient, which captures the difference between the average of the second group and the first group. This is typically the coefficient we are interested in when we are performing statistical tests: we want to know if the difference between the two groups is zero or not.
 
-We encode this experimental design in R with two pieces. We start with a formula with the tilde symbol `~`. This means, we want to model the observations using the variables to the right of the tilde. Then we put the name of a variable which tells us which samples are in which group.
+We encode this experimental design in R with two pieces. We start with a formula with the tilde symbol `~`. This means that we want to model the observations using the variables to the right of the tilde. Then we put the name of a variable, which tells us which samples are in which group.
 
 Let's try an example. Suppose we have two groups, 1 and 2, with two samples each. We should first tell R that these values should not be interpreted numerically, but as different levels of a *factor*. We can then use the paradigm `~ group` to, say, model on the variable `group`.
 
@@ -98,7 +98,7 @@ Such a linear model includes an intercept, a term for `group` and a term for `co
 
 We assume in the above linear model that the effect of the group and condition variables are simply additive. Being in group 2 and condition b is equal to the difference between 2 and 1 and the difference between b and a. 
 
-Another model is possible which fits an additional term, which encodes the potential interaction of group and condition variables. We will cover interaction terms in depth in a later script.
+Another model is possible which fits an additional term and which encodes the potential interaction of group and condition variables. We will cover interaction terms in depth in a later script.
 
 The interaction model can be written in either of the following two formulas:
 
@@ -109,7 +109,7 @@ model.matrix(~ group*condition)
 
 ## Releveling
 
-The level which is chosen for the *reference level* or *base level*. This is the level which is contrasted against, and by default this is simply the first level alphabetically. We can specify that we want group 2 to be the base level by either using the `relevel` function, or by providing the levels explicitly in the `factor` call:
+The level which is chosen for the *reference level* or *base level*. This is the level which is contrasted against and, by default, this is simply the first level alphabetically. We can specify that we want group 2 to be the base level by either using the `relevel` function or by providing the levels explicitly in the `factor` call:
 
 ```{r}
 group <- factor(c(1,1,2,2))
