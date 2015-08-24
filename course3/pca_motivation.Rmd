@@ -8,30 +8,23 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## Introduction
+## Dimension Reduction Motivation
 
 Visualizing data is one of the most, if not the most, important step in the analysis of high throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, that is typically appropriate, completely useless. 
 
-We have shown methods for visualizing global properties of the columns of rows but plots that reveal relationships between columns or between rows are more complicated due to the high dimensionality of data. To compare each of the 189 samples to each other we would have to create, for example, 17,766 MA plots. Creating a scatter plot of the data is impossible since points are very high dimensional. 
+We have shown methods for visualizing global properties of the columns of rows but plots that reveal relationships between columns or between rows are more complicated due to the high dimensionality of data. For example, to compare each of the 189 samples to each other we would have to create, for example, 17,766 MA-plots. Creating one single scatter plot of the data is impossible since points are very high dimensional. 
 
-Here we describe a powerful technique for exploratory data analysis based on dimension reduction. The general idea is relatively simple, we reduce the dataset to have a few dimensions yet approximately preserve certain properties such as distance between samples. Once we reduce it to, say, two dimensions, we can easily make plots. The technique behind it all, the singular value decomposition, is also useful in other context.  
+We will describe powerful technique for exploratory data analysis based on _dimension reduction_. The general idea is to reduce the dataset to have fewer dimensions yet approximately preserve imporat properties of that such as the distance between samples. If we are able to reduce down to, say, two dimensions, we can then easily make plots. The technique behind it all, the singular value decomposition (SVD), is also useful in other context. Before introducing the rather complicared mathematics behind the SVD, we will motivate the ideas behind it with a simple example.
 
+### Example: reducing two dimensions to one
 
-Visualizing data is one of the most, if not the most, important step in the analysis of high throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, that is typically appropriate, completely useless. 
+We consider an example with twin heights. Here we simulate 100 two dimensional points that represent the number of standard deviations each individual is from the mean height. Each pair of points is a pair of twins:
 
-We have shown methods for visualizing global properties of the columns of rows but plots that reveal relationships between columns or between rows are more complicated due to the high dimensionality of data. To compare each of the 189 samples to each other we would have created, for example, 17,766 MA plots. Creating a scatter plot of the data is impossible since points are very high dimensional. 
-
-Here we describe a powerful technique for exploratory data analysis based on dimension reduction. The general idea is relatively simple, we reduce the dataset to have a few dimensions yet approximately preserve certain properties such as distance between samples. Once we reduce it to, say, two dimensions, we can easily make plots. The technique behind it all, the singular value decomposition, is also useful in other context.  
-
-
-## Rotations 
-
-We consider an example with twin heights. Here are 100 two dimensional points $Y$:
-
-```{r simulate twin heights,echo=FALSE,fig.align="center"}
-suppressPackageStartupMessages(library(MASS))
-n = 100
-mypar2(1,1)
+```{r simulate twin heights,echo=FALSE,message=FALSE}
+library(rafalib)
+library(MASS)
+n <- 100
+mypar(1,1)
 set.seed(1)
 y=t(mvrnorm(n,c(0,0), matrix(c(1,0.95,0.95,1),2,2)))
 plot(y[1,], y[2,], xlab="Twin 1 (standardized height)", 
@@ -39,284 +32,110 @@ plot(y[1,], y[2,], xlab="Twin 1 (standardized height)",
 points(y[1,1:2], y[2,1:2], col=2, pch=16)
 ```
 
-We can think of this as $N$ sample (twin pairs) and 2 genes
-(the two heights). 
-
-We can compute the distance between any two samples
+To help with the illustration, if this where high-throughput gene expression data, the twin pairs are the $N$ samples  and the two heights would represnet gene expresssion from 2 genes. Note that we can compute the distance between any two samples. For example, here is the distance between the two orange points above:
 
 ```{r}
 d=dist(t(y))
 as.matrix(d)[1,2]
-y[,1:2]
 ```
 
-What if 2 dimensions is too much and we want to reduce dimensions?
+What if we are only able to make 1 dimensional plots: 2 dimensions is too complex. Can we, for example, reduce the data to a one dimensional matrix that preserves distances between points?
 
-We can define a new matrix:
+If we look back at the plot, and visualize a line between any pair of points, the length of this line is the distance between the two points. Note that these lines tend to go along the direction of the diagonal. We have seen before that we can "rotate" the plot so that the diagonal is in the x-axis by making a  MA-plot instead:
+
 
 ```{r}
-z1 = (y[1,]+y[2,]) / sqrt(2)
-z2 = (y[1,]-y[2,]) / sqrt(2)
-plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized height)",xlim=c(-3,3),ylim=c(-3,3))
+z1 = (y[1,]+y[2,])/2 ## the sum 
+z2 = (y[1,]-y[2,])   ## the difference
+
+z = rbind( z1, z2) ## matrix now same dimensions as y
+
+mypar(1,2)
+
+thelim <- c(-3,3)
+plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized height)",xlim=thelim,ylim=thelim)
 points(y[1,1:2],y[2,1:2],col=2,pch=16)
-plot(z1,z2,xlim=range(y),ylim=range(y))
-points(z1[1:2],z2[1:2],col=2,pch=16)
-```
 
-Note that the distance is the same!
-```{r}
-z=rbind(z1,z2)
-d2=dist(t(z))
-as.matrix(d)[1,2]
-as.matrix(d2)[1,2]
-```
-
-But here is the best part, we get very very close with just one dimension:
-
-```{r}
-d3 = dist(z1)
-plot(d,d3)
-```
-
-This is the first principal component.
-
-## MDS
-
-The idea behind MDS is that the distance between $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is approximated by the distance between points of lower dimensional. To make a tractable plot we tend to use a two dimensional vector because we can visualize the distances.
-
-
-## Example 
-
-Here is an MDS plot for kidney, liver and  colon samples
-
-Suppose we want to explore just two dimensions. We use principal components and look at the first few PCs using the `prcomp()` function. 
-
-```{r}
-pc <- prcomp( e - rowMeans(e))
+plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Differnece in height")
+points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ```
 
 
-```{r,echo=FALSE,fig.align="center"}
-library(rafalib)
-mypar2(1,1)
-ftissue = as.factor(tissue)
-plot(pc$rotation[,1], pc$rotation[,2], bg=as.numeric(ftissue), pch=21, 
-     xlab="First dimension", ylab="Second dimension")
-legend("topleft", levels(ftissue), col=seq(along=levels(ftissue)), 
-       pch=15, cex=.5)
-```
-
-
-## Variance Explained
-
-The PC calculation gives us a summary of how much variance each column explains.
-
-```{r}
-ve = pc$sdev
-plot(ve^2 / sum(ve^2)*100, xlab="PC", ylab="Variance explained")
-```
-
-
-### The `cmdscale()` function
-
-```{r}
-d = dist(t(e))
-mds = cmdscale(d)
-plot(mds[,1], mds[,2], bg=as.numeric(ftissue), pch=21, 
-     xlab="First dimension", ylab="Second dimension")
-```
-
-
-
-# Math for Multidimensional Scaling Plot
-
-If the sum of squares of the first two columns of $\mathbf{U^\top Y=DV^\top}$ is much larger than the rest then:
-
-$$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
-  \begin{pmatrix}
-    d_{1}&0\\
-    0&d_{2}\\
-  \end{pmatrix}
-  [\mathbf{V}_1 \mathbf{V}_2]^\top  
-$$
-
-This implies that column $i$ is approximately
+Later we will start using linear algebra to represent transformation of the data such as this. Here we can see that to get `z` we multiplied `y` by the matrix
 
 $$
-\mathbf{Y}_i \approx
-[\mathbf{U}_1 \mathbf{U}_2] 
-  \begin{pmatrix}
-    d_{1}&0\\
-    0&d_{2}\\
-  \end{pmatrix}
-  \begin{pmatrix}
-    v_{i,1}\\
-    v_{i,2}\\
-     \end{pmatrix}
-    =
-    [\mathbf{U}_1 \mathbf{U}_2] 
-  \begin{pmatrix}
-    d_{1} v_{i,1}\\
-    d_{2} v_{i,2}
- \end{pmatrix}
+A = \,
+\begin{pmatrix}
+1/2&1/2\\
+1&-1\\
+\end{pmatrix}
+\implies
+z = A y
 $$
 
-
-Define the following two dimensional vector:
-
- $$\mathbf{Z}_i=\begin{pmatrix}
-    d_{1} v_{i,1}\\
-    d_{2} v_{i,2}
- \end{pmatrix}$$
-
-Then
-
-$$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx$$
-
-$$\left\{ [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \right\}^\top \left\{[\mathbf{U}_1 \mathbf{U}_2]  (\mathbf{Z}_i-\mathbf{Z}_j)\right\} =
+Also note that can transform back by simply multiplying by $A^{-1}$
+$$
+A^{-1} = \,
+\begin{pmatrix}
+1&1/2\\
+1&-1/2\\
+\end{pmatrix}
+\implies
+y = A^{-1} z
 $$
 
-$$ (\mathbf{Z}_i-\mathbf{Z}_j)^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) =$$
+### Rotations 
 
-$$(\mathbf{Z}_i-\mathbf{Z}_j)^\top(\mathbf{Z}_i-\mathbf{Z}_j)=
+Note in the plot above the distance between the two orange points remains roughly the same, relative to the other points. This actually true for all pairs of points. A simple re-scaling of the transformation we performed above will actually make the distances to be exactly the same. What we will do is multiply by a scalar so that the standard deviations of each point is preserved. If you think of the columns of `y` as indpendent random variables with standard deviation $\sigma$ then note that the standard deviations of of $M$ and $A$ are 
+$$
+\mbox{sd}[ Z_1 ] = \mbox{sd}[ (Y_1 + Y_2) / 2 ] = \frac{1}{\sqrt{2}} \sigma \mbox{ and } \mbox{sd}[ Z_2] = \mbox{sd}[ Y_1 - Y_2  ] = {\sqrt{2}} \sigma 
 $$
 
-$$(Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+This impies that if we change the transformation above to 
+
 $$
-
-This derivation tells us that the distance between samples $i$ and $j$ is approximated by the distance between two two dimensional points.
-
-
-$$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx
- (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+A = \frac{1}{\sqrt{2}}
+\begin{pmatrix}
+1&1\\
+1&-1\\
+\end{pmatrix}
 $$
-
-
-So the distance between $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is approximated by the distance between two dimensional points. Note because this is a two dimensional vector and we can visualize the distances by plotting $\mathbf{Z}_1$ versus $\mathbf{Z}_2$. Note also that we may need more than two dimensions to obtain a decent approximation. Here we use only two to be able to make a scatter-plot. However, the same arguments can be made for more dimensions, let $\mathbf{Z}$ have more dimensions and then summarize the data with a series of scatterplots.
-
-
-# Example 
-
-Here is an MDS plot for kidney, liver and  colon samples
-
-```{r,echo=FALSE}
-library(tissuesGeneExpression)
-data(tissuesGeneExpression)
-##show matrix
-colind <- tissue%in%c("kidney","colon","liver")
-mat <- e[,colind]
-ftissue <- factor(tissue[colind])
-dim(mat)
-```
-
-Suppose we want to explore just two dimensions. Then the calculations above tell us we should look at `z` as defined here:
+then the SD of the columns of $Y$ are the same as the variance of the columsn $Z$. Note that $A^{-1}A=I$ making $A$. We call matrices with this properties _orthogonal_ and it guarantees the SD-preserving properties described above. The distances are now exactly preserved:
 
 ```{r}
-s <- svd(mat-rowMeans(mat))
-z <- sweep(s$v[,1:2],2,s$d[1:2],"*")
-```
-
-As we noted these are 99 two dimensional points:
-
-```{r}
-dim(z)
-```
-
-And we are approximating the distance between our 99 22215 dimensional points with these 99 two-dimensional points. 
-But now we can plot them:
-
-
-```{r,echo=FALSE,fig.align="center"}
-library(rafalib)
-mypar2(1,1)
-plot(z[,1],z[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension")
-legend("bottomright",levels(ftissue),col=seq(along=levels(ftissue)),pch=15)
-```
-
-We can easily look at other dimensions
-
-```{r}
-z <- sweep(s$v[,3:4],2,s$d[3:4],"*")
-mypar2(1,1)
-plot(z[,1],z[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension")
-```
-
-Here we note there is separation between the kidneys. 
-
-# `cmdscale`
-
-The `cmdscale` makes this computation for us. It is also useful because it only computes the number of dimensions we ask for. One does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the parameter `k`
-
-```{r,echo=FALSE,fig.align="center"}
-d <- dist(t(mat))
-mds <- cmdscale(d)
-library(rafalib)
-mypar2(1,1)
-plot(mds[,1],mds[,2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
-legend("bottomleft",levels(ftissue),col=seq(along=levels(ftissue)),pch=15,cex=1.5)
-```
-
-# Variance Explained
-
-Because the columns of $\mathbf{U}$ and $\mathbf{V}$ are 
-orthogonal we know their sum of squares is 1. So the sum of squares of the columns of $\mathbf{UD}$ and $\mathbf{VD}$ are determined by $\mathbf{D}$. This is a diagonal matrix so all the information is stored in just one vector. 
-
-```{r}
-SVD <- svd(mat-rowMeans(mat))
-length(SVD$d)
-```
-
-The sum of squares of the, say, 11th column of $\mathbf{UD}$ is therefore 
-
-```{r}
-i <- 11
-SVD$d[i]^2
-```
-
-We can see how much "variability" is added to the approximation of $\mathbf{Y}$ by looking at the percent of variability for each column:
-
-
-```{r,echo=FALSE,fig.align="center",fig.height=5}
+A <- 1/sqrt(2)*matrix(c(1,1,1,-1),2,2)
+z <- A%*%y
+d <- dist(t(y))
+d2 <- dist(t(z))
 mypar(1,1)
-plot(SVD$d^2/sum(SVD$d^2),xlab="Column",ylab="Variance explained")
+plot(as.numeric(d),as.numeric(d2)) #as.numeric turns distnaces into long vector
+abline(0,1,col=2)
 ```
 
-Here we can see that we can get a very good approximation with just the first 20 so, since after that practically nothing is added. We can confirm:
+We call this particular transformation a _rotation_ of `y`. 
 
 ```{r}
-k <- 20
-mathat <- SVD$u[,1:k] %*% diag(SVD$d[1:k]) %*% t(SVD$v[,1:k])
-mean((mat - rowMeans(mat) - mathat)^2)
+mypar(1,2)
+
+thelim <- c(-3,3)
+plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized height)",xlim=thelim,ylim=thelim)
+points(y[1,1:2],y[2,1:2],col=2,pch=16)
+
+plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Differnece in height")
+points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ```
 
+The reason we applied this transformation in the first place was because we noticed that to compute the distances between points we followed a direction along the diagonal in the oritinal plot which after the rotation falls on the horizontal, or the the first dimension of `z`. So this rotation actually achieves what we orginally wanted: we can preserve the distances between points with just one dimension. Let's remove the second dimension of `z` and recompute distances:
 
-# Multidimensional scaling with SVD
-
-Note that these two are equivalent
 
 ```{r}
-i=2
-plot(mds[,i],SVD$v[,i]*SVD$d[i])
+d3 = dist(z[1,]) ##distance computed using just first dimension
+mypar(1,1)
+plot(as.numeric(d),as.numeric(d3)) 
 abline(0,1)
-#abline(0,-1)
 ```
 
-Also note that the columns of $\mathbf{Z}$ are multiplied by scalars $d_{11}$ and $d_{22}$. Thus the only difference between plotting with MDS and plotting $\mathbf{V}$ are these scalars. We can add them back by multiplying by $\mathbf{D}$ but we can make quick plots like this
-
-```{r,echo=FALSE,fig.align="center"}
-mypar2(1,1)
-plot(SVD$v[,1:2],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
-legend("bottomleft",levels(ftissue),col=seq(along=levels(ftissue)),pch=15,cex=1.5)
-```
-
-Here are columns 3 and 4
-
-```{r,echo=FALSE,fig.align="center"}
-mypar2(1,1)
-plot(SVD$v[,3:4],bg=as.numeric(ftissue),pch=21,xlab="First dimension",ylab="Second dimension",cex=2)
-legend("bottomleft",levels(ftissue),col=seq(along=levels(ftissue)),pch=15,cex=1.5)
-```
-
+The distance computed with just the one dimensions provide a very good approximation to the actual distance provide a very useful dimension reduction: from 2 dimension to 1. This first dimension of the transformed data is acually the first _principal component_. This idea motivates the use of principal component analysis (PCA) and the singular value decomposition (SVD) to achieve dimension reduction more generally. 
 
 
 
