@@ -28,7 +28,7 @@ We can see that the high fat diet group appears to have higher weights on averag
 
 ### A Linear Model With One Variable
 
-For demonstration purposes, we will build the design matrix $\mathbf{X}$ using the formula `~ Diet`. The group with the 1's in the second column is determined by the level of `Diet` which comes second, that is, the non-reference level. 
+For demonstration purposes, we will build the design matrix $\mathbf{X}$ using the formula `~ Diet`. The group with the 1's in the second column is determined by the level of `Diet` which comes second; that is, the non-reference level. 
 
 ```{r}
 levels(dat$Diet)
