@@ -135,9 +135,9 @@ Note that these two approaches are equivalent up to an arbirary sign change.
 ```{r}
 mypar(1,2)
 for(i in 1:2){
-  plot(mds[,i],s$d[i]*s$v[,i])
+  plot(mds[,i],s$d[i]*s$v[,i],main=paste("PC",i))
   b = ifelse( cor(mds[,i],s$v[,i]) > 0, 1, -1)
-  abline(0,b) ##b is 1 or -1 depending on the arbitrary "flip"
+  abline(0,b) ##b is 1 or -1 depending on the arbitrary sign "flip"
 }
 ```
 
