@@ -8,50 +8,71 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
-The main mathematical result we use to achieve dimension reduction is the singular value decomposition (SVD).
-We will cover the SVD in more detail in a later section. Here we give an overview that is necessary to understand multidimensional scaling. 
+## Singular Value Decomposition
 
-# Singular Value Decomposition
+In the previous section we motivated dimension reduction and showed a transformation that permitted us to approximate the distance between two dimensional points with the distance betwee points with just one dimension. The singular value decomposition (SVD) is a generalization of the algorithm we used in the motivational section. As in the example, the SVD provides a transformation of the original data. As we will see, this transformation has some very useful properties. 
 
-The main result SVD provides is that we can write an $m \times n$ matrix $\mathbf{Y}$ as
+The main result SVD provides is that we can write an $m \times n$, matrix $\mathbf{Y}$ as
 
-$$\mathbf{Y = UDV^\top}$$
-
+$$\mathbf{U}^\top\mathbf{Y} = \mathbf{DV}^\top$$
 
 With:
 
-* $\mathbf{U}$ is an $m\times n$ orthogonal matrix
-* $\mathbf{V}$ is an $n\times n$ orthogonal matrix
-* $\mathbf{D}$ is an $n\times n$ diagonal matrix
+* $\mathbf{U}$ is an $m \times p$ orthogonal matrix
+* $\mathbf{V}$ is an $p \times p$ orthogonal matrix
+* $\mathbf{D}$ is an $n \times p$ diagonal matrix 
 
-and with the special property that the variability (sum of squares to be precise) of the columns of $\mathbf{VD}$ and $\mathbf{UD}$ are decreasing. We will see how this  particular property turns out to be quite useful. 
+with $p=\mbox{min}(m,n)$. Note that $\mathbf{U}^\top$ provide the rotation of our data $\mathbf{Y}$ that turns out to be very useful because the variability (sum of squares to be precise) of the columns of $\mathbf{VD}$ are decreasing.
+Also note that because $\mathbf{U}$ is orthogonal, we can wrtie the SVD like this: 
 
-If, for example, there are colinear columns the then  $\mathbf{UD}$ will include several columns with no variability. This can be seen like this
-```{r}
-x <- rnorm(100)
-y <- rnorm(100)
-z <- cbind(x,x,x,y,y)
-SVD <- svd(z)
-round(SVD$d,2)
+$$\mathbf{Y} = \mathbf{UDV}^\top$$
+
+In fact, the formula above is much more commonly used. Also note that we can write the transformation like this:
+
+$$\mathbf{YV} = \mathbf{UD}$$
+
+This transformaton of $Y$ also results in a matrix with column of decreasing sum of squares.
+
+
+Applying the SVD to the motivating example we have:
+
+```{r simulate twin heights,echo=FALSE,message=FALSE}
+library(rafalib)
+library(MASS)
+n <- 100
+mypar(1,1)
+set.seed(1)
+y <- t(mvrnorm(n,c(0,0), matrix(c(1,0.95,0.95,1),2,2)))
+s <- svd(y)
 ```
-In this case we can reconstruct `z` with just 2 columns:
 
+We can immediately see that applying the SVD results in a transformation very similar to the one we used in the motivating example:
 ```{r}
-newz <- SVD$u[,1:2] %*% diag(SVD$d[1:2]) %*% t(SVD$v[,1:2])
-max(abs(newz-z))
+round(sqrt(2) * s$u , 3)
 ```
 
-# How is this useful?
+The plot we showed after the rotation, was showing what we call the _principal components_: the second plotted againts the first. To obtain the principal components from the SVD we simply need the columns of the rotation $\mathbf{U}^\top\mathbf{Y}$ :
 
-It is not immediately obvious how incredibly useful the SVD can be. Let's consider some examples.
+```{r}
+PC1 = s$d[1]*s$v[,1]
+PC2 = s$d[2]*s$v[,2]
+plot(PC1,PC2,xlim=c(-3,3),ylim=c(-3,3))
+```
 
-First let's compute the SVD on the gene expression table we have been working with. We will take a subset so that computations are faster.
+
+
+
+
+### How is this useful?
+
+It is not immediately obvious how incredibly useful the SVD can be so let's consider some examples. In this example we will try to reduce dimension of $V$ and still be able to reconstruct $Y$.
+
+Let's compute the SVD on the gene expression table we have been working with. We will take a subset of 100 genes so that computations are faster.
 ```{r}
 library(tissuesGeneExpression)
 data(tissuesGeneExpression)
 set.seed(1)
-ind <- sample(nrow(e),500)
+ind <- sample(nrow(e),500) 
 Y <- t(apply(e[ind,],1,scale)) #standardize data for illustration
 ```
 
@@ -69,28 +90,26 @@ First note that we can in fact reconstruct y
 Yhat <- U %*% D %*% t(V)
 resid <- Y - Yhat
 max(abs(resid))
-i <- sample(ncol(Y),1)
-plot(Y[,i],Yhat[,i])
-abline(0,1)
-boxplot(resid)
 ```
 
-If we look at the sum of squares of $\mathbf{UD}$ we see that the last few are quite small. 
+If we look at the sum of squares of $\mathbf{UD}$ we see that the last few are quite close to 0.  
 
 ```{r}
 plot(s$d)
 ```
 
-So what happens if we remove the last column?
+This implies that the last columns of `V` have a very small effect on the reconstruction of `Y`. To see this consider the extreme example in which the last entry of $V$ is 0. In this case the last column of $V$ is not needed at all. Because of the way the SVD is created, the columns of $V, have less and less influence on the reconstruction of $Y$. You commonly see this described as "explaining less varinace". This implies that for a large matrix, by the time you get to the last columns it is possible that there is not much left to "explain" As an example, we will look at what happens if we remove the four last column?
+
 ```{r}
-k <- ncol(Y)-4
+k <- ncol(U)-4
 Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
 resid <- Y - Yhat 
-Range <- quantile(Y,c(0.01,0.99))
-boxplot(resid,ylim=Range,range=0)
+max(abs(resid))
 ```
 
-From looking at $d$, we can see that in this particular dataset we can obtain a good approximation keeping only 94 columns. The following plots are useful for seeing how much of the variability is explained by each column:
+The larges residual is practically 0, meaning that we `Yhat` is practically the same as `Y`, yet we need 4 less dimensions to transmit the information.
+
+By looking at $d$, we can see that in this particular dataset we can obtain a good approximation keeping only 94 columns. The following plots are useful for seeing how much of the variability is explained by each column:
 
 ```{r}
 plot(s$d^2/sum(s$d^2)*100,ylab="Percent variability explained")
@@ -101,12 +120,13 @@ We can also make cumulative plot
 plot(cumsum(s$d^2)/sum(s$d^2)*100,ylab="Percent variability explained",ylim=c(0,100),type="l")
 ```
 
+We see that although we start with just 125 dimensions we can approximate $Y$:
 
 ```{r}
-k <- 94
+k <- 95 ## out a possible 189
 Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
 resid <- Y - Yhat
-boxplot(resid,ylim=Range,range=0)
+boxplot(resid,ylim=quantile(Y,c(0.01,0.99)),range=0)
 ```
 
 Therefore, by using only half as many dimensions we retain most of the variability in our data:
@@ -117,13 +137,13 @@ var(as.vector(resid))/var(as.vector(Y))
 
 We say that we explain 96% of the variability.
 
-Note that we can predict this from $D$:
+Note that we can compute this proportionfrom $D$:
 ```{r}
 1-sum(s$d[1:k]^2)/sum(s$d^2)
 ```
+Thus the entries of $D$ tell us how much each
 
-
-# Highly correlated data
+### Highly correlated data
 
 To help understand how the SVD works, we construct a dataset with two highly correlated columns. 
 
