@@ -137,5 +137,14 @@ abline(0,1)
 
 The distance computed with just the one dimensions provide a very good approximation to the actual distance provide a very useful dimension reduction: from 2 dimension to 1. This first dimension of the transformed data is acually the first _principal component_. This idea motivates the use of principal component analysis (PCA) and the singular value decomposition (SVD) to achieve dimension reduction more generally. 
 
+### Important note on a difference to other explanations
+
+If you search the web for descriptions of PCA you will notice a difference in notation to how we describe it here. This mainly stems from the fact that it more common to have rows represent units so in the example shown here $Y$ would be transposed to be an $N \times 2$ matrix. In statistics this is also the most common way to represent the data: individuals in the rows. However, for practical reasons, in genomics it is more common to represent units in the columns: for example, genes are rows and samples are columns. For this reason, in this book we explain PCA and all the math that goes with in a slightly different way than it is usually done. Basically, if you want our explanations to match others you have to transpose the matrices we show here.
+
+
+
+
+
+
 
 

@@ -70,8 +70,6 @@ segments(x2[1]*c2,x2[2]*c2,y[1],y[2],lty=2)
 text(2,3," Y",pos=4,cex=3)
 ```
 
-# Rotations
-
 We can go back and forth between these two representations of $(2,3)$ using matrix multiplication.
 
 $$
@@ -89,7 +87,7 @@ $$
 
 $Z$ and $Y$ carry the same information but in different _coordinate system_
 
-# Example: twin Heights
+### Example: twin Heights
 
 Here are 100 two dimensional points $Y$
 
@@ -110,7 +108,6 @@ z = A%*%y
 mypar(1,1)
 plot(z[1,],z[2,],xlab="Average",ylab="Difference",xlim=c(-3,3),ylim=c(-3,3))
 ```
-
 
 Note that what we have done here is change rotate the data so that the first coordinate of $Z$ is the average height while the second is the differences between twin heights. 
 
