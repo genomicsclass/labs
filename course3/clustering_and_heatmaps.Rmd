@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Clustering lab
+title: Clustering 
 ---
 
 ```{r options, echo=FALSE}
@@ -97,7 +97,7 @@ table(true=tissue,cluster=km$cluster)
 
 <a name="heatmap"></a>
 
-# Heatmaps
+### Heatmaps
 
 Heatmaps are useful plots for visualizing the measurements for a subset of rows over all the samples. A *dendrogram* is added on top and on the side is a hierarchical clustering as we saw before. First we will use the `heatmap` available in base R. Let's begin by defining a color palette:
 
@@ -124,9 +124,8 @@ heatmap(e[idx,], col=hmcol)
 The `heatmap.2` function in the `gplots` package on CRAN is a bit more
 customized. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
 
-```{r}
-# install.packages("gplots")
-library(gplots)
+```{r,message=FALSE}
+library(gplots) ##Install from CRAN for heatmap.2 function
 cols <- palette(brewer.pal(8, "Dark2"))[as.fumeric(tissue)]
 head(cbind(colnames(e),cols))
 heatmap.2(e[idx,], labCol=tissue,
