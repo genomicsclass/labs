@@ -45,7 +45,8 @@ A graphical look shows that the correlation suggest a grouping into STEM and hum
 
 In the figure below high correlations are red, no correlation is white and negative correlations are blue.
 
-```{r,fig.align="center",echo=FALSE,fig.width=14}
+```{r,echo=FALSE,fig.width=14}
+library(RColorBrewer)
 mypar(1,2)
 cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
 eps = matrix(rnorm(n*p),n,p)
@@ -102,7 +103,7 @@ var(as.vector(fit))/var(as.vector(Y))
 
 In high throughput data is is quite common to see correlation structure. For example, notice the complex correlations we see across samples in the plot below. These are the correlations for a gene expression experiment with columns ordered by data:
 
-```{r,fig.align="center",message =FALSE}
+```{r,message =FALSE}
 library(Biobase)
 library(GSE5859)
 data(GSE5859)

@@ -14,7 +14,7 @@ Now that we have described the concept of dimension reduction and some of the ap
 
 As a review, remember that projections minimize distance between points and subspace
 
-![projection](http://upload.wikimedia.org/wikipedia/commons/8/84/Linalg_projection_3.png)
+<!-- ![projection](http://upload.wikimedia.org/wikipedia/commons/8/84/Linalg_projection_3.png) -->
 
 In the figure above the point on top is pointing to a point in space. In this particular cartoon the space is two dimensional but we should be thinking abstractly. The space is represented by the Cartesian plan and the line on which the little person stands is a subspace of points. The projection to this subspace is the place that is closes to the original point. Geometry tells us that we can find this closest point by dropping a perpendicular line (dotted line) from the point to the space. The little person is standing on the projection.  The amount this person had to walk from the origin to the new projected point is referred to as _the coordinate_. 
 
@@ -27,9 +27,9 @@ For the explanation of projections we will use the standard matrix algebra notat
 library(rafalib)
 ```
 
-If we let $Y = \begin{pmatrix} 2& 3\end{pmatrix}^\top$ we can plot it like this:
+If we let $Y = \begin{pmatrix} 2 \\ 3\end{pmatrix}$ we can plot it like this:
 
-```{r,fig.align="center",fig.width=4,fig.height=4}
+```{r,fig.width=4,fig.height=4}
 mypar (1,1)
 plot(c(0,4),c(0,4),xlab="Dimension 1",ylab="Dimension 2",type="n")
 arrows(0,0,2,3,lwd=3)
@@ -40,10 +40,10 @@ We can immediately define a coordinate system by projecting this vector to the s
 $\begin{pmatrix} 1\\ 0\end{pmatrix}$ (the x-axis) and $\begin{pmatrix} 0\\ 1\end{pmatrix}$ (the y-axis). The projections of $Y$ to the subspace defined by these points are 2 and 3 respectively:
 
 $$
-\begin{aligned}
+\begin{align*}
 Y &= \begin{pmatrix} 2 \\ 3\end{pmatrix} \\
 &=2  \begin{pmatrix} 1\\ 0\end{pmatrix} + 3 \begin{pmatrix} 0\\ 1\end{pmatrix} 
-\end{aligned}$$
+\end{align*}$$
 
 We say that $2$ and $3$ are the _coordinates_ and that 
 $\begin{pmatrix} 1\\ 0\end{pmatrix} \mbox{and} \begin{pmatrix} 0\\1 \end{pmatrix} \mbox{are the basis}$
@@ -87,7 +87,7 @@ and $L \subset \mathbb{R}^N$ is the space spanned by
 $$\vec{v}=\begin{pmatrix} 1\\ \vdots \\  1\end{pmatrix};
 L = \{ c \vec{v}; c \in \mathbb{R}\}$$
 
-Note that in this space all components of the vectors are the same number so we can think as this space represents the constants: in the projection each dimension will be the same value. So what $c$ minimizes distance between $c\vec{v}$ and $\vec{y}$? 
+Note that in this space all components of the vectors are the same number so we can think as this space represents the constants: in the projection each dimension will be the same value. So what $c$ minimizes distance between $c\vec{v}$ and $\vec{y}$ ? 
 
 Note that when talking about problems like this, we sometimes use 2 dimensional figures such as the one above. We simply abstract and think of $\vec{y}$ as point in $N-dimensions$ and $L$ as a subspace defined by a smaller number of values, in this case just one: $c$. 
 

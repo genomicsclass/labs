@@ -22,6 +22,7 @@ To illustrate the confounding, we will pick some genes to show in a heatmap plot
 
 ```{r,message=FALSE}
 library(rafalib)
+library(RColorBrewer)
 library(genefilter)
 
 batch <- factor(format(sampleInfo$date,"%m"))
@@ -54,7 +55,7 @@ In the next sections we will use the histogram p-values to evaluate the specific
 ```{r, fig.width=7}
 library(qvalue)
 res <- rowttests(geneExpression,as.factor( sampleInfo$group ))
-mypar2(1,2)
+mypar(1,2)
 hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))
@@ -121,7 +122,7 @@ res <- t( sapply(1:nrow(geneExpression),function(j){
 res <- data.frame(res)
 names(res) <- c("dm","p.value")
 
-mypar2(1,2)
+mypar(1,2)
 hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))
@@ -144,7 +145,7 @@ There is a great improvement in specificity (less false positives) without much 
 
 ## A Note On Computing Efficiency
 
-In the code above, the design matrix does not change within the iterations we are computing $(X'X)^{-1}$ repeatedly and applying to each gene. Instead we can perform this calculation in one matrix algebra calculation by computing it once and then obtaining all the betas by multiplying $(X^\top X)^{-1}X'Y$ with the columns of $Y$ representing genes in this case. The `limma` package has an implementation of this idea (using the QR decomposition). Note how much faster this is:
+In the code above, the design matrix does not change within the iterations we are computing $(X^\top X)^{-1}$ repeatedly and applying to each gene. Instead we can perform this calculation in one matrix algebra calculation by computing it once and then obtaining all the betas by multiplying $(X^\top X)^{-1}X^\top Y$ with the columns of $Y$ representing genes in this case. The `limma` package has an implementation of this idea (using the QR decomposition). Note how much faster this is:
 
 ```{r}
 library(limma)
@@ -174,6 +175,7 @@ We will cover `limma` in more detail in a later section.
  Combat [NEED CITATION] is a popular method and is based on using linear models to adjust for batch effects. It fits a hierarchical model (we will learn about these in the next section) to estimate and remove row specific batch effects. Combat uses a modular approach. In a first step, what is considered to be a batch effect is removed:
 
 ```{r}
+##install_bioc("sva")
 library(sva)
 mod <- model.matrix(~sex)
 cleandat <- ComBat(geneExpression,batch,mod)
@@ -189,7 +191,7 @@ res<-genefilter::rowttests(cleandat,factor(sex))
 In this case, the results are less specific than we obtain by fitting the simple linear model:
 
 ```{r}
-mypar2(1,2)
+mypar(1,2)
 hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))

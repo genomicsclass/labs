@@ -41,7 +41,7 @@ mat<-geneExpression[geneindex,]
 mat <- mat -rowMeans(mat)
 icolors <- colorRampPalette(rev(brewer.pal(11,"RdYlBu")))(100)
 
-mypar2(1,2)
+mypar(1,2)
 image(t(mat),xaxt="n",yaxt="n",col=icolors)
 y <- geneExpression - rowMeans(geneExpression)
 image(1:ncol(y),1:ncol(y),cor(y),col=icolors,zlim=c(-1,1),
@@ -60,7 +60,7 @@ Here is a plot of dates for each sample, with color representing month:
 
 ```{r}
 times <-sampleInfo$date 
-mypar2(1,1)
+mypar(1,1)
 o=order(times)
 plot(times[o],pch=21,bg=as.fumeric(batch)[o],ylab="date")
 o=order(times)
@@ -90,7 +90,7 @@ plot(s$d^2/sum(s$d^2),ylab="% variance explained",xlab="Principal component")
 
 In fact, the first six or so PC seem to be at least partially driven by date:
 ```{r}
-mypar2(3,4)
+mypar(3,4)
 for(i in 1:12)
 boxplot(split(s$v[,i],times))
 ```
@@ -108,7 +108,7 @@ This does remove the batch effect, but it seems we have also removed much of the
 
 
 ```{r}
-mypar2(1,2)
+mypar(1,2)
 hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))
@@ -173,7 +173,7 @@ There is an observable improvement over all other approaches:
 ```{r}
 res <- data.frame(dm= -lmfit$coef[,2],
                   p.value=2*(1-pt(abs(tt),lmfit$df.residual[1]) ) )
-mypar2(1,2)
+mypar(1,2)
 hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))

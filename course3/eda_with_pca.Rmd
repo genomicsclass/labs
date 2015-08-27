@@ -98,6 +98,7 @@ For the rest of the code shown here we use `s`
 A first step in determining how much sample correlation induced_structure_ there is in the data. 
 
 ```{r}
+library(RColorBrewer)
 cols=colorRampPalette(brewer.pal(9,"Blues"))(100)
 image ( cor(y) ,col=cols)
 ```
@@ -126,7 +127,7 @@ As we previously showed we can make MDS plots to start exploring the data to ans
 between variables of interest and PCs we can use color to denote these variables. For example, here are the first two PCs with color representing ethnicity:
 
 
-```{r,fig.align='center'}
+```{r}
 cols = as.numeric(eth)
 mypar()
 plot(s$v[,1],s$v[,2],col=cols,pch=16,
@@ -144,7 +145,7 @@ table(year,eth)
 
 Here is the same plot but with color now representing year:
 
-```{r,fig.align='center'}
+```{r}
 cols = as.numeric(year)
 mypar()
 plot(s$v[,1],s$v[,2],col=cols,pch=16,
