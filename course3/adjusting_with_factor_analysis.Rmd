@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Batch adjustment
+title: Modeling Batch Effects with Factor Analysis
 ---
 
 ```{r options, echo=FALSE}
@@ -8,7 +8,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+##  Modeling Batch Effects with Factor Analysis
 
 To illustrate how we can adjust for batch effects using statistical methods, we continue to use our subset example with sex as the outcome of interest, and with months purposely somewhat confounded with sex. 
 
@@ -54,7 +54,7 @@ axis(1,1:ncol(y),sex,las=2)
 
 We have seen how approaches that assume month explains the batch and use linear models perform relatively well. However, there was still room for improvement. This is most likely due to the fact that month is only a surrogate for some other variable that actually induces structure or between sample correlation.
 
-# What Is A Batch?
+### What Is A Batch?
 
 Here is a plot of dates for each sample, with color representing month:
 
@@ -69,7 +69,7 @@ plot(times[o],pch=21,bg=as.fumeric(batch)[o],ylab="date")
 There is more than one day per month. Could day have an effects as well?
 
 
-# PCA
+### PCA
 
 Here is a plot of the first principal component ordered by data:
 ```{r}
@@ -118,7 +118,7 @@ legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 ```
 
 <a name="sva"></a>
-# Factor Analysis
+### Factor Analysis
 
 An alternative is to fit models with both the covariate of interest, as well as those believed to be batches. An example of an approach that does this is Surrogate Variable Analysis (SVA).
 

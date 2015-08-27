@@ -8,6 +8,10 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
+# Basic Machine Learning
+
+Machine learning is a very broad topic and a highly active research area. In the life sciece, much of what is described as "precision medicine" is an application of machine learning to biomedical data. The general idea is predice or discover outcomes from measured predictors. Can we discover new types of cancer from gene expression profiles. Or can we predict drug response from a series of genotypes? Here we give brief introductions to two major machine learning component: clustering and class prediction.
+
 ## Clustering 
 
 We will demonstrate the concepts and code needed to perform clusturing analysis with the tissue gene expression data:

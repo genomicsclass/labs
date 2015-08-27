@@ -117,5 +117,42 @@ and maximizes  $(\mathbf{rv}_2)^\top \mathbf{rv}_2$.
 
 When $Y$ is $N \times m$ we repeat to find 3rd, 4th, ..., m-th PCs
 
+### `prcomp`
+
+We have shown how to obtain PCs using the SVD. However, R has a function specifically designed to find the principal components. In this case the data is centered by default. The following function 
+
+```{r}
+pc <- prcomp( t(Y) )
+```
+
+produces the same results as the SVD up to arbirary sign flips
+
+```{r}
+s <- svd( Y - rowMeans(Y) )
+mypar(1,2)
+for(i in 1:nrow(Y) ){
+  plot(pc$x[,i], s$d[i]*s$v[,i])
+}
+```
+
+The loadings can be found this way:
+```{r}
+pc$rotation
+```
+which are equivalent (up to a sign flip) to
+```{r}
+s$u
+```
+The equivalent of the variance explained is included in the 
+```{r}
+pc$sdev
+```
+component.
+
+
+
+Note that we take the transpose of `Y` because `prcomp` assumes the previously discussed ordering: units/samples in row and features in columns.
+
+
 
 

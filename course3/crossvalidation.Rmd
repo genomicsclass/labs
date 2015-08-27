@@ -7,9 +7,9 @@ title: Cross-validation
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
-### Cross-validation
+## Cross-validation
 
-In this lab, we will explore a method for picking parameters in a prediction / machine learning task, which is called *cross-validation*.
+Here we describe *cross-validation*: one of the fundamental methods in machine learning for picking parameters in a prediction / machine learning task.
 
 Suppose we have a prediction algorithm which is going to predict the class of some observations using a number of features. For example, we will use the gene expression values to predict the tissue type in our tissues gene expression dataset.
 

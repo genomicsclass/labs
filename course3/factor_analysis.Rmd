@@ -8,7 +8,8 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction 
+## Factor Analysis
+
 
 Many of the statistical ideas applied to correcting for batch effects come from Factor Analysis. Factor Analysis has was first developed over a century ago. Pearson noted that the between subject grades were correlated between subjects when the correlation was computed across students. To explain this he posed a model having one factor that was common across subjects for each student that explained this correlation:
 
@@ -33,7 +34,7 @@ Y <- cbind(Ystem,Yhum)
 colnames(Y) <- c("Math","Science","CS","Eng","Hist","Classics")
 ```
 
-# Sample correlations
+### Sample correlations
 
 Note we observe high correlation across five subject:
 ```{r}
@@ -45,7 +46,7 @@ A graphical look shows that the correlation suggest a grouping into STEM and hum
 In the figure below high correlations are red, no correlation is white and negative correlations are blue.
 
 ```{r,fig.align="center",echo=FALSE,fig.width=14}
-mypar2(1,2)
+mypar(1,2)
 cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
 eps = matrix(rnorm(n*p),n,p)
 par(mar = c(8.1, 8.1, 3.5, 2.1))
@@ -62,7 +63,7 @@ axis(2,1:ncol(Y),rev(colnames(Y)),las=2)
 ```
 
 
-# Factor model
+### Factor model
 
 Based on the plot above we hypothesize that there are two hidden factors $\mathbf{W}_1$ and $\mathbf{W}_2$ and to account for the observed correlation structure we model the data in the following way:
 
@@ -72,7 +73,7 @@ $$
 
 The interpretation of these parameters are as follows: $\alpha_{i,1}$ is the overall ability for student $i$ and $\alpha_{i,2}$ is the  difference in ability between the two subgroups for student $i$. Can we estimate the $W$ and $\alpha$? 
 
-# Factor analysis and PCA
+### Factor analysis and PCA
 
 The first two principal components estimate $W_1$ and $W_2$ [we need to add reference for the math]
 
@@ -97,7 +98,7 @@ var(as.vector(fit))/var(as.vector(Y))
 ```
 
 
-# Factor Analysis in General
+### Factor Analysis in General
 
 In high throughput data is is quite common to see correlation structure. For example, notice the complex correlations we see across samples in the plot below. These are the correlations for a gene expression experiment with columns ordered by data:
 
@@ -110,7 +111,7 @@ o <- order(pData(e)$date)
 Y=exprs(e)[,o]
 cors=cor(Y-rowMeans(Y))
 
-mypar2(1,1)
+mypar()
 cols=colorRampPalette(brewer.pal(9,"Blues"))(100)
 par(mar = c(8.1, 8.1, 3.5, 2.1))
 image(1:n,1:n,cors,xaxt="n",yaxt="n",col=cols,xlab="",ylab="",zlim=c(-1,1))

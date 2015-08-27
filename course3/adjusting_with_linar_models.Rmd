@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Projections
+title: Adjusting for Batch Effects with Linear Models
 ---
 
 ```{r options, echo=FALSE}
@@ -8,7 +8,8 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+
+## Data Example
 
 To illustrate how we can adjust for batch effects using statistical methods, we will create a data example in which the outcome of interest is confounded with batch, but not completely. We will also select a outcome for which we have an expectation of what genes should be diferentially expressed. Namely, we make sex the outcome of interest and expect genes on the Y chromosome to be diferentially expressed. We may also see genes from the X chromosome as differentially expressed since some escape X inactivation. The example dataset is below.
 
@@ -44,7 +45,7 @@ image(t(mat),xaxt="n",yaxt="n",col=icolors)
 
 In what follows, we will imitate the typical analysis we would do in practice. We will act as if we don't know which genes are supposed to be differentially expressed between males and females. 
 
-# Exploratory Data Analysis For Evaluation
+### Exploratory Data Analysis For Evaluation
 
 Another reason we are using the dataset described above for illustrating different approaches is because we actually have a  reasonable idea of what to expect. Autosomal (not on chrX or chrY) genes on the list are likely false positives and chr Y are likely true positives. Chr X genes could go either way. This gives us the opportunity to compare different procedures. Since in practice we rarely know the "truth", these evaluations are not possible. Simulations are therefore commonly used for evaluation purposes: we know the truth because we construct the data. But simulations are at risk of not capturing all the nuances of real experimental data. This dataset is an experimental dataset. 
 
@@ -71,7 +72,7 @@ cat("Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE))
 
 The histogram is not flat. Instead, low p-values are over-represented. More than half of the genes on the final list are autosomal.
 
-# Adjusting With Linear Models
+## Adjusting for Batch Effects with Linear Models
 
 We have already observed that processing date has an effect on gene expression.  We will therefore try to _adjust_ for this by including it a model.  When we perform a t-test comparing the two groups, it is equivalent to fitting the following linear model:
 

@@ -1,6 +1,6 @@
 ---
 layout: page
-title: EDA with PCA
+title: Discovering Batch Effects with EDA 
 ---
 
 ```{r options, echo=FALSE}
@@ -9,11 +9,10 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 
-# Introduction
-
+##  Discovering Batch Effects with EDA 
 Now that we understand PCA we are going to demonstrate how we use it in practice with an emphasis on  exploratory data analysis. To illustrate we will go through an actual dataset that has not be sanitized for teaching purposes. We start with the raw data as it was provided in the public repository. The only step we did for you is preprocess these data and create an R package with a preformed Bioconductor object.
 
-# Gene Expression Data
+## Gene Expression Data
 
 Start by loading the data:
 ```{r,message=FALSE}
@@ -66,7 +65,7 @@ chryexp<- colMeans(y[which(annot$CHR=="chrY"),])
 
 Note you can clearly see two modes which must be females and males:
 ```{r}
-mypar2()
+mypar()
 hist(chryexp)
 ```
 
@@ -75,7 +74,7 @@ So we can predict sex this way:
 sex <- factor(ifelse(chryexp<0,"F","M"))
 ```
 
-# Calculating the PCs
+### Calculating the PCs
 
 We have shown how we can compute principal components using 
 
@@ -94,7 +93,7 @@ for(i in 1:5) print( round( cor( pc$rotation[,i],s$v[,i]),3))
 
 For the rest of the code shown here we use `s`
 
-# Variance explained
+### Variance explained
 
 A first step in determining how much sample correlation induced_structure_ there is in the data. 
 
@@ -121,7 +120,7 @@ plot(s$d^2/sum(s$d^2))
 
 At least 20 or so PCs appear to be higher than what we would expect with independent data. A next step is to try to explain these PCs with measured variables. Is this driven by ethnicity? sex? date? something else?
 
-# MDS plot
+### MDS plot
 
 As we previously showed we can make MDS plots to start exploring the data to answer these questions. One way to explore the relationship
 between variables of interest and PCs we can use color to denote these variables. For example, here are the first two PCs with color representing ethnicity:
@@ -129,7 +128,7 @@ between variables of interest and PCs we can use color to denote these variables
 
 ```{r,fig.align='center'}
 cols = as.numeric(eth)
-mypar2(1,1)
+mypar()
 plot(s$v[,1],s$v[,2],col=cols,pch=16,
      xlab="PC1",ylab="PC2")
 legend("bottomleft",levels(eth),col=seq(along=levels(eth)),pch=16)
@@ -147,7 +146,7 @@ Here is the same plot but with color now representing year:
 
 ```{r,fig.align='center'}
 cols = as.numeric(year)
-mypar2(1,1)
+mypar()
 plot(s$v[,1],s$v[,2],col=cols,pch=16,
      xlab="PC1",ylab="PC2")
 legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
@@ -155,7 +154,7 @@ legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
 
 Year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding it is not easy to parse out but below and in the assessment questions we provide some further exploratory approaches.
 
-# Boxplot of PCs
+### Boxplot of PCs
 
 The structure seen in the plot of the between sample correlations shows a complex structure that seems to have more than 5 factors (one for each year). It certainly has more complexity than what would be explained by ethnicity. We can also explore the correlation with months. 
 
@@ -169,7 +168,7 @@ Because there are so many months (21), it get's a bit  complicated to use color.
 
 ```{r}
 variable <- as.numeric(month)
-mypar2(2,2)
+mypar(2,2)
 for(i in 1:4){
   boxplot(split(s$v[,i],variable),las=2,range=0)
   stripchart(split(s$v[,i],variable),add=TRUE,vertical=TRUE,pch=1,cex=.5,col=1)
@@ -183,7 +182,7 @@ corr <- sapply(1:ncol(s$v),function(i){
   fit <- lm(s$v[,i]~as.factor(month))
   return( summary(fit)$adj.r.squared  )
   })
-mypar2(1,1)
+mypar()
 plot(corr)
 ```
 
@@ -196,7 +195,7 @@ Fstats<- sapply(1:ncol(s$v),function(i){
    Fstat <- summary(aov(fit))[[1]][1,4]
    return(Fstat)
   })
-mypar2(1,1)
+mypar()
 plot(sqrt(Fstats))
 p <- length(unique(month))
 abline(h=sqrt(qf(0.995,p-1,ncol(s$v)-1)))

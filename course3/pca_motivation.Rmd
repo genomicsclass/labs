@@ -139,7 +139,10 @@ The distance computed with just the one dimensions provide a very good approxima
 
 ### Important note on a difference to other explanations
 
-If you search the web for descriptions of PCA you will notice a difference in notation to how we describe it here. This mainly stems from the fact that it more common to have rows represent units so in the example shown here $Y$ would be transposed to be an $N \times 2$ matrix. In statistics this is also the most common way to represent the data: individuals in the rows. However, for practical reasons, in genomics it is more common to represent units in the columns: for example, genes are rows and samples are columns. For this reason, in this book we explain PCA and all the math that goes with in a slightly different way than it is usually done. Basically, if you want our explanations to match others you have to transpose the matrices we show here.
+If you search the web for descriptions of PCA you will notice a difference in notation to how we describe it here. This mainly stems from the fact that it more common to have rows represent units so in the example shown here $Y$ would be transposed to be an $N \times 2$ matrix. In statistics this is also the most common way to represent the data: individuals in the rows. However, for practical reasons, in genomics it is more common to represent units in the columns: for example, genes are rows and samples are columns. For this reason, in this book we explain PCA and all the math that goes with in a slightly different way than it is usually done. So for example, many of the explanations you find for PCA start out with the sample covariance matrix usually denoted with
+$\mathbf{X}^\top\mathbf{X}$ and having cells represeting covaraince between two units. However for this to be the case we need the rows of $\mathbf{X}$ to represents units. So in our notation above you would have to compute, after scaling, $\mathbf{Y}\mathbf{Y}^\top$ instead.
+
+Basically, if you want our explanations to match others you have to transpose the matrices we show here.
 
 
 

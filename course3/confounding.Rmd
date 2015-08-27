@@ -8,11 +8,13 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-# Introduction
+## Confounding
+
+Batch effects have the most devasting effects when they are _counfounded_ with outcomes of interest. Here we described coufounding generally and how it relates to data interpretation.
 
 "Correlation is not causation" is one of the most important lessons you should take from this or any other data analysis course. A common example for why this statement is so often true is confounding. Simply stated confounding occurs when we observe a correlation or association between $X$ and $Y$, but  this is strictly the result of both $X$ and $Y$ depending on an extraneous variable $Z$. Here we describe Simpson's paradox, perhaps the most famous case of confounding, and then show an example of confounding in high throughput biology.
 
-# Simpson's Paradox
+### Simpson's Paradox
 
 Admission data from U.C. Berkeley 1973 showed that more men were being admitted than women: 44\% men admitted compared to 30\% women. This actually led to a [lawsuit](http://en.wikipedia.org/wiki/Simpson%27s_paradox#Berkeley_gender_bias_case). See: PJ Bickel, EA Hammel, and JW O'Connell. Science (1975)
 
@@ -69,19 +71,19 @@ y=sweep(y,2,colSums(y),"/")*100
 x=rowMeans(cbind(admissions[1:6,3],admissions[7:12,3]))
 
 library(rafalib)
-mypar2(1,1)
+mypar()
 matplot(x,y,xlab="percent that gets in the major",ylab="percent that applies to major",col=c("blue","red"),cex=1.5)
 legend("topleft",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0)
 ```
 
 
-## Confounding Explained Graphically
+### Confounding Explained Graphically
 
 
 In the plots below each letter represents a person. Accepted individuals are denoted in green and not admitted in orange. The letter indicates the major. In this plot we group all the students together and notice that the proportion of green is larger for men.
 
 
-```{r,echo=FALSE,fig.width=14,fig.height=7}
+```{r,echo=FALSE,fig.width=14,fig.height=7,echo=FALSE}
 ###make data for plot
 library(rafalib)
 mypar()
@@ -125,9 +127,9 @@ axis(side=3,c(NC/2,NC+NC/2),c("Male","Female"),tick=FALSE,line=-1)
 Now we stratify the data by major. The key point here is that most of the men denoted with green come from majors A and B, which are the ones with the highest acceptance rate. 
 
 
-```{r,echo=FALSE,fig.width=14,fig.height=7}
+```{r,echo=FALSE,fig.width=14,fig.height=7,echo=FALSE}
 ##statify
-mypar(1,1)
+mypar()
 malepoints <- vector("list",length(males))
 femalepoints <- vector("list",length(males))
 N<- length(males)
@@ -153,17 +155,7 @@ axis(side=3,c(NC/2,NC+FNC/2),c("Male","Female"),tick=FALSE,line=-1)
 axis(side=2,ADDY[-1]/2+ADDY[-length(ADDY)]/2,LETTERS[1:N],tick=FALSE,las=1)
 ```
 
-
-
-
-
-
-
-
-
-
-
-## Average After Stratifying
+### Average After Stratifying
 
 So if we condition or stratify by major this goes away. 
 ```{r}
@@ -178,9 +170,9 @@ The average difference by Major is 3.5% higher for women.
 mean(y[,1]-y[,2])
 ```
 
-## Simpson's Paradox In Baseball
+### Simpson's Paradox In Baseball
 
-We see this often in baseball:
+Simpson's Paradox is commonly seen in baseball statistics. Here is a well known example in which David Justice had a higher batting average that Derek Jeter in both 1995 and 1996, but Jeter had a higher overall average:
 
 |               | 1995           | 1996           | Combined        |
 | ------------- | -------------- | -------------- | --------------- |
@@ -190,17 +182,18 @@ We see this often in baseball:
 
 <a name="genomics"></a>
 
-# Confounding In Genomics
+## Confounding: High-throughput Example
 
-Here are the p-values from comparing CEU to ASN:
+To describe the problem of confoudning with a real example we will use a dataset from a paper [CITE] that claimed that roughly 50% of genes where differentially expressed when comparing blood from two ethnic groups. We include the data in one of our data packages:
+
 ```{r,message=FALSE}
-library(Biobase)
-library(genefilter)
-library(GSE5859)
+library(Biobase) ## install from Bioconductor
+library(genefilter) ## install from Bioconductor
+library(GSE5859) ##install from github
 data(GSE5859)
 ```
 
-This is the original dataset from which we selected the subset used in `GSE5859Subset`. We can extract the gene expression data and sample information table using the Bioconductor functions `exprs` and `pData` like this:
+We can extract the gene expression data and sample information table using the Bioconductor functions `exprs` and `pData` like this:
 
 ```{r}
 geneExpression = exprs(e)
