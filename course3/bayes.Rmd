@@ -17,7 +17,9 @@ One distinguishing characteristic of high-throuhgput data is that we make many m
 
 We start by reviewing Bayes theorem. We do this using a hypothetical Cystic Fibrosis test as an example. Suppose a test for cystic fibrosis has an accuracy of 99%. We will use the following notation:
 
-$$\mbox{Prob}(+ \mid D=1)=0.99, \mbox{Prob}(- \mid D=0)=0.99,$$
+$$
+\mbox{Prob}(+ \mid D=1)=0.99, \mbox{Prob}(- \mid D=0)=0.99 
+$$
 
 with $+$ meaning a positive test and $D$ representing if you actually have (1) the disease or not (0).
 
@@ -30,10 +32,10 @@ $$
 This equation applied to our problem becomes:
 
 $$
-\begin{eqnarray*}
-\mbox{Prob}(D=1 \mid +) & = & \frac{ P(+ \mid D=1) \cdot P(D=1)} {\mbox{Prob}(+)} \\
-& = & \frac{\mbox{Prob}(+ \mid D=0)\cdot P(D)} {\mbox{Prob}(+ \mid D) \cdot P(D) + \mbox{Prob}(+ \mid D=1) \mbox{Prob}( D=0)} \\
-\end{eqnarray*}
+\begin{align*}
+\mbox{Prob}(D=1 \mid +) & =  \frac{ P(+ \mid D=1) \cdot P(D=1)} {\mbox{Prob}(+)} \\
+& =  \frac{\mbox{Prob}(+ \mid D=0)\cdot P(D)} {\mbox{Prob}(+ \mid D) \cdot P(D) + \mbox{Prob}(+ \mid D=1) \mbox{Prob}( D=0)} 
+\end{align*}
 $$
 
 Pluging in the numbers we get:
@@ -48,7 +50,7 @@ Note that this says that despite the test having 0.99 accuracy, the probabilty o
 
 The following simulation is meant help you visualize Bayes Theorem. We start by randomely selection 1500 people from a population in which the disease in question has a 5% prevalence.
 
-```{r,echo=FALSE,fig.height=7.5,fig.width=12}
+```{r}
 set.seed(3)
 prev <- 1/20
 ##Later, we are arranging 1000 people in 80 rows and 20 columns
@@ -93,48 +95,11 @@ plot(people,col=negativecols,pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main=paste
 
 The proportions of red in the top plot shows $\mbox{Pr}(D=1)$. The bottom left shows $\mbox{Pr}(D=1 \mid +)$ and the bottom right shows $\mbox{Pr}(D=0 \mid +)$.
 
-If you have ImageMagic installed on your computer, you can create an animated gif with code below. Note that the computation will make several gifs so it might take some time to compute. Make sure to pick a `filename` that does not already exist in the working directory.
-
-```{r,eval=FALSE}
-set.seed(3)
-prev <- 1/20
-acc <- 0.90
-##For the animation we use 10 x 40 
-N <- 20; M <- 80
-x<-rbinom(N*M,1,p=prev)
-cols <- c("grey","red")
-people <- expand.grid(1:M,N:1)
-people2 <- expand.grid(1:(M/2),N:1)
-
-cols1 <- cols[x+1]
-cols2 <- rep(NA,length(cols1));count2<-1
-cols3 <- rep(NA,length(cols1));count3<-1
-
-library(rafalib)
-library(animation)
-filename <- 'bayes.gif'
-saveGIF({
-i=1
-while(count3 <= N*M/2 & count2 <= N*M/2){
-  test <- sample(100,1);min=round(100*acc)
-  mypar()
-  layout(matrix(c(1,2,1,3),2,2))
-  plot(people,col=cols1,pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main=paste0("Population: ",round(mean(x)*100),"% are red"))
-  if(test>min) axis(side=1,M/2,"X",col="red",tick=FALSE,cex.axis=3,line=1.5) else axis(side=1,M/2,"O",col="black",tick=FALSE,cex.axis=2,line=1.5)
-  points(people[i,],pch=1,cex=1.5)
-  if(all(is.na(cols2))) plot(people2,type="n",pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main="Tested Positive") else plot(people2,col=cols2,pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main=paste0("Tested Positive: ",round(mean(cols2=="red",na.rm=TRUE)*100),"% are red"))
-  if(all(is.na(cols3))) plot(people2,type="n",pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main="Tested Negative") else plot(people2,col=cols3,pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main=paste0("Tested Negative: ",round(mean(cols3=="red",na.rm=TRUE)*100,1),"% are red"))
-  outcome <- ifelse(x[i]==1, as.numeric(test<=min), as.numeric(test>min))
-  if(outcome==0) {cols3[count3]<-cols1[i];count3<-count3+1} else {cols2[count2]<-cols1[i];count2<-count2+1}
-  i<-i+1
-  }},filename, interval = .1, ani.width = 800, ani.height = 500)
-```
-
 
 ### Bayes in Practice
 
 
-![iglesias](http://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg/902px-Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg)
+<!-- ![iglesias](http://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg/902px-Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg) -->
 
 
 José Iglesias 2013
@@ -151,8 +116,9 @@ Ted Williams in 1941!
 
 
 Distribution of AVG 
-===
+
 This is for all players (>500 AB) 2010, 2011, 2012
+
 ```{r,include=FALSE, cache=TRUE}
 tmpfile <- tempfile()
 tmpdir <- tempdir()
@@ -163,8 +129,9 @@ players <- read.csv(unzip(tmpfile,files="Batting.csv",exdir=tmpdir),as.is=TRUE)
 unlink(tmpdir)
 file.remove(tmpfile)
 ```
-### 
-```{r,fig.align="center",cache=TRUE,echo=FALSE,fig.width=14,fig.height=6}
+
+
+```{r,cache=TRUE,echo=FALSE,fig.width=14,fig.height=6}
 library(dplyr)
 library(rafalib)
 mypar(1,3)
@@ -179,25 +146,26 @@ Average is .275 and SD is 0.027
 
 José Iglesias’ April batting average
 
-incremental:true
-* Should we trade him?
+Should we trade him?
 
-* What is the SE of our estimate?
+What is the SE of our estimate?
 
-* $$\sqrt{\frac{.450 (1-.450)}{20}}=.111$$
+$$
+\sqrt{\frac{.450 (1-.450)}{20}}=.111
+$$
 
-* Confidence interval?
+Confidence interval?
 
-* .450-.222 to .450+.222 = .228 to .672
+.450-.222 to .450+.222 = .228 to .672
 
 Hierarchichal Model
 
 Pick a random player, then what is their batting average
 
-$$\begin{eqnarray*}
-\theta &\sim& N(\mu, \tau^2) \mbox{ is called a prior}\\
-Y \mid \theta &\sim& N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
-\end{eqnarray*}$$
+$$\begin{align*}
+\theta &\sim N(\mu, \tau^2) \mbox{ is called a prior}\\
+Y \mid \theta &\sim N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
+\end{align*}$$
 
 Two levels of variability:
 
@@ -206,26 +174,23 @@ Two levels of variability:
 
 Hierarchichal Model
 
-$$\begin{eqnarray*}
-\theta &\sim& N(\mu, \tau^2) \mbox{ is called a prior}\\
-Y \mid \theta &\sim& N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
-\end{eqnarray*}$$
+$$\begin{align*}
+\theta &\sim N(\mu, \tau^2) \mbox{ is called a prior}\\
+Y \mid \theta &\sim N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
+\end{align*}$$
 
-* $\theta$ is our players "intrinsic" average value
-* $\mu$ is the average of all players
-* $\tau$ is the SD of all players
-* $Y$ is the observed average
-* $\sigma$ is the variability due to luck at each AB 
+Here $\theta$ is our players "intrinsic" average value, $\mu$ is the average of all players, $\tau$ is the SD of all players, $Y$ is the observed average, and 
+$\sigma$ is the variability due to luck at each AB.
 
 
 Hierarchichal Model
 
 Here are the equations with our data
 
-$$\begin{eqnarray*}
-\theta &\sim& N(.275, .027^2) \\
-Y \mid \theta &\sim& N(\theta, .110^2) 
-\end{eqnarray*}$$
+$$\begin{align*}
+\theta &\sim N(.275, .027^2) \\
+Y \mid \theta &\sim N(\theta, .110^2) 
+\end{align*}$$
 
 
 Posterior Distribution
@@ -233,10 +198,13 @@ Posterior Distribution
 The continuous version of Bayes rule can be used here
 
 $$
-\begin{eqnarray*}
-f_{\theta\mid Y}(\theta\mid Y)&=&\frac{f_{Y\mid \theta}(Y\mid \theta) f_{\theta}(\theta)}{f_Y(Y)}\\
-&=&\frac{f_{Y\mid \theta}(Y\mid \theta) f_{\theta}(\theta)}{\int_{\theta}f_{Y\mid \theta}(Y\mid \theta)f_{\theta}(\theta)}\\
-\end{eqnarray*}
+\begin{align*}
+f_{ \theta \mid Y} (\theta\mid Y) &=
+\frac{f_{Y\mid \theta}(Y\mid \theta) f_{\theta}(\theta)
+}{f_Y(Y)}\\
+&= \frac{f_{Y\mid \theta}(Y\mid \theta) f_{\theta}(\theta)}
+{\int_{\theta}f_{Y\mid \theta}(Y\mid \theta)f_{\theta}(\theta)}
+\end{align*}
 $$
 
 We are particularly interested in the $\theta$ that maximizes $f_{\theta\mid Y}(\theta\mid Y)$.
@@ -249,11 +217,11 @@ Posterior Distribution
 We can show the average of this distribution is the following:
 
 $$
-\begin{eqnarray*}
+\begin{align*}
 \mbox{E}(\theta\mid y) &=& B \mu + (1-B) Y\\
-&=& \mu + (1-B)(Y-\mu)\\
-B &=& \frac{\sigma^2}{\sigma^2+\tau^2}
-\end{eqnarray*}
+&= \mu + (1-B)(Y-\mu)\\
+B &= \frac{\sigma^2}{\sigma^2+\tau^2}
+\end{align*}
 $$
 
 
@@ -262,12 +230,12 @@ Posterior Distribution
 In the case of José Iglesias, we have:
 
 $$
-\begin{eqnarray*}
-E(\theta \mid Y=.450) &=& B \times .275 + (1 - B) \times .450 \\
-&=& .275 + (1 - B)(.450 - .260) \\
-B &=&\frac{.110^2}{.110^2 + .027^2} = 0.943\\
-E(\theta \mid Y=450) &\approx& .285\\
-\end{eqnarray*}
+\begin{align*}
+\mbox{E}(\theta \mid Y=.450) &=& B \times .275 + (1 - B) \times .450 \\
+&= .275 + (1 - B)(.450 - .260) \\
+B &=\frac{.110^2}{.110^2 + .027^2} = 0.943\\
+\mbox{E}(\theta \mid Y=450) &\approx& .285
+\end{align*}
 $$
 
 Posterior Distribution
@@ -275,10 +243,8 @@ Posterior Distribution
 The variance can be shown to be:
 
 $$
-\begin{eqnarray*}
 \mbox{var}(\theta\mid y) &=& \frac{1}{1/\sigma^2+1/\tau^2}
-&=& \frac{1}{1/.110^2 + 1/.027^2}
-\end{eqnarray*}
+= \frac{1}{1/.110^2 + 1/.027^2}
 $$
 
 In our example the SD is 0.026

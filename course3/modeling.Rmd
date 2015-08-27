@@ -215,7 +215,7 @@ In a later module we will learn about empirical bayes approaches to improve esti
 $$
 s^2 \sim s_0^2 F_{d,d_0}
 $$
-with $d$ the degrees of freedom involved in computing $s^2$; for example in a case comparing 3 verus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data
+with $d$ the degrees of freedom involved in computing $s^2$ ; for example in a case comparing 3 verus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data
 ```{r}
 library(rafalib)
 mypar(3,3)
