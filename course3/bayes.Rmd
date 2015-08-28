@@ -131,7 +131,7 @@ file.remove(tmpfile)
 ```
 
 
-```{r,cache=TRUE,echo=FALSE,fig.width=14,fig.height=6}
+```{r,echo=FALSE,fig.width=11,fig.height=6}
 library(dplyr)
 library(rafalib)
 mypar(1,3)
@@ -154,30 +154,29 @@ $$
 \sqrt{\frac{.450 (1-.450)}{20}}=.111
 $$
 
-Confidence interval?
-
-.450-.222 to .450+.222 = .228 to .672
+Confidence interval? .450-.222 to .450+.222 = .228 to .672
 
 Hierarchichal Model
 
 Pick a random player, then what is their batting average
 
-$$\begin{align*}
+$$
+\begin{align*}
 \theta &\sim N(\mu, \tau^2) \mbox{ is called a prior}\\
 Y \mid \theta &\sim N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
-\end{align*}$$
+\end{align*}
+$$
 
-Two levels of variability:
-
-* Player to player variability
-* Variability due to luck when batting
+Two levels of variability: 1) Player to player variability and 2) variability due to luck when batting
 
 Hierarchichal Model
 
-$$\begin{align*}
+$$
+\begin{align*}
 \theta &\sim N(\mu, \tau^2) \mbox{ is called a prior}\\
 Y \mid \theta &\sim N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
-\end{align*}$$
+\end{align*}
+$$
 
 Here $\theta$ is our players "intrinsic" average value, $\mu$ is the average of all players, $\tau$ is the SD of all players, $Y$ is the observed average, and 
 $\sigma$ is the variability due to luck at each AB.
@@ -187,10 +186,12 @@ Hierarchichal Model
 
 Here are the equations with our data
 
-$$\begin{align*}
+$$
+\begin{align*}
 \theta &\sim N(.275, .027^2) \\
 Y \mid \theta &\sim N(\theta, .110^2) 
-\end{align*}$$
+\end{align*}
+$$
 
 
 Posterior Distribution
@@ -218,7 +219,7 @@ We can show the average of this distribution is the following:
 
 $$
 \begin{align*}
-\mbox{E}(\theta\mid y) &=& B \mu + (1-B) Y\\
+\mbox{E}(\theta\mid y) &= B \mu + (1-B) Y\\
 &= \mu + (1-B)(Y-\mu)\\
 B &= \frac{\sigma^2}{\sigma^2+\tau^2}
 \end{align*}
@@ -231,10 +232,10 @@ In the case of José Iglesias, we have:
 
 $$
 \begin{align*}
-\mbox{E}(\theta \mid Y=.450) &=& B \times .275 + (1 - B) \times .450 \\
+\mbox{E}(\theta \mid Y=.450) &= B \times .275 + (1 - B) \times .450 \\
 &= .275 + (1 - B)(.450 - .260) \\
 B &=\frac{.110^2}{.110^2 + .027^2} = 0.943\\
-\mbox{E}(\theta \mid Y=450) &\approx& .285
+\mbox{E}(\theta \mid Y=450) &\approx .285
 \end{align*}
 $$
 
@@ -243,7 +244,7 @@ Posterior Distribution
 The variance can be shown to be:
 
 $$
-\mbox{var}(\theta\mid y) &=& \frac{1}{1/\sigma^2+1/\tau^2}
+\mbox{var}(\theta\mid y) = \frac{1}{1/\sigma^2+1/\tau^2}
 = \frac{1}{1/.110^2 + 1/.027^2}
 $$
 
