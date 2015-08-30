@@ -1,6 +1,3 @@
-{line-numbers=off}
-{frontmatter}
-
 # Introduction
 
 The unprecedented advance in digital technology during the second half of the 20th century has produced a measurement revolution that is transforming science. 
