@@ -29,15 +29,16 @@ obsdiff <- mean(treatment)-mean(control)
 
 In previous sections, we showed parametric approaches that helped determine if the observed difference is significant. Permutation tests take advantage of the fact that if we randomly shuffle the cases and control labels, then the null is true. So we shuffle the case and control labels and assume that the ensuing distribution approximates the null distribution. Here is how we generate a null distribution by shuffling the data 1,000 times:
 
-```{r}
+```{r diff_hist, fig.cap="Histogram of differece between averages from permutations. Vertical line shows the observed difference."}
+N <- 12
 avgdiff <- replicate(1000, {
     all <- sample(c(control,treatment))
     newcontrols <- all[1:N]
     newtreatments <- all[(N+1):(2*N)]
-  return(mean(smokersstar) - mean(nonsmokersstar))
+  return(mean(newtreatments) - mean(newcontrols))
 })
 hist(avgdiff)
-abline(v=obsdif)
+abline(v=obsdiff)
 ```
 
 How many of the null means are bigger than the observed value? That proportion would be the p-value for the null.
@@ -50,22 +51,23 @@ mean(abs(avgdiff) > abs(obsdiff))
 Now let's repeat this experiment for a smaller dataset. We create a smaller dataset by sampling:
 
 ```{r}
-control <- sample(control,5)
-treatment <- sample(treatment,5)
-obsdiff <- mean(treatment,control)
+N <- 5
+control <- sample(control,N)
+treatment <- sample(treatment,N)
+obsdiff <- mean(treatment)- mean(control)
 ```
 and repeat the exercise:
 
 
-```{r}
+```{r diff_hist_N50, fig.cap="Histogram of differece between averages from permutations for smaller sample size. Vertical line shows the observed difference."}
 avgdiff <- replicate(1000, {
     all <- sample(c(control,treatment))
     newcontrols <- all[1:N]
     newtreatments <- all[(N+1):(2*N)]
-  return(mean(smokersstar) - mean(nonsmokersstar))
+  return(mean(newtreatments) - mean(newcontrols))
 })
 hist(avgdiff)
-abline(v=obsdif)
+abline(v=obsdiff)
 ```
 
 Now the observed difference is not significant using this approach. Keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. For example, if there is a real difference between the populations, some of the permutations will be unbalanced and will contain some samples that explain this difference. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative p-values. For this reason, when we have few samples, we can't do permutations. 

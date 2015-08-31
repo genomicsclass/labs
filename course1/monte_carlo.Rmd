@@ -21,17 +21,21 @@ Simulations can also be used to check theoretical or analytical results. Also, m
 
 As an example, let's use a Monte Carlo simulation to compare the CLT to the t-distribution approximation for different sample sizes.
 
-```{r,message=FALSE}
+```{r,message=FALSE,echo=FALSE}
+library(rafalib)
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- tempfile()
-download(url,destfile=filename)
-dat <- read.csv(filename)
+if(!file.exists(filename)) download(url,destfile=filename)
+```
 
+```{r,message=FALSE}
 library(dplyr)
+dat <- read.csv("mice_pheno.csv")
 controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
 ```
 
+We will build a function that automatically generates a t-statistic under the null hypothesis for a any sample size of `n`.
 
 ```{r}
 ttestgenerator <- function(n) {
@@ -48,20 +52,20 @@ ttests <- replicate(1000, ttestgenerator(10))
 
 With 1,000 Monte Carlo simulated occurrences of this random variable, we can now get a glimpse of its distribution:
 
-```{r}
+```{r ttest_hist, fig.cap="Histogram of 1000 Monte Carlo simulated t-statistics."}
 hist(ttests)
 ```
 
 So is the distribution of this t-statistic well approximated by the normal distribution? In the next chapter we will introduce quantile-quantile plots, which provide a useful visual inspection of how well one distribution approximates another. As we will explain later, if points fall on the identity line, it means the approximation is a good one.
 
-```{r}
+```{r ttest_qqplot, fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics to theoretical normal distribution."}
 qqnorm(ttests)
 abline(0,1)
 ```
 
 This looks like a very good approximation. So, for this particular population, a sample size of 10 was large enough to use the CLT approximation. How about 3? 
 
-```{r}
+```{r, ttest_df3_qqplot,fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical normal distribution."}
 ttests <- replicate(1000, ttestgenerator(3))
 qqnorm(ttests)
 abline(0,1)
@@ -69,7 +73,7 @@ abline(0,1)
 
 Now we see that the large quantiles (referred to by statisticians as the _tails_) are larger than expected. In the previous module we explained that when the sample size is not large enough and the *population values* follow a normal distribution, then the t-distribution is a better approximation. Our simulation results seem to confirm this:
 
-```{r}
+```{r, ttest_v_tdist_qqplot,fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical t-distribution."}
 qs <- (seq(0,999)+0.5)/1000
 qqplot(qt(qs,df=2*3-2),ttests,xlim=c(-6,6),ylim=c(-6,6))
 abline(0,1)
@@ -77,11 +81,10 @@ abline(0,1)
 
 The t-distribution is a much better approximation in this case, but it is still not perfect. This is due to the fact that the original data is not that well approximated by the normal distribution.
 
-```{r}
+```{r, dat_qqplot, ig.cap="Quantile-quantile of original data compared to theoretical quantile distribution."}
 qqnorm(controlPopulation)
 qqline(controlPopulation)
 ```
-
 
 ### Parametric Simulations for the Observations
 

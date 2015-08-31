@@ -11,7 +11,6 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Central Limit Theorem and t-distribution
 
-### Introduction
 
 Below we will discuss the Central Limit Theorem (CLT) and the t-distribution, both of which help us make important calculations related to probabilities. Both are frequently used in science to test statistical hypotheses. To use these, we have to make assumptions, different ones for the CLT and the t-distribution. However, if the assumptions are true, then we are able to calculate the exact probabilities of events through the use of mathematical formula.
 
@@ -90,7 +89,7 @@ hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  select(Bodyweight) %>
 
 It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$, not the random variable $\bar{Y}$. Although we can't do this in practice, in this illustrative example we get to see this distribution for both controls and high fat diet mice:
 
-```{r, fig.height=3.5}
+```{r population_histograms, fig.cap="Histograms of all weights for both populations.",fig.width=10.5,fig.height=5.25}
 library(rafalib)
 mypar(1,2)
 hist(hfPopulation)
@@ -99,7 +98,7 @@ hist(controlPopulation)
 
 We can use qq-plots to confirm that the distributions are relatively close to being normally distributed.
 
-```{r,fig.height=3.5}
+```{r population_qqplots, fig.cap="Quantile-quantile plots of all weights for both populations",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 qqnorm(hfPopulation);qqline(hfPopulation)
 qqnorm(controlPopulation);qqline(controlPopulation)

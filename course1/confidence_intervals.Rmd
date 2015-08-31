@@ -15,6 +15,7 @@ set.seed(1) ##so that we get same results
 
 
 ## Confidence Intervals
+
 We have described how to compute p-values which are ubiquitous in the life sciences. However, we do not recommend reporting p-values as the only statistical summary of your results. The reason is simple: statistical significance does not guarantee scientific significance. With large enough sample sizes, one might detect a statistically significance difference in weight of, say, 1 microgram. But is this an important finding? Would we say a diet results in higher weight if the increase is less than a fraction of a percent? The problem with reporting only p-values is that you will not provide a very important piece of information: the effect sizes.
 
 A much more attractive alternative is to report confidence intervals. A confidence interval includes information about your estimated effect size and the uncertainty associated with this estimate. Here we use the mice data to illustrate the concept behind confidence intervals.
@@ -24,12 +25,15 @@ A much more attractive alternative is to report confidence intervals. A confiden
 We show how to construct a confidence interval for the population mean of control female mice. 
 We start by reading in the data and selecting the appropriate rows:
 
-```{r}
+```{r,echo=FALSE}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- "mice_pheno.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
-dat <- read.csv(filename)
+```
+
+```{r}
+dat <- read.csv("mice_pheno.csv")
 chowPopulation <- dat[dat$Sex=="F" & dat$Diet=="chow",3]
 ```
 
@@ -86,10 +90,10 @@ interval
 
 which covers $\mu_X$ or `mean(chowPopulation)`. However, we can take another sample and we might not be as lucky. In fact, the theory tells us that we will cover $\mu_X$ 95% of the time. Because we have access to the population data, we can confirm this by taking several new samples:
 
-```{r,fig.height=6}
+```{r confidence_interval_n30,fig.cap="We show 250 random realizations of 95% confidence intervals. The color denotes if the interval fell on the parameter or not.",fig.height=8}
 library(rafalib)
 B <- 250
-mypar2(1,1)
+mypar()
 plot(mean(chowPopulation)+c(-7,7),c(1,1),type="n",
      xlab="weight",ylab="interval",ylim=c(1,B))
 abline(v=mean(chowPopulation))
@@ -112,7 +116,8 @@ You can run this repeatedly to see what happens. You will see that about in abou
 For $N=30$ the CLT works very well. However, if $N=5$, do these confidence interval work as well? We used the CLT to create our intervals, and with $N=5$ it may not be as useful an approximation. We can confirm this with a simulation:
 
 
-```{r,fig.height=7}
+```{r confidence_interval_n5,fig.cap="We show 250 random realizations of 95% confidence intervals but now for a smaller samples ize. The confidence interval is based on the CLT approximation. The color denotes if the interval fell on the parameter or not.",fig.height=8}
+mypar()
 plot(mean(chowPopulation)+c(-7,7),c(1,1),type="n",
      xlab="weight",ylab="interval",ylim=c(1,B))
 abline(v=mean(chowPopulation))
@@ -131,15 +136,16 @@ for(i in 1:B){
 Despite the intervals being larger (we are dividing by $\sqrt{5}$ instead of $\sqrt{30}$), we see many more intervals not covering $\mu_X$. This is because the CLT is incorrectly telling us that the distribution of the `mean(hf)` is approximately normal when in fact it has a fatter tail. This mistake affects us in the calculation of `Q`, which assumes a normal distribution and uses `qnorm`. The t-distribution might be more appropriate. All we have to do is re-run the above, but change how we calculate `Q`: use `qt` instead of `qnorm`
 
 
-```{r,fig.height=7}
-plot(mean(chowPopulation)+c(-7,7),c(1,1),type="n",
-     xlab="weight",ylab="interval",ylim=c(1,B))
+```{r confidence_interval_tdist_n5,fig.cap="We show 250 random realizations of 95% confidence intervals but now for a smaller samples ize. The confidence is now based on the t-distribution approximatin. The color denotes if the interval fell on the parameter or not.",fig.height=8}
+mypar()
+plot(mean(chowPopulation) + c(-7,7), c(1,1), type="n",
+     xlab="weight", ylab="interval", ylim=c(1,B))
 abline(v=mean(chowPopulation))
 ##Q <- qnorm(1- 0.05/2) ##no longer normal so use:
 Q <- qt(1- 0.05/2, df=4)
 N<-5
 for(i in 1:B){
-  hf <- sample(chowPopulation,N)
+  hf <- sample(chowPopulation, N)
   se=sd(hf)/sqrt(N)
   interval <- c(mean(hf)-Q*se, mean(hf)+Q*se )
   covered<-mean(chowPopulation)<= interval[2] & mean(chowPopulation)>=interval[1]
@@ -167,12 +173,15 @@ Suppose you use CLT and report $\Delta \pm 2 s_\Delta/\sqrt{N}$ as a 95% confide
 
 Note that the confidence interval for the difference $\Delta$ is provided by the `t.test` function:
 
-```{r}
+```{r,echo=FALSE}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
 filename <- "femaleMiceWeights.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
-dat <- read.csv(filename)
+```
+
+```{r,echo=FALSE}
+dat <- read.csv("femaleMiceWeights.csv")
 controlIndex <- which(dat$Diet=="chow")
 treatmentIndex <- which(dat$Diet=="hf")
 control <- dat[controlIndex,2]

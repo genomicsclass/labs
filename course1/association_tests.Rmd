@@ -1,6 +1,6 @@
 ---
 title: "Association tests"
-output: pdf_document
+output: html_document
 layout: page
 ---
 

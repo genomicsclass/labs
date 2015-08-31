@@ -17,7 +17,14 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 We have used the example of the effects of two different diets on the weight of mice. Because in this illustrative example we have access to the population, we know that in fact there is a substantial (about 10%) difference between the average weights of the two populations:
 
-```{r}
+```{r,message=FALSE,echo=FALSE}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
+filename <- "mice_pheno.csv"
+if(!file.exists(filename)) download(url,destfile=filename)
+```
+
+```{r,message=FALSE}
 library(dplyr)
 dat <- read.csv("mice_pheno.csv") ## We downloaded this file in a previous section
 
@@ -86,7 +93,7 @@ reject <- function(N, alpha=0.05){
    pval <- t.test(hf,control)$p.value
    pval < alpha
 }
-````
+```
 
 Here is an example of one simulation for a sample size of 12. The call to `reject` answers the question "Did we reject?" 
 ```{r}
@@ -123,13 +130,13 @@ power <- sapply(Ns,function(N){
 
 For each of the three simulations the above code returns the proportion of times we reject. Not surprisingly power increases with N:
 
-```{r}
+```{r power_versus_sample_size, fig.cap="Power plotted against sample size."}
 plot(Ns, power, type="b")
 ```
 
 Similarly, if we change the level `alpha` at which we reject, power changes. The smaller I want the chance of type I error to be, the less power I will have. We can see this by writing similar code, but keeping $N$ fixed and considering several values of `alpha`:
 
-```{r}
+```{r power_versus_alpha, fig.cap="Power plotted against cut-off."}
 N <- 30
 alphas <- c(0.1,0.05,0.01,0.001,0.0001)
 power <- sapply(alphas,function(alpha){

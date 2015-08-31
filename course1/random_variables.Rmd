@@ -41,7 +41,12 @@ dat=read.csv("femaleMiceWeights.csv")
 We are interested in determining if following a given diet makes mice heavier after several weeks. This data was produced by ordering 24 mice from The Jackson Lab, randomly assigning either chow or high fat (hf) diet. After several weeks we weighed each mice and obtained this data:
 
 ```{r}
-dat
+head(dat) 
+``` 
+
+In RStuidio, you can vie the entire dataset with
+```{r,eval=FALSE}
+View(dat)
 ```
 
 So are the hf mice heavier? Note that mouse 24 at 20.73 grams is one the lightest mice while 21 at 34.02 is one of the heaviest. Both are on the hf diet. Just from looking at the data we see there is *variability*. Claims such as the one above usually refer to the averages. So let's look at the average of each group:
@@ -151,12 +156,13 @@ $$ F(a) \equiv \mbox{Pr}(x \leq a) $$
 
 This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ecdf). We can plot $F(a)$ versus $a$ like this:
 
-```{r}
+```{r ecdf,fig.cap="Empirical cummulative distribution function for height."}
 smallest <- floor( min(x) )
 largest <- ceiling( max(x) )
 values <- seq(smallest, largest,len=300)
 heightecdf <- ecdf(x)
-plot(values, heightecdf(values), type="l")
+plot(values, heightecdf(values), type="l",
+     xlab="a (Height in inches)",ylab="Pr(x <= a)")
 ```
 
 #### Histograms
@@ -172,9 +178,9 @@ hist(x)
 ```
 
 We can specify the bins and add better labels in the following way:
-```{r histogram, fig.width=4, fig.height=4}
+```{r histogram, fig.cap="Histogram for heights."}
 bins <- seq(smallest, largest)
-hist(x,breaks=bins,xlab="Height",main="Adult men heights")
+hist(x,breaks=bins,xlab="Height (in inches)",main="Adult men heights")
 ```
 
 Showing this plot to the alien is much more informative than showing numbers. Note that with this simple plot we can approximate the number of individuals in any given interval. For example, there are about 70 individuals over six feet (72 inches) tall. 
@@ -188,9 +194,9 @@ $$ \mbox{Pr}(a \leq X \leq b) = F(b) - F(a) $$
 
 Note that the $X$ is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable. Knowing this distribution is incredibly useful in science. For example, in the case above, if we know the distribution of the difference in mean when the null hypothesis is true, referred to as the _null distribution_, we can compute the probability of observing a value as large as we did, referred to as a _p-value_. In a previous section we ran what is called a _Monte Carlo_ simulation (we will provide more details on Monte Carlo simulation in a later section) and we obtained 10,000 outcomes of the random variable under the null hypothesis.  Let's repeat the loop above, but this time let's add a point to the figure every time we re-run the experiment. If you run this code you can see the null distribution forming as the observed values stack on top of each other.
 
-```{r,fig.cap="Illustration of the null distribution"}
+```{r null_distribution_illustration,fig.cap="Illustration of the null distribution."}
 n <- 100
-plot(0,0,xlim=c(-5,5),ylim=c(1,30),type="n")
+plot(0,0,xlim=c(-5,5),ylim=c(1,30),type="n",xlab="Observed differences (grams)",ylab="Frequency")
 totals <- vector("numeric",11)
 for(i in 1:n){
   control <- sample(population,12)
@@ -205,7 +211,7 @@ for(i in 1:n){
 
 The figure above amounts to a histogram. From an actual histogram we can see that values as large as `obsdiff` are relatively rare:
 
-```{r}
+```{r null_and_obs,fig.cap="Null distribution with observed difference marked with vertical line."}
 hist(null, freq=TRUE)
 abline(v=obsdiff)
 ```

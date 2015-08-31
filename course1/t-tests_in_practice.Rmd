@@ -23,15 +23,15 @@ set.seed(1)
 
 Throughout this book we use random number generators. This implies that many of the results presented can actually change by chance, including the correct answer to problems. One way to assure that results do not change is by setting the random number generation seed. For more on the topic please read the help file:
 
-```{r}
-?sed.seed
+```{r,eval=FALSE}
+?sed.seet
 ```
 
 
 
 ### Read-in and Prepare Data
 We start by reading in the data. A first important step is to identify which rows are associated with treatment and control, and computing the difference in mean.
-```{r}
+```{r,message=FALSE}
 library(dplyr)
 
 dat <- read.csv("femaleMiceWeights.csv") #previously downloaded
@@ -95,11 +95,15 @@ Now there is a problem. CLT works for large samples, but is 12 large enough? A r
 
 As described earlier, the statistical theory offers another useful result. If the distribution of the population is normal, then we can work out the exact distribution of the t-statistic without the need for the CLT. Note that this is a big "if" given that, with small samples, it is hard to check if the population is normal. But for something like weight, we suspect that the population distribution is likely well approximated by normal and use this approximation. Furthermore, we can look at qq-plot for the sample. This shows that the approximation is at least close:
 
-```{r, fig.height=3.5}
+```{r data_qqplot, fig.cap="Quantile-quantile plots for sample against theoretical normal distribution.", fig.width=10.5,fig.height=5.25}
 library(rafalib)
 mypar(1,2)
-qqnorm(treatment);qqline(treatment,col=2)
-qqnorm(control);qqline(control,col=2)
+
+qqnorm(treatment)
+qqline(treatment,col=2)
+
+qqnorm(control)
+qqline(control,col=2)
 ```
 
 If we use this approximation, then statistical theory tells us that the distribution of the random variable `tstat` follows a t-distribution. This is a much more complicated distribution than the normal that depends on another parameter called degrees of freedom. R has a nice function that actually computes everything for us.
@@ -126,8 +130,19 @@ Later, in the power calculation section, we will describe type I and type II err
 
 Now that we have gone over the concepts, we can show the relatively simple code that one actually would run to compute a t-test: 
 
-```{r}
-dat <- read.csv(filename)
+
+```{r,message=FALSE,echo=FALSE}
+library(downloader)
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
+filename <- "mice_pheno.csv"
+if(!file.exists(filename)) download(url,destfile=filename)
+```
+
+
+```{r,message=FALSE}
+library(dplyr)
+
+dat <- read.csv("mice_pheno.csv")
 
 control <- filter(dat,Diet=="chow") %>% select(Bodyweight) 
 
