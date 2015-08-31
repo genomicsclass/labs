@@ -20,7 +20,7 @@ The abstract of the paper says,
 
 Figure 1 includes some pretty cool electron microscope images of the tufts. We are interested in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). We can recreate Figure 4 of the paper by loading the data and calling `boxplot`:
 
-```{r}
+```{r spide_data, fig.cap="Comparison of friction coefficients of spiders' different leg pairs"}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/spider_wolff_gorb_2013.csv"
 filename <- "spider_wolff_gorb_2013.csv"
 library(downloader)
@@ -76,8 +76,7 @@ tail(X)
 
 Now we'll make a plot of the `X` matrix by putting a black block for the 1's in the design matrix and a white block for the 0's. This plot will be more interesting for the linear models later on in this script. Along the y-axis is the sample number (the row number of the `data`) and along the x-axis is the column of the design matrix $\mathbf{X}$. If you have installed the *rafalib* library, you can make this plot with the `imagemat` function:
 
-```{r}
-# library(devtools); install_github("ririzarr/rafalib")
+```{r model_matrix_image, fig.cap="Model matrix for linear model with one variable."}
 library(rafalib)
 imagemat(X, main="Model matrix for linear model with one variable")
 ```
@@ -86,7 +85,7 @@ imagemat(X, main="Model matrix for linear model with one variable")
 
 Now we will use a big chunk of code just to show how the coefficients from the linear model can be drawn as arrows. You wouldn't necessarily use this code in your daily practice, but it's helpful for visualizing what's going on in the linear model in your head.
 
-```{r}
+```{r spider_main_coef, fig.cap="MIKELOVE add caption."}
 stripchart(split(spider.sub$friction, spider.sub$type), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
 a <- -0.25
@@ -105,7 +104,7 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 Now, we'll continue and examine the full dataset, including the observations from all leg pairs. In order to model both the leg pair differences and the push vs. pull difference, we need to include both terms in the formula. Let's see what kind of design matrix will be formed with two variables in the formula:
 
-```{r}
+```{r model_matrix_image2, fig.cap="Image of more complex model matrix."}
 X <- model.matrix(~ type + leg, data=spider)
 colnames(X)
 head(X)
@@ -141,7 +140,7 @@ coefs
 
 We can make the same plot as before, with arrows for each of the coefficients in the model. The orange arrow represents the difference between the push and pull samples for all groups.
 
-```{r}
+```{r spider_interactions, fig.cap="MIKELOVE"}
 spider$group <- factor(paste0(spider$leg, spider$type))
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
@@ -246,7 +245,7 @@ As we saw in the previous linear model, we assumed that the push vs. pull effect
 We can see this by building our model with an *interaction* between `type` and `leg`, by including an extra term in the formula `type:leg`. An equivalent way to specify this model is `~ type*leg` which will expand to the formula shown below, with main effects for `type`, `leg` and an interaction of `type:leg`.
 
 
-```{r}
+```{r model_matrix_with_interaction_image, fig.cap="Image of model matrix with interactions."}
 X <- model.matrix(~ type + leg + type:leg, data=spider)
 colnames(X)
 head(X)
@@ -269,7 +268,7 @@ Here is where the plot with arrows help us see what is going on with the interac
 
 Now, as we have eight terms in the model and 8 parameters, you can check that the tips of the arrowheads are exactly equal to the group means.
 
-```{r}
+```{r spider_interactions2, fig.cap="MIKELOVE"}
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
 cols <- brewer.pal(8,"Dark2")
@@ -299,8 +298,8 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 Again we will show how to combine coefficients from the model using *contrasts*. For some simple cases, we can use the contrast package. Suppose we want to know the push vs. pull effect for the L2 leg pair samples. We can see from the arrow plot that this is the orange arrow plus the yellow arrow. We can also specify this comparison with the `contrast` function:
 
-```{r}
-library(contrast)
+```{r,message=FALSE}
+library(contrast) ##Available from CRAN
 L2push.vs.pull <- contrast(fitX,
                    list(leg="L2", type = "push"), 
                    list(leg="L2", type = "pull"))
@@ -332,8 +331,7 @@ We can't make this contrast using the `contrast` function shown before, but we c
 *Note*: there are other ways to perform contrasts using base R, but in my opinion this function is simpler to use.
 
 ```{r}
-# install.packages("multcomp")
-library(multcomp)
+library(multcomp) ##Available from CRAN
 C <- matrix(c(0,0,0,0,0,-1,1,0), 1)
 L3vsL2interaction <- glht(fitX, linfct=C)
 summary(L3vsL2interaction)
@@ -388,7 +386,7 @@ The [F distribution](http://en.wikipedia.org/wiki/F-distribution) has two parame
 
 In this last section, we show an alternate way to specify the model where we suppose that each group has its own mean (that the push vs. pull effect is not the same for each leg pair). This specification is in some ways simpler, but it does not allow us to build the ANOVA table as above, because it does not split interaction terms out in the same way. Here we simply include a term for each unique combination of `type` and `leg`. We include a `0 +` in the formula because we do not want to include an intercept:
 
-```{r}
+```{r matrix_model_image_group_variable, fig.cap="MIKELOVE"}
 # earlier, we defined the 'group' column:
 spider$group <- factor(paste0(spider$leg, spider$type))
 X <- model.matrix(~ 0 + group, data=spider)
@@ -409,7 +407,7 @@ coefs <- coef(fitG)
 
 Now we have eight arrows, one for each group. The arrow tips align directly with the mean of each group:
 
-```{r}
+```{r estimated_group_variables, fig.cap="MIKELOVE"}
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
 cols <- brewer.pal(8,"Dark2")
@@ -436,9 +434,9 @@ coefs[4] - coefs[3]
 
 We can also make pair-wise comparisons of the push vs. pull difference. For example, if we want to compare the push vs. pull difference in leg pair L3 vs. leg pair L2:
 
-$$ (L3push - L3 pull) - (L2push - L2pull) $$
+$$ (\mbox{L3push} - \mbox{L3pull}) - (\mbox{L2push} - \mbox{L2pull}) $$
 
-$$ = L3 push + L2 pull - L3pull - L2push $$
+$$ = \mbox{L3 push} + \mbox{L2pull} - \mbox{L3pull} - \mbox{L2push} $$
 
 ```{r}
 C <- matrix(c(0,0,1,-1,-1,1,0,0), 1)

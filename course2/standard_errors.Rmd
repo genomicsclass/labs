@@ -31,7 +31,7 @@ n <- 25
 tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
 X <-cbind(1,tt,tt^2)
 ##create X'X^-1 X'
-A <- solve(crossprod(X))%*%t(X)
+A <- solve(crossprod(X)) %*% t(X)
 betahat<-replicate(B,{
   y <- h0 + v0*tt  - 0.5*g*tt^2 + rnorm(n,sd=1)
   betahats <- A%*%y
@@ -42,7 +42,8 @@ head(betahat)
 
 As expected, the estimate is different every time. This is because $\hat{\beta}$ is a random variable. It therefore has a distribution:
 
-```{r,message=FALSE}
+```{r regression_estimates_normally_distributed,message=FALSE,fig.cap="Distribution of estimated regression coefficients obtained from Monte Carlo simulated falling object data. The left is a histogram and on the right we have a qq-plot against normal theoretical quantiles.", fig.width=10.5, fig.height=5.25}
+
 library(rafalib)
 mypar(1,2)
 hist(betahat)
@@ -91,8 +92,8 @@ betahat <- t(betahat) ## have estimates in two columns
 
 By making qq-plots, we see that our estimates are approximately normal random variables:
 
-```{r}
-mypar2(1,2)
+```{r regression_estimates_normally_distributed2,message=FALSE,fig.cap="Distribution of estimated regression coefficients obtained from Monte Carlo simulated father son height data. The left is a histogram and on the right we have a qq-plot against normal theoretical quantiles.", fig.width=10.5, fig.height=5.25}
+mypar(1,2)
 qqnorm(betahat[,1]);qqline(betahat[,1])
 qqnorm(betahat[,2]);qqline(betahat[,2])
 ```

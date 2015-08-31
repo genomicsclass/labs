@@ -211,15 +211,15 @@ library(UsingR)
 x=father.son$fheight
 y=father.son$sheight
 X <- cbind(1,x)
-betahat <- solve(t(X)%*%X)%*%t(X)%*%y
+betahat <- solve( t(X) %*% X ) %*% t(X) %*% y
 ###or
-betahat <- solve(crossprod(X))%*%crossprod(X,y)
+betahat <- solve( crossprod(X) ) %*% crossprod( X, y )
 ```
 
 
 Now we can see the results of this by computing the estimated $\hat{\beta}_0+\hat{\beta}_1 x$ for any value of $x$:
 
-```{r}
+```{r galton_regression_line, fig.cap="Galton's data with fitted regression line."}
 newx <- seq(min(x),max(x),len=100)
 X <- cbind(1,newx)
 fitted <- X%*%betahat
@@ -240,7 +240,7 @@ d <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1)
 Note that we are using almost the same exact code:
 
 
-```{r}
+```{r gravity_with_fitted_parabola, fig.cap="Fitted parabola to simulated data for distance travelled versus time of falling object measured with error."}
 X <- cbind(1,tt,tt^2)
 y <- d
 betahat <- solve(crossprod(X))%*%crossprod(X,y)

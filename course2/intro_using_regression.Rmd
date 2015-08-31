@@ -31,7 +31,7 @@ d <- 56.67  - 0.5*g*tt^2 + rnorm(n,sd=1)
 
 The assistants hand the data to Galileo and this is what he sees:
 
-```{r}
+```{r gravity, fig.cap="Simulated data for distance travelled versus time of falling object measured with error."}
 mypar()
 plot(tt,d,ylab="Distance in meters",xlab="Time in seconds")
 ```
@@ -53,7 +53,7 @@ y=father.son$sheight
 
 looks like this:
 
-```{r}
+```{r galton_data, fig.cap="Galton's data. Son heights versus father height."}
 plot(x,y,xlab="Father's height",ylab="Son's height")
 ```
 
@@ -68,7 +68,7 @@ This is also a linear model. Here $x_i$ and $Y_i$ the father and son heights res
 Here we read-in mouse body weight data from mice that were fed two different diets: high fat and control (chow). We have a random sample of 12 mice for each. We are interested in determining if the diet has an effect on weight. Here is the data:
 
 
-```{r}
+```{r mice_weights,fig.cap="Mouse weights under two diets."}
 dat <- read.csv("femaleMiceWeights.csv")
 mypar(1,1)
 stripchart(Bodyweight~Diet,data=dat,vertical=TRUE,method="jitter",pch=1,main="Mice weights")
@@ -111,7 +111,7 @@ $$d = h_0 + v_0 t -  0.5 \times 9.8 t^2$$
 
 with $h_0$ and $v_0$ the starting height and velocity respectively. The data we simulated above followed this equation and added measurement error to simulate `n` observations for dropping the ball $(v_0=0)$ from the tower of Pisa $(h_0=56.67)$. This is why we used this code to simulate data:
 
-```{r simulate drop data}
+```{r simulate_drop_data}
 g <- 9.8 ## meters per second
 n <- 25
 tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
@@ -121,7 +121,7 @@ y <-  f + rnorm(n,sd=1)
 
 Here is what the data looks like with the solid line representing the true trajectory:
 
-```{r}
+```{r simulate_drop_data_with_fit, fig.cap="Fitted model for simulated data for distance travelled versus time of falling object measured with error."}
 plot(tt,y,ylab="Distance in meters",xlab="Time in seconds")
 lines(tt,f,col=2)
 ```
@@ -158,7 +158,7 @@ rss <- function(Beta0,Beta1,Beta2){
 
 So for any three dimensional vector we get an RSS. Here is a plot of the RSS as a function of $\beta_2$ when we keep the other two fixed:
 
-```{r}
+```{r rss_versus_estimate, fig.cap="Residual sum of squares obtained for several values of the parameters."}
 Beta2s<- seq(-10,0,len=100)
 plot(Beta2s,sapply(Beta2s,rss,Beta0=55,Beta1=0),
      ylab="RSS",xlab="Beta2",type="l")
@@ -173,11 +173,16 @@ Trial and error here is not going to work. Instead we can use calculus: take the
 ### More On Galton (Advanced)
 When studying the father-son data, Galton made a fascinating discovery using exploratory analysis.
 
-<!-- ![Galton's plot](http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg) -->
+![Galton's plot](http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg) 
 
 He noted that if he tabulated the number of father-son height pairs and followed all the x,y values having the same totals in the table, they formed an ellipsis. In the plot above, made by Galton, you see the ellipsis formed by the pairs having 3 cases. This then led to modeling this data as correlated bivariate normal. 
 
-$$ Pr(X<a,Y<b) = 
+$$ 
+Pr(X<a,Y<b) =
+$$
+
+
+$$
 \int_{-\infty}^{a} \int_{-\infty}^{b} \frac{1}{2\pi\sigma_x\sigma_y\sqrt{1-\rho^2}}
 \exp{ \left\{
 \frac{1}{2(1-\rho^2)}

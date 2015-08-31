@@ -10,6 +10,8 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Linear Models
 
+Many of the models we use in data analysis can be presented using matrix algebra. We refer to these tpyes of models as _linear models_. Note that "linear"" here does not refer to lines but rather linear combinations. The representations we describe are conveninent because we can write models more succintly and we have the matrix algebra mathematical machinery to facilitate computation. In this chapter we will describe in some detail how we use matrix algebra to represent and fit.
+
 ## The Design Matrix
 
 Here we will show how to use the two base R functions:
