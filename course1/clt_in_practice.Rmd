@@ -13,7 +13,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 set.seed(1) ##so that we get same results
 ```
 
-## Central Limit Theorem in Practice
+## Central Limit Theorem In Practice
 
 Let's use our data to see how well the central limit approximates sample averages from our data. We will leverage our entire population dataset to compare the results we obtain by actually sampling from the distribution to what the CLT predicts.  
 

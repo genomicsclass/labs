@@ -98,7 +98,7 @@ hist(controlPopulation)
 
 We can use qq-plots to confirm that the distributions are relatively close to being normally distributed.
 
-```{r population_qqplots, fig.cap="Quantile-quantile plots of all weights for both populations",fig.width=10.5,fig.height=5.25}
+```{r population_qqplots, fig.cap="Quantile-quantile plots of all weights for both populations.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 qqnorm(hfPopulation);qqline(hfPopulation)
 qqnorm(controlPopulation);qqline(controlPopulation)
