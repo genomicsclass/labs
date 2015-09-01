@@ -186,7 +186,7 @@ shist(techsds,unit=0.1,col=2,add=TRUE)
 ```
 
 First notice that the normal distribution is not appropriate here since the right tail is rather large. Also, because SDs are strictly positive, there is a limitation to how symmetric this distribution can be.
-A qqplot shows it very clearly:
+A qqplot shows this very clearly:
 ```{r}
 qqnorm(biosds)
 qqline(biosds)
@@ -214,7 +214,7 @@ In a later module we will learn about empirical Bayes approaches to improve esti
 $$
 s^2 \sim s_0^2 F_{d,d_0}
 $$
-with $d$ the degrees of freedom involved in computing $s^2$ ; For example in a case comparing 3 versus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data
+with $d$ the degrees of freedom involved in computing $s^2$ ; For example, in a case comparing 3 versus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data:
 ```{r}
 library(rafalib)
 mypar(3,3)
@@ -228,7 +228,7 @@ for(d in c(1,5,10)){
     }
   }
 ```
-Now which $s_0$ and $d$ fit our data best? This is a rather advanced to topic as the MLE does not perform well for this particular distribution (we refer to Smyth (2004)). The Bioconductor limma package provides a function to estimate these parameters
+Now which $s_0$ and $d$ fit our data best? This is a rather advanced topic as the MLE does not perform well for this particular distribution (we refer to Smyth (2004)). The Bioconductor limma package provides a function to estimate these parameters:
 
 ```{r}
 library(limma)
@@ -245,4 +245,4 @@ dd=df(sds^2/estimates$scale,11,estimates$df2)
 k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
 lines(sds,dd*k,type="l",col=2,lwd=2)
 ```
-Apart for one outlier, this is not a bad fit at all. This approximation will come in very handy when we learn about empirical Bayes.
+Apart from one outlier, this is not a bad fit at all. This approximation will come in very handy when we learn about empirical Bayes.
