@@ -14,7 +14,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Many of the analysis we perform with high-dimensional data relate directly or inderictly to distance. For example many clustering and machine learning techniques rely on being able to define distance using features or predictors. The concept of distance can be generalized from  physical distance. For example, we cluster animals into groups. When we do this, we put animals that are "close" in the same group:
 
-![Clustering of animals based](images/animals.png)
+![Clustering of animals based](images/handmade/animals.png)
 
 Any time we cluster individuals into separate groups we are, explicitely or implicitely computing a distance. 
 
@@ -73,7 +73,7 @@ To define distance we need to know what points are since mathematical distance i
 Once we define points, the Euclidean distance is defined in a very similar way as it is defined for two dimensions. For example, the  distance between two samples $i$ and $j$ is
 
 $$
-\mboxx{dist}(i,j) = \sqrt{ \sum_{g=1}^{22215} (Y_{g,i}-Y_{g,j })^2 }
+\mbox{dist}(i,j) = \sqrt{ \sum_{g=1}^{22215} (Y_{g,i}-Y_{g,j })^2 }
 $$
 
 and the distance between two features $h$ and $g$ as:
@@ -87,7 +87,7 @@ $$
 
 The distance between samples $i$ and $j$ can be written as
 
-$$ d(i,j) = (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j)$$
+$$ \mbox{dist}(i,j) = (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j)$$
 
 With $\mathbf{Y}_i$ and $\mathbf{Y}_j$ coliumns $i$ and $j$. This result can be very convinient in practice as computations can be made much faster using matrix multiplication.
 

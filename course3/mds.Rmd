@@ -90,7 +90,7 @@ $$
 
 Because $Z$ is a two dimensional vector and we can visualize the distances between each sample by plotting $\mathbf{Z}_1$ versus $\mathbf{Z}_2$ and visualy inspect the distance between points. Here is this plot for our example dataset:
 
-```{r}
+```{r MDS, fig.cap="Multi-dimensional scaling (MDS) plot for tissue gene expression data."}
 s <- svd(mat-rowMeans(mat))
 PC1 <- s$d[1]*s$v[,1]
 PC2 <- s$d[2]*s$v[,2]
@@ -101,13 +101,13 @@ legend("bottomright",levels(group),col=seq(along=levels(group)),pch=15,cex=1.5)
 
 Note that the point separate by tissue type as expected. Now, the accuracy of the approximation above depends on the proportion of variance explained by the first two principal components. As we showed above, we can quickly see this by plotting the variance explained plot:
 
-```{r}
+```{r variance_explained, fig.cap="Variance examplained for each principal component."}
 plot(s$d^2/sum(s$d^2))
 ```
 
 Although the first two PCs explain over 50% of the variability, there is plenty of information that this plot does not show. However, it is an incredibly useful plot for obtaining a general idea of the distance between points. Also note, that we can plot other dimensions as well to search for patterns. Here are the 3rd and 4th PCs
 
-```{r}
+```{r PC_3_and_4, fig.cap="Third and fourth principal components"}
 PC3 <- s$d[3]*s$v[,3]
 PC4 <- s$d[4]*s$v[,4]
 mypar(1,1)
@@ -123,16 +123,17 @@ Note that the 4th PC shows a strong separation within the kidney samples. Later 
 
 Although above, we used the `svd` functiona, there is a special function that is specifcially made for MDS plots. It starts takes a distance object and then uses pricipal component analysis to provide the best approximation to this distance that can be obtained with $k$ dimensions. This function is more efficient because one does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the parameter `k`
 
-```{r}
+```{r mds2, fig.cap="MDS computed with cmdscale function."} 
 d <- dist(t(mat))
 mds <- cmdscale(d)
-mypar(1,1)
+
+mypar()
 plot(mds[,1],mds[,2],bg=as.numeric(group),pch=21,xlab="First dimension",ylab="Second dimension")
 legend("bottomleft",levels(group),col=seq(along=levels(group)),pch=15)
 ```
 Note that these two approaches are equivalent up to an arbirary sign change.
 
-```{r}
+```{r mds_same_as_svd, fig.cap="Comparison of MDS first two PCs to SVD first two PCs.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 for(i in 1:2){
   plot(mds[,i],s$d[i]*s$v[,i],main=paste("PC",i))
