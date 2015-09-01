@@ -23,7 +23,7 @@ $$
 
 with $+$ meaning a positive test and $D$ representing if you actually have (1) the disease or not (0).
 
-Suppose we select random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$. The  cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D)=0.0025$. To answer this question we will use Bayes Theorem, which in general  tells us that
+Suppose we select random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$. The  cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.0025$. To answer this question we will use Bayes Theorem, which in general  tells us that
 
 $$
 \mbox{Pr}(A \mid B)  =  \frac{\mbox{Pr}(B \mid A)\mbox{Pr}(A)}{\mbox{Pr}(B)} 
@@ -34,7 +34,7 @@ This equation applied to our problem becomes:
 $$
 \begin{align*}
 \mbox{Prob}(D=1 \mid +) & =  \frac{ P(+ \mid D=1) \cdot P(D=1)} {\mbox{Prob}(+)} \\
-& =  \frac{\mbox{Prob}(+ \mid D=0)\cdot P(D)} {\mbox{Prob}(+ \mid D) \cdot P(D) + \mbox{Prob}(+ \mid D=1) \mbox{Prob}( D=0)} 
+& =  \frac{\mbox{Prob}(+ \mid D=1)\cdot P(D=1)} {\mbox{Prob}(+ \mid D=1) \cdot P(D=1) + \mbox{Prob}(+ \mid D=0) \mbox{Prob}( D=0)} 
 \end{align*}
 $$
 
@@ -71,7 +71,7 @@ test[d==0]  <- rbinom(sum(d==0), 1, p=1-accuracy)
 
 Because there are so many more controls than cases, even with low false positive rate, we get enough so that we have more controls than cases in the tested-positive group:
 
-```{r}
+```{r simulation, fig.cap="Simulation demonstrating Bayes theorem. Top plot shows every individual with red denoting cases. Each one takes a test and with 90% gives correct answer. Those called positive (either by correctly or incorrectly) are put in the bottom left pane. Those called negative in the bottom right.", fig.width=10.5, fig.height=7.5}
 cols <- c("grey","red")
 people <- expand.grid(1:M,N:1)
 allcols <- cols[d+1] ##Cases will be red
@@ -131,7 +131,7 @@ file.remove(tmpfile)
 ```
 
 
-```{r,echo=FALSE,fig.width=11,fig.height=6}
+```{r batting_averages, fig.cap="Batting average histograms for 2010, 2011, and 2012.", echo=FALSE,fig.width=10.5,fig.height=5.25,message=FALSE}
 library(dplyr)
 library(rafalib)
 mypar(1,3)

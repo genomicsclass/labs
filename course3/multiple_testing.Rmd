@@ -287,7 +287,7 @@ As we consider a lower a lower p-value cut-off, the number of features detected 
 
 We want to construct a procedure that guarantees the FDR to be below a certain level $\alpha$. For any given $\alpha$, the Benjamini-Hochberg (1995) procedure is very practical because it simply requires that we are able to compute p-values for each of the individual tests and this permits a procedure to be defined.
 
-For the procedure order the p-values in increasing order: $p_{(1)},\dots,p_{(m)}. Then define $k$ to be the largest $i$ for which
+For the procedure order the p-values in increasing order: $p_{(1)},\dots,p_{(m)}$. Then define $k$ to be the largest $i$ for which
 
 $$p_{(i)} \leq \frac{i}{m}\alpha$$
 
@@ -364,13 +364,13 @@ $$
 \mbox{FDR} = E\left( \frac{V}{R} \mid R>0\right) \mbox{Pr}(R>0)
 $$
 
-In the approach proposed by Storey we condition on having a non-empty list, which implies $R>0$, and we instead compute the _positive FDR_ 
+In the approach proposed by Storey we condition on having a non-empty list, which implies $R>0$ , and we instead compute the _positive FDR_ 
 
 $$
 \mbox{pFDR} = E\left( \frac{V}{R} \mid R>0\right) 
 $$
 
-A second distinction is that while Benjamini and Hochberg's procedure controls under the worse case scenario, in which all null hypotheses are true ($m=m_0$), Storey proposes we actually try to estimate $m_0$ from the data. Because in high-throughput experiment we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values $>\lambda$ are mostly from cases in which the null hypothesis hold. We can then estimate $\pi_0 = m_0/m$ as: 
+A second distinction is that while Benjamini and Hochberg's procedure controls under the worse case scenario, in which all null hypotheses are true ( $m=m_0$ ), Storey proposes we actually try to estimate $m_0$ from the data. Because in high-throughput experiment we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values $>\lambda$ are mostly from cases in which the null hypothesis hold. We can then estimate $\pi_0 = m_0/m$ as: 
 $$
 \hat{\pi}_0 = \frac{\#\left\{p_i > \lambda \right\} }{ (1-\lambda) m }
 $$

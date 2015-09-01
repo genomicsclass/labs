@@ -14,13 +14,13 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Many of the analysis we perform with high-dimensional data relate directly or inderictly to distance. For example many clustering and machine learning techniques rely on being able to define distance using features or predictors. The concept of distance can be generalized from  physical distance. For example, we cluster animals into groups. When we do this, we put animals that are "close" in the same group:
 
-<img src="images/animals.png" align="middle" width="300">
+![Clustering of animals based](images/animals.png)
 
 Any time we cluster individuals into separate groups we are, explicitely or implicitely computing a distance. 
 
 to create _heatmaps_ a distance is computed explicitely. Heatmaps are widely used in genomics and other highthroughput fields:
 
-<img src="images/Heatmap.png" align="middle" width="300">
+![Example of heatmap](images/handmade/Heatmap.png)
 
 [Image Source: Heatmap, Gaeddal, 01.28.2007](http://commons.wikimedia.org/wiki/File:Heatmap.png) 
 
@@ -32,9 +32,9 @@ Here we will learn the necessary mathematics and computing skill to understand a
 
 As a review, let's define the distance between two points, $A$ and $B$, on a cartesian plane.
 
-```{r,echo=FALSE,fig.height=4}
+```{r,echo=FALSE,fig.cap=""}
 library(rafalib)
-mypar(1,1)
+mypar()
 plot(c(0,1,1),c(0,0,1),pch=16,cex=2,xaxt="n",yaxt="n",xlab="",ylab="",bty="n",xlim=c(-0.25,1.25),ylim=c(-0.25,1.25))
 lines(c(0,1,1,0),c(0,0,1,0))
 text(0,.2,expression(paste('(A'[x]*',A'[y]*')')),cex=1.5)
@@ -73,12 +73,13 @@ To define distance we need to know what points are since mathematical distance i
 Once we define points, the Euclidean distance is defined in a very similar way as it is defined for two dimensions. For example, the  distance between two samples $i$ and $j$ is
 
 $$
-d(i,j) = \sqrt{ \sum_{g=1}^{22215} (Y_{g,i}-Y_{g,j })^2 }
+\mboxx{dist}(i,j) = \sqrt{ \sum_{g=1}^{22215} (Y_{g,i}-Y_{g,j })^2 }
 $$
 
 and the distance between two features $h$ and $g$ as:
+
 $$
-d(h,g) = \sqrt{ \sum_{i=1}^{189} (Y_{h,i}-Y_{g,i})^2 }
+\mbox{dist}(h,g) = \sqrt{ \sum_{i=1}^{189} (Y_{h,i}-Y_{g,i})^2 }
 $$
 
 

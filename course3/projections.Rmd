@@ -14,7 +14,7 @@ Now that we have described the concept of dimension reduction and some of the ap
 
 As a review, remember that projections minimize distance between points and subspace
 
-<!-- ![projection](http://upload.wikimedia.org/wikipedia/commons/8/84/Linalg_projection_3.png) -->
+![Illustration of projection](http://upload.wikimedia.org/wikipedia/commons/8/84/Linalg_projection_3.png)
 
 In the figure above the point on top is pointing to a point in space. In this particular cartoon the space is two dimensional but we should be thinking abstractly. The space is represented by the Cartesian plan and the line on which the little person stands is a subspace of points. The projection to this subspace is the place that is closes to the original point. Geometry tells us that we can find this closest point by dropping a perpendicular line (dotted line) from the point to the space. The little person is standing on the projection.  The amount this person had to walk from the origin to the new projected point is referred to as _the coordinate_. 
 
@@ -29,7 +29,7 @@ library(rafalib)
 
 If we let $Y = \begin{pmatrix} 2 \\ 3\end{pmatrix}$ we can plot it like this:
 
-```{r,fig.width=4,fig.height=4}
+```{r point, fig.cap="Geometric representation of Y"}
 mypar (1,1)
 plot(c(0,4),c(0,4),xlab="Dimension 1",ylab="Dimension 2",type="n")
 arrows(0,0,2,3,lwd=3)
@@ -49,14 +49,19 @@ We say that $2$ and $3$ are the _coordinates_ and that
 $\begin{pmatrix} 1\\ 0\end{pmatrix} \mbox{and} \begin{pmatrix} 0\\1 \end{pmatrix} \mbox{are the basis}$
 
 Now let's define a new subspace. The red line in the plot below is subset $L$ defined by points satisfying $c \vec{v}$ with $\vec=\begin{pmatrix} 2& 1\end{pmatrix}^\top$. The projection of $\vec{y}$ onto $L$ is the closest point on $L$ to $\vec{y}$. So we need to find the $c$ that minimizes the distance between $\vec{y}$ and $c\vec{v}=(2c,c)$. In linear algebra we learn that the difference between these points is orthogonal to the space so:
+
 $$
 (\vec{y}-\hat{c}\vec{v}) \cdot \vec{v} = 0
 $$
+
 this implies that 
+
 $$
 \vec{y}\cdot\vec{v} - \hat{c}\vec{v}\cdot\vec{v} =  0
 $$
+
 and 
+
 $$\hat{c} = \frac{\vec{y}\cdot\vec{v}}
 {\vec{v}\cdot\vec{v}}$$
 
@@ -64,7 +69,7 @@ Here $\cdot$ represents the dot product: $\,\, \vec{x} \cdot \vec{y} = x_1 y_1+\
 
 The following R code confirms this equation works:
 
-```{r,fig.width=4,fig.height=4}
+```{r projection, fig.cap="Projection of Y onto new subspace."}
 mypar(1,1)
 plot(c(0,4),c(0,4),xlab="Dimension 1",ylab="Dimension 2",type="n")
 arrows(0,0,2,3,lwd=3)

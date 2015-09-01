@@ -20,13 +20,15 @@ We will describe powerful technique for exploratory data analysis based on _dime
 
 We consider an example with twin heights. Here we simulate 100 two dimensional points that represent the number of standard deviations each individual is from the mean height. Each pair of points is a pair of twins:
 
-```{r simulate twin heights,echo=FALSE,message=FALSE}
+```{r simulate twin heights, fig.cap="Simulated twin pair heights.",echo=FALSE,message=FALSE}
 library(rafalib)
 library(MASS)
-n <- 100
-mypar(1,1)
+
 set.seed(1)
+n <- 100
 y=t(mvrnorm(n,c(0,0), matrix(c(1,0.95,0.95,1),2,2)))
+
+mypar()
 plot(y[1,], y[2,], xlab="Twin 1 (standardized height)", 
      ylab="Twin 2 (standardized height)", xlim=c(-3,3), ylim=c(-3,3))
 points(y[1,1:2], y[2,1:2], col=2, pch=16)
@@ -44,15 +46,15 @@ What if we are only able to make 1 dimensional plots: 2 dimensions is too comple
 If we look back at the plot, and visualize a line between any pair of points, the length of this line is the distance between the two points. Note that these lines tend to go along the direction of the diagonal. We have seen before that we can "rotate" the plot so that the diagonal is in the x-axis by making a  MA-plot instead:
 
 
-```{r}
+```{r rotation, fig.cap="Twin height scatter plot (left) and MA-plot (right).",fig.width=10.5,fig.height=5.25}
 z1 = (y[1,]+y[2,])/2 ## the sum 
 z2 = (y[1,]-y[2,])   ## the difference
 
 z = rbind( z1, z2) ## matrix now same dimensions as y
 
+thelim <- c(-3,3)
 mypar(1,2)
 
-thelim <- c(-3,3)
 plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized height)",xlim=thelim,ylim=thelim)
 points(y[1,1:2],y[2,1:2],col=2,pch=16)
 
@@ -73,7 +75,8 @@ A = \,
 z = A y
 $$
 
-Also note that can transform back by simply multiplying by $A^{-1}$
+Also note that can transform back by simply multiplying by $A^{-1}$ as follows:
+
 $$
 A^{-1} = \,
 \begin{pmatrix}
@@ -87,6 +90,7 @@ $$
 ### Rotations 
 
 Note in the plot above the distance between the two orange points remains roughly the same, relative to the other points. This actually true for all pairs of points. A simple re-scaling of the transformation we performed above will actually make the distances to be exactly the same. What we will do is multiply by a scalar so that the standard deviations of each point is preserved. If you think of the columns of `y` as indpendent random variables with standard deviation $\sigma$ then note that the standard deviations of of $M$ and $A$ are 
+
 $$
 \mbox{sd}[ Z_1 ] = \mbox{sd}[ (Y_1 + Y_2) / 2 ] = \frac{1}{\sqrt{2}} \sigma \mbox{ and } \mbox{sd}[ Z_2] = \mbox{sd}[ Y_1 - Y_2  ] = {\sqrt{2}} \sigma 
 $$
@@ -100,9 +104,10 @@ A = \frac{1}{\sqrt{2}}
 1&-1\\
 \end{pmatrix}
 $$
+
 then the SD of the columns of $Y$ are the same as the variance of the columsn $Z$. Note that $A^{-1}A=I$ making $A$. We call matrices with this properties _orthogonal_ and it guarantees the SD-preserving properties described above. The distances are now exactly preserved:
 
-```{r}
+```{r rotation_preserves_dist, fig.cap="Distance computed from original data and after rotation is the same."}
 A <- 1/sqrt(2)*matrix(c(1,1,1,-1),2,2)
 z <- A%*%y
 d <- dist(t(y))
@@ -114,7 +119,7 @@ abline(0,1,col=2)
 
 We call this particular transformation a _rotation_ of `y`. 
 
-```{r}
+```{r rotation2, fig.cap="Twin height scatter plot (left) and after rotation (right).",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 
 thelim <- c(-3,3)
@@ -128,7 +133,7 @@ points(z[1,1:2],z[2,1:2],col=2,pch=16)
 The reason we applied this transformation in the first place was because we noticed that to compute the distances between points we followed a direction along the diagonal in the oritinal plot which after the rotation falls on the horizontal, or the the first dimension of `z`. So this rotation actually achieves what we orginally wanted: we can preserve the distances between points with just one dimension. Let's remove the second dimension of `z` and recompute distances:
 
 
-```{r}
+```{r approx dist, fig.cap="Distance computed with just one dimension after rotation versus actual distance."}
 d3 = dist(z[1,]) ##distance computed using just first dimension
 mypar(1,1)
 plot(as.numeric(d),as.numeric(d3)) 

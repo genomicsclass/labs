@@ -39,7 +39,7 @@ nullpvals <- rowttests(randomData,g)$p.value
 
 As we described above, reporting only p-values is a mistake when we can also report effect sizes. With high-throughput data, we can visualize the results by making a plot. The idea behind a _volcano plot_ is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis we plot the effect size. By using - log (base 10), the "highly significant" features appear at the top of the plot. Using log also permits us to better distinguish between small and very small p-values, for example 0.01 and $10^6$.  Here is the volcano plot for our results above:
 
-```{r}
+```{r volcano_plot, fig.align="Volcano plot. Negative log (base 10) p-values plotted against effect size estimates."}
 plot(results$dm,-log10(results$p.value),
      xlab="Effect size",ylab="- log (base 10) p-values")
 ```
@@ -50,7 +50,7 @@ Many features with very small p-values but small effect sizes, as we see here, a
 
 Another plot we can make to get an overall idea of the results is to make histograms of p-values. Note that when we generate completely null data the histogram follows a uniform distribution (we will say more about this later). With our original data set we see a higher frequency of smaller p-values. 
 
-```{r}
+```{r pval-hist, fig.cap="P-value histogram. We show a simulated case in which all null hypotheses are true (left) and p-values from the gene expression described above.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 hist(nullpvals,ylim=c(0,1400))
 hist(pvals,ylim=c(0,1400))
@@ -60,7 +60,7 @@ When we expect most hypothesis to be null and we don't see a uniform p-value dis
 
 Note that if we permute the outcomes and calculate p-values then, if the samples are independent, we should see a uniform distribution. With these data we do not:
 
-```{r}
+```{r pval-hist2, fig.cap="Histogram obtained after permuting labels."}
 permg <- sample(g)
 permresults <- rowttests(geneExpression,permg)
 hist(permresults$p.value)
@@ -80,7 +80,7 @@ ge[,49] <- ge[,49]/log2(exp(1)) ##immitate error
 
 A quick look at a summary of the distribution using boxplots immediately highlights the mistake:
 
-```{r}
+```{r boxplots, fig.cap="Boxplot for log-scale expression for all samples"}
 library(rafalib)
 mypar(1,1)
 boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
@@ -88,14 +88,14 @@ boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
 
 Note that the number of samples is a bit too large here making it hard to see the boxes. One can instead simply show the boxplot summaries without (cite Karl Broman):
 
-```{r}
+```{r kaboxplot, fig.cap="The 0.05,0.25,0.5,0.75, and 0.95 quantiles are plotted for each sample."}
 qs <- t(apply(ge,2,quantile,prob=c(0.05,0.25,0.5,0.75,0.95)))
 matplot(qs,type="l",lty=1)
 ```
 
 We can also plot all the histograms. Because we have so much data we create histograms using small bins, then smooth the heights of the bars and then plot _smooth histograms_. We re-calibrate the height of these smooth curves so that if a bar is made with base of size "unit" and height given by the curve at $x_0$, the area approximates the number of points in region of size "unit" centered at $x_0$:
 
-```{r}
+```{r shist, fig.cap="Smooth histograms for each sample."} 
 mypar(1,1)
 shist(ge,unit=0.5)
 ```
@@ -104,7 +104,7 @@ shist(ge,unit=0.5)
 
 Scatterplots and correlation are not the best tools to detect replication problems. Note, for example, that 1,2,3,4 and 100,200,300,400 are two lists with very different values yet have perfect correlation. A better measure of replication can be obtained from examining the differences between the values that should be the same. Therefore, a better plot is a rotation of the scatter plot containing the differences on the y-axis and the averages on the x-axis. This plot was originally named a Bland-Altman plot, but in the genomics world it is commonly referred to as an MA-plot. The name MA comes from plots of red log intensity minus (M) green intensities versus average (A) log intensities used with microarrays (MA) data.
 
-```{r}
+```{r maplot, fig.cap="Scatter plot (left) and M versus A plot (right) for the same data.", fig.width=10.5,fig.height=5.25}
 x <- ge[,1]
 y <- ge[,2]
 mypar(1,2)
