@@ -228,7 +228,7 @@ By requiring a FWER $\leq$ 0.05 we are practically assuring 0 power (sensitivity
 
 Before running the simulation we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above which is necessary here due to the fact that we will be generating several simulations. Understanding this chuck of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
 
-```{r,message=FALSE}
+```{r Q_distribution,message=FALSE, fig.cap="Q (false positives divide by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation."}
 library(genefilter) ##rowttests is here
 set.seed(1)
 ## Define groups to be used with rowttests
@@ -263,7 +263,7 @@ The FDR is relatively high here. This is because for 90% of the tests the null h
 To visually see why the FDR is high, we can make a histogram of the p-values. We use a higher value of `m` to have more data from the histogram. We draw a horizontal line representing the uniform distribution one gets for the `m0` cases for which the null is true. 
 
 
-```{r}
+```{r pval_hist, fig.cap="Histogram of p-values. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups."}
 set.seed(1)
 controls <- matrix(sample(population, N*m, replace=TRUE),nrow=m)
 treatments <-  matrix(sample(population, N*m, replace=TRUE),nrow=m)
@@ -276,7 +276,7 @@ abline(h=m0/20)
 ```
 The first bar on the left represents cases with p-values smaller than 0.05. From the horizontal line we can infer that about 1/2 are false positives. This is in agreement with an FDR of 0.50. If we look at the bar for 0.01 we see can infer a lower FDR, as expected, but would call less features significant.
 
-```{r}
+```{r pval_hist2, fig.cap="Histogram of p-values with breaks at every 0.01. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups."}
 hist(pvals,breaks=seq(0,1,0.01))
 abline(h=m0/100)
 ```
@@ -293,7 +293,7 @@ $$p_{(i)} \leq \frac{i}{m}\alpha$$
 
 The procedure is to reject tests with p-values larger than $p_{(k)}$. Here is an example of how we would select the $k$ with code using the p-values computed above:
 
-```{r}
+```{r pvalue_vs_rank_plot, fig.cap="Plotting p-values plotted against their rank illustrates the Benjamini-Hochberg procedure. The plot on the right is a close-up of plot on the left.",fig.width=10.5,fig.height=5.25}
 alpha <- 0.05
 i = seq(along=pvals)
 
@@ -312,7 +312,7 @@ We can show mathematically that this procedure has FDR lower than 5%. Please see
 
 Keep in mind that we don't have to run the complicated code above as we have functions to do this. For example, using the p-values `pvals` computed above
 we simply type the following:
-```{r}
+```{r fdr-versus-pval, fig.cap="FDR estimates plotted against p-value."}
 fdr <- p.adjust(pvals, method="fdr")
 mypar(1,1)
 plot(pvals,fdr,log="xy")
@@ -321,7 +321,7 @@ abline(h=alpha,v=cutoff) ##cutoff was computed above
 
 We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower than .05. Note that we compute all p-values first, and then use these to decide which get called.
 
-```{r}
+```{r Q_distribution2,message=FALSE, fig.cap="Histogram of Q (false positives divide by number of features called significant) when the alternative hypothesis is true for some features."}
 alpha <- 0.05
 B <- 100 ## number of simulations. We should increase for more precision
 Qs <- replicate(B,{
@@ -376,7 +376,7 @@ $$
 $$
 There are more sophisticated procedures than this, but they follow the same general idea. Here is an example setting $\lambda=0.1$. Using the p-values computed above we have:
 
-```{r}
+```{r pi0_estimate, fig.cap="p-value histogram with pi0 estimate."}
 hist(pvals,breaks=seq(0,1,0.05),freq=FALSE)
 lambda = 0.1
 pi0=sum(pvals> lambda) /((1-lambda)*m)
@@ -392,7 +392,7 @@ However, instead of doing this we compute a _q-value_ for each test. If a featur
 
 In R this can be computed with the `qvalue` function in the `qvalue` package:
 
-```{r}
+```{r qval_vs_pval,fig.cap="Q-values versus p-values."}
 library(qvalue)
 res <- qvalue(pvals)
 qvals <- res$qvalues
