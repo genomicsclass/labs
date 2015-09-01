@@ -56,7 +56,7 @@ disease=factor(c(rep(0,180),rep(1,20),rep(0,40),rep(1,10)),
 genotype=factor(c(rep("AA/Aa",200),rep("aa",50)),
                 levels=c("AA/Aa","aa"))
 dat <- data.frame(disease, genotype)
-dat <- dat[sample(nrow(dat)),]##shuffle them up
+dat <- dat[sample(nrow(dat)),] #shuffle them up
 head(dat)
 ```
 

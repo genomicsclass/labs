@@ -186,7 +186,7 @@ To describe the problem of confoudning with a real example we will use a dataset
 
 ```{r,message=FALSE}
 ##Following two libraries are available from Bioconductor
-library(Biobase) ## install from Bioconductor
+library(Biobase) ##install from Bioconductor
 library(genefilter) 
 ###Following library is available from course repository
 library(GSE5859) 

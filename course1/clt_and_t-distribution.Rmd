@@ -80,7 +80,7 @@ Here we will use the mice phenotype data as an example. We start by creating two
 ```{r,message=FALSE}
 library(dplyr)
 
-dat <- read.csv("mice_pheno.csv") ## We downloaded this file in a previous section
+dat <- read.csv("mice_pheno.csv") #We downloaded this file in a previous section
 
 controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
 

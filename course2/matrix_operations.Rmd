@@ -152,7 +152,7 @@ Here is a simple example. We can check to see if `abc=c(3,2,1)` is a solution:
 
 ```{r}
 X  <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
-abc <- c(3,2,1) ## use as an example
+abc <- c(3,2,1) #use as an example
 rbind( sum(X[1,]*abc), sum(X[2,]*abc), sum(X[3,]%*%abc))
 ```
 
@@ -240,7 +240,7 @@ $$
 
 In R you can form an identity matrix this way:
 ```{r}
-n <- 5 ##pick dimensions
+n <- 5 #pick dimensions
 diag(n)
 ```
 
@@ -253,7 +253,7 @@ As we will see when we get to the section on applications to linear models, bein
 ```{r}
 X <- matrix(c(1,3,2,1,-2,1,1,1,-1),3,3)
 y <- matrix(c(6,2,1),3,1)
-solve(X)%*%y ##equivalent to solve(X,y)
+solve(X)%*%y #equivalent to solve(X,y)
 ```
 
 Please note that `solve` is a function that should be used with caution as it is not generally numerically stable. We explain this in much more detail in the QR factorization section. 

@@ -150,7 +150,7 @@ fit <- lm(y~x)
 abline(fit$coef,lwd=2)
 b <- round(fit$coef,4)
 text(78, 200, paste("y =", b[1], "+", b[2], "x"), adj=c(0,0.5))
-rho <- round(cor(x,y),4) # 0.8567
+rho <- round(cor(x,y),4) 
 text(78, 187,expression(paste(rho," = 0.8567")),adj=c(0,0.5))
 
 plot(x,y,lwd=2)
@@ -274,7 +274,7 @@ legend(1,0.4,c("Drug A","Drug B","Drug C"),lwd=2, col=1:3)
 ### Ignoring Important Factors
 
 ```{r,echo=FALSE}
-##simulate data
+##Simulate data
 set.seed(12201970)
 
 x <- 1:8

@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 
 ```{r,results=FALSE,echo=FALSE}
-set.seed(1) ##so that we get same results
+set.seed(1) 
 ```
 
 ## Central Limit Theorem In Practice
@@ -25,7 +25,7 @@ download(url,destfile=filename)
 ```
 
 ```{r}
-dat <- read.csv("mice_pheno.csv") ##file was previously downloaded
+dat <- read.csv("mice_pheno.csv") #file was previously downloaded
 head(dat)
 ```
 
@@ -92,7 +92,7 @@ Now we can use qq-plots to see how well CLT approximations works for these. If i
 library(rafalib)
 mypar(2,2)
 for(i in seq(along=Ns)){
-  title <- paste("N=",Ns[i],"Avg=",signif(mean(res[,i]),3),"SD=",signif(popsd(res[,i]),3)) ##popsd defined above
+  title <- paste("N=",Ns[i],"Avg=",signif(mean(res[,i]),3),"SD=",signif(popsd(res[,i]),3)) #popsd defined above
   qqnorm(res[,i],main=title)
   qqline(res[,i],col=2)
 }

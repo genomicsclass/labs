@@ -116,7 +116,7 @@ abline(h=1)
 
 In the life science, the log transformation is also commonly used because fold changes are the most widely used quantification of interest. Note that a fold change of 100 can be a ratio of 100/1 or 1/100. However, 1/100 is much closer to 1 (no fold change) than 100: ratios are not symmetric about 1.
 
-## Footnotes <a name="foot"></a>
+### Footnotes <a name="foot"></a>
 
 ### Robust Statistics
 

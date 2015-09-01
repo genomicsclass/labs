@@ -25,7 +25,7 @@ set.seed(1)
 B <- 10000
 h0 <- 56.67
 v0 <- 0
-g <- 9.8 ## meters per second
+g <- 9.8 ##meters per second
 
 n <- 25
 tt <- seq(0,3.4,len=n) ##time in secs, t is a base function
@@ -87,7 +87,7 @@ betahat <- replicate(B,{
   y <- sampledat$sheight
   lm(y~x)$coef
   })
-betahat <- t(betahat) ## have estimates in two columns
+betahat <- t(betahat) #have estimates in two columns
 ```
 
 By making qq-plots, we see that our estimates are approximately normal random variables:

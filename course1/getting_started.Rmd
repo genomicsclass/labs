@@ -49,7 +49,7 @@ help("install.packages")
 and that the hashtag symbol represents comments and are not interpreted:
 
 ```{r}
-## This is just a comment
+##This is just a comment
 ```
 
 
@@ -149,9 +149,9 @@ install_github("genomicsclass/dagdata")
 The file we are working with is actually included in this package. So once you install the package, the file is on your computer. However, finding it is requires advanced knowledge. Here are the lines of code:
 
 ```{r}
-dir <- system.file(package="dagdata") ##This function extracts the location of package
+dir <- system.file(package="dagdata") #This function extracts the location of package
 list.files(dir)
-list.files(file.path(dir,"extdata")) ## we know external data is in this directory
+list.files(file.path(dir,"extdata")) #We know external data is in this directory
 ```
 
 And now we are ready to read-in the file:
@@ -168,14 +168,14 @@ The learning curve for R syntax is slow. One of the harder aspects that requires
 Take a look at the dataset we read-in:
 ```{r}
 dat <- read.csv(filename)
-head(dat) ##In R Studio use View(dat)
+head(dat) #In R Studio use View(dat)
 ```
 
 Note that there are two types of diets, which are denoted in the first column. Note also that if we want just the weights, we only need the second column. So if we want the weights for mice on the `chow` diet, we subset and filter like this:
 
 ```{r,message=FALSE}
 library(dplyr) 
-chow <- filter(dat, Diet=="chow") ##keep only the ones with chow diet
+chow <- filter(dat, Diet=="chow") #keep only the ones with chow diet
 head(chow)
 ```
 

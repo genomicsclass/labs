@@ -110,7 +110,7 @@ table(null_hypothesis,calls)
 The first column of the table above shows us $V$ and $S$. Note that $V$ and $S$ are random variables. If we run the simulation repeatedly, these values change. Here is a quick example:
 
 ```{r}
-B <- 10 ## number of simulations
+B <- 10 ##number of simulations
 VandS <- replicate(B,{
   calls <- sapply(1:m, function(i){
     control <- sample(population,N)
@@ -231,7 +231,7 @@ Before running the simulation we are going to _vectortize_ the code. This means 
 ```{r Q_distribution,message=FALSE, fig.cap="Q (false positives divided by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation."}
 library(genefilter) ##rowttests is here
 set.seed(1)
-## Define groups to be used with rowttests
+##Define groups to be used with rowttests
 g <- factor( c(rep(0,N),rep(1,N)) )
 B <- 100 ## number of simulations
 Qs <- replicate(B,{
@@ -323,14 +323,14 @@ We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower tha
 
 ```{r Q_distribution2,message=FALSE, fig.cap="Histogram of Q (false positives divided by number of features called significant) when the alternative hypothesis is true for some features."}
 alpha <- 0.05
-B <- 100 ## number of simulations. We should increase for more precision
+B <- 100 ##number of simulations. We should increase for more precision
 Qs <- replicate(B,{
   controls <- matrix(sample(population, N*m, replace=TRUE),nrow=m)
   treatments <-  matrix(sample(population, N*m, replace=TRUE),nrow=m)
   treatments[which(!nullHypothesis),]<-treatments[which(!nullHypothesis),]+delta
   dat <- cbind(controls,treatments)
   pvals <- rowttests(dat,g)$p.value 
-  ## then the FDR
+  ##then the FDR
   calls <- p.adjust(pvals,method="fdr") < alpha
   R=sum(calls)
   Q=ifelse(R>0,sum(nullHypothesis & calls)/R,0)

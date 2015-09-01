@@ -47,10 +47,10 @@ If we look back at the plot, and visualize a line between any pair of points, th
 
 
 ```{r rotation, fig.cap="Twin height scatter plot (left) and MA-plot (right).",fig.width=10.5,fig.height=5.25}
-z1 = (y[1,]+y[2,])/2 ## the sum 
-z2 = (y[1,]-y[2,])   ## the difference
+z1 = (y[1,]+y[2,])/2 #the sum 
+z2 = (y[1,]-y[2,])   #the difference
 
-z = rbind( z1, z2) ## matrix now same dimensions as y
+z = rbind( z1, z2) #matrix now same dimensions as y
 
 thelim <- c(-3,3)
 mypar(1,2)

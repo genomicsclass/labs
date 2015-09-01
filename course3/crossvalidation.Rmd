@@ -71,21 +71,21 @@ Now we will create a loop, which tries out each value of k from 1 to 12, and run
 set.seed(1)
 ks <- 1:12
 res <- sapply(ks, function(k) {
-  # try out each version of k from 1 to 12
+  ##try out each version of k from 1 to 12
   
   res.k <- sapply(seq_along(idx), function(i) {
-    # loop over each of the 5 cross-validation folds
+    ##loop over each of the 5 cross-validation folds
 
-    # predict the held-out samples using k nearest neighbors
+    ##predict the held-out samples using k nearest neighbors
     pred <- knn(train = Xsmall[ -idx[[i]], ],
                 test = Xsmall[ idx[[i]], ],
                 cl = y[ -idx[[i]] ], k = k)
 
-    # the ratio of misclassified samples
+    ##the ratio of misclassified samples
     mean(y[ idx[[i]] ] != pred)
   })
   
-  # average over the 5 folds
+  ##average over the 5 folds
   mean(res.k)
 })
 ```

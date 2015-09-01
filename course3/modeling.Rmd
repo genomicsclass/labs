@@ -173,7 +173,7 @@ So can we model the distribution of these standard errors? Are they normal? Note
 
 ```{r bio_sd_versus_tech_sd, fig.cap="Histograms of biological variance and technical variance.",message=FALSE}
 library(Biobase)
-library(maPooling) ##install with install_github("genomicsclass/maPooling")
+library(maPooling) ##available from course github repo
 
 data(maPooling)
 pd=pData(maPooling)

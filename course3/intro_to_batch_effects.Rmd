@@ -17,20 +17,20 @@ Batch effects are the biggest challenge faced by genomics research, especially i
 ```{r astronomical_units,echo=FALSE,message=FALSE,fig.cap="Estimates of the astronomical, unit with estimates of spread, verus year it was reported. The two laboratories that reported more than one estimate are shown in color."}
 library(rafalib)
 library(downloader)
-# Download the data from
+##Download the data from
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/astronomicalunit.csv"
 filename <- tempfile() 
 download(url, destfile=filename)
 dat <- read.csv(filename)
 year <-  jitter(dat[,2]) ##add jitter so points are not on top of each other
 
-## Use color to denote the labs that reported more than one measurement
+##Use color to denote the labs that reported more than one measurement
 labs <- as.character(dat[,1]) ##what lab did it
 labs[ !labs%in%c("Jodrell Bank","Spencer Jones")] <- "Others"
 labs <- factor(labs, levels=c("Others","Spencer Jones","Jodrell Bank"))
 cols=as.numeric(labs)
 
-current <- 92.956039 ## this is the current estimate in millions of mph
+current <- 92.956039 ##this is the current estimate in millions of mph
 
 mypar()
 plot(year, dat[,3], ylim=c(min(dat[,4]),max(dat[,5])), pch=16, col=cols, 

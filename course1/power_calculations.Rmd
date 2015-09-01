@@ -26,7 +26,7 @@ if(!file.exists(filename)) download(url,destfile=filename)
 
 ```{r,message=FALSE}
 library(dplyr)
-dat <- read.csv("mice_pheno.csv") ## We downloaded this file in a previous section
+dat <- read.csv("mice_pheno.csv") #Previously downloaded 
 
 controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
 

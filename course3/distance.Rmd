@@ -63,7 +63,7 @@ The data represent RNA expression levels for eight tissues, each with several in
 library(tissuesGeneExpression)
 data(tissuesGeneExpression)
 dim(e) ##e contains the expression data
-table(tissue) ## tissue[i] tells us what tissue is represented by e[,i]
+table(tissue) ##tissue[i] tells us what tissue is represented by e[,i]
 ```
 
 We are interested in describing distance between samples in the context of this dataset. We might also be interested in finding genes that _behave similarly_ across samples.

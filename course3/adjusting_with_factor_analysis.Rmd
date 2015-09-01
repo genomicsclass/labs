@@ -35,7 +35,7 @@ chr <- geneAnnotation$CHR
 
 tt<-rowttests(geneExpression,batch)
 
-ind1 <- which(chr=="chrY") ##real differences
+ind1 <- which(chr=="chrY") #real differences
 ind2 <- setdiff(c(order(tt$dm)[1:25],order(-tt$dm)[1:25]),ind1)
 
 set.seed(1)
@@ -105,7 +105,7 @@ for(i in 1:12){
 What happens if we simply remove the top six PC from the data and then perform a t-test? 
 
 ```{r}
-D <- s$d; D[1:4]<-0 ##take out first 2
+D <- s$d; D[1:4]<-0 #take out first 2
 cleandat <- sweep(s$u,2,D,"*")%*%t(s$v)
 res <-rowttests(cleandat,factor(sex))
 ```
@@ -148,8 +148,8 @@ for(b in 1:2){
   
   svafit <- sva(y,mod,B=b,n.sv=5)
   weights = svafit$pprob.gam*(1-svafit$pprob.b)
-  ## Weighted SVD
-  surrogate <- svd( y*weights)$v[,1]
+  
+  surrogate <- svd( y*weights)$v[,1]#Weighted SVD
   
   image(matrix(weights[geneindex],nrow=1),xaxt="n",yaxt="n",col=brewer.pal(9,"Blues"))
   plot(surrogate[cind],bg=sex[cind]+1,pch=21,xlab="",xaxt="n",ylab="Surrogate variable",ylim=c(-.5,.5),cex=1.5)

@@ -52,7 +52,7 @@ x0 <- makeX(M0)##the final values for y=0 (green)
 testx0 <- makeX(M0)
 x1 <- makeX(M1)
 testx1 <-makeX(M1)
-x <- rbind(x0,x1) ## one matrix with everything
+x <- rbind(x0,x1) ##one matrix with everything
 test <- rbind(testx0,testx1)
 y <- c(rep(0,N),rep(1,N)) #the outcomes
 ytest <- c(rep(0,N),rep(1,N))
@@ -115,7 +115,7 @@ x0 <- makeX(M0)##the final values for y=0 (green)
 testx0 <- makeX(M0)
 x1 <- makeX(M1)
 testx1 <-makeX(M1)
-x <- rbind(x0,x1) ## one matrix with everything
+x <- rbind(x0,x1) ##one matrix with everything
 test <- rbind(testx0,testx1)
 ```
 

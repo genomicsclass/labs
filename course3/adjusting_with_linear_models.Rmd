@@ -180,8 +180,7 @@ We will cover `limma` in more detail in a later section.
  Combat [NEED CITATION] is a popular method and is based on using linear models to adjust for batch effects. It fits a hierarchical model (we will learn about these in the next section) to estimate and remove row specific batch effects. Combat uses a modular approach. In a first step, what is considered to be a batch effect is removed:
 
 ```{r}
-##install_bioc("sva")
-library(sva)
+library(sva) #available from Bioconductor
 mod <- model.matrix(~sex)
 cleandat <- ComBat(geneExpression,batch,mod)
 ```

@@ -44,7 +44,7 @@ abline(v=obsdiff)
 How many of the null means are bigger than the observed value? That proportion would be the p-value for the null.
 
 ```{r}
-# the proportion of permutations with larger difference
+#the proportion of permutations with larger difference
 mean(abs(avgdiff) > abs(obsdiff))
 ```
 
