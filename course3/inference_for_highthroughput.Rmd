@@ -76,7 +76,7 @@ g
 
 If we were interested in a particular gene, let's arbitrarily pick the one on the 25th row, we would simply compute a t-test. Assuming the data is well approximated by normal:
 
-```{r qqplots_for_one_gene, fig.cap="Normal qq-plots for one gene. Left plot shows first groud and right plot shows second group.",fig.width=10.5,fig.height=5.25}
+```{r qqplots_for_one_gene, fig.cap="Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.",fig.width=10.5,fig.height=5.25}
 e <- geneExpression[25,]
 mypar(1,2)
 

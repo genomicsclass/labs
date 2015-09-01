@@ -71,7 +71,7 @@ test[d==0]  <- rbinom(sum(d==0), 1, p=1-accuracy)
 
 Because there are so many more controls than cases, even with low false positive rate, we get enough so that we have more controls than cases in the tested-positive group:
 
-```{r simulation, fig.cap="Simulation demonstrating Bayes theorem. Top plot shows every individual with red denoting cases. Each one takes a test and with 90% gives correct answer. Those called positive (either by correctly or incorrectly) are put in the bottom left pane. Those called negative in the bottom right.", fig.width=10.5, fig.height=7.5}
+```{r simulation, fig.cap="Simulation demonstrating Bayes theorem. Top plot shows every individual with red denoting cases. Each one takes a test and with 90% gives correct answer. Those called positive (either correctly or incorrectly) are put in the bottom left pane. Those called negative in the bottom right.", fig.width=10.5, fig.height=7.5}
 cols <- c("grey","red")
 people <- expand.grid(1:M,N:1)
 allcols <- cols[d+1] ##Cases will be red
@@ -156,7 +156,7 @@ $$
 
 Confidence interval? .450-.222 to .450+.222 = .228 to .672
 
-Hierarchichal Model
+Hierarchical Model
 
 Pick a random player, then what is their batting average
 
@@ -169,7 +169,7 @@ $$
 
 Two levels of variability: 1) Player to player variability and 2) variability due to luck when batting
 
-Hierarchichal Model
+Hierarchical Model
 
 $$
 \begin{align*}
@@ -182,7 +182,7 @@ Here $\theta$ is our players "intrinsic" average value, $\mu$ is the average of 
 $\sigma$ is the variability due to luck at each AB.
 
 
-Hierarchichal Model
+Hierarchical Model
 
 Here are the equations with our data
 

@@ -80,7 +80,7 @@ ge[,49] <- ge[,49]/log2(exp(1)) ##immitate error
 
 A quick look at a summary of the distribution using boxplots immediately highlights the mistake:
 
-```{r boxplots, fig.cap="Boxplot for log-scale expression for all samples"}
+```{r boxplots, fig.cap="Boxplot for log-scale expression for all samples."}
 library(rafalib)
 mypar(1,1)
 boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
@@ -88,7 +88,7 @@ boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
 
 Note that the number of samples is a bit too large here making it hard to see the boxes. One can instead simply show the boxplot summaries without (cite Karl Broman):
 
-```{r kaboxplot, fig.cap="The 0.05,0.25,0.5,0.75, and 0.95 quantiles are plotted for each sample."}
+```{r kaboxplot, fig.cap="The 0.05, 0.25, 0.5, 0.75, and 0.95 quantiles are plotted for each sample."}
 qs <- t(apply(ge,2,quantile,prob=c(0.05,0.25,0.5,0.75,0.95)))
 matplot(qs,type="l",lty=1)
 ```

@@ -228,7 +228,7 @@ By requiring a FWER $\leq$ 0.05 we are practically assuring 0 power (sensitivity
 
 Before running the simulation we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above which is necessary here due to the fact that we will be generating several simulations. Understanding this chuck of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
 
-```{r Q_distribution,message=FALSE, fig.cap="Q (false positives divide by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation."}
+```{r Q_distribution,message=FALSE, fig.cap="Q (false positives divided by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation."}
 library(genefilter) ##rowttests is here
 set.seed(1)
 ## Define groups to be used with rowttests
@@ -293,7 +293,7 @@ $$p_{(i)} \leq \frac{i}{m}\alpha$$
 
 The procedure is to reject tests with p-values larger than $p_{(k)}$. Here is an example of how we would select the $k$ with code using the p-values computed above:
 
-```{r pvalue_vs_rank_plot, fig.cap="Plotting p-values plotted against their rank illustrates the Benjamini-Hochberg procedure. The plot on the right is a close-up of plot on the left.",fig.width=10.5,fig.height=5.25}
+```{r pvalue_vs_rank_plot, fig.cap="Plotting p-values plotted against their rank illustrates the Benjamini-Hochberg procedure. The plot on the right is a close-up of the plot on the left.",fig.width=10.5,fig.height=5.25}
 alpha <- 0.05
 i = seq(along=pvals)
 
@@ -321,7 +321,7 @@ abline(h=alpha,v=cutoff) ##cutoff was computed above
 
 We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower than .05. Note that we compute all p-values first, and then use these to decide which get called.
 
-```{r Q_distribution2,message=FALSE, fig.cap="Histogram of Q (false positives divide by number of features called significant) when the alternative hypothesis is true for some features."}
+```{r Q_distribution2,message=FALSE, fig.cap="Histogram of Q (false positives divided by number of features called significant) when the alternative hypothesis is true for some features."}
 alpha <- 0.05
 B <- 100 ## number of simulations. We should increase for more precision
 Qs <- replicate(B,{

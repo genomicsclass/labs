@@ -113,7 +113,7 @@ Note that the variability plotted here includes biological variability, which th
 
 We use palindrome locations in the HMCV genome as example. We read in the locations of the palindrome and then count the number of palindromes in each 4,000 basepair segments.
 
-```{r, palindrome_count_histogram, fig.cap="Palindrom count histogram."}
+```{r, palindrome_count_histogram, fig.cap="Palindrome count histogram."}
 datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
 x=read.csv(file.path(datadir,"hcmv.csv"))[,2]
 
