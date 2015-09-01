@@ -11,7 +11,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Bayesian Statistics
 
-One distinguishing characteristic of high-throuhgput data is that we make many measure of related outcomes. For example, we measure the expression of thousands of genes, or the height of thousands of peaks represneting protein binding, or the methyaltion levels across several CpGs. However, most of the statistical inference approach we have shown here treat each feature independently and pretty much ignores data from other features. We will learn how using statistical models we can gain power by modeling features jointly. The most succsefull of these models are what we refer to as hiearchical models which are best explained in the context of Bayesian statistics.
+One distinguishing characteristic of high-throughput data is that we make many measure of related outcomes. For example, we measure the expression of thousands of genes, or the height of thousands of peaks representing protein binding, or the methylation levels across several CpGs. However, most of the statistical inference approach we have shown here treat each feature independently and pretty much ignores data from other features. We will learn how using statistical models we can gain power by modeling features jointly. The most successful of these models are what we refer to as hierarchical models which are best explained in the context of Bayesian statistics.
 
 ### Bayes theorem
 
@@ -23,7 +23,7 @@ $$
 
 with $+$ meaning a positive test and $D$ representing if you actually have (1) the disease or not (0).
 
-Suppose we select random person and they test postive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$. The  cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D)=0.0025$. To answer this question we will use Bayes Theorem, which in general  tells us that
+Suppose we select random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$. The  cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D)=0.0025$. To answer this question we will use Bayes Theorem, which in general  tells us that
 
 $$
 \mbox{Pr}(A \mid B)  =  \frac{\mbox{Pr}(B \mid A)\mbox{Pr}(A)}{\mbox{Pr}(B)} 
@@ -38,17 +38,17 @@ $$
 \end{align*}
 $$
 
-Pluging in the numbers we get:
+Plugging in the numbers we get:
 
 $$
 \frac{0.99 \cdot 0.0025}{0.99 \cdot 0.0025 + 0.01 \cdot (.9975)}  =  0.02 
 $$
 
-Note that this says that despite the test having 0.99 accuracy, the probabilty of having disease given a positive test in 0.02. This may appear counterintutive to some. The reason why this is the case is because we have to factor in the very rare probability that a person, chosen at random, has the disease. To see the 
+Note that this says that despite the test having 0.99 accuracy, the probability of having disease given a positive test in 0.02. This may appear counterintuitive to some. The reason why this is the case is because we have to factor in the very rare probability that a person, chosen at random, has the disease. To see the 
 
 ### Simulation
 
-The following simulation is meant help you visualize Bayes Theorem. We start by randomely selection 1500 people from a population in which the disease in question has a 5% prevalence.
+The following simulation is meant help you visualize Bayes Theorem. We start by randomly selection 1500 people from a population in which the disease in question has a 5% prevalence.
 
 ```{r}
 set.seed(3)
