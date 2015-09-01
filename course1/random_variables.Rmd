@@ -44,7 +44,7 @@ We are interested in determining if following a given diet makes mice heavier af
 head(dat) 
 ``` 
 
-In RStuidio, you can vie the entire dataset with
+In RStudio, you can vie the entire dataset with
 ```{r,eval=FALSE}
 View(dat)
 ```

@@ -3,7 +3,7 @@ layout: page
 title: Getting Started
 ---
 
-# Getting started
+# Getting Started
 
 In this book we will be using the [R](https://cran.r-project.org/) programming language for all our analysis. You will learn R and statistics simultaneously. However, we assume you have some basic programming skills and knowledge of R syntax. If you don't, your first homework, listed below, is to complete a tutorial. Here we give step-by-step instructions on how to get set up to follow along.
 
@@ -20,7 +20,7 @@ The first step is to install R. You can download and install R from the [Compreh
 
 The next step is to install RStudio. Technically you can run all the code shown here without installing RStudio, but we highly recommend this integrated development environment (IDE). Instructions are [here](http://www.rstudio.com/products/rstudio/download/) and for Windows we have special [instructions](https://github.com/genomicsclass/windows).
 
-## Learn R basics
+## Learn R Basics
 
 The first homework assignment is to complete an R tutorial to familiarize yourself with the basics of programming and R syntax. If you are already familiar you can skip to the next section.
 
@@ -53,7 +53,7 @@ and that the hashtag symbol represents comments and are not interpreted:
 ```
 
 
-## Installing packages
+## Installing Packages
 
 The first R command we will run is `install.packages`. If you took the `swirl` tutorial you already did this. R only includes a basic set of functions. It can do much more than this, but not everybody needs everything so we instead make some functions via packages. Many of these functions are stored in CRAN. Note that these packages are vetted. You can easily install from within R if you know the name of the function. As an example, we are going to install the packages `rafalib` and `downloader` which we use in our first data analysis examples:
 
@@ -71,7 +71,7 @@ library(downloader)
 
 From now on you will see that we sometimes load packages without installing them. This is because once you install the package, it remains in place and only needs to be loaded. If you try to load a package and get an error, it probably means you need to install it.
 
-## Importing data into R
+## Importing Data Into R
 
 The first step when getting ready to analyze data is to read-in the data into R. There are several ways to do this and we will discuss three of them. But you only need to learn one to follow along. 
 
@@ -80,7 +80,7 @@ In the life sciences, small datasets such as the one used as an example in the n
 The first step is to find the file containing your data and know its *path*. 
 
 
-### Paths and the working directory
+### Paths And The Working Directory
 
 When you are working in R it is useful to know your _working directory_. This is the directory or folder in which R will save or look for files by default. You can see your working directory by typing:
 
@@ -92,7 +92,7 @@ You can also change your working directory using the function `setwd`. Or you ca
 
 The functions that read and write files (there are several in R) assume you mean to look for files or write files in the working directory. Our recommended approach for beginners will have you reading and writing to the working directory. However, you can also type the [full path](http://www.computerhope.com/jargon/a/absopath.htm), which will work independently of the working directory.
 
-### Projects in RStudio
+### Projects In RStudio
 
 We find that the simplest way to organize yourself is to start a Project in RStudio (Click on "File" and "New Project"). When creating the project, you will select a folder to be associated with it. You can then download all your data into this folder. Your working directory will be this folder.
 
@@ -161,7 +161,7 @@ dat <- read.csv(filename)
 ```
 
 
-## Brief introduction to dplyr
+## Brief Introduction To `dplyr`
 
 The learning curve for R syntax is slow. One of the harder aspects that requires getting used to is subsetting data tables. The `dplyr` packages brings these tasks closer to English and we are therefore going to introduce two simple functions: one is used to subset and the other to select columns.
 
