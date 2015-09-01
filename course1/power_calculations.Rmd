@@ -50,7 +50,7 @@ t.test(hf,control)$p.value
 Did we make a mistake? By not rejecting the null hypothesis are we saying the diet has no effect? The answer to this question is no. All we can say is that we did not reject the null. But this does not necessarily imply that the null is true. The problem is that in this particular instance we don't have enough _power_, a term we are now going to define. If you are doing scientific research it is very likely that you will have to do a power calculation at some point. In many cases it is an ethical obligation as it can help you avoid sacrificing mice unnecessarily. Here we explain what this means.
 
 
-### Types of Error
+### Types Of Error
 
 Whenever we perform a statistical test we aware that we may make a mistake. This is why our p-values are not 0. Under the null, there is always a positive, perhaps super small, but still a chance that we will reject the null when it is true. If the p-value is 0.05, it will happen 1 out of 20 times. This *error* is called _type I error_ by statisticians. 
 

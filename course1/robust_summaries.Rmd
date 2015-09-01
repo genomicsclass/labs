@@ -43,10 +43,10 @@ estimate of the actual center. Notice how much closer we are to one with the MAD
 mad(x)
 ```
 
-## Spearman correlation
+## Spearman Correlation
 Earlier we saw that the correlation is also sensitive to outliers. Here we construct a independent list of numbers, but for which a similar mistake was made for the same entry:
 
-```{r, scatter_plot_showing_outlier,fig.cap="Scatter plot showing bivariate normal data with one signle outlier resulting in large values in both dimensions."}
+```{r, scatter_plot_showing_outlier,fig.cap="Scatter plot showing bivariate normal data with one signal outlier resulting in large values in both dimensions."}
 set.seed(1)
 x=c(rnorm(100,0,1)) ##real distribution
 x[23] <- 100 ##mistake made in 23th measurement
@@ -60,7 +60,7 @@ abline(0,1)
 
 The Spearman correlation follows the general idea of median and MAD, that of using quantiles.  The idea is simple: we convert each dataset to ranks an then compute correlation:
 
-```{r spearman_corr_illustration, fig.cap="Scatter plot of original data (left) and ranks (right). Spearman correlation reduces the influence of outliers by considering the ranks instaed of original data.",fig.width=10.5,fig.height=5.25}
+```{r spearman_corr_illustration, fig.cap="Scatter plot of original data (left) and ranks (right). Spearman correlation reduces the influence of outliers by considering the ranks instead of original data.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 plot(x,y,main=paste0("correlation=",round(cor(x,y),3)),pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
 plot(rank(x),rank(y),main=paste0("correlation=",round(cor(x,y,method="spearman"),3)),pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))

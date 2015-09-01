@@ -40,7 +40,7 @@ browsers <- c(Opera=1,Safari=9,Firefox=20,IE=26,Chrome=44)
 
 Say we want to report the results from a poll asking about browser preference (taken in August 2013). The standard way of displaying these is with a pie chart:
 
-```{r piechart, fig.cap="Pie chart of browser usage"}
+```{r piechart, fig.cap="Pie chart of browser usage."}
 pie(browsers,main="Browser Usage (August 2013)")
 ```
 
@@ -131,7 +131,7 @@ stripchart(dat,vertical=TRUE,method="jitter",pch=16,add=TRUE,col=1)
 ```
 
 
-### Show The Scatterplot
+### Show The Scatter Plot
 
 The purpose of many statistical analyses is to determine relationships between two variables. Sample correlations are typically reported and sometimes plots are displayed to show this. However, showing just the regression line is one way to display your data badly as it hides the scatter. Surprisingly, plots such as the following are commonly seen.
 
@@ -170,7 +170,7 @@ library(Biobase)
 library(SpikeInSubset) 
 ```
 
-```{r correlation-not-replication, fig.cap="Gene expression data from two replicated samples. Left is in orginal scale and right in log scale.",fig.width=10.5 , fig.height=5.25}
+```{r correlation-not-replication, fig.cap="Gene expression data from two replicated samples. Left is in original scale and right is in log scale.",fig.width=10.5 , fig.height=5.25}
 data(mas95)
 mypar(1,2)
 r <- exprs(mas95)[,1] ##original measures were not logged
@@ -195,7 +195,7 @@ abline(0,1,col=2,lwd=2)
 
 Although the correlation is reduced in the log-scale, it is very close to 1 in both cases. Does this mean these data are reproduced? To examine how well the second vector reproduces the first, we need to study the differences. So we should instead plot that. In this plot, we plot the difference (in the log scale) versus the average:
 
-```{r MAplot, fig.cap="MA plot of the same data shown above shows that data is not replicated very well despite a high correlation"}
+```{r MAplot, fig.cap="MA plot of the same data shown above shows that data is not replicated very well despite a high correlation."}
 mypar(1,1)
 plot((r+g)/2,(r-g),lwd=2,cex=0.2,pch=16,
      xlab=expression(paste("Ave{ ",log[2], " ", E[1],", ",log[2], " ", E[2]," }")),
@@ -235,7 +235,7 @@ abline(h=0, lty=2, col=1)
 
 Line plots are not a bad choice, although I find them harder to follow than the previous two. Boxplots show you the increase, but lose the paired information.
 
-```{r lines-plot-box-plot, fig.cap="Another alternative is the lines-plot. If we don't care about pairings then the boxplot is appropriate.",fig.width=10.5,fig.height=5.25}
+```{r lines-plot-box-plot, fig.cap="Another alternative is the lines-plot. If we don't care about pairings, then the boxplot is appropriate.",fig.width=10.5,fig.height=5.25}
 z <- rep(c(0,1), rep(6,2))
 mypar(1,2)
 plot(z, c(before, after),
@@ -299,7 +299,7 @@ In this example we generate data with a simulation. We are studying a dose respo
 
 Instead we should show each curve. We can use color to distinguish treatment and control and dashed and solid lines to distinguish the original data from the mean of the three groups.
 
-```{r show-important-factors, fig.cap="Because dose is an important factor we show it in this plot."}
+```{r show-important-factors, fig.cap="Because dose is an important factor, we show it in this plot."}
 plot(x, y1, ylim=c(0,1), type="n", xlab="Dose", ylab="Response") 
 for(i in 1:3) lines(x, z[,i], col=1, lwd=1, lty=2)
 for(i in 1:3) lines(x, y[,i], col=2, lwd=1, lty=2)

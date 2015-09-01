@@ -8,7 +8,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## t-tests in Practice
+## t-tests In Practice
 
 ### Introduction
 

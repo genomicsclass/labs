@@ -20,7 +20,7 @@ We have described how to compute p-values which are ubiquitous in the life scien
 
 A much more attractive alternative is to report confidence intervals. A confidence interval includes information about your estimated effect size and the uncertainty associated with this estimate. Here we use the mice data to illustrate the concept behind confidence intervals.
 
-### Confidence Interval for Population Mean
+### Confidence Interval For Population Mean
 
 We show how to construct a confidence interval for the population mean of control female mice. 
 We start by reading in the data and selecting the appropriate rows:
@@ -111,12 +111,12 @@ You can run this repeatedly to see what happens. You will see that about in abou
 
 <a name="smallsample"></a>
 
-### Small Sample Size and the CLT
+### Small Sample Size And The CLT
 
 For $N=30$ the CLT works very well. However, if $N=5$, do these confidence interval work as well? We used the CLT to create our intervals, and with $N=5$ it may not be as useful an approximation. We can confirm this with a simulation:
 
 
-```{r confidence_interval_n5,fig.cap="We show 250 random realizations of 95% confidence intervals but now for a smaller samples ize. The confidence interval is based on the CLT approximation. The color denotes if the interval fell on the parameter or not.",fig.height=8}
+```{r confidence_interval_n5,fig.cap="We show 250 random realizations of 95% confidence intervals, but now for a smaller sample size. The confidence interval is based on the CLT approximation. The color denotes if the interval fell on the parameter or not.",fig.height=8}
 mypar()
 plot(mean(chowPopulation)+c(-7,7),c(1,1),type="n",
      xlab="weight",ylab="interval",ylim=c(1,B))
@@ -136,7 +136,7 @@ for(i in 1:B){
 Despite the intervals being larger (we are dividing by $\sqrt{5}$ instead of $\sqrt{30}$), we see many more intervals not covering $\mu_X$. This is because the CLT is incorrectly telling us that the distribution of the `mean(hf)` is approximately normal when in fact it has a fatter tail. This mistake affects us in the calculation of `Q`, which assumes a normal distribution and uses `qnorm`. The t-distribution might be more appropriate. All we have to do is re-run the above, but change how we calculate `Q`: use `qt` instead of `qnorm`
 
 
-```{r confidence_interval_tdist_n5,fig.cap="We show 250 random realizations of 95% confidence intervals but now for a smaller samples ize. The confidence is now based on the t-distribution approximatin. The color denotes if the interval fell on the parameter or not.",fig.height=8}
+```{r confidence_interval_tdist_n5,fig.cap="We show 250 random realizations of 95% confidence intervals, but now for a smaller sample size. The confidence is now based on the t-distribution approximation. The color denotes if the interval fell on the parameter or not.",fig.height=8}
 mypar()
 plot(mean(chowPopulation) + c(-7,7), c(1,1), type="n",
      xlab="weight", ylab="interval", ylim=c(1,B))

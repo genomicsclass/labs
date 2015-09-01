@@ -44,7 +44,7 @@ abline(0,1) ##identity line
 
 Note how close these values are. Also, note that we can see these qqplots with less code:
 
-```{r qqplot_example2, fig.cap="Second example of qqplot. Here we use the function qqnorm which computes the theoretical noraml quantiles automatically."}
+```{r qqplot_example2, fig.cap="Second example of qqplot. Here we use the function qqnorm which computes the theoretical normal quantiles automatically."}
 qqnorm(x)
 qqline(x) 
 ```
@@ -63,7 +63,7 @@ qqline(x)
 
 We can also get a sense for how non-normally distributed data looks. Here we generate data from the t-distribution with different degrees of freedom. Note that the smaller the degrees of freedoms, the fatter the tails.
 
-```{r qqnorm_of_t, fig.cap="We generate t-distributed data for four degrees of freedom and plot qqplots agains normal theoretical quantiles.",fig.width=10.5,fig.height=10.5}
+```{r qqnorm_of_t, fig.cap="We generate t-distributed data for four degrees of freedom and plot qqplots against normal theoretical quantiles.",fig.width=10.5,fig.height=10.5}
 dfs <- c(3,6,12,30)
 mypar(2,2)
 for(df in dfs){
@@ -75,7 +75,7 @@ for(df in dfs){
 
 <a name="scatterplots"></a>
 
-## Scatterplots and Correlation
+## Scatterplots And Correlation
 
 The methods described above relate to _univariate_ variables. In the biomedical sciences, it is common to be interested in the relationship between two or more variables. A classic examples is the father/son height data used by Galton to understand heredity. If we were to summarize these data, we could use the two averages and two standard deviations as both distributions are well approximated by the normal distribution. This summary, however, fails to describe an important characteristic of the data.
 
@@ -154,7 +154,7 @@ with the $\mu$ representing the averages, $\sigma$ the standard deviations, and 
 
 To confirm that the above approximations hold in this case, let's compare the mean of each strata to the identity line and the regression line:
 
-```{r scatterplot2, fig.cap="Average son height of each strata plotted against father heights defeining the strata"}
+```{r scatterplot2, fig.cap="Average son height of each strata plotted against father heights defining the strata"}
 x=(x-mean(x))/sd(x)
 y=(y-mean(y))/sd(y)
 means=tapply(y,round(x*4)/4,mean)
