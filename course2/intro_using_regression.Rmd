@@ -53,7 +53,7 @@ y=father.son$sheight
 
 looks like this:
 
-```{r galton_data, fig.cap="Galton's data. Son heights versus father height."}
+```{r galton_data, fig.cap="Galton's data. Son heights versus father heights."}
 plot(x,y,xlab="Father's height",ylab="Son's height")
 ```
 

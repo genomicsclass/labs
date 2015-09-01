@@ -20,7 +20,7 @@ The abstract of the paper says,
 
 Figure 1 includes some pretty cool electron microscope images of the tufts. We are interested in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). We can recreate Figure 4 of the paper by loading the data and calling `boxplot`:
 
-```{r spide_data, fig.cap="Comparison of friction coefficients of spiders' different leg pairs"}
+```{r spide_data, fig.cap="Comparison of friction coefficients of spiders' different leg pairs."}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/spider_wolff_gorb_2013.csv"
 filename <- "spider_wolff_gorb_2013.csv"
 library(downloader)
