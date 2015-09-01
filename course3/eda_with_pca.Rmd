@@ -64,7 +64,7 @@ chryexp<- colMeans(y[which(annot$CHR=="chrY"),])
 ```
 
 Note you can clearly see two modes which must be females and males:
-```{r}
+```{r predict_sex,fig.cap="Histogram of median expresion y-axis. We can see females and males."}
 mypar()
 hist(chryexp)
 ```
@@ -97,17 +97,17 @@ For the rest of the code shown here we use `s`
 
 A first step in determining how much sample correlation induced_structure_ there is in the data. 
 
-```{r}
+```{r correlations, fig.cap="Image of correlations. Cell i,j  represents correlation between samples i and j. Red is high, white is 0 and red is negative."}
 library(RColorBrewer)
-cols=colorRampPalette(brewer.pal(9,"Blues"))(100)
-image ( cor(y) ,col=cols)
+cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
+image ( cor(y) ,col=cols,zlim=c(-1,1))
 ```
 
 Here we are using the term _structure_ to refer to the deviation from what one would see if the samples were in fact independent from each other. 
 
 One simple exploratory plot we make to determine how many principal components we need to describe this _structure_ is the variance-explained plot. This is what the variance explained for the PCs would look like:
 
-```{r}
+```{r null_variance_explained, fig.cap="Variance explained plot for simulated independent data."}
 y0 <- matrix( rnorm( nrow(y)*ncol(y) ) , nrow(y), ncol(y) )
 d0 <- svd(y0)$d
 plot(d0^2/sum(d0^2),ylim=c(0,.25))
@@ -115,7 +115,7 @@ plot(d0^2/sum(d0^2),ylim=c(0,.25))
 
 Instead we see this:
 
-```{r}
+```{r variance_explained, fig.cap="Variance explained plot for gene expression data."}
 plot(s$d^2/sum(s$d^2))
 ```
 
@@ -127,7 +127,7 @@ As we previously showed we can make MDS plots to start exploring the data to ans
 between variables of interest and PCs we can use color to denote these variables. For example, here are the first two PCs with color representing ethnicity:
 
 
-```{r}
+```{r mds_plot, fig.cap="First two PCs for gene expression data with color representing ethnicity."}
 cols = as.numeric(eth)
 mypar()
 plot(s$v[,1],s$v[,2],col=cols,pch=16,
@@ -145,7 +145,7 @@ table(year,eth)
 
 Here is the same plot but with color now representing year:
 
-```{r}
+```{r mds_plot2, fig.cap="First two PCs for gene expression data with color representing processing year."}
 cols = as.numeric(year)
 mypar()
 plot(s$v[,1],s$v[,2],col=cols,pch=16,
@@ -167,7 +167,7 @@ length( unique(month))
 Because there are so many months (21), it get's a bit  complicated to use color. Instead we can stratify by month and look at boxplots of our PCs:
 
 
-```{r}
+```{r pc_boxplots, fig.cap="Boxplot of first four PCs stratified by month", fig.width=10.5,fig.height=10.5}
 variable <- as.numeric(month)
 mypar(2,2)
 for(i in 1:4){
@@ -178,26 +178,26 @@ for(i in 1:4){
 
 Here we see that month has a very strong correlation with the first PC as well as some of the others. In cases such as these in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
 
-```{r}
+```{r month_PC_corr, fig.cap="Adjusted R-squared after fitting a model with each month as a factor to each PC."}
 corr <- sapply(1:ncol(s$v),function(i){
   fit <- lm(s$v[,i]~as.factor(month))
   return( summary(fit)$adj.r.squared  )
   })
 mypar()
-plot(corr)
+plot(seq(along=corr), corr, xlab="PC")
 ```
 
 We see a very strong correlation with the first PC. An relatively strong correlations for the first 20 or so PCs.
 We can also compute F-statistics comparing within month to across month variability:
 
-```{r}
+```{r fstat_month_PC, fig.cap="Square root of F-statistics  from an analysis of variance to explain PCs with month."}
 Fstats<- sapply(1:ncol(s$v),function(i){
    fit <- lm(s$v[,i]~as.factor(month))
    Fstat <- summary(aov(fit))[[1]][1,4]
    return(Fstat)
   })
 mypar()
-plot(sqrt(Fstats))
+plot(seq(along=Fstats),sqrt(Fstats))
 p <- length(unique(month))
 abline(h=sqrt(qf(0.995,p-1,ncol(s$v)-1)))
 ```

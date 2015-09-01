@@ -35,25 +35,25 @@ With the distance between each pari of samples computed, we need a clustering al
 
 We can perform hierarchical clustering based on the distances defined above, using the `hclust` function. This function returns an `hclust` object that describes the groupings that were created using the algorithm described above. The `plot` method represents these relationships with a tree or dendrogram: 
 
-```{r}
+```{r dendrogram, fig.cap="Dendrogram showing hierarchical clustering of tisuse gene expression data.",fig.width=10.5,fig.height=5.25}
 library(rafalib)
-mypar(1,1)
+mypar()
 hc <- hclust(d)
 hc
-plot(hc,labels=tissue)
+plot(hc,labels=tissue,cex=0.5)
 ```
 
 Does this technique "discover" the clusters defined by the different tissues? In this case it is not easy to see the different tissues so we add colors by using the `mypclust` function from the `rafalib` package. 
  
-```{r}
-myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
+```{r color_dendrogram, fig.cap="Dendrogram showing hierarchical clustering of tisuse gene expression data with colors denoting tissues.",fig.width=10.5,fig.height=5.25}
+myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue), cex=0.5)
 ```
 
 Keep in mind that hierarchical clustering does not define specific clusters, but rather defines the dendrogram above. From the dendogram we can decipher the distance between any two groups by looking at the height at which the two groups split into two. To define clusters we need to "cut the tree" at some distance  and group all samples that are within that distance into  groups below. To visualize this, we draw a horizontal line a the height we wish to cut and this defines the 
 that line. We use 120 as an example:
 
-```{r}
-myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue))
+```{r color_dendrogram2, fig.cap="Dendrogram showing hierarchical clustering of tisuse gene expression data with colors denoting tissues. Horizontal line defines actual clusters.",fig.width=10.5,fig.height=5.25}
+myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue),cex=0.5)
 abline(h=120)
 ```
 
@@ -77,23 +77,26 @@ table(true=tissue, cluster=hclusters)
 
 We can also cluster with the `kmeans` function to perform k-means clustering. As an example, let's run k-means on the samples in the space of the first two genes:
 
-```{r}
-plot(e[1,], e[2,])
+```{r kmeans, fig.cap="Plot of gene expression for first two genes (order of appearance in data) with color representing tissue (left) and clusters found with kmeans (right).",fig.width=10.5,fig.height=5.25}
 set.seed(1)
 km <- kmeans(t(e[1:2,]), centers=7)
 names(km)
-plot(e[1,], e[2,], col=km$cluster, pch=16)
+
+mypar(1,2)
 plot(e[1,], e[2,], col=as.fumeric(tissue), pch=16)
+plot(e[1,], e[2,], col=km$cluster, pch=16)
 table(true=tissue,cluster=km$cluster)
 ```
 
 We can instead perform k-means clustering using all of the genes. To visualize this, we can use an MDS plot:
 
 
-```{r}
-mds <- cmdscale(d)
-plot(mds[,1], mds[,2]) 
+```{r kmeans_mds, fig.cap="Plot of gene expression for first two PCs  with color representing tissues (left) and clusters found using all genes (right).",fig.width=10.5,fig.height=5.25}
 km <- kmeans(t(e), centers=7)
+mds <- cmdscale(d)
+
+mypar(1,2)
+plot(mds[,1], mds[,2]) 
 plot(mds[,1], mds[,2], col=km$cluster, pch=16)
 table(true=tissue,cluster=km$cluster)
 ```
@@ -106,8 +109,7 @@ table(true=tissue,cluster=km$cluster)
 Heatmaps are useful plots for visualizing the measurements for a subset of rows over all the samples. A *dendrogram* is added on top and on the side is a hierarchical clustering as we saw before. First we will use the `heatmap` available in base R. Let's begin by defining a color palette:
 
 ```{r}
-# install.packages("RColorBrewer")
-library(RColorBrewer)
+library(RColorBrewer) 
 hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
 ```
 
@@ -121,15 +123,16 @@ idx <- order(-rv)[1:40]
 
 Now we can plot a heatmap of these genes:
 
-```{r}
+```{r heatmap, fig.cap="Heatmap created using the 40 most variable genes."}
 heatmap(e[idx,], col=hmcol)
 ```
 
 The `heatmap.2` function in the `gplots` package on CRAN is a bit more
 customized. For example, it stretches to fill the window. Here we add colors to indicate the tissue on the top:
 
-```{r,message=FALSE}
-library(gplots) ##Install from CRAN for heatmap.2 function
+```{r heatmap.2,message=FALSE,fig.cap="Heatmap created using the 40 most variable genes and the function heatmap.2.", fig.width=10.5,fig.height=5.25}
+
+library(gplots) ##Available from CRAN
 cols <- palette(brewer.pal(8, "Dark2"))[as.fumeric(tissue)]
 head(cbind(colnames(e),cols))
 heatmap.2(e[idx,], labCol=tissue,

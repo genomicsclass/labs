@@ -16,6 +16,7 @@ Many of the statistical ideas applied to correcting for batch effects come from 
 $$
 Y_ij = \alpha_i W_1 + \varepsilon_{ij}
 $$
+
 with $Y_{ij}$ the grade for individual $i$ on subject $j$ and $\alpha_i$ representing the ability of student $i$ to obtain good grades. 
 
 In this example, $W_1$ is a constant. Here we will motivate factor analysis with a slightly more complicated situation that resembles the presence of batch effects. We generate random grande
@@ -45,7 +46,7 @@ A graphical look shows that the correlation suggest a grouping into STEM and hum
 
 In the figure below high correlations are red, no correlation is white and negative correlations are blue.
 
-```{r,echo=FALSE,fig.width=14}
+```{r correlation_images,fig.cap="Images of correlation between columns. High correlation is red, no correlation is white and negative correlation is blue.",echo=FALSE,fig.width=10.5,fig.height=5.25}
 library(RColorBrewer)
 mypar(1,2)
 cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
@@ -72,7 +73,7 @@ $$
 Y_{ij} = \alpha_{i,1} W_{1,j} + \alpha_{i,2} W_{2,j} + \varepsilon_{ij}
 $$
 
-The interpretation of these parameters are as follows: $\alpha_{i,1}$ is the overall ability for student $i$ and $\alpha_{i,2}$ is the  difference in ability between the two subgroups for student $i$. Can we estimate the $W$ and $\alpha$? 
+The interpretation of these parameters are as follows: $\alpha_{i,1}$ is the overall ability for student $i$ and $\alpha_{i,2}$ is the  difference in ability between the two subgroups for student $i$. Can we estimate the $W$ and $\alpha$ ? 
 
 ### Factor analysis and PCA
 
@@ -87,6 +88,7 @@ round(W,1)
 
 Note that, as expected, the first factor is close to a constant and will help explain the observed correlation across all subjects, while the second is a factor that differs between STEM and humanities and 
 We can use these estimate in the model:
+
 $$
 Y_{ij} = \alpha_{i,1} \hat{W}_{1,j} + \alpha_{i,2} \hat{W}_{2,j} + \varepsilon_{ij}
 $$
@@ -103,7 +105,7 @@ var(as.vector(fit))/var(as.vector(Y))
 
 In high throughput data is is quite common to see correlation structure. For example, notice the complex correlations we see across samples in the plot below. These are the correlations for a gene expression experiment with columns ordered by data:
 
-```{r,message =FALSE}
+```{r gene_expression_correlations, fig.cap="Image of correlations. Cell i,j  represents correlation between samples i and j. Red is high, white is 0 and red is negative.",message=FALSE}
 library(Biobase)
 library(GSE5859)
 data(GSE5859)
@@ -113,8 +115,8 @@ Y=exprs(e)[,o]
 cors=cor(Y-rowMeans(Y))
 
 mypar()
-cols=colorRampPalette(brewer.pal(9,"Blues"))(100)
-par(mar = c(8.1, 8.1, 3.5, 2.1))
+
+cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
 image(1:n,1:n,cors,xaxt="n",yaxt="n",col=cols,xlab="",ylab="",zlim=c(-1,1))
 ```
 

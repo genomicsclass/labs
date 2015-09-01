@@ -50,7 +50,6 @@ colnames(y)[2:3]=c("Male","Female")
 y
 ```
 
-**Optional Homework**: Run the `chisq.test` in each major.
 
 Here are the absolute numbers of admissions by major:
 ```{r}
@@ -65,7 +64,7 @@ This is called _Simpson's paradox_ .
 As we will see, males were much more likely to apply to "easy" majors. 
 
 Male and "easy"" majors are confounded. 
-```{r}
+```{r hard_major_confounding, fig.cap="Percent of students that applied versus percent that get admited by gender."}
 y=cbind(admissions[1:6,5],admissions[7:12,5])
 y=sweep(y,2,colSums(y),"/")*100
 x=rowMeans(cbind(admissions[1:6,3],admissions[7:12,3]))
@@ -83,7 +82,7 @@ legend("topleft",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0
 In the plots below each letter represents a person. Accepted individuals are denoted in green and not admitted in orange. The letter indicates the major. In this plot we group all the students together and notice that the proportion of green is larger for men.
 
 
-```{r,echo=FALSE,fig.width=14,fig.height=7,echo=FALSE}
+```{r simpsons_paradox_illustration, fig.cap="Admitted are in green and majors are denoted with letters. Here we clearly see that more males get admitted.",echo=FALSE,fig.width=10.5,fig.height=5.25}
 ###make data for plot
 library(rafalib)
 mypar()
@@ -121,14 +120,13 @@ PCH=LETTERS[rep(1:6,sapply(females,length))]
 o<-order(-allfemales)
 points(femalepoints,col=2-allfemales[o],pch=PCH[o],cex=CEX)
 abline(v=NC+NC/20)
-axis(side=3,c(NC/2,NC+NC/2),c("Male","Female"),tick=FALSE,line=-1)
+axis(side=3,c(NC/2,NC+NC/2),c("Male","Female"),tick=FALSE)
 ```
 
 Now we stratify the data by major. The key point here is that most of the men denoted with green come from majors A and B, which are the ones with the highest acceptance rate. 
 
 
-```{r,echo=FALSE,fig.width=14,fig.height=7,echo=FALSE}
-##statify
+```{r simpsons_paradox_illustration2, fig.cap="Simpon's Paradox illustrated. Admitted students are in green. Students are now stratified by the major they applied to.", echo=FALSE,fig.width=10.5,fig.height=5.25}
 mypar()
 malepoints <- vector("list",length(males))
 femalepoints <- vector("list",length(males))
@@ -151,14 +149,14 @@ for(i in 1:N){
   if(i>1) abline(h=ADDY[i])
   }
 abline(v=NC+NC/20)
-axis(side=3,c(NC/2,NC+FNC/2),c("Male","Female"),tick=FALSE,line=-1)
+axis(side=3,c(NC/2,NC+FNC/2),c("Male","Female"),tick=FALSE)
 axis(side=2,ADDY[-1]/2+ADDY[-length(ADDY)]/2,LETTERS[1:N],tick=FALSE,las=1)
 ```
 
 ### Average After Stratifying
 
 So if we condition or stratify by major this goes away. 
-```{r}
+```{r admission_by_major, fig.cap="Admission percentage by major for each gender."}
 y=cbind(admissions[1:6,3],admissions[7:12,3])
 matplot(1:6,y,xaxt="n",xlab="major",ylab="percent",col=c("blue","red"),cex=1.5)
 legend("topright",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0,cex=0.75)
@@ -187,9 +185,11 @@ Simpson's Paradox is commonly seen in baseball statistics. Here is a well known 
 To describe the problem of confoudning with a real example we will use a dataset from a paper [CITE] that claimed that roughly 50% of genes where differentially expressed when comparing blood from two ethnic groups. We include the data in one of our data packages:
 
 ```{r,message=FALSE}
+##Following two libraries are available from Bioconductor
 library(Biobase) ## install from Bioconductor
-library(genefilter) ## install from Bioconductor
-library(GSE5859) ##install from github
+library(genefilter) 
+###Following library is available from course repository
+library(GSE5859) 
 data(GSE5859)
 ```
 
@@ -219,7 +219,7 @@ print(tab)
 By running a t-test and creating a volcano plot, we note that thousands of genes appear to be differentially expressed. Yet when we perform a similar comparison only on the CEU population between the years 2002 and 2003, we again obtain thousands of diferentially expressed genes:
 
 
-```{r}
+```{r volcano_plots, fig.cap="Volcano plots for gene expression data. Comparison by ethnicity (left) and by year within one ethnicity (right).", fig.width=10.5,fig.height=5.25}
 library(genefilter)
 
 ##remove control genes

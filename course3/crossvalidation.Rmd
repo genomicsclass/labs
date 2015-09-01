@@ -38,8 +38,6 @@ X <- t( e[,ind] )
 We will use the `createFolds` function from the `caret` package to make 5 folds of the data, which are balanced over the tissues. Don't be confused that the `createFolds` function uses the same letter 'k' as the k in K-nearest neighbors. These 'k' are unrelated.  The caret function `createFolds` is asking for how many folds to create, the 'N' from above. The `knn` function is asking how many closest observations to use to classify the test observations.
 
 ```{r}
-# install.packages("caret")
-#library(class)
 library(caret)
 set.seed(1)
 idx <- createFolds(y, k=10)
@@ -49,8 +47,9 @@ sapply(idx, function(i) table(y[i]))
 
 Because tissues have very different gene expression profiles, predicting tissue with all genes will be too easy. For illustration purposes we will try to predict tissue type with just two dimensional data. We will reduce dimension using `cmdscale`
 
-```{r}
+```{r mds, fig.cap="First two PCs of the tissue gene expression data with color representing tissue. We use these two PCs as our two predictors throughout."}
 library(rafalib)
+mypar()
 Xsmall <- cmdscale(dist(X))
 plot(Xsmall,col=as.fumeric(y))
 legend("topleft",levels(factor(y)),fill=seq_along(levels(factor(y))))
@@ -93,14 +92,14 @@ res <- sapply(ks, function(k) {
 
 Now we can plot the mean misclassification rate for each value of k:
 
-```{r}
+```{r misclassification_error, fig.cap="Misclassification error versus number of neighbors."}
 plot(ks, res, type="o")
 ```
 
 
 Finally, to show that gene expression can perfectly predict tissue, we use 5 dimensions instead of 2 and note we get perfect prediction
 
-```{r}
+```{r misclassification_error2, fig.cap="Misclassification error versus number of neighbors when we use five dimensions instead of 2."}
 Xsmall <- cmdscale(dist(X),k=5)
 set.seed(1)
 ks <- 1:12
