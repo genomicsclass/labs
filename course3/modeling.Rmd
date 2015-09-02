@@ -230,9 +230,11 @@ with $B$ the _beta function_ and $d_1$ and $d_2$ are called the degrees of freed
 ### Modeling The Variance
 
 In a later module we will learn about empirical Bayes approaches to improve estimates of variance. In these cases it is mathematically convenient (see Bayesian book) to model the distribution of the variance $\sigma^2$. The hierarchical model (described here [Smyth 2004]) to the mean and variance implies (see paper for details) that the sample standard deviation of genes follows scaled F-statistics:
+
 $$
 s^2 \sim s_0^2 F_{d,d_0}
 $$
+
 with $d$ the degrees of freedom involved in computing $s^2$ ; For example, in a case comparing 3 versus 3, the degrees of freedom would be 4. This leaves two free parameters to adjust to the data. Here $d$ will control the location and $s_0$ will control the scale. Here are some examples plotted on top of the histogram from the real data:
 
 ```{r modeling_variance, fig.cap="Histograms of sample standard deviations and densities of estimated distributions.",fig.width=10.25,fig.height=10.25}
