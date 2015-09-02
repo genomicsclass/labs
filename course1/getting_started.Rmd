@@ -160,7 +160,7 @@ dat <- read.csv(filename)
 ```
 
 
-## Brief Introduction To `dplyr`
+## Brief Introduction to `dplyr`
 
 The learning curve for R syntax is slow. One of the harder aspects that requires getting used to is subsetting data tables. The `dplyr` packages brings these tasks closer to English and we are therefore going to introduce two simple functions: one is used to subset and the other to select columns.
 

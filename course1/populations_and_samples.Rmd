@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Now that we have introduced the idea of a random variable, a null distribution, and a p-value, we are ready to describe the mathematical theory that permits us to compute p-values in practice. We will also learn about confidence intervals and power calculations. 
 
-### Population Parameters
+#### Population parameters
 
 A first step in statistical inference is to understand what population you are interested in. In the mouse weight example, we have two populations: female mice on control diets and female mice on high fat diets, with weight being the outcome of interest. We consider this population to be fixed, and the randomness comes from the sampling. One reason we have been using this dataset as an example is because we happen to have the weights of all the mice of this type. Here we download and read-in this dataset:
 
@@ -56,7 +56,7 @@ with the standard deviation being the square root of the variance. We refer to s
 
 Although in our illustration we have all the values and can check if this is true, in practice we do not. For example, in practice it would be prohibitively expensive to buy all mice in a population. Here we learn how taking a _sample_ permits us to answer our questions. This is the essence of statistical inference.
 
-### Sample Estimates
+#### Sample estimates
 
 In the previous chapter, we obtained samples of 12 mice from each population. We represent data from samples with capital letters to indicate that they are random. This is common practice in statistics, although it is not always followed. So the samples are $X_1,\dots,X_M$ and $Y_1,\dots,Y_N$ and, in this case, $N=M=12$. In contrast, as we saw above, when we list out the values of the population, which are set and not random, we use small caps.
 
