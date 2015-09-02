@@ -258,15 +258,15 @@ Now which $s_0$ and $d$ fit our data best? This is a rather advanced topic as th
 library(limma)
 estimates=fitFDist(biosds^2,11)
 
-theoretical<- sqrt(qf((seq(0,999)+0.5)/1000,11,estimates$df2)*estimates$scale)
+theoretical<- sqrt(qf((seq(0,999)+0.5)/1000, 11, estimates$df2)*estimates$scale)
 observed <- biosds
 
 mypar(1,2)
 qqplot(theoretical,observed)
 abline(0,1)
-tmp=hist(biosds,main=paste("s_0 =",signif(estimates[[1]],2),"d =",signif(estimates[[2]],2)),xlab="sd",ylab="density",freq=FALSE,nc=100,xlim=c(0,1),ylim=c(0,9))
+tmp=hist(biosds,main=paste("s_0 =", signif(estimates[[1]],2), "d =", signif(estimates[[2]],2)), xlab="sd", ylab="density", freq=FALSE, nc=100, xlim=c(0,1), ylim=c(0,9))
 dd=df(sds^2/estimates$scale,11,estimates$df2)
 k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
-lines(sds,dd*k,type="l",col=2,lwd=2)
+lines(sds, dd*k, type="l", col=2, lwd=2)
 ```
 Apart from one outlier, this is not a bad fit at all. This approximation will come in very handy when we learn about empirical Bayes.
