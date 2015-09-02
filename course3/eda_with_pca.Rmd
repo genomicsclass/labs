@@ -75,7 +75,7 @@ sex <- factor(ifelse(chryexp<0,"F","M"))
 
 #### Calculating the PCs
 
-We have shown how we can compute principal components using 
+We have shown how we can compute principal components using: 
 
 ```{r}
 s <- svd(y)
@@ -152,7 +152,7 @@ plot(s$v[,1],s$v[,2],col=cols,pch=16,
 legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
 ```
 
-Year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding, it is not easy to parse out. Nonetheless, below and in the assessment questions we provide some further exploratory approaches.
+Year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding, it is not easy to parse out. Nonetheless, in the assessment questions and below we provide some further exploratory approaches.
 
 #### Boxplot of PCs
 
@@ -175,7 +175,7 @@ for(i in 1:4){
   }
 ```
 
-Here we see that month has a very strong correlation with the first PC as well as some of the others. In cases such as these, in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
+Here we see that month has a very strong correlation with the first PC, as well as some of the others. In cases such as these, in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
 
 ```{r month_PC_corr, fig.cap="Adjusted R-squared after fitting a model with each month as a factor to each PC."}
 corr <- sapply(1:ncol(s$v),function(i){
