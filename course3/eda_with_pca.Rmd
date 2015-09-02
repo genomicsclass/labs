@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 
 ##  Discovering Batch Effects with EDA 
-Now that we understand PCA we are going to demonstrate how we use it in practice with an emphasis on  exploratory data analysis. To illustrate we will go through an actual dataset that has not be sanitized for teaching purposes. We start with the raw data as it was provided in the public repository. The only step we did for you is preprocess these data and create an R package with a preformed Bioconductor object.
+Now that we understand PCA, we are going to demonstrate how we use it in practice with an emphasis on exploratory data analysis. To illustrate we will go through an actual dataset that has not be sanitized for teaching purposes. We start with the raw data as it was provided in the public repository. The only step we did for you is to preprocess these data and create an R package with a preformed Bioconductor object.
 
 ## Gene Expression Data
 
@@ -22,8 +22,7 @@ library(GSE5859)
 data(GSE5859)
 ```
 
-We start by exploring the sample correlation matrix and noting that 
-one pair has a correlation of 1. This must mean that the same sample was uploaded twice to the public repository but given different names. The following code identifies this sample and removes it.
+We start by exploring the sample correlation matrix and noting that one pair has a correlation of 1. This must mean that the same sample was uploaded twice to the public repository, but given different names. The following code identifies this sample and removes it.
 ```{r}
 cors <- cor(exprs(e))
 Pairs=which(abs(cors)>0.9999,arr.ind=TRUE)
@@ -52,7 +51,7 @@ The original dataset did not include sex in the sample information. We did this 
 annotation(e)
 ```
 
-We need to download and install the `hgfocus.db` package and then extract the chromosome location information
+We need to download and install the `hgfocus.db` package and then extract the chromosome location information.
 
 ```{r,message=FALSE}
 library(hgfocus.db)
@@ -63,7 +62,7 @@ annot$CHR <- ifelse(is.na(annot$CHR),NA,paste0("chr",annot$CHR))
 chryexp<- colMeans(y[which(annot$CHR=="chrY"),])
 ```
 
-Note you can clearly see two modes which must be females and males:
+You can clearly see two modes which must be females and males:
 ```{r predict_sex,fig.cap="Histogram of median expresion y-axis. We can see females and males."}
 mypar()
 hist(chryexp)
@@ -74,7 +73,7 @@ So we can predict sex this way:
 sex <- factor(ifelse(chryexp<0,"F","M"))
 ```
 
-### Calculating the PCs
+#### Calculating the PCs
 
 We have shown how we can compute principal components using 
 
@@ -83,7 +82,7 @@ s <- svd(y)
 dim(s$v)
 ```
 
-But we can also use `prcomp` which creates an object with just the PCs and also demeans by default. Note `svd` keeps $U$ which is as large as `y` while `prcomp` does not. However, they provide the practically the same principal components:
+But we can also use `prcomp` which creates an object with just the PCs and also demeans by default. Note `svd` keeps $U$ which is as large as `y` while `prcomp` does not. However, they provide practically the same principal components:
 
 
 ```{r}
@@ -91,9 +90,9 @@ pc <- prcomp(y)
 for(i in 1:5) print( round( cor( pc$rotation[,i],s$v[,i]),3))
 ```
 
-For the rest of the code shown here we use `s`
+For the rest of the code shown here we use `s`.
 
-### Variance explained
+#### Variance Explained
 
 A first step in determining how much sample correlation induced_structure_ there is in the data. 
 
@@ -119,12 +118,12 @@ Instead we see this:
 plot(s$d^2/sum(s$d^2))
 ```
 
-At least 20 or so PCs appear to be higher than what we would expect with independent data. A next step is to try to explain these PCs with measured variables. Is this driven by ethnicity? sex? date? something else?
+At least 20 or so PCs appear to be higher than what we would expect with independent data. A next step is to try to explain these PCs with measured variables. Is this driven by ethnicity? Sex? Date? Or something else?
 
-### MDS plot
+#### MDS plot
 
-As we previously showed we can make MDS plots to start exploring the data to answer these questions. One way to explore the relationship
-between variables of interest and PCs we can use color to denote these variables. For example, here are the first two PCs with color representing ethnicity:
+As previously shown, we can make MDS plots to start exploring the data to answer these questions. One way to explore the relationship
+between variables of interest and PCs is to use color to denote these variables. For example, here are the first two PCs with color representing ethnicity:
 
 
 ```{r mds_plot, fig.cap="First two PCs for gene expression data with color representing ethnicity."}
@@ -135,7 +134,7 @@ plot(s$v[,1],s$v[,2],col=cols,pch=16,
 legend("bottomleft",levels(eth),col=seq(along=levels(eth)),pch=16)
 ```
 
-There is a very clear association between the first PC and ethnicity. However, we also see that for the orange points there are sub-clusters. We know from previous analyzes that ethnicity and preprocessing date are correlated:
+There is a very clear association between the first PC and ethnicity. However, we also see that for the orange points there are sub-clusters. We know from previous analyses that ethnicity and preprocessing date are correlated:
 
 
 ```{r}
@@ -143,7 +142,7 @@ year = factor(format(dates,"%y"))
 table(year,eth)
 ```
 
-Here is the same plot but with color now representing year:
+Here is the same plot, but now with color representing year:
 
 ```{r mds_plot2, fig.cap="First two PCs for gene expression data with color representing processing year."}
 cols = as.numeric(year)
@@ -153,9 +152,9 @@ plot(s$v[,1],s$v[,2],col=cols,pch=16,
 legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
 ```
 
-Year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding it is not easy to parse out but below and in the assessment questions we provide some further exploratory approaches.
+Year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding, it is not easy to parse out. Nonetheless, below and in the assessment questions we provide some further exploratory approaches.
 
-### Boxplot of PCs
+#### Boxplot of PCs
 
 The structure seen in the plot of the between sample correlations shows a complex structure that seems to have more than 5 factors (one for each year). It certainly has more complexity than what would be explained by ethnicity. We can also explore the correlation with months. 
 
@@ -164,10 +163,10 @@ month <- format(dates,"%y%m")
 length( unique(month))
 ```
 
-Because there are so many months (21), it get's a bit  complicated to use color. Instead we can stratify by month and look at boxplots of our PCs:
+Because there are so many months (21), it becomes complicated to use color. Instead we can stratify by month and look at boxplots of our PCs:
 
 
-```{r pc_boxplots, fig.cap="Boxplot of first four PCs stratified by month", fig.width=10.5,fig.height=10.5}
+```{r pc_boxplots, fig.cap="Boxplot of first four PCs stratified by month.", fig.width=10.5,fig.height=10.5}
 variable <- as.numeric(month)
 mypar(2,2)
 for(i in 1:4){
@@ -176,7 +175,7 @@ for(i in 1:4){
   }
 ```
 
-Here we see that month has a very strong correlation with the first PC as well as some of the others. In cases such as these in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
+Here we see that month has a very strong correlation with the first PC as well as some of the others. In cases such as these, in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
 
 ```{r month_PC_corr, fig.cap="Adjusted R-squared after fitting a model with each month as a factor to each PC."}
 corr <- sapply(1:ncol(s$v),function(i){
@@ -187,10 +186,10 @@ mypar()
 plot(seq(along=corr), corr, xlab="PC")
 ```
 
-We see a very strong correlation with the first PC. An relatively strong correlations for the first 20 or so PCs.
+We see a very strong correlation with the first PC and relatively strong correlations for the first 20 or so PCs.
 We can also compute F-statistics comparing within month to across month variability:
 
-```{r fstat_month_PC, fig.cap="Square root of F-statistics  from an analysis of variance to explain PCs with month."}
+```{r fstat_month_PC, fig.cap="Square root of F-statistics from an analysis of variance to explain PCs with month."}
 Fstats<- sapply(1:ncol(s$v),function(i){
    fit <- lm(s$v[,i]~as.factor(month))
    Fstat <- summary(aov(fit))[[1]][1,4]

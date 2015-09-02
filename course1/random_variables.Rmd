@@ -36,7 +36,7 @@ If you have the file in your working directory, you can read it with just one li
 dat=read.csv("femaleMiceWeights.csv")
 ```
 
-### Our first look at data
+#### Our First Look at Data
 
 We are interested in determining if following a given diet makes mice heavier after several weeks. This data was produced by ordering 24 mice from The Jackson Lab, randomly assigning either chow or high fat (hf) diet. After several weeks we weighed each mice and obtained this data:
 
@@ -67,7 +67,7 @@ Note that if we repeat the experiment, we will obtain 24 new mice from The Jacks
 
 <a name="random_variable"></a>
 
-## Random variables
+## Random Variables
 
 Let's see what a random variable is. Imagine we actually have the weight of all control female mice and can upload them to R. In Statistics we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we're using here to illustrate concepts. 
 
@@ -237,7 +237,7 @@ Here $\mu$ and $\sigma$ are referred to as the mean and standard deviation of th
 
 Later we will learn there is a mathematical explanation for this. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this we can compute the proportion of values in any interval. 
 
-### Summary
+#### Summary
 
 So computing a p-value for the difference in diet for the mice was pretty easy, right? But why are we not done? Note that to make the calculation we did the equivalent of buying all the mice available from The Jackson Laboratory and performing our experiment over and over again to define the null distribution. This is not something we can do in practice. Statistical Inference is the mathematical theory that permits you to approximate this with only the data from your sample, i.e. the original 24 mice. This is what we will learn in the following sections. 
 
