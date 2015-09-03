@@ -29,7 +29,7 @@ stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
 
 We can see that the high fat diet group appears to have higher weights on average, although there is overlap between the two samples.
 
-### A Linear Model With One Variable
+#### A linear model with one variable
 
 For demonstration purposes, we will build the design matrix $\mathbf{X}$ using the formula `~ Diet`. The group with the 1's in the second column is determined by the level of `Diet` which comes second; that is, the non-reference level. 
 
@@ -80,7 +80,7 @@ summary(fit)
 (coefs <- coef(fit))
 ```
 
-### Examining The Coefficients
+#### Examining the coefficients
 
 The following large and clunky piece of code allows us to visualize the meaning of the coefficients with colored arrows:
 
@@ -99,7 +99,7 @@ abline(h=coefs[1]+coefs[2],col=cols[2])
 legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 ```
 
-## Comparing Simple Two Group lm To A t-test
+## Comparing Simple Two Group lm to a t-test
 
 To make a connection with material presented earlier, this simple linear model is actually giving us the same result (the t-statistic and p-value) for the difference as a specific kind of t-test. This is the t-test between two groups with the assumption that both groups have the same variance. This was encoded into our linear model when we assumed that the errors $\boldsymbol{\varepsilon}$ were all equally distributed.
 
