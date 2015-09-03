@@ -85,7 +85,7 @@ imagemat(X, main="Model matrix for linear model with one variable")
 
 Now we will use a big chunk of code just to show how the coefficients from the linear model can be drawn as arrows. You wouldn't necessarily use this code in your daily practice, but it's helpful for visualizing what's going on in the linear model in your head.
 
-```{r spider_main_coef, fig.cap="MIKELOVE add caption."}
+```{r spider_main_coef, fig.cap="Diagram of the coefficients in the linear model. The green arrow indicates the Intercept term, which rises from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples, jittered horizontally to avoid overplotting."}
 stripchart(split(spider.sub$friction, spider.sub$type), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
 a <- -0.25
@@ -138,9 +138,9 @@ coefs
 
 ### Examining The Coefficients
 
-We can make the same plot as before, with arrows for each of the coefficients in the model. The orange arrow represents the difference between the push and pull samples for all groups.
+We can make the same plot as before, with arrows for each of the coefficients in the model. 
 
-```{r spider_interactions, fig.cap="MIKELOVE"}
+```{r spider_interactions, fig.cap="Diagram of the coefficients in the linear model. As before, the teal-green arrow represents the Intercept, which fits the mean of the reference group (here, the pull samples for leg L1). The purple, pink and yellow-green arrows represent differences between the three other leg groups and L1. The orange arrow represents the difference between the push and pull samples for all groups."}
 spider$group <- factor(paste0(spider$leg, spider$type))
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
@@ -267,7 +267,7 @@ Here is where the plot with arrows help us see what is going on with the interac
 
 Now, as we have eight terms in the model and 8 parameters, you can check that the tips of the arrowheads are exactly equal to the group means.
 
-```{r spider_interactions2, fig.cap="MIKELOVE"}
+```{r spider_interactions2, fig.cap="Diagram of the coefficients in the linear model. In the design with interaction terms, the orange arrow now indicates the push vs pull difference only for the reference group (L1), while three new arrows (yellow, brown and grey) indicate the additionally push vs pull differences in the non-reference groups (L2, L3 and L4) with respect to the reference group."}
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
 cols <- brewer.pal(8,"Dark2")
@@ -385,7 +385,7 @@ The [F distribution](http://en.wikipedia.org/wiki/F-distribution) has two parame
 
 In this last section, we show an alternate way to specify the model where we suppose that each group has its own mean (that the push vs. pull effect is not the same for each leg pair). This specification is in some ways simpler, but it does not allow us to build the ANOVA table as above, because it does not split interaction terms out in the same way. Here we simply include a term for each unique combination of `type` and `leg`. We include a `0 +` in the formula because we do not want to include an intercept:
 
-```{r matrix_model_image_group_variable, fig.cap="MIKELOVE"}
+```{r matrix_model_image_group_variable, fig.cap="Image of model matrix for linear model with group variable."}
 ##earlier, we defined the 'group' column:
 spider$group <- factor(paste0(spider$leg, spider$type))
 X <- model.matrix(~ 0 + group, data=spider)
@@ -406,7 +406,7 @@ coefs <- coef(fitG)
 
 Now we have eight arrows, one for each group. The arrow tips align directly with the mean of each group:
 
-```{r estimated_group_variables, fig.cap="MIKELOVE"}
+```{r estimated_group_variables, fig.cap="Diagram of the coefficients in the linear model, with each term representing the mean of a combination of leg and direction."}
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
 cols <- brewer.pal(8,"Dark2")
