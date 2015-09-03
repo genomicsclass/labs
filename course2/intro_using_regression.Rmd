@@ -17,7 +17,7 @@ library(rafalib)
 ```
 ## Motivating Examples
 
-### Objects Falling
+#### Objects falling
 
 Imagine you are Galileo in the 16th century trying to describe the velocity of a falling object. An assistant climbs the Tower of Pisa and drops a ball, while several others record the position at different times. Let's simulate some data using the equations we know today and adding some measurement error:
 
@@ -42,7 +42,7 @@ $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
 
 With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon$ accounting for measurement error. This is a linear model because it is a linear combination of known quantities (th $x$ s) referred to as predictors or covariates and unknown parameters (the $\beta$ s). 
 
-### Fathers' & Sons' Heights
+#### Fathers' & sons' heights
 Now imagine you are Francis Galton in the 19th century and you collect paired height data from fathers and sons. You suspect that height is inherited. Your data:
 
 ```{r,message=FALSE}
@@ -57,13 +57,13 @@ looks like this:
 plot(x,y,xlab="Father's height",ylab="Son's height")
 ```
 
-The sons' height does seem to increase linearly with fathers' height. In this case a model that describes the data is as follows:
+The sons' height does seem to increase linearly with the fathers' height. In this case a model that describes the data is as follows:
 
 $$ Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N $$
 
-This is also a linear model. Here $x_i$ and $Y_i$ the father and son heights respectively for the $i$-th pair and $\varepsilon$ a term to account for the extra variability. Here we think of the fathers' height as the predictor and being fixed (not random) so we use lower case. Note that measurement error alone can't explain all the variability seen in $\varepsilon$. This makes sense as there are other variables not in the model, for example, mothers' height, genetic randomness, and environmental factors.
+This is also a linear model. Here $x_i$ and $Y_i$ the father and son heights respectively for the $i$-th pair and $\varepsilon$ a term to account for the extra variability. Here we think of the fathers' height as the predictor and being fixed (not random) so we use lower case. Measurement error alone can't explain all the variability seen in $\varepsilon$. This makes sense as there are other variables not in the model, for example, mothers' height, genetic randomness, and environmental factors.
 
-### Random Samples From Multiple Populations
+#### Random samples from multiple populations
 
 Here we read-in mouse body weight data from mice that were fed two different diets: high fat and control (chow). We have a random sample of 12 mice for each. We are interested in determining if the diet has an effect on weight. Here is the data:
 
@@ -81,7 +81,7 @@ $$ Y_i = \beta_0 + \beta_1 x_{i} + \varepsilon_i$$
 with $\beta_0$ the chow diet average weight, $\beta_1$ the difference between averages, $x_i = 1$ when mouse $i$ gets the high fat (hf) diet, $x_i = 0$ when it gets the chow diet, and $\varepsilon_i$ explains the differences between mice of the same population. 
  
 
-### Linear Model In General
+#### Linear model in general
 
 We have seen three very different examples in which linear models can be used. A general model that encompasses all of the above examples is the following:
 
@@ -94,7 +94,7 @@ Note that we have a general number of predictors $p$. Matrix algebra provides a 
 
 <a name="estimates"></a>
 
-### Estimating Parameters
+#### Estimating parameters
 
 For the models above to be useful we have to estimate the unknown $\beta$ s. In the first example, we want to describe a physical process for which we can't have unknown parameters. In the second example, we better understand inheritance by estimating how much, on average, the father's height affects the son's height. In the final example, we want to determine if there is in fact a difference: if $\beta_1 \neq 0$. 
 
@@ -104,7 +104,7 @@ $$ \sum_{i=1}^n \{  Y_i - (\beta_0 + \sum_{j=1}^p \beta_j x_{i,j}\}^2 $$
 
 Once we find the minimum, we will call the values the least squares estimates (LSE) and denote them with $\hat{\beta}$. The quantity obtained when evaluating the least square equation at the estimates is called the residual sum of squares (RSS). Note that because all these quantities depend on $Y$, *they are random variables*. The $\hat{\beta}$ s are random variables and we will eventually perform inference on them.
 
-### Falling Object Example Revisited
+#### Falling object example revisited
 Thanks to my high school physics teacher, I know that the equation for the trajectory of a falling object is: 
 
 $$d = h_0 + v_0 t -  0.5 \times 9.8 t^2$$
@@ -132,7 +132,7 @@ $$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
 
 How do we find the LSE?
 
-### The `lm` Function
+#### The `lm` function
 
 In R we can fit this model by simply using the `lm` function. We will describe this function in detail later, but here is a preview:
 
@@ -146,7 +146,7 @@ It gives us the LSE, as well as standard errors and p-values.
 
 Part of what we do in this course is explain the mathematics behind this function. 
 
-### The Least Squares Estimate (LSE)
+#### The Least Squares Estimate (LSE)
 
 Let's write a function that computes the RSS for any vector $\beta$:
 ```{r}
@@ -170,7 +170,7 @@ lines(Beta2s,sapply(Beta2s,rss,Beta0=65,Beta1=0),col=2)
 Trial and error here is not going to work. Instead we can use calculus: take the partial derivatives, set them to 0 and solve. Of course, if we have many parameters, these equations can get rather complex. Linear algebra provides a compact and general way of solving this problem. 
 
 
-### More On Galton (Advanced)
+#### More on Galton (Advanced)
 When studying the father-son data, Galton made a fascinating discovery using exploratory analysis.
 
 ![Galton's plot](http://upload.wikimedia.org/wikipedia/commons/b/b2/Galton's_correlation_diagram_1875.jpg) 
@@ -194,6 +194,6 @@ $$
 }
 $$
 
-Now we can use math to show that if you keep $X$ fixed (condition to be $x$) the distribution of $Y$ is normally distributed with mean: $\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. Homework: what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$ ? It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
+Now we can use math to show that if you keep $X$ fixed (condition to be $x$) the distribution of $Y$ is normally distributed with mean: $\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. [CHECK] Homework: what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$ ? It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
 
 

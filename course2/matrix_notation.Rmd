@@ -15,7 +15,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Here we introduce the basics of matrix notation. Initially this may seem over-complicated, but once we discuss examples you will appreciate the power of using this notation to both explain and derive solutions, as well as implement them as R code. 
 
-### The Language of Linear Models
+#### The language of linear models
 
 Linear algebra notation actually simplifies the mathematical descriptions and manipulations of linear models, as well as coding in R. We will discuss the basics of this notation and then show some examples in R.
 
