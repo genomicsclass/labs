@@ -13,7 +13,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 set.seed(1) 
 ```
 
-## Central Limit Theorem In Practice
+## Central Limit Theorem in Practice
 
 Let's use our data to see how well the central limit approximates sample averages from our data. We will leverage our entire population dataset to compare the results we obtain by actually sampling from the distribution to what the CLT predicts.  
 
@@ -44,7 +44,7 @@ mu_control <- mean(controlPopulation)
 print(mu_hf - mu_control)
 ```
 
-Compute the population standard deviations as well. Note that we do not use the R function `sd` because this is to compute the population based estimates that divide by the sample size - 1. 
+Compute the population standard deviations as well. We do not use the R function `sd` because this is to compute the population based estimates that divide by the sample size - 1. 
 
 We can see that with R code:
 ```{r}
@@ -69,7 +69,7 @@ sd_control <- popsd(controlPopulation)
 ```
 
 Remember that in practice we do not get to compute these population parameters.
-These are values we do not get to see. In general, we want to estimate them from samples. 
+These are values we never see. In general, we want to estimate them from samples. 
 ```{r}
 N <- 12
 hf <- sample(hfPopulation,12)

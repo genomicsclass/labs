@@ -14,7 +14,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Below we will discuss the Central Limit Theorem (CLT) and the t-distribution, both of which help us make important calculations related to probabilities. Both are frequently used in science to test statistical hypotheses. To use these, we have to make assumptions, different ones for the CLT and the t-distribution. However, if the assumptions are true, then we are able to calculate the exact probabilities of events through the use of mathematical formula.
 
-### Central Limit Theorem 
+#### Central Limit Theorem 
 
 The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{Y}$ of a random sample follows a normal distribution centered at the population average $\mu_Y$ and with standard deviation equal to the population standard deviation $\sigma_Y$, divided by the square root of the sample size $N$. 
 
@@ -65,7 +65,7 @@ $$
 
 The CLT tells us that when $N$ and $M$ are large (rule of thumb is 30), this random variable is normally distributed with mean 0 and SD 1. Thus we can compute p-values using the function `pnorm`.
 
-### The t-distribution
+#### The t-distribution
 
 The CLT relies on large samples; what we refer to as _asymptotic results_. When the CLT does not apply, there is another option that does not rely on asymptotic results. When the original population from which a random variable, say $Y$, is sampled is normally distributed with mean 0, then we can calculate the distribution of: 
 
