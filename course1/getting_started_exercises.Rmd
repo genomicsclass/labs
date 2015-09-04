@@ -17,7 +17,6 @@ download(url, destfile=filename)
 1. Read in the file `femaleMiceWeights.csv` and report the bodyweight of the mouse in the exact name of the column containing the weights
 
 ```{r answer1,echo=FALSE, eval=FALSE}
-#Answer:Bodyweight
 dat <- read.csv("femaleMiceWeights.csv")
 head(dat) 
 names(dat)[2] 
@@ -26,14 +25,12 @@ names(dat)[2]
 2. The `[` and `]` can be used to extract specific rows and specific columns of the table.  What is the entry in the 12th row and second column?
 
 ```{r answer2,echo=FALSE, eval=FALSE}
-#Answer:26.25
 dat[12,2]
 ```
 
 3. You should have learned how the`$` character is used to extract a column from the table returned as a vector. Use `$` to extract the weight column and report the weight of the mouse in the 11th row.
 
 ```{r answer3,echo=FALSE, eval=FALSE}
-#Answer:26.91
 weights <- dat$Bodyweight
 weights[11]
 ```
@@ -41,7 +38,6 @@ weights[11]
 4. The `length` function returns the number of elements in a vector. How many mice are included in our dataset?
 
 ```{r answer4,echo=FALSE, eval=FALSE}
-#Answer:24
 weights <- dat$Bodyweight
 length(weights)
 ```
@@ -50,7 +46,6 @@ length(weights)
 
 
 ```{r answer5,echo=FALSE, eval=FALSE}
-#Answer:26.83417
 View(dat) 
 weights <- dat$Bodyweight
 mean( weights[ 13:24 ])
@@ -60,7 +55,6 @@ mean( weights[ 13:24 ])
 
 
 ```{r answer6,echo=FALSE, eval=FALSE}
-#Answer:25.34
 set.seed(1)
 i <- sample( 13:24, 1)
 dat$Bodyweight[i]
