@@ -13,11 +13,11 @@ library(rafalib)
 ```
 
 
-## Inference In Practice
+## Inference in Practice
 
-Suppose we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. Note that if instead thousands of genes we were handed data from just one gene, we could simply apply the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+Suppose we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. If instead thousands of genes we were handed data from just one gene, we could simply apply the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
 
-### p-values Are Random Variables
+#### p-values are random variables
 
 An important concept to remember in order to understand the concepts presented in this chapter is that p-values are random variables. To see this  consider the example in which we define a p-value from a t-test with a large enough sample size to use the CLT approximation. Then our p-value is defined as the probability that a normally distributed random variable than the observed t-test, call it $Z$. So for a two sided test: 
 
@@ -64,7 +64,7 @@ $$
 
 which is the definition of a uniform distribution.
 
-### Thousands Of Tests
+#### Thousands of tests
 
 In this data we have two groups denoted with 0 and 1:
 ```{r}
@@ -108,7 +108,7 @@ sum(pvals<0.05)
 
 genes had p-values less than 0.05.
 
-However, as we will describe in more detail below, we have to be careful in interpreting this result because we have performed over 8,000 tests. Note that if we performed the same procedure on random data, for which the null hypothesis is true for all features, we obtain the following results:
+However, as we will describe in more detail below, we have to be careful in interpreting this result because we have performed over 8,000 tests. If we performed the same procedure on random data, for which the null hypothesis is true for all features, we obtain the following results:
 
 ```{r}
 set.seed(1)
@@ -121,9 +121,9 @@ sum(nullpvals<0.05)
 
 As we will explain later in the chapter, this is to be expected. 419 is roughly 0.05*8192 and we will describe the theory that tells us why this prediction works.
 
-### Faster t-test Implementation
+#### Faster t-test implementation
 
-Before we continue, we should point out that the above implementation is very inefficient. There are several faster implementations that perform t-test for high throughput data. For example:
+Before we continue, we should point out that the above implementation is very inefficient. There are several faster implementations that perform t-test for high-throughput data. For example:
 
 ```{r,message=FALSE}
 library(genefilter)
@@ -131,13 +131,13 @@ results <- rowttests(geneExpression,factor(g))
 max(abs(pvals-results$p))
 ```
 
-Note that `genefilter` is available from the Bioconductor projects. In a later section we will say more about this project, but here is how to install it:
+`genefilter` is available from the Bioconductor projects. In a later section we will say more about this project, but here is how to install it:
  
 ```{r,eval=FALSE}
 source("http://www.bioconductor.org/biocLite.R")
 biocLite("genefilter")
 ```
 
-Notice that we get practically the same answer and much faster performance.
+Note that we get practically the same answer and much faster performance.
 
 

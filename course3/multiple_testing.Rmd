@@ -37,7 +37,7 @@ In the context of high-throughput data we can make several type I errors and sev
 |Alternative True   | $S$  | $m_1-S$    | $m_1$    |   
 |True   | $R$  |  $m-R$ | $m$  |
 
-To describe the entries in the table let's use as an example a dataset representing measurements from 10,000 genes, which means that the total number of tests that we are conducting is: $m=10,000$. The number of genes for which the null hypothesis is true, which in most cases represent the "non-interesting" genes, is $m_0$, while the number of genes for which the null hypothesis is false is $m_1$. In general, we are interested in _detecting_ as many as the cases for which the null hypothesis is false (true positives), without incorrectly detecting cases for which the null hypothesis is true (false positives). For most high-throughput experiments, we assume that $m_0$ is much greater than $m_1$. For example, we test 10,000 and 100 genes to be _interesting_. This implies $m_1=100$ and and $m_0=19,900$. 
+To describe the entries in the table let's use as an example a dataset representing measurements from 10,000 genes, which means that the total number of tests that we are conducting is: $m=10,000$. The number of genes for which the null hypothesis is true, which in most cases represent the "non-interesting" genes, is $m_0$, while the number of genes for which the null hypothesis is false is $m_1$. In general, we are interested in _detecting_ as many as the cases for which the null hypothesis is false (true positives), without incorrectly detecting cases for which the null hypothesis is true (false positives). For most high-throughput experiments, we assume that $m_0$ is much greater than $m_1$. For example, we test 10,000 and 100 genes to be _interesting_. This implies $m_1=100$ and $m_0=19,900$. 
 
 Throughout this chapter we refer to _features_ as the units being tested. In genomics, examples of features are genes, transcripts, binding sites, CpG sites, and SNPs. In the table, $R$ represents the total number of features that we call significant after applying our procedure, while $m-R$ is the total number of genes we don't call significant. The rest of the table contains important quantities that are unknown in practice.
 
@@ -46,10 +46,10 @@ Throughout this chapter we refer to _features_ as the units being tested. In gen
 
 This implies that there are $m_1-S$ type II errors or _false negatives_ and $m_0-V$ true negatives. 
 
-Note that if we only ran one test, a p-value is simply the probability that $V=1$ when $m=m_0=1$. Power is the probability of $S=1$ when $m=m_1=1$. In this very simple case, we wouldn't bother making tables. Below we will show how defining the terms in the table helps in practice the high-dimensional context.
+Keep in mind that if we only ran one test, a p-value is simply the probability that $V=1$ when $m=m_0=1$. Power is the probability of $S=1$ when $m=m_1=1$. In this very simple case, we wouldn't bother making tables. Below we will show how defining the terms in the table helps in practice the high-dimensional context.
 
   
-### Data Example
+#### Data example
 
 Let's compute these quantities with a data example. We will use a Monte Carlo simulation using our mice data to imitate a situation in which we perform tests for 10,000 different fad diets, none of them having an effect on weight. This implies that the null hypothesis is true for diets and thus $m=m_0=10,000$ and $m_1=0$. Let's run the tests with a sample size of $N=12$ and compute $R$. Our procedure will declare any diet achieving a p-value smaller than $\alpha=0.05$ as significant. 
 
@@ -129,7 +129,7 @@ This motivates the definition of error rates. We can, for example, estimate prob
 
 Now that we have learned about the Family Wide Error Rate (FWER), we describe what we can actually do to control it.  In practice we want to choose a _procedure_ that guarantees the FWER is smaller than a predetermined value such as 0.05. We can keep it general and instead of 0.05, use $\alpha$ in our derivations.
 
-Since are now describing what we do in practice, we no longer have the advantage of knowing _the truth_. Instead, we pose a procedure and try to estimate the FWER.  Let's consider the naive procedure "reject all the hypotheses with p-value <0.01". For illustrative purposes we will assume all the tests are independent (in the case of testing diets this is a safe assumption; in the case of genes it is not so safe since genes act together). Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are independent random variables so: 
+Since are now describing what we do in practice, we no longer have the advantage of knowing _the truth_. Instead, we pose a procedure and try to estimate the FWER.  Let's consider the naive procedure: "reject all the hypotheses with p-value <0.01". For illustrative purposes we will assume all the tests are independent (in the case of testing diets this is a safe assumption; in the case of genes it is not so safe since genes act together). Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are independent random variables so: 
 
 $$
 \begin{align*}
@@ -155,7 +155,7 @@ $$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{10000}$$
 
 and solving for $k$, we get $1-(1-k)^{10000}=0.05 \implies k = 1-0.95^{1/10000} \approx 0.000005$
 
-Using this cutoff is known as . This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 0.000005". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
+[CHECK] Using this cutoff is known as . This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 0.000005". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
 
 A problem with Sidak's procedure is that it assumes the tests are independent. It therefore only controls FWER when this assumption holds. The Bonferroni correction is more general in that it controls FWER even if the tests are not independent. 
 As with Sidak's procedure we start by noting that: 
@@ -176,7 +176,7 @@ $$
 \end{align*}
 $$
 
-Note that controlling the FWER at 0.05 is a very conservative approach. Using the p-values computed in the previous section:
+Controlling the FWER at 0.05 is a very conservative approach. Using the p-values computed in the previous section:
 
 ```{r}
 set.seed(1)
@@ -211,7 +211,7 @@ sum(pvals < 0.05/10000)
 
 ## False Discovery Rate 
 
-There are many situations for which requiring an FWER of 0.05 does not make sense as it is much too strict. For example, consider the very common exercise of running a preliminary small study to determine a handful of candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow up studies with many more samples on just the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a resounding success. Note that with a small sample size, the only way to achieve a FWER $\leq$ 0.05 is with an empty list of genes. We already saw in the previous section that despite 1,000 diets being effective, we ended up with a list with just 2. Change the sample size to 6 and you very likely get 0:
+There are many situations for which requiring an FWER of 0.05 does not make sense as it is much too strict. For example, consider the very common exercise of running a preliminary small study to determine a handful of candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow up studies with many more samples on just the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a resounding success. With a small sample size, the only way to achieve a FWER $\leq$ 0.05 is with an empty list of genes. We already saw in the previous section that despite 1,000 diets being effective, we ended up with a list with just 2. Change the sample size to 6 and you very likely get 0:
 
 ```{r}
 set.seed(1)
@@ -224,9 +224,9 @@ pvals <- sapply(1:m, function(i){
 sum(pvals < 0.05/10000)
 ```
 
-By requiring a FWER $\leq$ 0.05 we are practically assuring 0 power (sensitivity) and that the specificity requirement is over-kill. A widely used alternative to the FWER is the false discover rate (FDR). The idea behind FDR is to consider the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept here, we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
+[CHECK] By requiring a FWER $\leq$ 0.05 we are practically assuring 0 power (sensitivity) and that the specificity requirement is over-kill. A widely used alternative to the FWER is the false discover rate (FDR). The idea behind FDR is to consider the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept here, we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
 
-Before running the simulation we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above which is necessary here due to the fact that we will be generating several simulations. Understanding this chuck of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
+Before running the simulation we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above which is necessary here due to the fact that we will be generating several simulations. Understanding this chuNk of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
 
 ```{r Q_distribution,message=FALSE, fig.cap="Q (false positives divided by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation."}
 library(genefilter) ##rowttests is here
@@ -258,7 +258,7 @@ FDR=mean(Qs)
 print(FDR)
 ```
 
-The FDR is relatively high here. This is because for 90% of the tests the null hypotheses is true. This implies that with a 0.05 p-value cut-off, out of the 100 tests we incorrectly call between 4 and 5 significant on average. This combined with the fact that we don't "catch" all the cases where the alternative is true, gives us a relatively high FDR. So how can we control this? What if we want lower FDR, say 5%.
+The FDR is relatively high here. This is because for 90% of the tests, the null hypotheses is true. This implies that with a 0.05 p-value cut-off, out of the 100 tests we incorrectly call between 4 and 5 significant on average. This combined with the fact that we don't "catch" all the cases where the alternative is true, gives us a relatively high FDR. So how can we control this? What if we want lower FDR, say 5%?
 
 To visually see why the FDR is high, we can make a histogram of the p-values. We use a higher value of `m` to have more data from the histogram. We draw a horizontal line representing the uniform distribution one gets for the `m0` cases for which the null is true. 
 
@@ -274,7 +274,7 @@ pvals <- rowttests(dat,g)$p.value
 hist(pvals,breaks=seq(0,1,0.05))
 abline(h=m0/20)
 ```
-The first bar on the left represents cases with p-values smaller than 0.05. From the horizontal line we can infer that about 1/2 are false positives. This is in agreement with an FDR of 0.50. If we look at the bar for 0.01 we see can infer a lower FDR, as expected, but would call less features significant.
+The first bar on the left represents cases with p-values smaller than 0.05. From the horizontal line we can infer that about 1/2 are false positives. This is in agreement with an FDR of 0.50. [CHECK] If we look at the bar for 0.01, we see can infer a lower FDR, as expected, but would call less features significant.
 
 ```{r pval_hist2, fig.cap="Histogram of p-values with breaks at every 0.01. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups."}
 hist(pvals,breaks=seq(0,1,0.01))
@@ -283,7 +283,7 @@ abline(h=m0/100)
 
 As we consider a lower a lower p-value cut-off, the number of features detected decreases (loss of sensitivity), but our FDR also decreases (gain of specificity). So how do we decide? One approach is to set a desired FDR level $\alpha$, and then develop procedures that control the error rate: FDR  $\leq \alpha$.
 
-### Benjamini-Hochberg (Advanced)
+#### Benjamini-Hochberg (Advanced)
 
 We want to construct a procedure that guarantees the FDR to be below a certain level $\alpha$. For any given $\alpha$, the Benjamini-Hochberg (1995) procedure is very practical because it simply requires that we are able to compute p-values for each of the individual tests and this permits a procedure to be defined.
 
@@ -308,9 +308,9 @@ cutoff <- sort(pvals)[k]
 cat("k =",k,"p-value cutoff=",cutoff)
 ```
 
-We can show mathematically that this procedure has FDR lower than 5%. Please see Benjamini-Hochberg (1995) for details. An important outcome is that we now have selected 11 tests instead of just 2. If we are willing to set an FDR of 50% (for example, 1/2 our genes are expected to be hits!) then this list grows to 1063! The FWER does not provide this flexibility since any list of substantial size will result in an FWER of 1.
+We can show mathematically that this procedure has FDR lower than 5%. Please see Benjamini-Hochberg (1995) for details. An important outcome is that we now have selected 11 tests instead of just 2. If we are willing to set an FDR of 50% (for example, 1/2 our genes are expected to be hits!), then this list grows to 1063! The FWER does not provide this flexibility since any list of substantial size will result in an FWER of 1.
 
-Keep in mind that we don't have to run the complicated code above as we have functions to do this. For example, using the p-values `pvals` computed above
+Keep in mind that we don't have to run the complicated code above as we have functions to do this. For example, using the p-values `pvals` computed above,
 we simply type the following:
 ```{r fdr-versus-pval, fig.cap="FDR estimates plotted against p-value."}
 fdr <- p.adjust(pvals, method="fdr")
@@ -319,7 +319,7 @@ plot(pvals,fdr,log="xy")
 abline(h=alpha,v=cutoff) ##cutoff was computed above
 ```
 
-We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower than .05. Note that we compute all p-values first, and then use these to decide which get called.
+We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower than .05. We compute all p-values first, and then use these to decide which get called.
 
 ```{r Q_distribution2,message=FALSE, fig.cap="Histogram of Q (false positives divided by number of features called significant) when the alternative hypothesis is true for some features."}
 alpha <- 0.05
@@ -348,7 +348,7 @@ Finally, note that the `p.adjust` function has several options for error rate co
 ```{r}
 p.adjust.methods
 ```
-It is important to keep in mind that these options offer not just different approaches to estimating error rates, but also that different error rates are estimated: namely FWER and FDR. This is an important distinction. More information is available from:
+It is important to remember that these options offer not just different approaches to estimating error rates, but also that different error rates are estimated: namely FWER and FDR. This is an important distinction. More information is available from:
 
 ```{r,eval=FALSE}
 ?p.adjust
@@ -358,7 +358,7 @@ In summary, requiring that FDR $leq$ 0.05 is a much more lenient requirement FWE
 
 ## Direct Approach to FDR and q-values (Advanced)
 
-Here we review the results described by John D. Storey in J. R. Statist. Soc. B (2002). One major distinction between Storey's approach and Benjamini and Hochberg's is that we are no longer going to set a $\alpha$ level a priori. Because in many high-throughput we are interested in obtaining some list for validation, we can instead decide beforehand that we will consider all tests with $p-values$ smaller than 0.01. We then want to attach an estimate of an error rate. Using this approach, we are guaranteed to have $R>0$. Note that in the FDR definition above we assigned $Q=0$ in the case that $R=V=0$. We are therefore computing: 
+Here we review the results described by John D. Storey in J. R. Statist. Soc. B (2002). One major distinction between Storey's approach and Benjamini and Hochberg's is that we are no longer going to set a $\alpha$ level a priori. [CHECK] Because in many high-throughput we are interested in obtaining some list for validation, we can instead decide beforehand that we will consider all tests with $p-values$ smaller than 0.01. We then want to attach an estimate of an error rate. Using this approach, we are guaranteed to have $R>0$. Note that in the FDR definition above we assigned $Q=0$ in the case that $R=V=0$. We are therefore computing: 
 
 $$
 \mbox{FDR} = E\left( \frac{V}{R} \mid R>0\right) \mbox{Pr}(R>0)
@@ -370,7 +370,7 @@ $$
 \mbox{pFDR} = E\left( \frac{V}{R} \mid R>0\right) 
 $$
 
-A second distinction is that while Benjamini and Hochberg's procedure controls under the worse case scenario, in which all null hypotheses are true ( $m=m_0$ ), Storey proposes we actually try to estimate $m_0$ from the data. Because in high-throughput experiment we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values $>\lambda$ are mostly from cases in which the null hypothesis hold. We can then estimate $\pi_0 = m_0/m$ as: 
+A second distinction is that while Benjamini and Hochberg's procedure controls under the worse case scenario, in which all null hypotheses are true ( $m=m_0$ ), Storey proposes that we actually try to estimate $m_0$ from the data. Because in high-throughput experiments we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values $>\lambda$ are mostly from cases in which the null hypothesis hold. We can then estimate $\pi_0 = m_0/m$ as: 
 $$
 \hat{\pi}_0 = \frac{\#\left\{p_i > \lambda \right\} }{ (1-\lambda) m }
 $$
