@@ -17,7 +17,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 High-throughput technologies have changed basic biology and the biomedical sciences from data poor disciplines to data intensive ones. A specific example comes from research fields interested in understanding gene expression. Gene expression is the process in which DNA, the blueprint for life, is copied into RNA, the templates for the synthesis of proteins, the building blocks for life. In the 1990s, the analysis of gene expression data amounted to spotting black dots on a piece of paper or extracting a few numbers from standard curves. With high-throughput technologies, such as microarrays, this suddenly changed to sifting through tens of thousands of numbers. More recently, RNA-Sequencing has further increased data complexity. Biologists went from using their eyes or simple summaries to categorize results to having thousands (and now millions) of measurements per sample to analyze. In this chapter we will focus on statistical inference. Specifically, we focus on the problem of detecting differences in groups using statistical tests and quantifying uncertainty in a meaningful way. In later chapters we will study the statistics behind clustering, machine learning, factor analysis and multi-level modeling. 
 
-Since there is a vast number of available public datasets, we use several gene expression examples. Nonetheless, the statistical techniques you will learn have also proven useful in other fields that make use of high throughput technologies. Technologies such as microarrays, next generation sequencing, fRMI, and mass spectrometry all produce data to answer questions for which what we learn here will be indispensable. The specific topics we will focus on are inference in the context of high-throughput data, distance and clustering, dimension reduction, machine learning, modeling including Bayesian/hierarchical models and advanced exploratory data analysis. Because there is an interplay between these topics, we will cover each separately. 
+Since there is a vast number of available public datasets, we use several gene expression examples. Nonetheless, the statistical techniques you will learn have also proven useful in other fields that make use of high-throughput technologies. Technologies such as microarrays, next generation sequencing, fRMI, and mass spectrometry all produce data to answer questions for which what we learn here will be indispensable. The specific topics we will focus on are inference in the context of high-throughput data, distance and clustering, dimension reduction, machine learning, modeling including Bayesian/hierarchical models and advanced exploratory data analysis. Because there is an interplay between these topics, we will cover each separately. 
 
 ```{r,message=FALSE}
 library(rafalib)
@@ -25,17 +25,17 @@ library(rafalib)
 
 <a name="threetables"></a>
 
-### Data Packages
+#### Data packages
 Several of the  examples we are going to use in the following sections are best obtained through R packages. These are available from GitHub and can be installed using the `install_github` function from the `devtools` package. Microsoft Windows users might need to follow [these instructions](https://github.com/genomicsclass/windows) to properly install `devtools`. 
 
-Once devtools is installed, you can then install the data packages like this:
+Once `devtools` is installed, you can then install the data packages like this:
 
 ```{r,eval=FALSE}
 library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 ```
 
-### The Three Tables
+#### The three tables
 
 Most of the data we use as examples in this class are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of feature are genes, single base locations of the genome, genomic regions, or image pixel intensities. Each specific measurement product is defined by a specific set of features. For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
 
@@ -63,7 +63,7 @@ head(sampleInfo)
 sampleInfo$group
 ```
 
-Note that one of the columns, filenames, permits us to connect the rows of this table to the columns of the measurement table.
+One of the columns, filenames, permits us to connect the rows of this table to the columns of the measurement table.
 
 ```{r}
 match(sampleInfo$filename,colnames(geneExpression))
@@ -77,13 +77,13 @@ dim(geneAnnotation)
 head(geneAnnotation)
 ```
 
-Note that it includes an ID that permits us to connect the rows of this table with the rows of the measurement table:
+The table includes an ID that permits us to connect the rows of this table with the rows of the measurement table:
 ```{r}
 head(match(geneAnnotation$PROBEID,rownames(geneExpression)))
 ```
 The table also includes biological information about the features; namely chromosome location and the gene "name" used by biologists.
 
-### Examples
+#### Examples
 
 Here we list some of the examples of data analysis questions we might be asked to answer with the dataset shown here:
 

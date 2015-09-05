@@ -23,7 +23,7 @@ mypar()
 
 
 
-### System Of Equations Example
+#### System of Equations example
 
 The following system of equations:
 
@@ -37,7 +37,7 @@ $$
 
 has more than one solution since there are an infinite number of triplets that satisfy  $a=1-c, b=1+c$. Two examples are $a=1,b=1,c=0$ and $a=0,b=2,c=1$. 
 
-### Matrix Algebra Approach
+#### Matrix algebra approach
 
 The system of equations above can be written like this:
 
@@ -140,7 +140,7 @@ Notice that the third column does not add a constraint and that what we really h
 
 
 
-### Collinearity And Least Squares
+#### Collinearity and least squares
 
 Consider a design matrix $\mathbf{X}$ with two collinear columns. Here we create an extreme example in which one column is the opposite of the other:
 
@@ -163,9 +163,9 @@ $$
 If $\hat{\beta}_1$, $\hat{\beta}_2$, $\hat{\beta}_3$ is a solution then $\hat{\beta}_1$, $\hat{\beta}_2+1$, $\hat{\beta}_3+1$ is also a solution
 
 
-### Confounding As An Example
+#### Confounding as an example
 
-We demonstrate how collinearity helps us determine problems with our design using one of the most common errors made in current experimental design: confounding. We illustrate with an imagined experiment in which we are interested in the effect of four treatments A, B, C and D. We assign two mice to each treatment. After starting the experiment by giving A and B to female mice, we realize there might be a sex effect. 
+Now we will demonstrate how collinearity helps us determine problems with our design using one of the most common errors made in current experimental design: confounding. To illustrate let's use an imagined experiment in which we are interested in the effect of four treatments A, B, C and D. We assign two mice to each treatment. After starting the experiment by giving A and B to female mice, we realize there might be a sex effect. 
 We decide to give C and D to males with hopes of estimating this effect. But can we estimate the sex effect? The described design implies the following design matrix:
 
 
