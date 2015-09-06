@@ -52,7 +52,7 @@ library(swirl)
 swirl()
 ```
 
-To follow this book you should be familiar with the difference between lists (including data frames) and numeric vectors, for loops, how to create functions, and how to use the `sapply` and `replicate` functions.
+To follow this book you should be familiar with the difference between lists (including data frames) and numeric vectors, for-loops, how to create functions, and how to use the `sapply` and `replicate` functions.
 
 Alternatively you can take the [try R](http://tryr.codeschool.com/) interactive class from Code School. 
 

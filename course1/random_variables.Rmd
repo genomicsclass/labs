@@ -88,14 +88,15 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 Let's see what a random variable is. Imagine we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we're using here to illustrate concepts. 
 
-Read-in the data either from your home directory or from dagdata:
+Read in the data either from your home directory or from dagdata:
+
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename <- "femaleControlsPopulation.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
 population <- read.csv(filename)
-population <- unlist(population) #turn it into a numeric
+population <- unlist(population) # turn it into a numeric
 ```
 
 Now let's sample 12 mice three times and see how the average changes.
@@ -119,22 +120,28 @@ Note how the average varies. [CHECK] We can continue to do this repeatedly and s
 
 Now let's go back to our average difference of `obsdiff`. As scientists we need to be skeptics. How do we know that this `obsdiff` is due to the diet? What happens if we give all 24 the same diet? Will we see a difference this big? Statisticians refer to this scenario as the *null hypothesis*. The name "null" is used to remind us that we are acting as skeptics: we give credence to the possibility that there is no difference. 
 
-Because we have access to the population, we can actually observe as many values as we want of the difference of the averages when the diet has no effect. We can do this by randomly sampling 24 control mice, giving them the same diet, and then recording the difference in mean between them to randomly split groups. Here is the code:
+Because we have access to the population, we can actually observe as
+many values as we want of the difference of the averages when the diet
+has no effect. We can do this by randomly sampling 24 control mice,
+giving them the same diet, and then recording the difference in mean
+between two randomly split groups of 12 and 12. Here is this process
+written in R code:
 
 ```{r}
-##12 control mice
+## 12 control mice
 control <- sample(population,12)
-##another 12 control mice that we act as if they were not
+## another 12 control mice that we act as if they were not
 treatment <- sample(population,12)
 print(mean(treatment) - mean(control))
 ```
 
-Now let's do it 10,000 times. We will use a "for-loop", an operation that lets us automatize this (a more efficient approach that we will learn later is to use `replicate`)
+Now let's do it 10,000 times. We will use a "for-loop", an operation
+that lets us automate this (a simpler approach that we will learn later is to use `replicate`)
 
 ```{r}
 n <- 10000
 null <- vector("numeric",n)
-for(i in 1:n){
+for (i in 1:n) {
   control <- sample(population,12)
   treatment <- sample(population,12)
   null[i] <- mean(treatment) - mean(control)
@@ -143,12 +150,16 @@ for(i in 1:n){
 
 The values in `null` form what we call the *null distribution*. We will define this more formally below.
 
-So what percent are bigger than `obsdiff`?
+So what percent of the 10,000 are bigger than `obsdiff`?
+
 ```{r}
-mean(null>=obsdiff)
+mean(null >= obsdiff)
 ```
 
-Only a small percent of the 1,000 simulations. So as skeptics what do we conclude? When there is no diet effect, we see value `diff` as big as the one we observed only 1.5% of the time. This is what is known as a p-value, which we will define more formally later in the book.
+Only a small percent of the 10,000 simulations. So as skeptics what do
+we conclude? When there is no diet effect, we see a difference as big
+as the one we observed only 1.5% of the time. This is what is known as
+a p-value, which we will define more formally later in the book. 
 
 <a name="distributions"></a>
 
