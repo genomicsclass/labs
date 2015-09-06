@@ -5,12 +5,21 @@ title: Getting Started
 
 # Getting Started
 
-In this book we will be using the [R](https://cran.r-project.org/) programming language for all our analysis. You will learn R and statistics simultaneously. However, we assume you have some basic programming skills and knowledge of R syntax. If you don't, your first homework, listed below, is to complete a tutorial. Here we give step-by-step instructions on how to get set up to follow along.
+In this book we will be using the
+[R programming language](https://cran.r-project.org/) for all our
+analysis. You will learn R and statistics simultaneously. However, we
+assume you have some basic programming skills and knowledge of R
+syntax. If you don't, your first homework, listed below, is to
+complete a tutorial. Here we give step-by-step instructions on how to
+get set up to follow along. 
 
 
 ## Installing R
 
-The first step is to install R. You can download and install R from the [Comprehensive R Archive Network](https://cran.r-project.org/) (CRAN). It is relatively straightforward, but if you need further help you can try the following resources:
+The first step is to install R. You can download and install R from
+the [Comprehensive R Archive Network](https://cran.r-project.org/)
+(CRAN). It is relatively straightforward, but if you need further help
+you can try the following resources: 
 
 * [Installing R on Windows](https://github.com/genomicsclass/windows#installing-r). 
 * [Installing R on Mac](http://youtu.be/Icawuhf0Yqo)
@@ -18,13 +27,24 @@ The first step is to install R. You can download and install R from the [Compreh
 
 ## Installing RStudio
 
-The next step is to install RStudio. Technically you can run all the code shown here without installing RStudio, but we highly recommend this integrated development environment (IDE). Instructions are [here](http://www.rstudio.com/products/rstudio/download/) and for Windows we have special [instructions](https://github.com/genomicsclass/windows).
+The next step is to install RStudio, a program for viewing and running
+R scripts. Technically you can run all the code shown here without
+installing RStudio, but we highly recommend this integrated
+development environment (IDE). Instructions are
+[here](http://www.rstudio.com/products/rstudio/download/) and for
+Windows we have special
+[instructions](https://github.com/genomicsclass/windows). 
 
 ## Learn R Basics
 
-The first homework assignment is to complete an R tutorial to familiarize yourself with the basics of programming and R syntax. If you are already familiar you can skip to the next section.
+The first homework assignment is to complete an R tutorial to
+familiarize yourself with the basics of programming and R syntax. If
+you are already familiar with R you can skip to the next section.
 
-*Homework 0*:  Go through the [swirl](http://swirlstats.com/) tutorial, which teaches you R programming and data science interactively, at your own pace, and in the R console. Once you have R installed you can install `swirl` and run it the following way:
+*Homework 0*:  Go through the [swirl](http://swirlstats.com/)
+ tutorial, which teaches you R programming and data science
+ interactively, at your own pace, and in the R console. Once you have
+ R installed you can install `swirl` and run it the following way: 
 
 ```{r, eval=FALSE}
 install.packages("swirl")
@@ -36,7 +56,9 @@ To follow this book you should be familiar with the difference between lists (in
 
 Alternatively you can take the [try R](http://tryr.codeschool.com/) interactive class from Code School. 
 
-Note that there are also many open and free resources and reference guides for R. Two examples are
+Note that there are also many open and free resources and reference
+guides for R. Two examples are:
+
 * [Quick-R](http://www.statmethods.net/): a quick online reference for data input, basic statistics and plots
 * R reference card (PDF)[https://cran.r-project.org/doc/contrib/Short-refcard.pdf] by Tom Short 
 
@@ -46,7 +68,8 @@ Two key things you need to know about R is that you can get help for a function 
 help("install.packages")
 ```
 
-and that the hashtag symbol represents comments and are not interpreted:
+and that the hash character represents comments and so text after this
+character is interpreted:
 
 ```{r}
 ##This is just a comment
@@ -54,21 +77,33 @@ and that the hashtag symbol represents comments and are not interpreted:
 
 ## Installing Packages
 
-The first R command we will run is `install.packages`. If you took the `swirl` tutorial you already did this. R only includes a basic set of functions. It can do much more than this, but not everybody needs everything so we instead make some functions via packages. Many of these functions are stored in CRAN. Note that these packages are vetted. You can easily install from within R if you know the name of the function. As an example, we are going to install the packages `rafalib` and `downloader` which we use in our first data analysis examples:
+The first R command we will run is `install.packages`. If you took the
+`swirl` tutorial you already did this. R only includes a basic set of
+functions. It can do much more than this, but not everybody needs
+everything so we instead make some functions available via
+packages. Many of these functions are stored in CRAN. Note that these
+packages are vetted: they are checked for common errors and they must have
+a dedicated maintainer. You can easily install packages from within R if you know
+the name of the packages. As an example, we are going to install the
+packages `rafalib` and `downloader` which we use in our first data
+analysis examples: 
 
 ```{r,eval=FALSE}
 install.packages("rafalib")
 install.packages("downloader")
 ```
 
-We can then load the package into our R sessions using:
+We can then load the package into our R sessions using the *library* function:
 
 ```{r}
 library(downloader)
 ```
 
-
-From now on you will see that we sometimes load packages without installing them. This is because once you install the package, it remains in place and only needs to be loaded. If you try to load a package and get an error, it probably means you need to install it.
+From now on you will see that we sometimes load packages without
+installing them. This is because once you install the package, it
+remains in place and only needs to be loaded with *library*. If you
+try to load a package and get an error, it probably means you need to
+install it first.
 
 ## Importing Data into R
 
