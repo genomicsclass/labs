@@ -14,7 +14,14 @@ Now that we have introduced the idea of a random variable, a null distribution, 
 
 #### Population parameters
 
-A first step in statistical inference is to understand what population you are interested in. In the mouse weight example, we have two populations: female mice on control diets and female mice on high fat diets, with weight being the outcome of interest. We consider this population to be fixed, and the randomness comes from the sampling. One reason we have been using this dataset as an example is because we happen to have the weights of all the mice of this type. Here we download and read-in this dataset:
+A first step in statistical inference is to understand what population
+you are interested in. In the mouse weight example, we have two
+populations: female mice on control diets and female mice on high fat
+diets, with weight being the outcome of interest. We consider this
+population to be fixed, and the randomness comes from the
+sampling. One reason we have been using this dataset as an example is
+because we happen to have the weights of all the mice of this
+type. Here we download and read in this dataset:
 
 ```{r,message=FALSE}
 library(downloader)
