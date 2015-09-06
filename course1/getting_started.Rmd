@@ -93,7 +93,7 @@ install.packages("rafalib")
 install.packages("downloader")
 ```
 
-We can then load the package into our R sessions using the *library* function:
+We can then load the package into our R sessions using the `library` function:
 
 ```{r}
 library(downloader)
@@ -101,15 +101,24 @@ library(downloader)
 
 From now on you will see that we sometimes load packages without
 installing them. This is because once you install the package, it
-remains in place and only needs to be loaded with *library*. If you
+remains in place and only needs to be loaded with `library`. If you
 try to load a package and get an error, it probably means you need to
 install it first.
 
 ## Importing Data into R
 
-The first step when getting ready to analyze data is to read-in the data into R. There are several ways to do this and we will discuss three of them. But you only need to learn one to follow along. 
+The first step when getting ready to analyze data is to read in the data into R. There are several ways to do this and we will discuss three of them. But you only need to learn one to follow along. 
 
-In the life sciences, small datasets such as the one used as an example in the next sections are stored as Excel files. Although there are R packages designed to read Excel (xls) format, you generally want to avoid this and save files as comma delimited (csv) or tab delinted (txt) files. We will start with a simple example dataset containing [female mouse weights](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv). 
+In the life sciences, small datasets such as the one used as an
+example in the next sections are stored as Excel files. Although there
+are R packages designed to read Excel (xls) format, you generally want
+to avoid this and save files as comma delimited (Comma-Separated
+Value/CSV) or tab delimited (Tab-Separated Value/TSV/TXT) files.
+These plain-text formats are often easier for sharing data with
+collaborators, as commercial software is not required for viewing or
+working with the data.
+We will start with a simple example dataset containing
+[female mouse weights](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv).
 
 The first step is to find the file containing your data and know its *path*. 
 
@@ -134,7 +143,15 @@ We find that the simplest way to organize yourself is to start a Project in RStu
 #### Option 1: Download file with your browser to your working directory
 
 
-You can navigate to the `femaleMiceWeights.csv` file by visiting the data directory of dagadat on [GitHub](https://github.com/genomicsclass/dagdata/tree/master/inst/extdata). Note that if you navigate to the file, you need to click on *Raw* on the upper right hand corner of the data and then use your browser's "Save As" function to assure that the downloaded file is in a csv file. Note that some browsers add a suffix to your file name by default. You do not want this. You want your file to be called `femaleMiceWeights.csv`.
+You can navigate to the `femaleMiceWeights.csv` file by visiting the
+data directory of dagdata on
+[GitHub](https://github.com/genomicsclass/dagdata/tree/master/inst/extdata). Note
+that if you navigate to the file, you need to click on *Raw* on the
+upper right hand corner of the data and then use your browser's "Save
+As" function to assure that the downloaded file is in a CSV
+format. Note that some browsers add an extra suffix to your filename by
+default. You do not want this. You want your file to be named
+`femaleMiceWeights.csv`. 
 
 Once you have this file in your working directory then you can simply read it in like this:
 
@@ -142,7 +159,7 @@ Once you have this file in your working directory then you can simply read it in
 dat <- read.csv("femaleMiceWeights.csv")
 ```
 
-Note that if you did not receive any message then you probably read-in the file successfully.
+Note that if you did not receive any message then you probably read in the file successfully.
 
 #### Option 2: Download from within R
 
@@ -160,9 +177,7 @@ We can then read it in like this:
 dat <- read.csv(filename)
 ```
 
-
-
-Many of the datasets we include in this book are available as insider packages available from GitHub. The reason we use GitHub rather than CRAN is that on GitHub we do not have to vet packages, which gives us much more flexibility. 
+Many of the datasets we include in this book are available in custom-built packages available from GitHub. The reason we use GitHub rather than CRAN is that on GitHub we do not have to vet packages, which gives us much more flexibility. 
 
 To install packages from GitHub you will need to install the `devtools` package:
 
@@ -172,7 +187,7 @@ install.packages("devtools")
 
 Note to Windows users: to use devtools you will have to also install `Rtools`. In general you will need to install packages as administrator. One way to do this is to start R as administrator. If you do not have permission to do this, then it is a bit [more complicated](http://www.magesblog.com/2012/04/installing-r-packages-without-admin.html). 
 
-Now we are ready to install from GitHub. Note that we now use a different function:
+Now we are ready to install a package from GitHub. Note that we now use a different function:
 
 ```{r,message=FALSE,eval=FALSE}
 library(devtools)
@@ -182,23 +197,15 @@ install_github("genomicsclass/dagdata")
 The file we are working with is actually included in this package. So once you install the package, the file is on your computer. However, finding it is requires advanced knowledge. Here are the lines of code:
 
 ```{r}
-dir <- system.file(package="dagdata") #This function extracts the location of package
+dir <- system.file(package="dagdata") # extracts the location of package
 list.files(dir)
-list.files(file.path(dir,"extdata")) #We know external data is in this directory
+list.files(file.path(dir,"extdata")) # external data is in this directory
 ```
 
-And now we are ready to read-in the file:
+And now we are ready to read in the file:
+
 ```{r}
 filename <- file.path(dir,"extdata/femaleMiceWeights.csv")
 dat <- read.csv(filename)
 ```
-
-
-
-
-
-
-
-
-
 
