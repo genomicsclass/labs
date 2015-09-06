@@ -27,29 +27,46 @@ Note that the abstract has this statement:
 
 To support this claim they provide the following in the results section:
 
-> "Already during the first week after introduction of high-fat diet, body weight increased significantly more in the high-fat diet–fed mice (+1.6 ± 0.1 g) than in the normal diet–fed mice (+0.2 $\pm$ 0.1 g; P < 0.001)."
+> "Already during the first week after introduction of high-fat diet, body weight increased significantly more in the high-fat diet-fed mice (+1.6 ± 0.1 g) than in the normal diet-fed mice (+0.2 $\pm$ 0.1 g; P < 0.001)."
 
-What does P < 0.001 mean? What are $\pm$ included? In this class, we will learn what this means and learn to compute these values in R. The first step is to understand what is a random variable. To do this, we will use data from a mouse database (provided by Karen Svenson via Gary Churchill and Dan Gatti and partially funded by P50 GM070683.) We will import the data with R and explain random variables and null distributions using R programming.
+What does P < 0.001 mean? What are the $\pm$ included? In this class,
+we will learn what this means and learn to compute these values in
+R. The first step is to understand what a random variable is. To do
+this, we will use data from a mouse database (provided by Karen
+Svenson via Gary Churchill and Dan Gatti and partially funded by P50
+GM070683.) We will import the data into R and explain random variables
+and null distributions using R programming. 
 
-[CHECK] If you have the file in your working directory, you can read it with just one line.
+[CHECK] If you have the file in your working directory, you can read
+it with just one line:
+
 ```{r}
-dat=read.csv("femaleMiceWeights.csv")
+dat <- read.csv("femaleMiceWeights.csv")
 ```
 
 #### Our first look at data
 
-We are interested in determining if following a given diet makes mice heavier after several weeks. This data was produced by ordering 24 mice from The Jackson Lab and randomly assigning either chow or high fat (hf) diet. After several weeks we weighed each mice and obtained this data:
+We are interested in determining if following a given diet makes mice
+heavier after several weeks. This data was produced by ordering 24
+mice from The Jackson Lab and randomly assigning either chow or high
+fat (hf) diet. After several weeks the scientists weighed each mice
+and obtained this data (`head` just shows us the first 6 rows):
 
 ```{r}
 head(dat) 
 ``` 
 
 In RStudio, you can view the entire dataset with
+
 ```{r,eval=FALSE}
 View(dat)
 ```
 
-So are the hf mice heavier? Mouse 24 at 20.73 grams is one the lightest mice, while 21 at 34.02 is one of the heaviest. Both are on the hf diet. Just from looking at the data we see there is *variability*. Claims such as the one above usually refer to the averages. So let's look at the average of each group:
+So are the hf mice heavier? Mouse 24 at 20.73 grams is one the
+lightest mice, while Mouse 21 at 34.02 grams is one of the heaviest. Both are on
+the hf diet. Just from looking at the data we see there is
+*variability*. Claims such as the one above usually refer to the
+averages. So let's look at the average of each group: 
 
 ```{r,message=FALSE}
 library(dplyr)
@@ -57,7 +74,7 @@ control <- filter(dat,Diet=="chow") %>% select(Bodyweight) %>% unlist
 treatment <- filter(dat,Diet=="hf") %>% select(Bodyweight) %>% unlist
 print( mean(treatment) )
 print( mean(control) )
-obsdiff <- mean(treatment)-mean(control)
+obsdiff <- mean(treatment) - mean(control)
 print(obsdiff)
 ```
 
