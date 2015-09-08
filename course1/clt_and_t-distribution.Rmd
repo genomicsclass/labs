@@ -87,21 +87,28 @@ $$
 \sqrt{N} \frac{\bar{Y}}{s_Y}
 $$
 
-Note that this is the ratio of two random variables so it is not necessarily normal. The fact that the denominator can be small by chance increases the probability of observing large values. [William Sealy Gosset](http://en.wikipedia.org/wiki/William_Sealy_Gosset), an employee of Guinness, deciphered the distribution of this random variable and published a paper under the pseudonym "Student". The distribution is therefore called Student's t-distribution. Later we will learn more about how this result is used.
+Note that this is the ratio of two random variables so it is not
+necessarily normal. The fact that the denominator can be small by
+chance increases the probability of observing large
+values. [William Sealy Gosset](http://en.wikipedia.org/wiki/William_Sealy_Gosset),
+an employee of the Guinness brewing company, deciphered the
+distribution of this random variable and published a paper under the
+pseudonym "Student". The distribution is therefore called Student's
+t-distribution. Later we will learn more about how this result is
+used. 
 
-Here we will use the mice phenotype data as an example. We start by creating two vectors: 
+Here we will use the mice phenotype data as an example. We start by
+creating two vectors, one for the control population and one for the
+high-fat diet population:
 
 ```{r,message=FALSE}
 library(dplyr)
-
 dat <- read.csv("mice_pheno.csv") #We downloaded this file in a previous section
-
 controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
-
 hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  select(Bodyweight) %>% unlist
 ```
 
-It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$, not the random variable $\bar{Y}$. Although we can't do this in practice, in this illustrative example we get to see this distribution for both controls and high fat diet mice:
+It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$, not the random variable $\bar{Y}$. Although we can't do this in practice, in this illustrative example, we get to see this distribution for both controls and high fat diet mice:
 
 ```{r population_histograms, fig.cap="Histograms of all weights for both populations.",fig.width=10.5,fig.height=5.25}
 library(rafalib)
@@ -110,7 +117,12 @@ hist(hfPopulation)
 hist(controlPopulation)
 ```
 
-We can use qq-plots to confirm that the distributions are relatively close to being normally distributed.
+We can use *qq-plots* to confirm that the distributions are relatively
+close to being normally distributed. We will explore these plots in
+more depth in a later section, but the important thing to know is that
+it compares data (on the y-axis) against a theoretical distribution
+(on the x-axis). If the points fall on the identity line, then the
+data is close to the theoretical distribution.
 
 ```{r population_qqplots, fig.cap="Quantile-quantile plots of all weights for both populations.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
@@ -118,5 +130,8 @@ qqnorm(hfPopulation);qqline(hfPopulation)
 qqnorm(controlPopulation);qqline(controlPopulation)
 ```
 
-The larger the sample, the more forgiving the result is to the weakness of this approximation. In the next section we will see that for this particular dataset the t-distribution works well even for sample sizes as small as 3.
+The larger the sample, the more forgiving the result is to the
+weakness of this approximation. In the next section we will see that
+for this particular dataset the t-distribution works well even for
+sample sizes as small as 3. 
 
