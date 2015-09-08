@@ -118,7 +118,13 @@ Note how the average varies. [CHECK] We can continue to do this repeatedly and s
 
 ## The Null Hypothesis
 
-Now let's go back to our average difference of `obsdiff`. As scientists we need to be skeptics. How do we know that this `obsdiff` is due to the diet? What happens if we give all 24 the same diet? Will we see a difference this big? Statisticians refer to this scenario as the *null hypothesis*. The name "null" is used to remind us that we are acting as skeptics: we give credence to the possibility that there is no difference. 
+Now let's go back to our average difference of `obsdiff`. As
+scientists we need to be skeptics. How do we know that this `obsdiff`
+is due to the diet? What happens if we give all 24 mice the same diet? Will
+we see a difference this big? Statisticians refer to this scenario as
+the *null hypothesis*. The name "null" is used to remind us that we
+are acting as skeptics: we give credence to the possibility that there
+is no difference.
 
 Because we have access to the population, we can actually observe as
 many values as we want of the difference of the averages when the diet
@@ -170,7 +176,7 @@ The simplest way to think of a *distribution* is as a compact description of man
 
 ```{r definingHeights, message=FALSE}
 library(UsingR)
-x=father.son$fheight
+x <- father.son$fheight
 ```
 One approach to summarizing these numbers is to simply list them all out for the alien to see. Here are 10 randomly selected heights of 1,078.
 
@@ -178,11 +184,12 @@ One approach to summarizing these numbers is to simply list them all out for the
 round(sample(x,10),1)
 ```
 #### Cumulative Distribution Function
+
 Scanning through these numbers, we start to get a rough idea of what the entire list looks like, but it is certainly inefficient. We can quickly improve on this approach by defining and visualizing a _distribution_. To define a distribution we compute, for all possible values of $a$, the proportion of numbers in our list that are below $a$. We use the following notation:
 
 $$ F(a) \equiv \mbox{Pr}(x \leq a) $$
 
-This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ecdf). We can plot $F(a)$ versus $a$ like this:
+This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ECDF). We can plot $F(a)$ versus $a$ like this:
 
 ```{r ecdf,fig.cap="Empirical cummulative distribution function for height."}
 smallest <- floor( min(x) )
@@ -195,11 +202,20 @@ plot(values, heightecdf(values), type="l",
 
 #### Histograms
 
-The `ecdf` function is a function that returns a function that is not typical. For that reason, we won't discuss it further here. Furthermore, the `ecdf` is actually not as popular as histograms, which give us the same information, but show us the proportion of values in intervals:
+The `ecdf` function is a function that returns a function, which is
+not typical behavior of R functions. For that reason, we won't discuss
+it further here. Furthermore, the `ecdf` is actually not as popular as
+histograms, which give us the same information, but show us the
+proportion of values in intervals: 
 
 $$ \mbox{Pr}(a \leq x \leq b) = F(b) - F(a) $$
 
-Plotting these heights as bars is what we call a _histogram_. It is a more useful plot because we are usually more interested in intervals: such and such percent are between 70 inches and 71 inches, etc. It is also easier to distinguish different types (families) of distributions by looking at histograms. Here is a histogram of heights:
+Plotting these heights as bars is what we call a _histogram_. It is a
+more useful plot because we are usually more interested in intervals:
+such and such percent are between 70 inches and 71 inches, etc.,
+rather than the percent less than a particular height.
+It is also easier to distinguish different types (families) of distributions
+by looking at histograms. Here is a histogram of heights: 
 
 ```{r hist, eval=FALSE}
 hist(x)
@@ -216,56 +232,99 @@ Showing this plot to the alien is much more informative than showing numbers. Wi
 
 ## Probability Distribution
 
-Summarizing lists of numbers is one powerful use of distribution. An even more important use is describing the possible outcomes of a random variable. Since, unlike fixed list of numbers, random variables are not observed, instead of proportion we describe probabilities. For instance, if we pick a random height for our list, then the probability of it falling between $a$ and $b$ is denoted with:
+Summarizing lists of numbers is one powerful use of distribution. An
+even more important use is describing the possible outcomes of a
+random variable. Unlike a fixed list of numbers, random variables are
+not observed, so instead of describing proportions, we describe
+probabilities. For instance, if we pick a random height for our list,
+then the probability of it falling between $a$ and $b$ is denoted with: 
 
 $$ \mbox{Pr}(a \leq X \leq b) = F(b) - F(a) $$
 
-Note that the $X$ is now capitalized to distinguish it as a random variable and that the equation above defines the probability distribution of the random variable. Knowing this distribution is incredibly useful in science. For example, in the case above, if we know the distribution of the difference in mean when the null hypothesis is true, referred to as the _null distribution_, we can compute the probability of observing a value as large as we did, referred to as a _p-value_. In a previous section we ran what is called a _Monte Carlo_ simulation (we will provide more details on Monte Carlo simulation in a later section) and we obtained 10,000 outcomes of the random variable under the null hypothesis.  Let's repeat the loop above, but this time let's add a point to the figure every time we re-run the experiment. If you run this code you can see the null distribution forming as the observed values stack on top of each other.
+Note that the $X$ is now capitalized to distinguish it as a random
+variable and that the equation above defines the probability
+distribution of the random variable. Knowing this distribution is
+incredibly useful in science. For example, in the case above, if we
+know the distribution of the difference in mean of mouse weights
+when the null hypothesis is true, referred to as the _null distribution_, we can
+compute the probability of observing a value as large as we did,
+referred to as a _p-value_. In a previous section we ran what is
+called a _Monte Carlo_ simulation (we will provide more details on
+Monte Carlo simulation in a later section) and we obtained 10,000
+outcomes of the random variable under the null hypothesis.  Let's
+repeat the loop above, but this time let's add a point to the figure
+every time we re-run the experiment. If you run this code you can see
+the null distribution forming as the observed values stack on top of
+each other. 
 
 ```{r null_distribution_illustration,fig.cap="Illustration of the null distribution."}
 n <- 100
-plot(0,0,xlim=c(-5,5),ylim=c(1,30),type="n",xlab="Observed differences (grams)",ylab="Frequency")
+library(rafalib)
+nullplot(-5,5,1,30, xlab="Observed differences (grams)", ylab="Frequency")
 totals <- vector("numeric",11)
-for(i in 1:n){
+for (i in 1:n) {
   control <- sample(population,12)
   treatment <- sample(population,12)
   nulldiff <- mean(treatment) - mean(control)
   j <- pmax(pmin(round(nulldiff)+6,11),1)
-  totals[j]<-totals[j]+1
+  totals[j] <- totals[j]+1
   text(j-6,totals[j],pch=15,round(nulldiff,1))
   ##if(i < 15) scan() ##You can add this line to interactively see values appear
   }
 ```
 
-The figure above amounts to a histogram. From an actual histogram, we can see that values as large as `obsdiff` are relatively rare:
+The figure above amounts to a histogram. From a histogram of the
+`null` vector we calculated earlier, we can see that values as large
+as `obsdiff` are relatively rare: 
 
-```{r null_and_obs,fig.cap="Null distribution with observed difference marked with vertical line."}
+```{r null_and_obs,fig.cap="Null distribution with observed difference marked with vertical red line."}
 hist(null, freq=TRUE)
-abline(v=obsdiff)
+abline(v=obsdiff, col="red", lwd=2)
 ```
 
-
-An important point to keep in mind here is that while we defined $Pr(a)$ by counting cases, we will learn how, in some circumstances, mathematics gives us formulas for $Pr(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation:
+An important point to keep in mind here is that while we defined $Pr(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $Pr(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation:
 
 <a name="normal_distribution"></a>
 
 ## Normal Distribution
 
-The probability distribution we see above approximates one that is very common in a nature: the bell curve, also known as the normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution, we can use a convenient mathematical formula to approximate the proportion of value or outcomes in any given interval:
+The probability distribution we see above approximates one that is very common in nature: the bell curve, also known as the normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution, we can use a convenient mathematical formula to approximate the proportion of value or outcomes in any given interval:
 
 $$
 \mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\left( \frac{-(x-\mu)^2}{2 \sigma^2} \right)} \, dx
 $$
 
-Here $\mu$ and $\sigma$ are referred to as the mean and standard deviation of the population (we explain these in more detail in another section). If this approximation holds for our list, then the population mean and variance of our list can be used in the formula above. An example of this would be when we noted above that only 1.5% of values on the null distribution were above `obsdiff`. We can compute the proportion of values below a value `x` with `pnorm(x,mu,sigma)` without knowing all the values. The normal approximation works very well here:
+While the formula may look intimidating, don't worry, you will never
+actually have to type it out, as it is stored in a more convenient
+form (as `pnorm` in R which sets *a* to 0, and takes *b* as an argument). 
+
+Here $\mu$ and $\sigma$ are referred to as the mean and standard
+deviation of the population (we explain these in more detail in
+another section). If this *normal approximation* holds for our list, then the
+population mean and variance of our list can be used in the formula
+above. An example of this would be when we noted above that only 1.5%
+of values on the null distribution were above `obsdiff`. We can
+compute the proportion of values below a value `x` with
+`pnorm(x,mu,sigma)` without knowing all the values. The normal
+approximation works very well here: 
 
 ```{r}
-1-pnorm(obsdiff,mean(null),sd(null)) 
+1 - pnorm(obsdiff,mean(null),sd(null)) 
 ```
 
 Later we will learn that there is a mathematical explanation for this. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this, we can compute the proportion of values in any interval. 
 
 #### Summary
 
-So computing a p-value for the difference in diet for the mice was pretty easy, right? But why are we not done? To make the calculation we did the equivalent of buying all the mice available from The Jackson Laboratory and performing our experiment repeatedly to define the null distribution. Yet this is not something we can do in practice. Statistical Inference is the mathematical theory that permits you to approximate this with only the data from your sample, i.e. the original 24 mice. We will focus on this in the following sections. 
+So computing a p-value for the difference in diet for the mice was
+pretty easy, right? But why are we not done? To make the calculation
+we did the equivalent of buying all the mice available from The
+Jackson Laboratory and performing our experiment repeatedly to define
+the null distribution. Yet this is not something we can do in
+practice. Statistical Inference is the mathematical theory that
+permits you to approximate this with only the data from your sample,
+i.e. the original 24 mice. We will focus on this in the following
+sections.
+
+
 
