@@ -16,6 +16,7 @@ We will now demonstrate how to obtain a p-value in practice. We begin by loading
 
 
 #### Setting the random seed
+
 Before we continue we briefly explain the following important line of code:
 ```{r,results=FALSE,echo=FALSE}
 set.seed(1) 
@@ -24,22 +25,19 @@ set.seed(1)
 Throughout this book we use random number generators. This implies that many of the results presented can actually change by chance, including the correct answer to problems. One way to ensure that results do not change is by setting the random number generation seed. For more on the topic please read the help file:
 
 ```{r,eval=FALSE}
-?sed.seet
+?set.seed
 ```
 
-
-
 #### Read-in and prepare data
+
 We start by reading in the data. A first important step is to identify which rows are associated with treatment and control, and computing the difference in mean.
+
 ```{r,message=FALSE}
 library(dplyr)
-
 dat <- read.csv("femaleMiceWeights.csv") #previously downloaded
-
 control <- filter(dat,Diet=="chow") %>% select(Bodyweight) %>% unlist
 treatment <- filter(dat,Diet=="hf") %>% select(Bodyweight) %>% unlist
-
-diff <- mean(treatment)-mean(control)
+diff <- mean(treatment) - mean(control)
 print(diff)
 ```
 
