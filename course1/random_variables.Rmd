@@ -269,7 +269,7 @@ for (i in 1:n) {
   j <- pmax(pmin(round(nulldiff)+6,11),1)
   totals[j] <- totals[j]+1
   text(j-6,totals[j],pch=15,round(nulldiff,1))
-  ##if(i < 15) scan() ##You can add this line to interactively see values appear
+  ##if(i < 15) Sys.sleep(1) ##You can add this line to see values appear slowly
   }
 ```
 
