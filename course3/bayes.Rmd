@@ -11,9 +11,9 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Bayesian Statistics
 
-One distinguishing characteristic of high-throughput data is that we make many measure of related outcomes. For example, we measure the expression of thousands of genes, or the height of thousands of peaks representing protein binding, or the methylation levels across several CpGs. However, most of the statistical inference approach we have shown here treat each feature independently and pretty much ignores data from other features. We will learn how using statistical models we can gain power by modeling features jointly. The most successful of these models are what we refer to as hierarchical models which are best explained in the context of Bayesian statistics.
+One distinguishing characteristic of high-throughput data is that we make many measures of related outcomes. For example, we measure the expression of thousands of genes, or the height of thousands of peaks representing protein binding, or the methylation levels across several CpGs. However, most of the statistical inference approaches we have shown here treat each feature independently and pretty much ignores data from other features. We will learn how using statistical models we can gain power by modeling features jointly. The most successful of these models are what we refer to as hierarchical models, which are best explained in the context of Bayesian statistics.
 
-### Bayes theorem
+#### Bayes theorem
 
 We start by reviewing Bayes theorem. We do this using a hypothetical Cystic Fibrosis test as an example. Suppose a test for cystic fibrosis has an accuracy of 99%. We will use the following notation:
 
@@ -23,7 +23,7 @@ $$
 
 with $+$ meaning a positive test and $D$ representing if you actually have (1) the disease or not (0).
 
-Suppose we select random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$. The  cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.0025$. To answer this question we will use Bayes Theorem, which in general  tells us that
+Suppose we select a random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$. The cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.0025$. To answer this question we will use Bayes Theorem, which in general tells us that:
 
 $$
 \mbox{Pr}(A \mid B)  =  \frac{\mbox{Pr}(B \mid A)\mbox{Pr}(A)}{\mbox{Pr}(B)} 
@@ -44,11 +44,11 @@ $$
 \frac{0.99 \cdot 0.0025}{0.99 \cdot 0.0025 + 0.01 \cdot (.9975)}  =  0.02 
 $$
 
-Note that this says that despite the test having 0.99 accuracy, the probability of having disease given a positive test in 0.02. This may appear counterintuitive to some. The reason why this is the case is because we have to factor in the very rare probability that a person, chosen at random, has the disease. To see the 
+This says that despite the test having 0.99 accuracy, the probability of having disease given a positive test in 0.02. This may appear counterintuitive to some. The reason this is the case is because we have to factor in the very rare probability that a person, chosen at random, has the disease. To see the 
 
-### Simulation
+#### Simulation
 
-The following simulation is meant help you visualize Bayes Theorem. We start by randomly selection 1500 people from a population in which the disease in question has a 5% prevalence.
+The following simulation is meant to help you visualize Bayes Theorem. We start by randomly selection 1500 people from a population in which the disease in question has a 5% prevalence.
 
 ```{r}
 set.seed(3)
@@ -59,7 +59,7 @@ M <- 50 ; N <- 30
 d<-rbinom(N*M,1,p=prev)
 ```
 
-Now each person gets the test which is correct 90% of the time
+Now each person gets the test which is correct 90% of the time.
 ```{r}
 accuracy <- 0.9
 test <- rep(NA,N*M)
@@ -96,7 +96,7 @@ plot(people,col=negativecols,pch=16,xaxt="n",yaxt="n",xlab="",ylab="",main=paste
 The proportions of red in the top plot shows $\mbox{Pr}(D=1)$. The bottom left shows $\mbox{Pr}(D=1 \mid +)$ and the bottom right shows $\mbox{Pr}(D=0 \mid +)$.
 
 
-### Bayes in Practice
+#### Bayes in practice
 
 
 <!-- ![iglesias](http://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg/902px-Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg) -->
@@ -158,7 +158,7 @@ Confidence interval? .450-.222 to .450+.222 = .228 to .672
 
 Hierarchical Model
 
-Pick a random player, then what is their batting average
+Pick a random player, then what is their batting average?
 
 $$
 \begin{align*}
@@ -184,7 +184,7 @@ $\sigma$ is the variability due to luck at each AB.
 
 Hierarchical Model
 
-Here are the equations with our data
+Here are the equations with our data:
 
 $$
 \begin{align*}
@@ -196,7 +196,7 @@ $$
 
 Posterior Distribution
 
-The continuous version of Bayes rule can be used here
+The continuous version of Bayes rule can be used here:
 
 $$
 \begin{align*}
