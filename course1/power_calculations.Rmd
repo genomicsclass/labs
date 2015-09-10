@@ -198,13 +198,13 @@ There is no "right" power or "right" alpha level, but it is important that you u
 ### p-values are Arbitrary under the Alternative Hypothesis
 
 Another consequence of what we have learned about power is that
-p-values have what might be considered an arbitrary nature when the 
-if the null hypothesis is not true and therefore
+p-values are somewhat arbitrary when the 
+null hypothesis is not true and therefore
 the *alternative* hypothesis is true (the
 difference between the population means is not zero).
 When the alternative hypothesis is true, 
 we can make a p-value as small as we want simply by increasing
-the sample size (supposing that we have an infinite population to draw
+the sample size (supposing that we have an infinite population to sample
 from). We can show this property of p-values
 by drawing larger and larger samples from our
 population and calculating p-values. This works because in our case,
