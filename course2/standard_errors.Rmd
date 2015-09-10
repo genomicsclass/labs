@@ -260,4 +260,22 @@ Using the above, we know how to compute the variance covariance matrix of $\hat{
 
 We have shown how we can obtain standard errors for our estimates. However, as we learned in the first chapter, to perform inference we need to know the distribution of these random variables. The reason we went through the effort to compute the standard errors is because the CLT applies in linear models. If $N$ is large enough, then the LSE will be normally distributed with mean $\boldsymbol{\beta}$ and standard errors as described. For small samples, if the $\varepsilon$ are normally distributed, then the $\hat{\beta}-\beta$ follow a t-distribution. Proving this mathematically is rather advanced, but the results are extremely useful since it is how we construct p-values and confidence intervals in the context of linear models.
 
+## Code Versus Math
 
+The standard approach to writing linear models either assume the X are fixed or that we are conditioning on them. Thus  X*beta has no variance as the $X$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following: 
+
+```{r}
+x =  father.son$fheight
+beta =  c(34,0.5)
+var(beta[1]+beta[2]*x)
+```
+
+it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function var is simply computing the variance of the list we feed it, while the mathematical use of var is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary but when we write  $\mboxv{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly if we use R to compute the variance of $Y$ in our object dropping example we obtain something very different than $\sigma^2=1$ (the known variance):
+
+```{r}
+n <- length(tt)
+y <- h0 + v0*tt  - 0.5*g*tt^2 + rnorm(n,sd=1)
+var(y)
+```
+
+Again, this is because we are not fixing `tt`. 
