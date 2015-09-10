@@ -274,9 +274,8 @@ N <- 12
 hf <- sample(hfPopulation, N)
 control <- sample(controlPopulation, N)
 diff <- mean(hf) - mean(control)
-tt <- t.test(hf, control)
-diff/mean(control) * 100
-t.test(hf, control)$conf.int/mean(control) * 100
+diff / mean(control) * 100
+t.test(hf, control)$conf.int / mean(control) * 100
 ```
 
 In addition, we can report a statistic called
@@ -286,7 +285,7 @@ deviation of the two groups.
 
 ```{r}
 sd_pool <- sqrt(((N-1)*var(hf) + (N-1)*var(control))/(2*N - 2))
-diff/sd_pool
+diff / sd_pool
 ```
 
 This tells us how many standard deviations of the data the mean of the
