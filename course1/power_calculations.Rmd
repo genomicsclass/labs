@@ -291,6 +291,6 @@ diff/sd_pool
 
 This tells us how many standard deviations of the data the mean of the
 high-fat diet group is from the control group. And under the
-alternative hypothesis, nlike the t-statistic, which is guaranteed to
+alternative hypothesis, unlike the t-statistic, which is guaranteed to
 increase, the effect size and Cohen's d will become more precise.
 
