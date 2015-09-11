@@ -53,7 +53,7 @@ round(sqrt(2) * s$u , 3)
 
 The plot we showed after the rotation, was showing what we call the _principal components_: the second plotted againts the first. To obtain the principal components from the SVD we simply need the columns of the rotation $\mathbf{U}^\top\mathbf{Y}$ :
 
-```{r, fig.cap="Second PC plotted against first PC for the twins height data"}
+```{r PCAplot, fig.cap="Second PC plotted against first PC for the twins height data"}
 PC1 = s$d[1]*s$v[,1]
 PC2 = s$d[2]*s$v[,2]
 plot(PC1,PC2,xlim=c(-3,3),ylim=c(-3,3))
@@ -91,7 +91,7 @@ max(abs(resid))
 
 If we look at the sum of squares of $\mathbf{UD}$ we see that the last few are quite close to 0.  
 
-```{r, fig.cap="Entries of the diagonal of D for gene expression data."}
+```{r D_entries, fig.cap="Entries of the diagonal of D for gene expression data."}
 plot(s$d)
 ```
 
@@ -108,19 +108,19 @@ The larges residual is practically 0, meaning that we `Yhat` is practically the 
 
 By looking at $d$, we can see that in this particular dataset we can obtain a good approximation keeping only 94 columns. The following plots are useful for seeing how much of the variability is explained by each column:
 
-```{r, fig.cap="Percent variance explained by each principal component of gene expression data."}
+```{r percent_var_explained, fig.cap="Percent variance explained by each principal component of gene expression data."}
 plot(s$d^2/sum(s$d^2)*100,ylab="Percent variability explained")
 ```
 
 We can also make cumulative plot
 
-```{r, fig.cap="Cumulative variance explained by principal components of gene expression data."}
+```{r cum_variance_explained, fig.cap="Cumulative variance explained by principal components of gene expression data."}
 plot(cumsum(s$d^2)/sum(s$d^2)*100,ylab="Percent variability explained",ylim=c(0,100),type="l")
 ```
 
 We see that although we start with just 125 dimensions we can approximate $Y$:
 
-```{r, fig.cap="Residuals from comparing a reconstructed gene expression table using 95 PCs to the original data with 189 dimensions."}
+```{r reconstruction_with_less_dimensions, fig.cap="Residuals from comparing a reconstructed gene expression table using 95 PCs to the original data with 189 dimensions."}
 k <- 95 ## out a possible 189
 Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
 resid <- Y - Yhat
