@@ -104,12 +104,20 @@ documents that include R code used to produce the figures, tables and
 results shown in the book. In order to distinguish it, the code is
 shown in the following font:
 
-```{r,eval=FALSE} x <- 2 y <- 3 print(x+y) ```
+```{r,eval=FALSE} 
+x <- 2 
+y <- 3 
+print(x+y) 
+```
 
 and the results in different colors and preceded by two hash
 characters (*##*):
 
-```{r,echo=FALSE} x <- 2 y <- 3 print(x+y) ```
+```{r,echo=FALSE} 
+x <- 2 
+y <- 3 
+print(x+y) 
+```
 
 We will provide links that will give you access to the raw R markdown
 code so you can easily follow along with the book by programming in R.

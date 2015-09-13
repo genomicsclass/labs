@@ -95,7 +95,7 @@ If we look at the sum of squares of $\mathbf{UD}$ we see that the last few are q
 plot(s$d)
 ```
 
-This implies that the last columns of `V` have a very small effect on the reconstruction of `Y`. To see this consider the extreme example in which the last entry of $V$ is 0. In this case the last column of $V$ is not needed at all. Because of the way the SVD is created, the columns of $V, have less and less influence on the reconstruction of $Y$. You commonly see this described as "explaining less varinace". This implies that for a large matrix, by the time you get to the last columns it is possible that there is not much left to "explain" As an example, we will look at what happens if we remove the four last column?
+This implies that the last columns of `V` have a very small effect on the reconstruction of `Y`. To see this consider the extreme example in which the last entry of $V$ is 0. In this case the last column of $V$ is not needed at all. Because of the way the SVD is created, the columns of $V$, have less and less influence on the reconstruction of $Y$. You commonly see this described as "explaining less varinace". This implies that for a large matrix, by the time you get to the last columns it is possible that there is not much left to "explain" As an example, we will look at what happens if we remove the four last column?
 
 ```{r}
 k <- ncol(U)-4
