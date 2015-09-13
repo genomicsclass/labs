@@ -9,6 +9,7 @@ The learning curve for R syntax is slow. One of the harder aspects that requires
 
 Take a look at the dataset we read in:
 ```{r}
+filename <- "femaleMiceWeights.csv"
 dat <- read.csv(filename)
 head(dat) #In R Studio use View(dat)
 ```
