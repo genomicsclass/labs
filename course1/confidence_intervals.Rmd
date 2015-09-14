@@ -89,13 +89,15 @@ random interval with a 95% probability of falling on the parameter we
 are estimating. Note that, saying 95% of random intervals will fall on the
 true value (our definition above) is *not the same* as saying there is
 a 95% chance that the specific interval we calculate contains the true value.
-To construct it, we note that the CLT tells us that $\sqrt{N}
-(\bar{X}-\mu_X)/s_X$ follows a normal distribution with mean 0 and
+To construct it, we note that the CLT tells us that 
+$\sqrt{N} (\bar{X}-\mu_X) / s_X$ follows a normal distribution with mean 0 and
 SD 1. This implies that the probability of this event:
 
-$$-2 \leq \sqrt{N} (\bar{X}-\mu_X)/s_X \leq 2$$  
+$$
+-2 \leq \sqrt{N} (\bar{X}-\mu_X)/s_X \leq 2
+$$  
 
-...written in R code:
+which written in R code is:
 
 ```{r}
 pnorm(2) - pnorm(-2)
@@ -105,12 +107,15 @@ pnorm(2) - pnorm(-2)
 2). Now do some basic algebra to clear out everything and leave
 $\mu_X$ alone in the middle and you get that the following event: 
 
-$$\bar{X}-2 s_X/\sqrt{N} \leq \mu_X \leq \bar{X}+2s_X/\sqrt{N}$$  
+$$
+\bar{X}-2 s_X/\sqrt{N} \leq \mu_X \leq \bar{X}+2s_X/\sqrt{N}
+$$  
 
 has a probability of 95%. 
 
-Be aware that it is the edges of the interval $\bar{X} \pm 2
-s_X/\sqrt{N}$, not $\mu_X$, that are random. Again, the definition of
+Be aware that it is the edges of the interval 
+$\bar{X} \pm 2 s_X / \sqrt{N}$ , not $\mu_X$ , 
+that are random. Again, the definition of
 the confidence interval is that 95% of *random intervals* will contain
 the true, fixed value $\mu_X$. For a specific interval that has been
 calculated, the probability is either 0 or 1 that it contains the
@@ -171,8 +176,8 @@ for (i in 1:B) {
 }
 ```
 
-Despite the intervals being larger (we are dividing by $\sqrt{5}$
-instead of $\sqrt{30}$), we see many more intervals not covering
+Despite the intervals being larger ( we are dividing by $\sqrt{5}$
+instead of $\sqrt{30}$ ), we see many more intervals not covering
 $\mu_X$. This is because the CLT is incorrectly telling us that the
 distribution of the `mean(chow)` is approximately normal when in fact
 it has a fatter tail (the parts of the distribution going to
@@ -221,8 +226,9 @@ If we are talking about a t-test p-value, we are asking if the
 difference we observe $\bar{Y} - \bar{X}$ is actually equal to
 zero. So we can form a confidence interval for this
 difference. Instead of writing $\bar{Y} - \bar{X}$ repeatedly, let's
-define this difference as a new variable $\Delta \equiv \bar{Y} -
-\bar{X}$. The symbol $\Delta$ (Delta) is often used for the difference
+define this difference as a new variable 
+$\Delta \equiv \bar{Y} - \bar{X}$ . 
+The symbol $\Delta$ (Delta) is often used for the difference
 between two variables in math and physics.
 
 Suppose you use CLT and report $\Delta \pm 2 s_\Delta/\sqrt{N}$ as a

@@ -370,10 +370,12 @@ $$
 \mbox{pFDR} = E\left( \frac{V}{R} \mid R>0\right) 
 $$
 
-A second distinction is that while Benjamini and Hochberg's procedure controls under the worse case scenario, in which all null hypotheses are true ( $m=m_0$ ), Storey proposes that we actually try to estimate $m_0$ from the data. Because in high-throughput experiments we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values $>\lambda$ are mostly from cases in which the null hypothesis hold. We can then estimate $\pi_0 = m_0/m$ as: 
+A second distinction is that while Benjamini and Hochberg's procedure controls under the worse case scenario, in which all null hypotheses are true ( $m=m_0$ ), Storey proposes that we actually try to estimate $m_0$ from the data. Because in high-throughput experiments we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values > $\lambda$ are mostly from cases in which the null hypothesis hold. We can then estimate $\pi_0 = m_0/m$ as: 
+
 $$
 \hat{\pi}_0 = \frac{\#\left\{p_i > \lambda \right\} }{ (1-\lambda) m }
 $$
+
 There are more sophisticated procedures than this, but they follow the same general idea. Here is an example setting $\lambda=0.1$. Using the p-values computed above we have:
 
 ```{r pi0_estimate, fig.cap="p-value histogram with pi0 estimate."}

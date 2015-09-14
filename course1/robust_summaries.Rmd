@@ -34,9 +34,11 @@ median(x)
 
 ## The Median Absolute Deviance
 The median absolute deviance (MAD) is a robust summary for the standard deviation. It is defined by computing the differences between each point and the median and then taking the median of their absolute values:
+
 $$
  1.4826 \mbox{median}\{| X_i - \mbox{median}(X_i)|\}
 $$
+
 The number $1.4826$ is a scale factor that guarantees an unbiased 
 estimate of the actual center. Notice how much closer we are to one with the MAD:
 ```{r}

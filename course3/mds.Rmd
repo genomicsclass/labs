@@ -146,7 +146,9 @@ for(i in 1:2){
 ### Why the arbitrary sign?
 Note that the SVD is not unique because we can multiply any column of $\mathbf{V}$ by -1 as long as we multiply the sample column of $\mathbf{U}$ by -1. We can see this immediately by noting that
 
-$$\mathbf{-1UD(-1)V}^\top$ = \mathbf{UDV}^\top$$
+$$
+\mathbf{-1UD(-1)V}^\top = \mathbf{UDV}^\top
+$$
 
 
 ### Why we substract the mean
