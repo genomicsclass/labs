@@ -38,7 +38,7 @@ First we download the `femaleControlsPopulation.csv` file:
 
 ```{r}
 library(downloader)
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extd\ ata/femaleControlsPopulation.csv"
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename <- "femaleControlsPopulation.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
 ```
