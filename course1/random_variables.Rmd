@@ -134,9 +134,9 @@ between two randomly split groups of 12 and 12. Here is this process
 written in R code:
 
 ```{r}
-## 12 control mice
+##12 control mice
 control <- sample(population,12)
-## another 12 control mice that we act as if they were not
+##another 12 control mice that we act as if they were not
 treatment <- sample(population,12)
 print(mean(treatment) - mean(control))
 ```

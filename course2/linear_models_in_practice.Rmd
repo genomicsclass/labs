@@ -22,7 +22,7 @@ if (!file.exists(filename)) download(url, filename)
 ```
 
 ```{r bodyweight_by_diet_stripchart, fig.cap="Mice bodyweights stratified by diet."}
-set.seed(1) # same jitter in stripchart
+set.seed(1) #same jitter in stripchart
 dat <- read.csv("femaleMiceWeights.csv") ##previously downloaded
 stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
            main="Bodyweight over Diet")

@@ -121,7 +121,7 @@ plot(cumsum(s$d^2)/sum(s$d^2)*100,ylab="Percent variability explained",ylim=c(0,
 We see that although we start with just 125 dimensions we can approximate $Y$:
 
 ```{r reconstruction_with_less_dimensions, fig.cap="Residuals from comparing a reconstructed gene expression table using 95 PCs to the original data with 189 dimensions."}
-k <- 95 ## out a possible 189
+k <- 95 ##out a possible 189
 Yhat <- U[,1:k] %*% D[1:k,1:k] %*% t(V[,1:k])
 resid <- Y - Yhat
 boxplot(resid,ylim=quantile(Y,c(0.01,0.99)),range=0)

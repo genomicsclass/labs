@@ -233,7 +233,7 @@ library(genefilter) ##rowttests is here
 set.seed(1)
 ##Define groups to be used with rowttests
 g <- factor( c(rep(0,N),rep(1,N)) )
-B <- 100 ## number of simulations
+B <- 100 ##number of simulations
 Qs <- replicate(B,{
   ##matrix with control data (rows are tests, columns are mice)
   controls <- matrix(sample(population, N*m, replace=TRUE),nrow=m)

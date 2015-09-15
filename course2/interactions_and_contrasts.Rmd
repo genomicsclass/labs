@@ -86,7 +86,7 @@ imagemat(X, main="Model matrix for linear model with one variable")
 Now we will use a big chunk of code just to show how the coefficients from the linear model can be drawn as arrows. You wouldn't necessarily use this code in your daily practice, but it's helpful for visualizing what's going on in the linear model in your head.
 
 ```{r spider_main_coef, fig.cap="Diagram of the coefficients in the linear model. The green arrow indicates the Intercept term, which rises from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples, jittered horizontally to avoid overplotting."}
-set.seed(1) # same jitter in stripchart
+set.seed(1) #same jitter in stripchart
 stripchart(split(spider.sub$friction, spider.sub$type), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
 a <- -0.25

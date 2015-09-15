@@ -168,7 +168,7 @@ We store many of the datasets used in this course on [GitHub](https://github.com
 ```{r,message=FALSE}
 library(downloader) ##use install.packages to install
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
-filename <- "femaleMiceWeights.csv" ## creates a random name for a temporary file
+filename <- "femaleMiceWeights.csv" ##creates a random name for a temporary file
 download(url, destfile=filename)
 ```
 
@@ -197,9 +197,9 @@ install_github("genomicsclass/dagdata")
 The file we are working with is actually included in this package. So once you install the package, the file is on your computer. However, finding it is requires advanced knowledge. Here are the lines of code:
 
 ```{r}
-dir <- system.file(package="dagdata") # extracts the location of package
+dir <- system.file(package="dagdata") #extracts the location of package
 list.files(dir)
-list.files(file.path(dir,"extdata")) # external data is in this directory
+list.files(file.path(dir,"extdata")) #external data is in this directory
 ```
 
 And now we are ready to read in the file:
