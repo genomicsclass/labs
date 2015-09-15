@@ -15,15 +15,49 @@ set.seed(1)
 
 ## Association Tests
 
-The statistical tests we have covered up to now leave out a substantial portion of life science projects. Specifically, we are referring to data that is binary, categorical and ordinal. To give a very specific example, consider genetic data where you have two genotypes (AA/Aa or aa) for cases and controls for a given disease. The statistical question is if genotype and disease are associated. As in the examples we have been studying, we have two populations: AA/Aa and aa and numeric data for each. So why can't we perform a t-test? Note that the data is either 0 (control) or 1 (cases). It is pretty clear that this data is not normally distributed so the t-distribution approximation is certainly out of the question. We could use CLT if the sample size is large enough; otherwise we can use association tests.
+The statistical tests we have covered up to now leave out a
+substantial portion of life science projects. Specifically, we are
+referring to data that is binary, categorical and ordinal. To give a
+very specific example, consider genetic data where you have two groups
+of genotypes (AA/Aa or aa) for cases and controls for a given
+disease. The statistical question is if genotype and disease are
+associated. As in the examples we have been studying previously, we have two
+populations (AA/Aa and aa) and then numeric data for each, where disease
+status can be coded as 0 or 1. So why can't we
+perform a t-test? Note that the data is either 0 (control) or 1
+(cases). It is pretty clear that this data is not normally distributed
+so the t-distribution approximation is certainly out of the
+question. We could use CLT if the sample size is large enough;
+otherwise we can use *association tests*. 
 
 ### Lady Tasting Tea
 
-One of the most famous examples of hypothesis testing was performed by R.A. Fisher. A person he knew claimed she could tell if milk was added before or after tea was poured. Fisher gave the lady four pairs of cups of tea: one with milk poured first, the other after. The order was randomized. Say the lady picked 3 out 4 correctly, do we believe she has a special ability? Hypothesis testing helps answer this question by quantifying what happens by chance.
+One of the most famous examples of hypothesis testing was performed by
+R.A. Fisher. A person he knew claimed she could tell if milk was added
+before or after tea was poured. Fisher gave her four pairs of
+cups of tea: one with milk poured first, the other after. The order
+was randomized. Say she picked 3 out 4 correctly, do we believe
+she has a special ability? Hypothesis testing helps answer this
+question by quantifying what happens by chance. This example is called
+the "Lady tasting tea" experiment (and as it turns out Fisher's friend
+was a scientist herself, [Muriel Bristol](https://en.wikipedia.org/wiki/Muriel_Bristol)).
 
-The basic question we ask is: if the lady is actually guessing, what are the chances that she gets 3 or more correct? Just as we have done before we can compute a probability under the null hypothesis that she is guessing four of each. If we assume this null hypothesis, we can think of this particular examples as picking 4 balls out of an urn with 4 green (correct answer) and 4 red (incorrect answer) balls. 
+The basic question we ask is: if the tester is actually guessing, what
+are the chances that she gets 3 or more correct? Just as we have done
+before, we can compute a probability under the null hypothesis that she
+is guessing four of each. If we assume this null hypothesis, we can
+think of this particular examples as picking 4 balls out of an urn
+with 4 green (correct answer) and 4 red (incorrect answer) balls.
 
-Under the null hypothesis that the lady is simply guessing, each ball has the same chance of being picked. We can then use combinatorics to figure out the probability. The probability of picking 3 is ${4 \choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of picking all correct is ${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$. Thus the chance of observing a 3 or something more extreme, under the null hypothesis, is 0.24. This is called a p-value. The procedure that produced this p-value is called Fisher's exact test and it uses the hypergeometric distribution.
+Under the null hypothesis that she is simply guessing, each ball
+has the same chance of being picked. We can then use combinatorics to
+figure out each probability. The probability of picking 3 is ${4
+\choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of
+picking all 4 correct is ${4 \choose 4} {4 \choose 0}/{8 \choose 4}=
+1/70$. Thus the chance of observing a 3 or something more extreme,
+under the null hypothesis, is $\approx 0.24$. This is called a p-value. The
+procedure that produced this p-value is called Fisher's exact test and
+it uses the *hypergeometric distribution*. 
 
 ### Two By Two Tables
 
@@ -44,7 +78,20 @@ fisher.test(tab,alternative="greater")
 
 ### Chi-square Test
 
-Genome-wide association studies (GWAS) have become ubiquitous in Biology. One of the main statistical summaries used in these studies are Manhattan plots. The y-axis of a Manhattan plot typically represents the negative of log (base 10) of the p-values obtained for association tests applied at millions of single nucleotide polymorphisms (SNP). These p-values are obtained in a similar way to the test performed on the tea tasting lady. However, in that example the number of green and red balls is experimentally fixed and the number of answers given for each category is also fixed. Another way to say this is that the sum of the rows and the sum of the columns are fixed. This defines constraints on the possible ways we can fill the 2 by 2 table and also permits us to use the hypergeometric distribution. In general, this is not the case. Nonetheless, there is another approach, the Chi-squared test, which described below.
+Genome-wide association studies (GWAS) have become ubiquitous in
+Biology. One of the main statistical summaries used in these studies
+are Manhattan plots. The y-axis of a Manhattan plot typically
+represents the negative of log (base 10) of the p-values obtained for
+association tests applied at millions of single nucleotide
+polymorphisms (SNP). These p-values are obtained in a similar way to
+the test performed on the tea taster. However, in that example the
+number of green and red balls is experimentally fixed and the number
+of answers given for each category is also fixed. Another way to say
+this is that the sum of the rows and the sum of the columns are
+fixed. This defines constraints on the possible ways we can fill the 2
+by 2 table and also permits us to use the hypergeometric
+distribution. In general, this is not the case. Nonetheless, there is
+another approach, the Chi-squared test, which described below. 
 
 Imagine we have 280 individuals, some of them have a given disease and the rest do not. We observe that 20% of the individuals that are homozygous for the minor allele (aa) have the disease compared to 10% of the rest. Would we see this again if we picked another 220 individuals?
 
