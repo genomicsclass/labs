@@ -33,7 +33,8 @@ otherwise we can use *association tests*.
 ### Lady Tasting Tea
 
 One of the most famous examples of hypothesis testing was performed by
-R.A. Fisher. A person he knew claimed she could tell if milk was added
+[R.A. Fisher](https://en.wikipedia.org/wiki/Ronald_Fisher).
+An acquaintance of Fisher's claimed that she could tell if milk was added
 before or after tea was poured. Fisher gave her four pairs of
 cups of tea: one with milk poured first, the other after. The order
 was randomized. Say she picked 3 out 4 correctly, do we believe
@@ -51,10 +52,11 @@ with 4 green (correct answer) and 4 red (incorrect answer) balls.
 
 Under the null hypothesis that she is simply guessing, each ball
 has the same chance of being picked. We can then use combinatorics to
-figure out each probability. The probability of picking 3 is ${4
-\choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of
-picking all 4 correct is ${4 \choose 4} {4 \choose 0}/{8 \choose 4}=
-1/70$. Thus the chance of observing a 3 or something more extreme,
+figure out each probability. The probability of picking 3 is
+${4 \choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of
+picking all 4 correct is
+${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$.
+Thus the chance of observing a 3 or something more extreme,
 under the null hypothesis, is $\approx 0.24$. This is called a p-value. The
 procedure that produced this p-value is called Fisher's exact test and
 it uses the *hypergeometric distribution*. 
