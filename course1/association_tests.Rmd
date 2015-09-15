@@ -79,11 +79,13 @@ fisher.test(tab,alternative="greater")
 ### Chi-square Test
 
 Genome-wide association studies (GWAS) have become ubiquitous in
-Biology. One of the main statistical summaries used in these studies
+biology. One of the main statistical summaries used in these studies
 are Manhattan plots. The y-axis of a Manhattan plot typically
 represents the negative of log (base 10) of the p-values obtained for
 association tests applied at millions of single nucleotide
-polymorphisms (SNP). These p-values are obtained in a similar way to
+polymorphisms (SNP). The x-axis is typically organized by chromosome
+(chromosome 1 to 22, X, Y, etc.).
+These p-values are obtained in a similar way to
 the test performed on the tea taster. However, in that example the
 number of green and red balls is experimentally fixed and the number
 of answers given for each category is also fixed. Another way to say
@@ -93,7 +95,11 @@ by 2 table and also permits us to use the hypergeometric
 distribution. In general, this is not the case. Nonetheless, there is
 another approach, the Chi-squared test, which described below. 
 
-Imagine we have 280 individuals, some of them have a given disease and the rest do not. We observe that 20% of the individuals that are homozygous for the minor allele (aa) have the disease compared to 10% of the rest. Would we see this again if we picked another 220 individuals?
+Imagine we have 250 individuals, where some of them have a given disease
+and the rest do not. We observe that 20% of the individuals that are
+homozygous for the minor allele (aa) have the disease compared to 10%
+of the rest. Would we see this again if we picked another 250
+individuals? 
 
 Let's create an dataset with these percentages:
 
@@ -107,7 +113,9 @@ dat <- dat[sample(nrow(dat)),] #shuffle them up
 head(dat)
 ```
 
-To create the appropriate two by two table, we will use the function `table`. This function tabulates the frequency of each level in a factor. For example:
+To create the appropriate two by two table, we will use the function
+`table`. This function tabulates the frequency of each level in a
+factor. For example: 
 
 ```{r}
 table(genotype)
@@ -129,7 +137,15 @@ The typical statistics we use to summarize these results is the odds ratio (OR).
 (tab[2,2]/tab[2,1]) / (tab[1,2]/tab[1,1])
 ```
 
-To compute a p-value we don't use the OR directly. We instead assume that there is no association between genotype and disease, and then compute what we expect to see in each cell. Under the null hypothesis, the group with 200 individuals and the group with 50 individuals were each randomly assigned the disease with the same probability. If this is the case, then the probability of disease is:
+To compute a p-value we don't use the OR directly. We instead assume
+that there is no association between genotype and disease, and then
+compute what we expect to see in each *cell* of the table (note: this use of
+the word "cell" refers to elements in a matrix or table and has
+nothing to do with biological cells). 
+Under the null hypothesis,
+the group with 200 individuals and the group with 50 individuals were
+each randomly assigned the disease with the same probability. If this
+is the case, then the probability of disease is: 
 
 ```{r}
 p=mean(disease=="cases")
@@ -145,7 +161,11 @@ dimnames(expected)<-dimnames(tab)
 expected
 ```
 
-The Chi-square test uses an asymptotic result (similar to CLT) related to the sums of independent binary outcomes. Using this approximation, we can compute the probability of seeing a deviation from the expected table as big as the one we saw. The p-value for this table is: 
+The Chi-square test uses an asymptotic result (similar to the CLT)
+related to the sums of independent binary outcomes. Using this
+approximation, we can compute the probability of seeing a deviation
+from the expected table as big as the one we saw. The p-value for this
+table is:
 
 ```{r}
 chisq.test(tab)$p.value
@@ -153,9 +173,21 @@ chisq.test(tab)$p.value
 
 ### Large Samples, Small p-values
 
-As mentioned earlier, reporting only p-values is not an appropriate way to report the results of your experiment. Many genetic association studies seem to over emphasize p-values. They have large sample sizes and report impressively small p-values.  Yet when one looks closely at the results, we realize odds ratios are quite modest: barely bigger than 1.
+As mentioned earlier, reporting only p-values is not an appropriate
+way to report the results of your experiment. Many genetic association
+studies seem to over emphasize p-values. They have large sample sizes
+and report impressively small p-values.  Yet when one looks closely at
+the results, we realize odds ratios are quite modest: barely bigger
+than 1. In this case the difference of having genotype AA/Aa or aa
+might not change an individual's risk for a disease in an amount which is
+*practically significant*, in that one might not change one's behavior
+based on the small increase in risk.
 
-There is not a one-to-one relationship between the odds ratio and the p-value. To demonstrate, we recalculate the p-value keeping all the proportions identical, but increasing the sample size by 10, which reduces the p-value substantially:
+There is not a one-to-one relationship between the odds ratio and the
+p-value. To demonstrate, we recalculate the p-value keeping all the
+proportions identical, but increasing the sample size by 10, which
+reduces the p-value substantially (as we saw with the t-test under the
+alternative hypothesis):
 
 ```{r}
 tab<-tab*10
@@ -164,10 +196,20 @@ chisq.test(tab)$p.value
 
 ### Confidence Intervals For The Odd Ratio
 
-Computing confidence intervals for the OR is not mathematically straightforward. Unlike other statistics, for which we can derive useful approximations of their distributions, the OR is not only a ratio, but a ratio of ratios. Therefore there is no simple way of using, for example, the CLT.
- 
-One approach is to use the theory of generalized linear models which provides estimates of the log odds ratio, rather than the OR itself, that can be shown to be asymptotically normal. Here we provide R code without presenting the theoretical details (for further details please see [CITE]:
+Computing confidence intervals for the OR is not mathematically
+straightforward. Unlike other statistics, for which we can derive
+useful approximations of their distributions, the OR is not only a
+ratio, but a ratio of ratios. Therefore there is no simple way of
+using, for example, the CLT. 
   
+One approach is to use the theory of *generalized linear models* which
+provides estimates of the log odds ratio, rather than the OR itself,
+that can be shown to be asymptotically normal. Here we provide R code
+without presenting the theoretical details (for further details please
+see a reference on generalized linear models such as
+[Wikipedia](https://en.wikipedia.org/wiki/Generalized_linear_model) or
+[McCullagh and Nelder, 1989](https://books.google.com/books?hl=en&lr=&id=h9kFH2_FfBkC)): 
+
 ```{r}
 fit <- glm(disease~genotype,family="binomial",data=dat)
 coeftab<- summary(fit)$coef

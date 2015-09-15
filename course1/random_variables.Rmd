@@ -178,11 +178,13 @@ The simplest way to think of a *distribution* is as a compact description of man
 library(UsingR)
 x <- father.son$fheight
 ```
+
 One approach to summarizing these numbers is to simply list them all out for the alien to see. Here are 10 randomly selected heights of 1,078.
 
 ```{r}
 round(sample(x,10),1)
 ```
+
 #### Cumulative Distribution Function
 
 Scanning through these numbers, we start to get a rough idea of what the entire list looks like, but it is certainly inefficient. We can quickly improve on this approach by defining and visualizing a _distribution_. To define a distribution we compute, for all possible values of $a$, the proportion of numbers in our list that are below $a$. We use the following notation:
@@ -325,6 +327,3 @@ practice. Statistical Inference is the mathematical theory that
 permits you to approximate this with only the data from your sample,
 i.e. the original 24 mice. We will focus on this in the following
 sections.
-
-
-

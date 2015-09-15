@@ -15,12 +15,30 @@ library(rafalib)
 
 # Exploratory Data Analysis
 
-Biases, systematic errors and unexpected variability are common in data from the life sciences. Failure to discover these problems often leads to flawed analyses and false discoveries. As an example, consider that experiments sometimes fail and not all data processing pipelines, such as the t.test function in R, are designed to detect these. Yet, these pipelines still give you an answer. Furthermore, it may be hard or even impossible to notice that an error was made just from the reported results.
+Biases, systematic errors and unexpected variability are common in
+data from the life sciences. Failure to discover these problems often
+leads to flawed analyses and false discoveries. As an example,
+consider that experiments sometimes fail and not all data processing
+pipelines, such as the `t.test` function in R, are designed to detect
+these. Yet, these pipelines still give you an answer. Furthermore, it
+may be hard or impossible to notice an error was made just from the
+reported results. 
 
-Summarizing and, especially, visualizing data are powerful approaches to detecting these problems. We refer to this as _exploratory data analyis_ (EDA). Many important methodological contributions to existing data analysis techniques in data analysis were initiated by discoveries made via EDA. Through this book we make use of exploratory plots to motivate the analyses we choose. Here we present a general introduction to EDA using height data.
+Graphing data is a powerful approach to detecting these problems. We
+refer to this as _exploratory data analysis_ (EDA). Many important
+methodological contributions to existing data analysis techniques in
+data analysis were initiated by discoveries made via EDA.
+In addition, EDA can lead to interesting biological discoveries which
+would otherwise be missed through simply subjecting the data to a
+battery of hypothesis tests.
+Through this book we make use of exploratory plots to motivate the analyses we
+choose. Here we present a general introduction to EDA using height
+data.
 
-We have already introduced some EDA approaches for _univariate_ data, namely the histograms. Here we describe the qq-plot in more detail and how some EDA and summary statistics for paired data. We also give a demonstration of commonly used figures that we recommend against.
-
+We have already introduced some EDA approaches for _univariate_ data,
+namely the histograms. Here we describe the QQ-plot in more detail and
+how some EDA and summary statistics for paired data. We also give a
+demonstration of commonly used figures that we recommend against. 
 
 ## Quantile Quantile Plots
 

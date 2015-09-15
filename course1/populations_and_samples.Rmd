@@ -1,6 +1,6 @@
 ---
-title: "Population, Samples, and Estimates"
 layout: page
+title: Population, Samples, and Estimates
 ---
 
 ```{r options, echo=FALSE}
@@ -91,3 +91,4 @@ that will in turn help us understand the relationship between
 $\bar{Y}-\bar{X}$  and $\mu_Y - \mu_X$. Specifically, we will describe
 how the Central Limit Theorem permits us to use an approximation to
 answer this question as well as motivate the widely used t-distribution.
+
