@@ -1,6 +1,5 @@
 ---
-title: "Exploratory Data Analysis 2"
-output: html_document
+title: Exploratory Data Analysis
 layout: page
 ---
 
@@ -8,9 +7,9 @@ layout: page
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
+
 ```{r,include=FALSE}
 set.seed(1)
-library(rafalib)
 ```
 
 # Exploratory Data Analysis
@@ -42,25 +41,34 @@ demonstration of commonly used figures that we recommend against.
 
 ## Quantile Quantile Plots
 
-To corroborate that the normal distribution is in fact a good approximation, we can use quantile-quantile plots (QQ-plots). Quantiles are best understood by considering the special case of percentiles. The p-th percentile of a list of a distribution is defined as the number q that is bigger than p% of numbers. For example, the median 50-th percentile is the median. We can compute the percentiles for our list of heights
-
+To corroborate that the normal distribution is in fact a good
+approximation, we can use quantile-quantile plots
+(QQ-plots). Quantiles are best understood by considering the special
+case of percentiles. The p-th percentile of a list of a distribution
+is defined as the number q that is bigger than p% of numbers. For
+example, the median 50-th percentile is the median (so the inverse of
+the cumulative distribution function we defined earlier).
+We can compute the percentiles for our list of heights:
 
 ```{r definingHeights, message=FALSE}
 library(UsingR) ##available from CRAN
-x=father.son$fheight
+library(rafalib)
+x <- father.son$fheight
 ```
 
 and for the normal distribution:
 
 ```{r qqplot_example1, fig.cap="First example of qqplot. Here we compute the theoretical quantiles ourselves."}
-ps <- seq(0.01,0.99,0.01)
-qs <- quantile(x,ps)
-normalqs <- qnorm(ps,mean(x),popsd(x))
+ps <- seq(0, 1, length=101)
+qs <- quantile(x, ps)
+normalqs <- qnorm(ps, mean(x), popsd(x))
 plot(normalqs,qs,xlab="Normal percentiles",ylab="Height percentiles")
 abline(0,1) ##identity line
 ```
 
-Note how close these values are. Also, note that we can see these qqplots with less code:
+Note how close these values are. Also, note that we can see these
+QQ-plots with less code (this plot has more points than the one we
+constructed manually, and so tail-behavior can be seen more clearly).
 
 ```{r qqplot_example2, fig.cap="Second example of qqplot. Here we use the function qqnorm which computes the theoretical normal quantiles automatically."}
 qqnorm(x)
@@ -79,9 +87,18 @@ qqnorm(x)
 qqline(x)
 ```
 
-We can also get a sense for how non-normally distributed data looks. Here we generate data from the t-distribution with different degrees of freedom. Note that the smaller the degrees of freedoms, the fatter the tails.
+We can also get a sense for how non-normally distributed data will
+look in a QQ-plot. Here we generate data from the t-distribution with
+different degrees of freedom. Note that the smaller the degrees of
+freedom, the fatter the tails. We call these "fat tails" because if we
+plotted an empirical density or histogram, the density at the extremes would be
+higher than the theoretical curve. In the QQ-plot this can be seen in
+that the curve is lower than the identity line on the left
+side and higher on the right side. This means that there are more
+extreme values than predicted by the theoretical density plotted on
+the x-axis.
 
-```{r qqnorm_of_t, fig.cap="We generate t-distributed data for four degrees of freedom and plot qqplots against normal theoretical quantiles.",fig.width=10.5,fig.height=10.5}
+```{r qqnorm_of_t, fig.cap="We generate t-distributed data for four degrees of freedom and make qqplots against normal theoretical quantiles.",fig.width=10.5,fig.height=10.5}
 dfs <- c(3,6,12,30)
 mypar(2,2)
 for(df in dfs){
@@ -180,4 +197,22 @@ fatherheights=as.numeric(names(means))
 mypar(1,1)
 plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fatherheights))
 abline(0,cor(x,y))
+```
+
+<a name="boxplots"></a>
+
+# Boxplots
+
+Data is not always normally distributed. Income is widely cited example. In these cases the average and standard deviation are not necessarily informative since one can't infer the distribution from just these two numbers. The properties described above are specific to the normal. For example, the normal distribution does not seem to be a good approximation for the direct compensation for 199 United States CEOs in the year 2000
+
+```{r fig.width=4, fig.height=4}
+hist(exec.pay)
+qqnorm(exec.pay)
+qqline(exec.pay)
+```
+
+A practical summary is to compute 3 percentiles: 25-th, 50-th (the median) and the 75-th. A boxplots shows these 3 values along with a range calculated as median $\pm$ 1.5 75-th percentiles - 25th-percentile. Values outside this range are shown as points and sometimes refereed to as _outliers_.
+
+```{r fig.width=4, fig.height=4}
+boxplot(exec.pay,ylab="10,000s of dollars",ylim=c(0,400))
 ```
