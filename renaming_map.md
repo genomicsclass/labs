@@ -12,3 +12,8 @@ from | to
 3 | highdim
 3 | ml
 3 | batch
+4 | bioc
+5 | rnaseq
+6 | variants
+7 | chipseq
+8 | methyl
