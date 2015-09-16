@@ -10,5 +10,5 @@ from | to
 3 | advinference
 3 | modeling
 3 | distance
-3 | machinelearn
+3 | ml
 3 | batch
