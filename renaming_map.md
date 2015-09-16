@@ -2,6 +2,7 @@
 
 from | to
 --- | ---
+1 | intro
 1 | inference
 1 | eda
 1 | robust
