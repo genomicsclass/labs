@@ -9,6 +9,6 @@ from | to
 2 | linear
 3 | advinference
 3 | modeling
-3 | distance
+3 | highdim
 3 | ml
 3 | batch
