@@ -27,7 +27,7 @@ data("father.son")
 x=round(father.son$fheight) ##round to nearest inch
 y=round(father.son$sheight)
 hist(y,breaks=seq(min(y),max(y)))
-abline(v=mean(y),col=2)
+abline(v=mean(y),col="red",lwd=2)
 ```
 
 In this case, we can also approximate the distribution of $Y$ as normal, which implies the mean maximizes the probability density. 

@@ -120,7 +120,7 @@ the normal. For example, the normal distribution does not seem to be a
 good approximation for the direct compensation for 199 United States
 CEOs in the year 2000.
 
-```{r fig.width=8, fig.height=4, fig.cap="Histogram of executive pay."}
+```{r fig.width=8, fig.height=4, fig.cap="Histogram and QQ-plot of executive pay."}
 mypar(1,2)
 hist(exec.pay) ##in UsingR package
 qqnorm(exec.pay)
