@@ -16,7 +16,7 @@ When we see a p-value in the literature, it means a probability distribution of 
 
 The CLT is backed by theoretical results that guarantee that the approximation is accurate. However, we cannot always use this approximation, such as when our sample size is too small. In a previous module we described how the sample average can be approximated with t-distribution when the population data is approximately normal. However, there is no theoretical backing for this assumption. We are now *modeling*. In the case of height, we know from experience that this turns out to be a very good model. 
 
-But this does not imply that every dataset we collect will follow a normal distribution. Some examples are: coin tosses, the number of people who win the lottery, and US incomes. The normal is not the only parametric distribution that is available from modeling. Here we describe some useful parametric distributions and their use in genomics. For many more please consult the following books: [CITE books]
+But this does not imply that every dataset we collect will follow a normal distribution. Some examples are: coin tosses, the number of people who win the lottery, and US incomes. The normal is not the only parametric distribution that is available from modeling. Here we describe some useful parametric distributions and their use in genomics. For many more please consult a Statistics textbook such as [this one](https://www.stat.berkeley.edu/~rice/Book3ed/index.html). 
 
 ## The Binomial Distribution
 
@@ -213,7 +213,7 @@ $$
 f(x;\alpha,\beta)=\frac{\beta^\alpha x^{\alpha-1}\exp{-\beta x}}{\Gamma(\alpha)}
 $$
 
-It is defined by two parameters $\alpha$ and $\beta$ that can, indirectly, control location and scale. They also control the shape of the distribution. For more on this distribution please refer to [CITE BOOKs]. 
+It is defined by two parameters $\alpha$ and $\beta$ that can, indirectly, control location and scale. They also control the shape of the distribution. For more on this distribution please refer to [this book](https://www.stat.berkeley.edu/~rice/Book3ed/index.html). 
 
 Two special cases of the gamma distribution are the chi-squared distribution, which we used earlier to analyze a 2x2 table and the exponential distribution, which we will use later in this section. For chi-square we $\alpha=\nu/2$ and $\beta=2$ with $\nu$ the degrees of freedom. For exponential we have $\alpha=1$ and $\beta=\lambda$ the rate.
 

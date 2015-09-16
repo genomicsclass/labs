@@ -194,6 +194,8 @@ $$
 }
 $$
 
-Now we can use math to show that if you keep $X$ fixed (condition to be $x$) the distribution of $Y$ is normally distributed with mean: $\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. [CHECK] Homework: what are $\beta_0$ and $\beta_1$ in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$ ? It turns out that the least squares estimate of $\beta_1$ can be written in terms of the sample correlation and standard deviations.
+Now we can use math to show that if you keep $X$ fixed (condition to be $x$) the distribution of $Y$ is normally distributed with mean: $\mu_x +\sigma_y \rho \left(\frac{x-\mu_x}{\sigma_x}\right)$ and standard deviation $\sigma_y \sqrt{1-\rho^2}$. Note that $\rho$ is the correlation between $Y$ and $X$ and this implies that if we fix $X=x$, $Y$ does in fact follow a linear model. 
+
+Note that the $\beta_0$ and $\beta_1$ parameters in a simple linear model can be expressed in terms of $\mu_x,\mu_y,\sigma_x,\sigma_y$, and $\rho$.
 
 

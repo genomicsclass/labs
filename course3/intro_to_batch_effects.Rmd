@@ -42,7 +42,7 @@ abline(h=current,lty=2)
 text(1905,current,"Current estimate",pos=3)
 ```
 
-[CHECK] Judging by the variability across labs and the fact that the reported bounds do not cover this variability shows very clearly that each group of measurement includes a bias that is consistent within group, but not across. This type of variability is what we call a batch effect. Note that there are laboratories that reported two estimates (purple and orange) and batch effects are seen across the two different measurements from the same laboratories as well. 
+Judging by the variability across labs and the fact that the reported bounds do not explain this variability clearly shows the presence of an effect that differes across labs but not within. This type of variability is what we call a batch effect. Note that there are laboratories that reported two estimates (purple and orange) and batch effects are seen across the two different measurements from the same laboratories as well. 
 
 
 We can use statistical notation to precisely describe the problem. The scientists making these measurements assumed they observed:

@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 In this section we use the mathematical theory which describes an approach that has become widely applied in the analysis of high-throughput data. The general idea is to build a _hierachichal model_ with two levels. One level describes variability across samples/units, and the other describes variability across features. The first level of variation is accounted for by all the models and approaches we have described here, for example the model that leads to the t-test. The second level provides power by permitting us to "borrow" information from all features to inform the inference performed on each one. 
 
-Here we describe one specific case that is currently the most widely used approach to inference with gene expression data. It is the model implemented by the `limma` Bioconductor package. This idea has been adapted to develop methods for other data types such as RNAseq CITE.
+Here we describe one specific case that is currently the most widely used approach to inference with gene expression data. It is the model implemented by the `limma` Bioconductor package. This idea has been adapted to develop methods for other data types such as RNAseq such as [edgeR](http://www.ncbi.nlm.nih.gov/pubmed/19910308) and [DESeq](http://www.ncbi.nlm.nih.gov/pubmed/20979621).
 This package provides an alternative to the t-test that greatly improves power by modeling the variance. We motivate and demonstrate the approach with an example.
 
 Here is a volcano showing effect sizes and p-value from applying a t-test to data from an experiment running six replicated samples with 16 genes artificially made to be different in two groups of three genes. These genes are the only genes for which the null hypothesis is true. In the plot they are shown in blue.
@@ -64,7 +64,7 @@ $$
 
 Because we have thousands of data points, we can actually check this assumption and also estimate the parameters $s_0$ and $d_0$. This particular approach is referred to as empirical Bayes because it can be described as using data (empirical) to build the prior distribution (Bayesian approach). 
 
-Now we apply what we learned with the baseball example to the standard error estimates. As before we have an observed value for each gene $s_g$, a sampling distribution as a prior distribution. We can therefore compute a posterior distribution for the variance $\sigma^2_g$ and obtain the posterior mean. You can see the details of the derivation [CITE Smyth 2004]
+Now we apply what we learned with the baseball example to the standard error estimates. As before we have an observed value for each gene $s_g$, a sampling distribution as a prior distribution. We can therefore compute a posterior distribution for the variance $\sigma^2_g$ and obtain the posterior mean. You can see the details of the derivation in [this paper](http://www.ncbi.nlm.nih.gov/pubmed/16646809).
 
 $$
 \mbox{E}[\sigma^2_g \mid s_g] = \frac{d_0 s_0^2 + d s^2_g}{d_0 + d}

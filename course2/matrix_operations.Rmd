@@ -236,8 +236,6 @@ $$
 $$
 
 
-[CHECK] **Optional Homework**: use what you know about matrix multiplication to convince yourself that the above is correct.
-
 In R you can form an identity matrix this way:
 ```{r}
 n <- 5 #pick dimensions
