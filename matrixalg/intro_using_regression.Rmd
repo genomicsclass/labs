@@ -15,6 +15,7 @@ We are going to describe three examples from the life sciences: one from physics
 ```{r prep}
 library(rafalib)
 ```
+
 ## Motivating Examples
 
 #### Objects falling
