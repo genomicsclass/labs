@@ -20,7 +20,7 @@ This section is based on a talk by [Karl W. Broman](http://kbroman.org/) titled 
 
 ### General Principles
 
-The aims of good data graphics is to display data accurately and clearly. Some rules for displaying data *badly*:
+The aims of good data graphics is to display data accurately and clearly. According to Karl, some rules for displaying data *badly* are:
 
 *  Display as little information as possible.
 *  Obscure what you do show (with chart junk).
@@ -95,7 +95,7 @@ the number of points is too large for us to see them, just showing a
 boxplot is preferable. We can even set `range=0` in `boxplot` to avoid
 drawing many outliers when the data is in the range of millions.
 
-Let's recreate these barplots as boxplots. xFirst let's download the data:
+Let's recreate these barplots as boxplots. First let's download the data:
 
 ```{r}
 library("downloader")
@@ -111,7 +111,7 @@ Now we can simply show the points and make simple boxplots:
 library(rafalib)
 mypar()
 dat <- list(Treatment=x,Control=y)
-boxplot(dat,xlab="Group",ylab="Response",xlab="Group",ylab="Response",cex=0)
+boxplot(dat,xlab="Group",ylab="Response",cex=0)
 stripchart(dat,vertical=TRUE,method="jitter",pch=16,add=TRUE,col=1)
 ```
 
@@ -140,10 +140,10 @@ library(rafalib)
 mypar(1,2)
 dat <- list(Treatment=x,Control=y)
 
-boxplot(dat,xlab="Group",ylab="Response",xlab="Group",ylab="Response",cex=0)
+boxplot(dat,xlab="Group",ylab="Response",cex=0)
 stripchart(dat,vertical=TRUE,method="jitter",pch=16,add=TRUE,col=1)
 
-boxplot(dat,xlab="Group",ylab="Response",xlab="Group",ylab="Response",log="y",cex=0)
+boxplot(dat,xlab="Group",ylab="Response",log="y",cex=0)
 stripchart(dat,vertical=TRUE,method="jitter",pch=16,add=TRUE,col=1)
 ```
 
@@ -186,13 +186,10 @@ When new technologies or laboratory techniques are introduced, we are often show
 
 In the plot on the left, we see the original data which shows very high correlation. Yet the data follows a distribution with very fat tails. Furthermore, 95% of the data is below the green line. The plot on the right is in the log scale:
 
-```{r,message=FALSE}
+```{r correlation-not-replication, fig.cap="Gene expression data from two replicated samples. Left is in original scale and right is in log scale.",fig.width=10.5 , fig.height=5.25,message=FALSE,echo=FALSE}
 ##Both these libraries are available from Bioconductor
-library(Biobase) 
+library(Biobase) ##install with install_bioc
 library(SpikeInSubset) 
-```
-
-```{r correlation-not-replication, fig.cap="Gene expression data from two replicated samples. Left is in original scale and right is in log scale.",fig.width=10.5 , fig.height=5.25}
 data(mas95)
 mypar(1,2)
 r <- exprs(mas95)[,1] ##original measures were not logged
@@ -214,10 +211,11 @@ plot(r,g,lwd=2,cex=0.2,pch=16,
      main=paste0("corr=",signif(cor(r,g),3)))
 abline(0,1,col=2,lwd=2)
 ```
+Note that do not show the code here as it is rather complex but we explain how to make MA plots in a latter chapter. 
 
 Although the correlation is reduced in the log-scale, it is very close to 1 in both cases. Does this mean these data are reproduced? To examine how well the second vector reproduces the first, we need to study the differences. So we should instead plot that. In this plot, we plot the difference (in the log scale) versus the average:
 
-```{r MAplot, fig.cap="MA plot of the same data shown above shows that data is not replicated very well despite a high correlation."}
+```{r MAplot, fig.cap="MA plot of the same data shown above shows that data is not replicated very well despite a high correlation.",echo=FALSE}
 mypar(1,1)
 plot((r+g)/2,(r-g),lwd=2,cex=0.2,pch=16,
      xlab=expression(paste("Ave{ ",log[2], " ", E[1],", ",log[2], " ", E[2]," }")),
@@ -226,7 +224,7 @@ plot((r+g)/2,(r-g),lwd=2,cex=0.2,pch=16,
 abline(h=0,col=2,lwd=2)
 ```
 
-These are referred to as Bland-Altman plots or "MA plots" in the
+These are referred to as Bland-Altman plots, or _MA plots_ in the
 genomics literature, and we will talk more about them later. "MA"
 stands for "minus" and "average", because in this plot, the y-axis is
 the difference between two samples on the log scale (the log ratio is
@@ -388,7 +386,7 @@ Turning tables into graphs. The American Statistician 56:121-130
 
 The use of correlation to summarize reproducibility has become widespread in, for example, genomics. Despite its English language definition, mathematically, correlation is not necessarily informative with regards to reproducibility.  Here we briefly describe three major problems.
 
-The most egregious related mistake is to compute correlations of data that is not approximated by bi-variate normal data. As described above, averages, standard deviations and correlations are popular summary statistics for two-dimensional data because, for the bivariate normal distribution, these five parameters fully describe the distribution. However, there are many examples of data that are not well approximated by bivariate normal data. 
+The most egregious related mistake is to compute correlations of data that is not approximated by bi-variate normal data. As described above, averages, standard deviations and correlations are popular summary statistics for two-dimensional data because, for the bivariate normal distribution, these five parameters fully describe the distribution. However, there are many examples of data that are not well approximated by bivariate normal data. Gene expression data, for example, tends to have a distribution with a very fat right tail.
 
 The standard way to quantify reproducibility between two sets of replicated measurements, say $x_1,\dots,x_n$ and $y_1,\dots,y_n$, is simply to compute the distance between them:
 
@@ -397,7 +395,9 @@ $$
 \sum_{i=1}^n d_i^2} \mbox{ with } d_i=x_i - y_i
 $$
 
-This metric decreases as reproducibility improves and it is 0 when the reproducibility is perfect. Another advantage of this metric is that if we divide the sum by N, we can interpret the resulting quantity as the standard deviation of the $d_1,\dots,d_N$ if we assume the $d$ average out to 0. Furthermore, this quantity will have the same units as our measurements resulting in a more interpretable metric. Another limitation of the correlation is that it does not detect cases that are not reproducible due to average changes. The distance metric does detect these differences. We can rewrite:
+This metric decreases as reproducibility improves and it is 0 when the reproducibility is perfect. Another advantage of this metric is that if we divide the sum by N, we can interpret the resulting quantity as the standard deviation of the $d_1,\dots,d_N$ if we assume the $d$ average out to 0. If the $d$ can be considered residuals, then this quantity is equivalent to the root mean squared error (RMSE), a summary statistic that has been around for over a century. Furthermore, this quantity will have the same units as our measurements resulting in a more interpretable metric. 
+
+Another limitation of the correlation is that it does not detect cases that are not reproducible due to average changes. The distance metric does detect these differences. We can rewrite:
 
 $$\frac{1}{n} \sum_{i=1}^n (x_i - y_i)^2 = \frac{1}{n} \sum_{i=1}^n [(x_i-\mu_x) - (y_i - \mu_y)^2 + (\mu_x-\mu_y)]^2$$
 
@@ -412,10 +412,10 @@ $$\frac{1}{n} \sum_{i=1}^n (x_i - y_i)^2 = 2 + (\mu_x-\mu_y)^2 - 2\rho$$
 
 with $\rho$ the correlation. So we see the direct relationship between distance and correlation. However, an important difference is that the distance contains the term $$(\mu_x-\mu_y)^2$$ and thus it can detect cases that are not reproducible due to large average changes. 
 
-Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this we use a formula that relates the correlation of a variable with the correlation of that variable, plus what is interpreted here as deviation: $x$ and $y=x+d$. The larger the variance of $d$, the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibility. However, correlation depends on the variance of $x$ as well:
+Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this we use a formula that relates the correlation of a variable with that variable plus what is interpreted here as deviation: $x$ and $y=x+d$. The larger the variance of $d$, the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibility. However, correlation depends on the variance of $x$ as well. If $d$ is independent of $x$ then
 
 $$
-cor(x,x+d) = \frac{1}{\sqrt{1+\mbox{var}(d)/\mbox{var}(x)}}
+cor(x,y) = \frac{1}{\sqrt{1+\mbox{var}(d)/\mbox{var}(x)}}
 $$
 
 This suggests that correlations near 1 do not necessarily imply reproducibility. Specifically, irrespective of the variance of $d$, we can make the correlation arbitrarily close to 1 by increasing the variance of $x$.

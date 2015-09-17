@@ -14,6 +14,8 @@ set.seed(1)
 
 # Exploratory Data Analysis
 
+"The greatest value of a picture is when it forces us to notice what we never expected to see." -John W. Tukey
+
 Biases, systematic errors and unexpected variability are common in
 data from the life sciences. Failure to discover these problems often
 leads to flawed analyses and false discoveries. As an example,
@@ -35,19 +37,19 @@ choose. Here we present a general introduction to EDA using height
 data.
 
 We have already introduced some EDA approaches for _univariate_ data,
-namely the histograms. Here we describe the QQ-plot in more detail and
+namely the histograms and QQ-plot. Here we describe the QQ-plot in more detail and
 how some EDA and summary statistics for paired data. We also give a
 demonstration of commonly used figures that we recommend against. 
 
 ## Quantile Quantile Plots
 
-To corroborate that the normal distribution is in fact a good
+To corroborate that a theoretical distribution, for example the normal distribution, is in fact a good
 approximation, we can use quantile-quantile plots
 (QQ-plots). Quantiles are best understood by considering the special
 case of percentiles. The p-th percentile of a list of a distribution
-is defined as the number q that is bigger than p% of numbers. For
-example, the median 50-th percentile is the median (so the inverse of
-the cumulative distribution function we defined earlier).
+is defined as the number q that is bigger than p% of numbers (so the inverse of
+the cumulative distribution function we defined earlier). For
+example, the median 50-th percentile is the median.
 We can compute the percentiles for our list of heights:
 
 ```{r definingHeights, message=FALSE}
@@ -98,7 +100,7 @@ side and higher on the right side. This means that there are more
 extreme values than predicted by the theoretical density plotted on
 the x-axis.
 
-```{r qqnorm_of_t, fig.cap="We generate t-distributed data for four degrees of freedom and make qqplots against normal theoretical quantiles.",fig.width=10.5,fig.height=10.5}
+```{r qqnorm_of_t, fig.cap="We generate t-distributed data for four degrees of freedom and make qqplots against normal theoretical quantiles.",fig.width=7.5,fig.height=7.5}
 dfs <- c(3,6,12,30)
 mypar(2,2)
 for(df in dfs){
@@ -134,7 +136,7 @@ range of the points within median $\pm$ 1.5 (75-th percentile -
 25th-percentile). Values outside this range are shown as points and
 sometimes refereed to as _outliers_. Here we show just one boxplot,
 however one of the great benefits of boxplots is that we could easily
-show many distributions in one plot, by lining them up, side by side.
+show many distributions in one plot, by lining them up, side by side. We will see several examples of this throughout the book.
 
 ```{r fig.width=6, fig.height=6, fig.cap="Simple boxplot of executive pay."}
 boxplot(exec.pay, ylab="10,000s of dollars", ylim=c(0,400))
@@ -174,7 +176,7 @@ average height, 68.7 inches, is the value with the highest proportion
 (see histogram) and would be our prediction. But what if we are told
 that the father is 72 inches tall, do we sill guess 68.7? 
 
-Note that the father is taller than average. Specifically, he is 1.7
+Note that the father is taller than average. Specifically, he is 1.75
 standard deviations taller than the average father. So should we
 predict that the son is also 1.75 standard deviations taller? It turns
 out this would be an overestimate. To see this we look at all the sons
@@ -196,12 +198,12 @@ below.
 
 ## Bi-variate Normal Distribution
 
-A pair of random variables $(X,y)$ is considered to be approximated by
-bivariate normal when the proportion of values below, for example, $x$
-and $y$ is approximated by this expression: 
+A pair of random variables $(X,Y)$ is considered to be approximated by
+bivariate normal when the proportion of values below, for example, $a$
+and $b$ is approximated by this expression: 
 
 $$ 
-Pr(X<a,Y<b) = 
+\mbox{Pr}(X<a,Y<b) = 
 $$
 
 $$
@@ -216,16 +218,15 @@ $$
 }
 $$
 
-A definition that is more intuitive is the following: fix a value $x$
+This may seem like a rather complicated equation, but the concept behind it is rather intuitive. An alternative definition is the following: fix a value $x$
 and look at all the pairs $(X,Y)$ for which $X=x$. Generally, in
 statistics we call this exercise _conditioning_. We are conditioning
 $Y$ on $X$. If a pair of random variables is approximated by a
-bivariate normal distribution, then the distribution of $Y$ condition
-on $X=x$ is approximated with a normal distribution for all $x$. Let's
-see if this happens here. We take 4 different strata to demonstrate
-this: 
+bivariate normal distribution, then the distribution of $Y$ conditioned
+on $X=x$ is approximated with a normal distribution no matter waht $x$ we choose. Let's
+see if this holds with our height data. We show 4 different strata: 
 
-```{r qqnorm_of_strata, fig.cap="qqplots of son heights for four strata defined by father heights.",fig.width=10.5,fig.height=10.5}
+```{r qqnorm_of_strata, fig.cap="qqplots of son heights for four strata defined by father heights.",fig.width=7.5,fig.height=7.5}
 groups <- split(y,round(x)) 
 mypar(2,2)
 for(i in c(5,8,11,14)){
@@ -239,28 +240,41 @@ for(i in c(5,8,11,14)){
 Now we come back to defining correlation. Mathematical statistics tells us that when two variables follow a bivariate normal distribution, then for any given value of $x$, the average of the $Y$ in pairs for which $X=x$ is:
 
 $$ 
-\mu_Y +  r \frac{X-\mu_X}{\sigma_X}\sigma_Y
+\mu_Y +  \rho \frac{X-\mu_X}{\sigma_X}\sigma_Y
 $$
 
-Note that this is a line with slope $r \frac{\sigma_Y}{\sigma_X}$. This is referred to as the _regression line_. If the SDs are the same, then the slope of the regression line is the correlation $r$. Therefore, if we standardize $X$ and $Y$, the correlation is the slope of the regression line.
 
-Another way to see this is, to form a prediction $\hat{Y}$, for every SD away from the mean in $x$, we predict $r$ SDs away for $Y$: 
+Note that this is a line with slope $\rho \frac{\sigma_Y}{\sigma_X}$. This is referred to as the _regression line_. If the SDs are the same, then the slope of the regression line is the correlation $\rho$. Therefore, if we standardize $X$ and $Y$, the correlation is the slope of the regression line. 
+
+
+
+
+Another way to see this is, to form a prediction $\hat{Y}$, for every SD away from the mean in $x$, we predict $\rho$ SDs away for $Y$: 
 
 $$
-\frac{\hat{Y} - \mu_Y}{\sigma_Y} = r \frac{x-\mu_X}{\sigma_X}
+\frac{\hat{Y} - \mu_Y}{\sigma_Y} = \rho \frac{x-\mu_X}{\sigma_X}
 $$
 
-with the $\mu$ representing the averages, $\sigma$ the standard deviations, and $r$ the correlation. So, if there is perfect correlation, we predict the same number of SDs. If there is 0 correlation, then we don't use $x$ at all.  For values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
-
+So, if there is perfect correlation, we predict the same number of SDs. If there is 0 correlation, then we don't use $x$ at all.  For values between 0 and 1, the prediction is somewhere in between. For negative values, we simply predict in the opposite direction.
 
 To confirm that the above approximations hold in this case, let's compare the mean of each strata to the identity line and the regression line:
 
 ```{r scatterplot2, fig.cap="Average son height of each strata plotted against father heights defining the strata"}
-x=(x-mean(x))/sd(x)
-y=(y-mean(y))/sd(y)
-means=tapply(y,round(x*4)/4,mean)
+x=( x-mean(x) )/sd(x)
+y=( y-mean(y) )/sd(y)
+means=tapply(y, round(x*4)/4, mean)
 fatherheights=as.numeric(names(means))
 mypar(1,1)
-plot(fatherheights,means,ylab="average of strata of son heights",ylim=range(fatherheights))
-abline(0,cor(x,y))
+plot(fatherheights, means, ylab="average of strata of son heights", ylim=range(fatherheights))
+abline(0, cor(x,y))
 ```
+
+#### Variance explained
+
+The standard deviation of the _conditional_ distribution described above is:
+
+$$
+ \sqrt{1-\rho^2} \sigma_Y
+$$
+
+This is where statements like $X$ explains $\rho^2 \times 100$ % of the variation in $Y$: the variance of $Y$ is $\sigma^2$ and once we condition it goes down to $(1-\rho^2) \sigma^2_Y$ . It is important to note that the "variance explained" statement only makes sense when the data is approximated by a bivariate normal distribution.

@@ -25,7 +25,7 @@ and $a$ is a constant, the mean of $X - a$ is $\mu-a$. A similarly
 intuitive result holds for multiplication and the standard deviation (SD).
 If $X$ is a random
 variable with mean $\mu$ and SD $\sigma$, and $a$ is a constant, then
-the mean and SD of $aX$ are $a \mu$ and $\mid a \mid$ \sigma$
+the mean and SD of $aX$ are $a \mu$ and $\mid a \mid \sigma$
 respectively. To see how intuitive this is, imagine that we subtract
 10 grams from each of the mice weights. The average weight should also
 drop by that much. Similarly, if we change the units from grams to
