@@ -3,6 +3,12 @@ layout: page
 title: Mathematical Notation
 ---
 
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
 ## Mathematical Notation
 
 This book focuses on teaching statistical concepts and data analysis programming skills. We avoid mathematical notation as much as possible but we do use it.  We do not want readers to be intimidated by the notation though. Mathematics is actually the easier part of learning statistics. Unfortunately, many text books use mathematical notation in what we believe to be an over-complicated way. For this reason, we do try to keep the notation as simple as possible. However, we do not want to water down the material, and some mathematical notation facilitates a deeper understanding of the concepts. Here we describe a few specific symbols that we use often. If they appear intimidating to you, please take some time to read this section carefully as they are actually simpler than they seem. Because by now you should be somewhat familiar with R we will make the connection between mathematical notation and R code.
@@ -16,7 +22,7 @@ We dealing with data we almost always have a series of numbers. To describe the 
 x <- 1:5
 ```
 
-can be generally represented like this $x_1, x_2, x_3, x_4, x_5$. We use dots to simplify this $x_1,\dots,x_5$ and indexing to simplify even more $x_i, i=1,\dots,5$. If we want to describe a procedure for a list of any size $n$ we write $x_i, i=1,dots,n$. 
+can be generally represented like this $x_1, x_2, x_3, x_4, x_5$. We use dots to simplify this $x_1,\dots,x_5$ and indexing to simplify even more $x_i, i=1,\dots,5$. If we want to describe a procedure for a list of any size $n$ we write $x_i, i=1,\dots,n$. 
 
 We sometimes have two indexes. For example we may several measurements (blood pressure, weight, height, age, cholesterol level) for 100 individuals. We can then use double indexes: $x_{i,j}, i=1,\dots,100, j=1,\dots,5$. 
 
@@ -31,7 +37,7 @@ x <- 1:n
 S <- sum(x)
 ```
 
-and it is the $\sum$ sign:
+and it is the $\sum$ notation (captial S in Greek):
 
 $$
 S = \sum_{i=1}^n x_i

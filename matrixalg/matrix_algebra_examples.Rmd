@@ -90,14 +90,9 @@ crossprod(r)/N
 
 Which is almost equivalent to:
 ```{r}
-var(y) 
+library(rafalib)
+popvar(y) 
 ```
-The difference is due to the fact that `var` is for the sample estimate which divides by $N-1$, so this:
-
-```{r}
-var(y) * (N-1) / N
-```
-gives us the same answer as our matrix multiplication example.
 
 #### Linear models
 
@@ -183,7 +178,11 @@ $$
 (\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})
 $$
 
-So now we are ready to determine which values of $\beta$ minimize the above. There are a series of rules that permit us to compute partial derivatives equations in matrix notation. By equating the derivative to 0 and solving for the $\beta$, we will have our solution. The only one we need here tells us that the derivative of the above equation is:
+So now we are ready to determine which values of $\beta$ minimize the above, which we  can do  using calculus to find the minimum. 
+
+#### Advanced: Finding the minimum using calculus
+
+There are a series of rules that permit us to compute partial derivatives equations in matrix notation. By equating the derivative to 0 and solving for the $\beta$, we will have our solution. The only one we need here tells us that the derivative of the above equation is:
 
 $$
 2 \mathbf{X}^\top (\mathbf{Y} - \mathbf{X} \boldsymbol{\hat{\beta}})=0
@@ -201,6 +200,9 @@ $$
 and we have our solution. We usually put a hat on the $\beta$ that solves this, $\hat{\beta}$ as it is an estimate of the "real" $\beta$ that generated the data.
 
 Remember that the least squares are like a square (multiply something by itself) and that this formula is similar to the derivative of $f(x)^2$ being $2f(x)f\prime (x)$. 
+
+
+#### Finding LSE in R
 
 Let's see how it works in R:
 
@@ -255,7 +257,7 @@ And the resulting estimates are what we expect:
 betahat
 ```
 
-The Tower of Pisa is about 56 meters high, there is no initial velocity and half the constant of gravity is 9.8/2=4.9.
+The Tower of Pisa is about 56 meters high, since we are just dropping the object there is no initial velocity, and half the constant of gravity is 9.8/2=4.9 meters per second squared.
 
 #### The `lm` Function
 R has a very convenient function that fits these models. We will learn more about this function later, but here is a preview:

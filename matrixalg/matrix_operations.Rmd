@@ -13,7 +13,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Matrix Operations
 
-In the previous section we motivated the use of matrix algebra with this system of equations:
+In a previous section we motivated the use of matrix algebra with this system of equations:
 
 
 $$
@@ -68,10 +68,18 @@ Having described matrix notation, we will explain the operation we perform with 
 
 We start with one of the simplest operations: scalar multiplication. If $a$ is scalar and $\mathbf{X}$ is a matrix, then:
 
+
 $$
+\mathbf{X} = \begin{pmatrix}
+  x_{1,1}&\dots & x_{1,p} \\
+  x_{2,1}&\dots & x_{2,p} \\
+   & \vdots & \\
+  x_{N,1}&\dots & x_{N,p} 
+  \end{pmatrix} \implies
 a \mathbf{X} = 
 \begin{pmatrix}
   a x_{1,1} & \dots & a x_{1,p}\\
+  a x_{2,1}&\dots & a x_{2,p} \\
   & \vdots & \\
   a x_{N,1} & \dots & a  x_{N,p}
 \end{pmatrix}
