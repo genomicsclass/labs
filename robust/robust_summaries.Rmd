@@ -76,7 +76,7 @@ abline(0,1)
 So if these statistics are robust to outliers, why would we ever use
 the non-robust version? In general, if we know there are outliers,
 then median and MAD are recommended over the mean and standard
-deviation counterparts. However, there are example in which robust
+deviation counterparts. However, there are examples in which robust
 statistics are less powerful than the non-robust versions.
 
 We also note that there is a [large statistical literature](#foot) on
