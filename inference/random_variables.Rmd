@@ -27,7 +27,7 @@ Note that the abstract has this statement:
 
 To support this claim they provide the following in the results section:
 
-> "Already during the first week after introduction of high-fat diet, body weight increased significantly more in the high-fat diet-fed mice (+1.6 ± 0.1 g) than in the normal diet-fed mice (+0.2 $\pm$ 0.1 g; P < 0.001)."
+> "Already during the first week after introduction of high-fat diet, body weight increased significantly more in the high-fat diet-fed mice ($+$ 1.6 $\pm$ 0.1 g) than in the normal diet-fed mice ($+$ 0.2 $\pm$ 0.1 g; P < 0.001)."
 
 What does P < 0.001 mean? What are the $\pm$ included? In this class,
 we will learn what this means and learn to compute these values in
@@ -37,7 +37,7 @@ Svenson via Gary Churchill and Dan Gatti and partially funded by P50
 GM070683.) We will import the data into R and explain random variables
 and null distributions using R programming. 
 
-If you already downloaded the `femaleMiceWeights` file and it your working directory, you can read it into R with just one line:
+If you already downloaded the `femaleMiceWeights` file and into your working directory, you can read it into R with just one line:
 
 ```{r}
 dat <- read.csv("femaleMiceWeights.csv")
@@ -85,7 +85,7 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 ## Random Variables
 
-Let's see what a random variable is. Imagine we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we're using here to illustrate concepts. 
+Let's see what a random variable is. Imagine we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
 
 Read in the data either from your home directory or from dagdata:
 
@@ -235,8 +235,7 @@ Showing this plot to the alien is much more informative than showing numbers. Wi
 
 Summarizing lists of numbers is one powerful use of distribution. An
 even more important use is describing the possible outcomes of a
-random variable. Unlike a fixed list of numbers, random variables are
-not observed, so instead of describing proportions, we describe
+random variable. Unlike a fixed list of numbers, we don't actually observe all possible outcomes of random variables, so instead of describing proportions, we describe
 probabilities. For instance, if we pick a random height for our list,
 then the probability of it falling between $a$ and $b$ is denoted with: 
 
@@ -283,13 +282,13 @@ hist(null, freq=TRUE)
 abline(v=obsdiff, col="red", lwd=2)
 ```
 
-An important point to keep in mind here is that while we defined $Pr(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $Pr(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation:
+An important point to keep in mind here is that while we defined $\mbox{Pr}(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $\mbox{Pr}(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation:
 
 <a name="normal_distribution"></a>
 
 ## Normal Distribution
 
-The probability distribution we see above approximates one that is very common in nature: the bell curve, also known as the normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution, we can use a convenient mathematical formula to approximate the proportion of value or outcomes in any given interval:
+The probability distribution we see above approximates one that is very common in nature: the bell curve, also known as the normal distribution or Gaussian distribution. When the histogram of a list of numbers approximates the normal distribution, we can use a convenient mathematical formula to approximate the proportion of values or outcomes in any given interval:
 
 $$
 \mbox{Pr}(a < x < b) = \int_a^b \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\left( \frac{-(x-\mu)^2}{2 \sigma^2} \right)} \, dx
@@ -297,7 +296,7 @@ $$
 
 While the formula may look intimidating, don't worry, you will never
 actually have to type it out, as it is stored in a more convenient
-form (as `pnorm` in R which sets *a* to 0, and takes *b* as an argument). 
+form (as `pnorm` in R which sets *a* to $-\infty$, and takes *b* as an argument). 
 
 Here $\mu$ and $\sigma$ are referred to as the mean and standard
 deviation of the population (we explain these in more detail in
@@ -315,6 +314,7 @@ approximation works very well here:
 
 Later we will learn that there is a mathematical explanation for this. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this, we can compute the proportion of values in any interval. 
 
+
 #### Summary
 
 So computing a p-value for the difference in diet for the mice was
@@ -326,3 +326,19 @@ practice. Statistical Inference is the mathematical theory that
 permits you to approximate this with only the data from your sample,
 i.e. the original 24 mice. We will focus on this in the following
 sections.
+
+#### Setting the random seed
+
+Before we continue, we briefly explain the following important line of
+code:
+
+```{r}
+set.seed(1) 
+```
+
+Throughout this book we use random number generators. This implies that many of the results presented can actually change by chance, including the correct answer to problems. One way to ensure that results do not change is by setting R's random number generation seed. For more on the topic please read the help file:
+
+```{r,eval=FALSE}
+?set.seed
+```
+

@@ -29,7 +29,7 @@ chowVals <- select(chow,Bodyweight)
 head(chowVals)
 ```
 
-A nice feature of the `dplyr` function is that you can perform consecutive tasks by using what is called a "pipe".  In `dplyr` we use `%>%` to denote a pipe. This symbol tells the program to first do one thing and then do something else to the result of the first. So we can perform several data manipulations in one line.  For example:
+A nice feature of the `dplyr` package is that you can perform consecutive tasks by using what is called a "pipe".  In `dplyr` we use `%>%` to denote a pipe. This symbol tells the program to first do one thing and then do something else to the result of the first. So we can perform several data manipulations in one line.  For example:
 
 ```{r}
 chowVals <- filter(dat, Diet=="chow") %>% select(Bodyweight)
@@ -51,7 +51,7 @@ class( chowVals )
 ```
 
 
-To this in R without `dplyr` the code is the following:
+To do this in R without `dplyr` the code is the following:
 
 ```{r}
 chowVals <- dat[ dat$Diet=="chow", colnames(dat)=="Bodyweight"]

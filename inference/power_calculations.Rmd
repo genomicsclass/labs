@@ -26,9 +26,11 @@ if(!file.exists(filename)) download(url,destfile=filename)
 library(dplyr)
 dat <- read.csv("mice_pheno.csv") #Previously downloaded 
 
-controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
+controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  
+  select(Bodyweight) %>% unlist
 
-hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  select(Bodyweight) %>% unlist
+hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  
+  select(Bodyweight) %>% unlist
 
 mu_hf <- mean(hfPopulation)
 mu_control <- mean(controlPopulation)
@@ -46,7 +48,7 @@ control <- sample(controlPopulation,N)
 t.test(hf,control)$p.value
 ```
 
-Did we make a mistake? By not rejecting the null hypothesis are we
+Did we make a mistake? By not rejecting the null hypothesis, are we
 saying the diet has no effect? The answer to this question is no. All
 we can say is that we did not reject the null hypothesis. But this
 does not necessarily imply that the null is true. The problem is that
@@ -60,7 +62,7 @@ statistical power means.
 
 ### Types Of Error
 
-Whenever we perform a statistical test we aware that we may make a
+Whenever we perform a statistical test we are aware that we may make a
 mistake. This is why our p-values are not 0. Under the null, there is
 always a positive, perhaps very small, but still positive chance that we
 will reject the null when it is true. If the p-value is 0.05, it will
@@ -193,7 +195,7 @@ Note that the x-axis in this last plot is in the log scale.
 
 There is no "right" power or "right" alpha level, but it is important that you understand what each means.
 
-<b>Optional homework</b> Create a plot with curves of power versus N. Show several curves in the same plot with color representing alpha level.
+To see this clearly, you could create a plot with curves of power versus N. Show several curves in the same plot with color representing alpha level.
 
 ### p-values are Arbitrary under the Alternative Hypothesis
 

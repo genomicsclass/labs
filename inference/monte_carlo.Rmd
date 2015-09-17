@@ -32,7 +32,8 @@ if(!file.exists(filename)) download(url,destfile=filename)
 ```{r,message=FALSE}
 library(dplyr)
 dat <- read.csv("mice_pheno.csv")
-controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
+controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  
+  select(Bodyweight) %>% unlist
 ```
 
 We will build a function that automatically generates a t-statistic under the null hypothesis for a any sample size of `n`.
@@ -106,7 +107,7 @@ not have access to the entire population. The reason for using the
 approach here was for educational purposes. However, when we want to
 use Monte Carlo simulations in practice, it is much more typical to
 assume a parametric distribution and generate a population from
-this, which is called a "parametric simulation". This means that we take
+this, which is called a _parametric simulation_. This means that we take
 parameters estimated from the real data (here the mean and the standard
 deviation), and plug these into a model (here the normal
 distribution).  This is actually the most common form of Monte Carlo
@@ -119,7 +120,7 @@ For the case of weights, we could use our knowledge that mice typically weigh 24
 controls<- rnorm(5000, mean=24, sd=3.5) 
 ```
 
-After we generate the date, we can then repeat the exercise above. We no longer have to use the `sample` function since we can re-generate random normal numbers. So the `ttestgenerator` function can be written like this: 
+After we generate the data, we can then repeat the exercise above. We no longer have to use the `sample` function since we can re-generate random normal numbers. So the `ttestgenerator` function can be written like this: 
 
 ```{r}
 ttestgenerator <- function(n, mean=24, sd=3.5) {

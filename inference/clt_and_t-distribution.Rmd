@@ -16,7 +16,7 @@ Below we will discuss the Central Limit Theorem (CLT) and the t-distribution, bo
 
 #### Central Limit Theorem 
 
-The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{Y}$ of a random sample follows a normal distribution centered at the population average $\mu_Y$ and with standard deviation equal to the population standard deviation $\sigma_Y$, divided by the square root of the sample size $N$. 
+The CLT is one of the most frequently used mathematical results in science. It tells us that when the sample size is large, the average $\bar{Y}$ of a random sample follows a normal distribution centered at the population average $\mu_Y$ and with standard deviation equal to the population standard deviation $\sigma_Y$, divided by the square root of the sample size $N$. We refer to the standard deviation of the distribution of a random variable as the random variable's _standard error_.
 
 Please note that if we subtract a constant from a random variable, the
 mean of the new random variable shifts by that
@@ -25,7 +25,7 @@ and $a$ is a constant, the mean of $X - a$ is $\mu-a$. A similarly
 intuitive result holds for multiplication and the standard deviation (SD).
 If $X$ is a random
 variable with mean $\mu$ and SD $\sigma$, and $a$ is a constant, then
-the mean and SD of $aX$ are $a \mu$ and $\|a\| \sigma$
+the mean and SD of $aX$ are $a \mu$ and $|a|$ \sigma$
 respectively. To see how intuitive this is, imagine that we subtract
 10 grams from each of the mice weights. The average weight should also
 drop by that much. Similarly, if we change the units from grams to
@@ -51,7 +51,7 @@ $$
 \frac{\bar{Y}-\bar{X}}{\sqrt{\frac{\sigma_X^2}{M} + \frac{\sigma_Y^2}{N}}}
 $$
 
-is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation makes computing p-values simple because we know the proportion of the distribution under any value. For example, only 5% values of larger than 2 (in absolute value):
+is approximated by a normal distribution centered at 0 and standard deviation 1.  Using this approximation makes computing p-values simple because we know the proportion of the distribution under any value. For example, only 5% of these values are larger than 2 (in absolute value):
 
 ```{r}
 pnorm(-2) + (1 - pnorm(2))
@@ -77,7 +77,7 @@ $$
 \frac{\bar{Y}-\bar{X}}{\sqrt{\frac{s_X^2}{M} + \frac{s_Y^2}{N}}}
 $$
 
-The CLT tells us that when $M$ and $N$ are large (rule of thumb is 30), this random variable is normally distributed with mean 0 and SD 1. Thus we can compute p-values using the function `pnorm`.
+The CLT tells us that when $M$ and $N$ are large, this random variable is normally distributed with mean 0 and SD 1. Thus we can compute p-values using the function `pnorm`.
 
 #### The t-distribution
 
@@ -104,8 +104,10 @@ high-fat diet population:
 ```{r,message=FALSE}
 library(dplyr)
 dat <- read.csv("mice_pheno.csv") #We downloaded this file in a previous section
-controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  select(Bodyweight) %>% unlist
-hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  select(Bodyweight) %>% unlist
+controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  
+  select(Bodyweight) %>% unlist
+hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  
+  select(Bodyweight) %>% unlist
 ```
 
 It is important to keep in mind that what we are assuming to be normal here is the distribution of $y_1,y_2,\dots,y_n$, not the random variable $\bar{Y}$. Although we can't do this in practice, in this illustrative example, we get to see this distribution for both controls and high fat diet mice:
@@ -126,8 +128,10 @@ data is close to the theoretical distribution.
 
 ```{r population_qqplots, fig.cap="Quantile-quantile plots of all weights for both populations.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
-qqnorm(hfPopulation);qqline(hfPopulation)
-qqnorm(controlPopulation);qqline(controlPopulation)
+qqnorm(hfPopulation)
+qqline(hfPopulation)
+qqnorm(controlPopulation)
+qqline(controlPopulation)
 ```
 
 The larger the sample, the more forgiving the result is to the

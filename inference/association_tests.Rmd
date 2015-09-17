@@ -57,7 +57,7 @@ ${4 \choose 3} {4 \choose 1} / {8 \choose 4} = 16/70$. The probability of
 picking all 4 correct is
 ${4 \choose 4} {4 \choose 0}/{8 \choose 4}= 1/70$.
 Thus the chance of observing a 3 or something more extreme,
-under the null hypothesis, is $\approx 0.24$. This is called a p-value. The
+under the null hypothesis, is $\approx 0.24$. This is the p-value. The
 procedure that produced this p-value is called Fisher's exact test and
 it uses the *hypergeometric distribution*. 
 
@@ -95,7 +95,7 @@ this is that the sum of the rows and the sum of the columns are
 fixed. This defines constraints on the possible ways we can fill the 2
 by 2 table and also permits us to use the hypergeometric
 distribution. In general, this is not the case. Nonetheless, there is
-another approach, the Chi-squared test, which described below. 
+another approach, the Chi-squared test, which is described below. 
 
 Imagine we have 250 individuals, where some of them have a given disease
 and the rest do not. We observe that 20% of the individuals that are
