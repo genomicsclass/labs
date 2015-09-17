@@ -43,7 +43,8 @@ length(controlPopulation)
 We usually denote these values as $x_1,\dots,x_m$. In this case $m$ is the number computed above. We can do the same for the high fat diet population:
 
 ```{r}
-hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  select(Bodyweight) %>% unlist
+hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%  
+  select(Bodyweight) %>% unlist
 length(hfPopulation)
 ```
 
