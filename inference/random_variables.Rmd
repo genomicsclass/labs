@@ -39,6 +39,13 @@ and null distributions using R programming.
 
 If you already downloaded the `femaleMiceWeights` file and into your working directory, you can read it into R with just one line:
 
+```{r echo=FALSE, results="hide"}
+library(downloader) ##use install.packages to install
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+filename <- "femaleMiceWeights.csv" 
+download(url, destfile=filename)
+```
+
 ```{r}
 dat <- read.csv("femaleMiceWeights.csv")
 ```
