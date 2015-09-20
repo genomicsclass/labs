@@ -98,7 +98,7 @@ imagemat(X, main="Model matrix for linear model with one variable")
 
 #### Examining the coefficients
 
-Now we show the coefficient estimates  from the linear model with arrows arrows (code not showns).
+Now we show the coefficient estimates  from the linear model with arrows arrows (code not shown).
 
 ```{r spider_main_coef, fig.cap="Diagram of the coefficients in the linear model. The green arrow indicates the Intercept term, which rises from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples, jittered horizontally to avoid overplotting.",echo=FALSE}
 set.seed(1) #same jitter in stripchart
@@ -142,7 +142,7 @@ Note that R calls uses the name `coefficient` to denote the component containing
 
 #### Mathematical representation
 
-The model we are fiitng above can be written as
+The model we are fitting above can be written as
 
 $$
 Y_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \beta_3 x_{i,3} + \beta_4 x_{i,4} + \varepsilon, i=1,\dots,N
@@ -361,7 +361,7 @@ If we work out the math for comparing across two non-reference leg pairs, this i
 
 We can't make this contrast using the `contrast` function shown before, but we can make this comparison using the `glht` (for "general linear hypothesis test") function from the *multcomp* package. All we need to do is form a 1-row matrix which has a -1 for the `typepush:legL2` effect and a +1 for the `typepush:legL3` effect. We provide this matrix to the `linfct` (linear function) argument, and obtain a summary table for this contrast alone.
 
-*Note*: there are other ways to perform contrasts using base R, and this just our prefered way.
+*Note*: there are other ways to perform contrasts using base R, and this just our preferred way.
 
 ```{r,message=FALSE}
 library(multcomp) ##Available from CRAN
@@ -375,7 +375,7 @@ coefs[7] - coefs[6]
 
 Suppose that we want to know if the push vs. pull difference is *different* across leg pairs in general. Here we are not comparing any two leg pairs in particular, but rather want to know if the three interaction terms which represent differences in the push vs. pull difference are larger than we would expect them to be. We want to determine if the push vs pull difference was actually constant across the leg pairs.
 
-In statistics, such a question can be answered by an _analysis of variance_ (ANOVA). ANOVA compares the reduction in the sum of squares of the residuals for different models. Under certain assumptions we can also perform inference that determines the probabulity of improvements as large as what we observe.  Let's first print the result of an ANOVA and then examine the results in detail:
+In statistics, such a question can be answered by an _analysis of variance_ (ANOVA). ANOVA compares the reduction in the sum of squares of the residuals for different models. Under certain assumptions we can also perform inference that determines the probability of improvements as large as what we observe.  Let's first print the result of an ANOVA and then examine the results in detail:
 
 ```{r}
 anova(fitX)
