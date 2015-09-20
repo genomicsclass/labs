@@ -1,3 +1,23 @@
+{frontmatter}
+
+# Acknowledgements
+
+The authors would like to thank Alexandra Nones for her many edits of the manuscript during its various stages.  
+Also, thanks to Karl Broman for contributing the "Plots to Avoid" section and to Stephanie Hicks for designing 
+some of the exercises.  
+
+This book was conceived during the teaching of several HarvardX courses, coordinated by Heather Sternshein. We are also grateful to all the students whose questions and comments helped us improve the book. 
+The courses were
+partially funded by NIH grant R25GM114818.  We are very grateful to the National Institute of Health for its support.  
+
+A special thanks goes to all those that edited the book via GitHub pull requests.
+
+Cover image credit: this photograph is La Mina Falls, El Yunque National Forest, Puerto Rico, taken by Ron Kroetz
+https://www.flickr.com/photos/ronkroetz/14779273923
+Attribution-NoDerivs 2.0 Generic (CC BY-ND 2.0)
+
+{mainmatter}
+
 # Introduction
 
 The unprecedented advance in digital technology during the second half
