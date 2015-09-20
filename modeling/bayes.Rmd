@@ -105,7 +105,7 @@ The proportions of red in the top plot shows $\mbox{Pr}(D=1)$. The bottom left s
 <!-- ![iglesias](http://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg/902px-Jos%C3%A9_Iglesias_on_September_28%2C_2012.jpg) -->
 
 
-José Iglesias is a professional baseball player. In April 2013, when he was starting his career he was performin rather well:
+José Iglesias is a professional baseball player. In April 2013, when he was starting his career he was performing rather well:
 
 | Month | At Bats | H | AVG |
 |-------|---------|---|-----|
@@ -116,7 +116,7 @@ season batting .400 since
 Ted Williams in 1941! We have only seen 20 at bats when, so what is our prediction at the end of the season when he has accumulated about 500.
 
 
-Let's explore the distribution of batting averages for all playes with more than 500 at bats during the previous three seasons:
+Let's explore the distribution of batting averages for all players with more than 500 at bats during the previous three seasons:
 
 ```{r,include=FALSE, cache=TRUE}
 tmpfile <- tempfile()
@@ -140,7 +140,7 @@ for(y in 2010:2012){
 }
 ```
 
-We note that the average player had an average of .275 and the standard deviation of the population of players was 0.027. So we can see already that .450 would be quite an annomally as it is over six SDs away from the mean. So is José lucky or good? If we become convinced that he is luck we should trade him to a team that trusts the .450 observation and thinks this is not just luck.
+We note that the average player had an average of .275 and the standard deviation of the population of players was 0.027. So we can see already that .450 would be quite an anomaly as it is over six SDs away from the mean. So is José lucky or good? If we become convinced that he is luck we should trade him to a team that trusts the .450 observation and thinks this is not just luck.
 
 First, note that we can think of outcomes from hitting as a binomial with a success rate of $p$. So if the success rate is indeed .450 the standard error of just 20 at bats is:
 
@@ -215,7 +215,7 @@ $$
 In our example the SD is 0.026
 
 
-So we started with a _frequentist_ 95% confidence interval that ignored data from other players and summarized just José's data: .450 $\pm$ 0.220. Then we used an Bayesian approach to obtain a posterior probability. This is actually referred to asn empirical Bayes approach because we used data to construct the prior. From the posterior we can report what is called a 95% credible interval by reporting a region, centered at the mean, with a 95% chance of ocurring. In our case this turns out to be: .285 $\pm$ 0.052
+So we started with a _frequentist_ 95% confidence interval that ignored data from other players and summarized just José's data: .450 $\pm$ 0.220. Then we used an Bayesian approach to obtain a posterior probability. This is actually referred to as empirical Bayes approach because we used data to construct the prior. From the posterior we can report what is called a 95% credible interval by reporting a region, centered at the mean, with a 95% chance of occurring. In our case this turns out to be: .285 $\pm$ 0.052
 
 Here are the José Iglesias batting averages for the next five months. 
 
