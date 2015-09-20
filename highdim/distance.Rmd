@@ -12,11 +12,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Introduction
 
-Many of the analyses we perform with high-dimensional data relate directly or indirectly to distance. For instance, many clustering and machine learning techniques rely on being able to define distance using features or predictors. The concept of distance can be generalized from physical distance; for example, we cluster animals into groups. When we do this, we put animals that are "close" in the same group:
+The concept of distance is quite intuitive. For example, when we cluster animals into subgroups we are implicitely defining a distance that permits us to say what animals are "close" to each other.
 
 ![Clustering of animals](images/handmade/animals.png)
 
-Any time we cluster individuals into separate groups we are, explicitly or implicitly, computing a distance. To create _heatmaps_ a distance is computed explicitly. Heatmaps are widely used in genomics and other highthroughput fields:
+Many of the analyses we perform with high-dimensional data relate directly or indirectly to distance. For instance, many clustering and machine learning techniques rely on being able to define distance using features or predictors. For example, to create _heatmaps_, which  are widely used in genomics and other highthroughput fields, a distance is computed explicitly. 
 
 ![Example of heatmap](images/handmade/Heatmap.png)
 
@@ -26,7 +26,7 @@ In these plots the measurements, which are stored in a matrix, are
 represented with colors after the columns and rows have been
 clustered. (A side note: red and green, a common color theme for heatmaps,
 are two of the most difficult colors for many people who are
-color-blind to discern, better to use yellow and blue/purple.)
+color-blind to discern.)
 Here we will learn the necessary mathematics and computing
 skills to understand and create heatmaps. We start by reviewing the
 mathematical definition of distance.
@@ -71,7 +71,7 @@ table(tissue) ##tissue[i] tells us what tissue is represented by e[,i]
 
 We are interested in describing distance between samples in the context of this dataset. We might also be interested in finding genes that _behave similarly_ across samples.
 
-To define distance we need to know what the points are since mathematical distance is computed between points. With high dimensional data, points are no longer on the Cartesian plan. Instead they are in higher dimensions. For example, sample $i$ is defined by a point in 22,215 dimensional space: $(Y_{1,i},\dots,Y_{22215,i})^\top$. Feature $g$ is defined by a point in 189 dimensions $(Y_{g,189},\dots,Y_{g,189})^\top$
+To define distance we need to know what the points are since mathematical distance is computed between points. With high dimensional data, points are no longer on the Cartesian plane. Instead they are in higher dimensions. For example, sample $i$ is defined by a point in 22,215 dimensional space: $(Y_{1,i},\dots,Y_{22215,i})^\top$. Feature $g$ is defined by a point in 189 dimensions $(Y_{g,189},\dots,Y_{g,189})^\top$
 
 Once we define points, the Euclidean distance is defined in a very similar way as it is defined for two dimensions. For instance, the distance between two samples $i$ and $j$ is:
 
@@ -79,7 +79,7 @@ $$
 \mbox{dist}(i,j) = \sqrt{ \sum_{g=1}^{22215} (Y_{g,i}-Y_{g,j })^2 }
 $$
 
-and the distance between two features $h$ and $g$ as:
+and the distance between two features $h$ and $g$ is:
 
 $$
 \mbox{dist}(h,g) = \sqrt{ \sum_{i=1}^{189} (Y_{h,i}-Y_{g,i})^2 }
