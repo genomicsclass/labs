@@ -13,13 +13,12 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## The QR Factorization (Advanced)
 
-We have seen that in order to calculate the LSE, we need to invert a matrix. We have shown how to use solve. However, solve is not a stable solution. When coding LSE computation, we use the QR decomposition.
+We have seen that in order to calculate the LSE, we need to invert a matrix. In previous sections we used the function `solve`. However, solve is not a stable solution. When coding LSE computation, we use the QR decomposition.
 
 
 #### Inverting $\mathbf{X^\top X}$
 
-
-To minimize the RSS: 
+Remember that to minimize the RSS: 
 
 $$
 (\mathbf{Y}-\mathbf{X}\boldsymbol{\beta})^\top
@@ -38,16 +37,17 @@ $$
 \boldsymbol{\hat{\beta}} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y}   
 $$
 
-Thus, we need to compute $(\mathbf{X}^\top \mathbf{X})^{-1}$
+Thus, we need to compute $(\mathbf{X}^\top \mathbf{X})^{-1}$.
 
-#### `solve` is unstable
+#### `solve` is numerically unstable
 
-Here we construct an extreme case:
+To demonstrate what we mean by _numerically unstable_,  we construct an extreme case:
 
 ```{r}
 n <- 50;M <- 500
 x <- seq(1,M,len=n)
 X <- cbind(1,x,x^2,x^3)
+colnames(X) <- c("Intercept","x","x2","x3")
 beta <- matrix(c(1,1,1,1),4,1)
 set.seed(1)
 y <- X%*%beta+rnorm(n,sd=1)
@@ -60,15 +60,12 @@ solve(crossprod(X)) %*% crossprod(X,y)
 
 To see why this happens, look at $(\mathbf{X}^\top \mathbf{X})$
 
-```{r,include=FALSE}
-options(digits=4)
-```
-
 ```{r}
+options(digits=4)
 log10(crossprod(X))
 ```
 
-Note the difference of several orders of magnitude. On a digital computer, we have a limited range of numbers which makes some numbers seem like 0, which in turn leads to division by 0 errors.
+Note the difference of several orders of magnitude. On a digital computer, we have a limited range of numbers. This makes some numbers seem like 0, when we also have to consider very large numbers. This in turn leads to  divisions that are, practically, divisions by 0 errors.
 
 #### The factorization 
 
@@ -110,7 +107,7 @@ c\\
 \end{pmatrix}
 $$
 
-We immediately know that $c=1$, which implies that $b+2=4$. This in turn suggests $b=2$ and thus $a+4-1=6$ so $a = 3$. Writing an algorithm to do this is straight-forward for any upper triangular matrix.
+We immediately know that $c=1$, which implies that $b+2=4$. This in turn implies $b=2$ and thus $a+4-1=6$ so $a = 3$. Writing an algorithm to do this is straight-forward for any upper triangular matrix.
 
 #### Finding LSE with QR 
 
