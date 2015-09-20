@@ -163,22 +163,7 @@ $$
 
 Two levels of variability: 1) Player to player variability and 2) variability due to luck when batting. In a Bayesian framework the first level is called a _prior distribution_ and the second the _sampling distribution_
 
-Hierarchical Model
-
-$$
-\begin{align*}
-\theta &\sim N(\mu, \tau^2) \mbox{ is called a prior}\\
-Y \mid \theta &\sim N(\theta, \sigma^2) \mbox{ is called a sampling distribution}
-\end{align*}
-$$
-
-Here $\theta$ is our players "intrinsic" average value, $\mu$ is the average of all players, $\tau$ is the SD of all players, $Y$ is the observed average, and 
-$\sigma$ is the variability due to luck at each AB.
-
-
-Hierarchical Model
-
-Here are the equations with our data:
+Now, let's use this model for José's data. Suppose we want to predict his innate ability in the form of his _true_ batting average $\theta$. This would be the hierarchical model for our data:
 
 $$
 \begin{align*}
@@ -187,10 +172,7 @@ Y \mid \theta &\sim N(\theta, .110^2)
 \end{align*}
 $$
 
-
-Posterior Distribution
-
-The continuous version of Bayes rule can be used here:
+So now we are ready to compute a posterior distribution to summarize our prediction of $\theta$. The continuous version of Bayes rule can be used here:
 
 $$
 \begin{align*}
@@ -202,14 +184,7 @@ f_{ \theta \mid Y} (\theta\mid Y) &=
 \end{align*}
 $$
 
-We are particularly interested in the $\theta$ that maximizes $f_{\theta\mid Y}(\theta\mid Y)$.
-
-In our case, these can be shown to be normal so we want the average $\mbox{E}(\theta\mid y)$
-
-
-Posterior Distribution
-
-We can show the average of this distribution is the following:
+We are particularly interested in the $\theta$ that maximizes the posterior probability $f_{\theta\mid Y}(\theta\mid Y)$. In our case, our $f$ s are normal and we can compute the  $\mbox{E}(\theta\mid y)$ and $\mbox{var}(\theta\mid y)$. Specifically, we can show the average of this distribution is the following:
 
 $$
 \begin{align*}
@@ -218,9 +193,6 @@ $$
 B &= \frac{\sigma^2}{\sigma^2+\tau^2}
 \end{align*}
 $$
-
-
-Posterior Distribution
 
 In the case of José Iglesias, we have:
 
@@ -233,8 +205,6 @@ B &=\frac{.110^2}{.110^2 + .027^2} = 0.943\\
 \end{align*}
 $$
 
-Posterior Distribution
-
 The variance can be shown to be:
 
 $$
@@ -245,8 +215,9 @@ $$
 In our example the SD is 0.026
 
 
-Final Results:
+So we started with a _frequentist_ 95% confidence interval that ignored data from other players and summarized just José's data: .450 $\pm$ 0.220. Then we used an Bayesian approach to obtain a posterior probability. This is actually referred to asn empirical Bayes approach because we used data to construct the prior. From the posterior we can report what is called a 95% credible interval by reporting a region, centered at the mean, with a 95% chance of ocurring. In our case this turns out to be: .285 $\pm$ 0.052
 
+Here are the José Iglesias batting averages for the next five months. 
 
 |Month|At Bat| Hits| AVG |
 |-----|------|-----|-----|
@@ -258,8 +229,4 @@ Final Results:
 |September|50|10|.200|
 |Total w/o April|330|97|.293|
 
-Frequentist confidence interval = .450 $\pm$ 0.220
-
-Empirical Bayes credible interval = .285 $\pm$ 0.052
-
-Actual = .293
+Although both intervals included the final batting average, the Bayesian credible interval provided a much more precise prediction. In particular it predicted that we would not be as good the remainder of the season.
