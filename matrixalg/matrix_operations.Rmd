@@ -135,7 +135,7 @@ a + b + c &=6\\
 \end{align*}
 $$
 
-What we are doing is multiplying the rows of the first matrix by the columns of the second. Since the second matrix only has one column, to perform this multiplication we can do the following:
+What we are doing is multiplying the rows of the first matrix by the columns of the second. Since the second matrix only has one column, we perform this multiplication by doing the following:
 
 $$
 \,
@@ -252,7 +252,7 @@ diag(n)
 
 #### The inverse
 
-The inverse of matrix of $X$, denoted with $X^{-1}$ has the property that, when multiplied, gives you the identity $X^{-1}X=I$. Keep in mind that not all matrices have inverses. For example, a $2\times 2$ matrix with 1s in all its entries does not have an inverse. 
+The inverse of matrix $X$, denoted with $X^{-1}$ has the property that, when multiplied, gives you the identity $X^{-1}X=I$. Keep in mind that not all matrices have inverses. For example, a $2\times 2$ matrix with 1s in all its entries does not have an inverse. 
 
 As we will see when we get to the section on applications to linear models, being able to compute the inverse of a matrix is quite useful. A very convenient aspect of R is that it includes a predefined function `solve` to do this. Here is how we would use it to solve the linear of equations:
 
