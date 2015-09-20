@@ -8,7 +8,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-## Linear Models In Practice
+#### The mouse diet example
 
 We will demonstrate how to analyze the high fat diet data using linear models instead of directly applying a t-test. We will demonstrate how, ultimately, these two approaches are equivalent. 
 
@@ -21,8 +21,11 @@ library(downloader)
 if (!file.exists(filename)) download(url, filename)
 ```
 
-```{r bodyweight_by_diet_stripchart, fig.cap="Mice bodyweights stratified by diet."}
+```{r,echo=FALSE}
 set.seed(1) #same jitter in stripchart
+```
+
+```{r bodyweight_by_diet_stripchart, fig.cap="Mice bodyweights stratified by diet."}
 dat <- read.csv("femaleMiceWeights.csv") ##previously downloaded
 stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
            main="Bodyweight over Diet")
@@ -30,30 +33,19 @@ stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
 
 We can see that the high fat diet group appears to have higher weights on average, although there is overlap between the two samples.
 
-#### A linear model with one variable
-
 For demonstration purposes, we will build the design matrix $\mathbf{X}$ using the formula `~ Diet`. The group with the 1's in the second column is determined by the level of `Diet` which comes second; that is, the non-reference level. 
 
 ```{r}
 levels(dat$Diet)
 X <- model.matrix(~ Diet, data=dat)
-X
-colnames(X)
-dat$Diet <- relevel(dat$Diet, ref="hf")
-model.matrix(~ Diet, data=dat)
-```
-
-After trying out the `relevel` function, we finally reset `chow` as the reference level because we want the comparison to be $hf - chow$:
-
-```{r}
-dat$Diet <- relevel(dat$Diet, ref="chow")
+head(X)
 ```
 
 ## The Mathematics Behind lm()
 
-Before we use our shortcut for running linear models, `lm`, we want to review what will happen internally. Inside of `lm`, we will form the design matrix $\mathbf{X}$, and calculate the $\boldsymbol{\beta}$ which minimizes the sum of squares, as described in a previous lecture. The formula for this solution is:
+Before we use our shortcut for running linear models, `lm`, we want to review what will happen internally. Inside of `lm`, we will form the design matrix $\mathbf{X}$, and calculate the $\boldsymbol{\beta}$ which minimizes the sum of squares, as described in a previously. The formula for this solution is:
 
-$$ \hat{\boldsymbol{\beta}} = (\mathbf{X}^t \mathbf{X})^{-1} \mathbf{X}^t \mathbf{Y} $$
+$$ \hat{\boldsymbol{\beta}} = (\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top \mathbf{Y} $$
 
 We can calculate this in R using our matrix multiplication operator `%*%`, the inverse function `solve` and the transpose function `t`.
 
@@ -83,9 +75,9 @@ summary(fit)
 
 #### Examining the coefficients
 
-The following large and clunky piece of code allows us to visualize the meaning of the coefficients with colored arrows:
+The following plot provides a visualization of  the meaning of the coefficients with colored arrows (code not shown):
 
-```{r parameter_estimate_illustration, fig.cap="Estimated linear model coefficients for bodyweight data illustrated with arrows."}
+```{r parameter_estimate_illustration, fig.cap="Estimated linear model coefficients for bodyweight data illustrated with arrows.",echo=FALSE}
 stripchart(dat$Bodyweight ~ dat$Diet, vertical=TRUE, method="jitter",
            main="Bodyweight over Diet", ylim=c(0,40), xlim=c(0,3))
 a <- -0.25
@@ -100,29 +92,20 @@ abline(h=coefs[1]+coefs[2],col=cols[2])
 legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 ```
 
-## Comparing Simple Two Group lm to a t-test
+To make a connection with material presented earlier, this simple linear model is actually giving us the same result (the t-statistic and p-value) for the difference as a specific kind of t-test. This is the t-test between two groups with the assumption that the population standard deviation is the same for both groups. This was encoded into our linear model when we assumed that the errors $\boldsymbol{\varepsilon}$ were all equally distributed.
 
-To make a connection with material presented earlier, this simple linear model is actually giving us the same result (the t-statistic and p-value) for the difference as a specific kind of t-test. This is the t-test between two groups with the assumption that both groups have the same variance. This was encoded into our linear model when we assumed that the errors $\boldsymbol{\varepsilon}$ were all equally distributed.
+Note that although, in this case, the linear model is equivalent to a t-test, we will soon explore more complicated designs, where the linear model is a useful extension. Below we demonstrate that one does in fact get the exact same results:
 
-Though, in this case, the linear model is equivalent to a t-test, we will soon explore more complicated designs, where the linear model is a useful extension.
-
-Our `lm` coefficients were:
+Our `lm` estimates were:
 
 ```{r}
 summary(fit)$coefficients
 ```
 
-And the t-statistic of the t-test is the same, with a flipped sign:
+And the t-statistic  is the same:
 
 ```{r}
-(ttest <- t.test(s[["chow"]], s[["hf"]], var.equal=TRUE))
+ttest <- t.test(s[["hf"]], s[["chow"]], var.equal=TRUE)
 summary(fit)$coefficients[2,3]
 ttest$statistic
 ```
-
-If we put the high fat group first, we get the same sign as the linear model:
-
-```{r}
-t.test(s[["hf"]], s[["chow"]], var.equal=TRUE)$statistic
-```
-

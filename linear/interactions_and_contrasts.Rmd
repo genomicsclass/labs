@@ -18,33 +18,48 @@ The abstract of the paper says,
 
 > The hunting spider Cupiennius salei (Arachnida, Ctenidae) possesses hairy attachment pads (claw tufts) at its distal legs, consisting of directional branched setae... Friction of claw tufts on smooth glass was measured to reveal the functional effect of seta arrangement within the pad.
 
-Figure 1 includes some pretty cool electron microscope images of the tufts. We are interested in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). We can recreate Figure 4 of the paper by loading the data and calling `boxplot`:
+Figure 1 includes some pretty cool electron microscope images of the tufts. We are interested in the comparisons in Figure 4, where the pulling and pushing motions are compared for different leg pairs (for an example of pushing and pulling see the top of Figure 3). 
 
-```{r spide_data, fig.cap="Comparison of friction coefficients of spiders' different leg pairs."}
+We include the data in our dagdata package and can download it this way:
+
+```{r}
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/spider_wolff_gorb_2013.csv"
 filename <- "spider_wolff_gorb_2013.csv"
 library(downloader)
 if (!file.exists(filename)) download(url, filename)
 spider <- read.csv(filename, skip=1)
+```
+
+#### Initial visual inspection of the data
+
+Each measurement comes from one of our legs while it is either pushing or pulling. So we have two variables:
+
+```{r}
+table(spider$leg,spider$type)
+```
+
+
+We can make a boxplot summarizing the measurements for each of the eight pairs. This is similar to Figure 4 of the original paper:
+
+```{r spide_data, fig.cap="Comparison of friction coefficients of spiders' different leg pairs."}
 boxplot(spider$friction ~ spider$type * spider$leg, 
         col=c("grey90","grey40"), las=2, 
         main="Comparison of friction coefficients of different leg pairs ")
 ```
 
-#### Initial visual inspection of the data
 
 What we can immediately see are two trends: 
 
 * The pulling motion has a higher frictional coefficient than the pushing motion.
 * The leg pairs to the back of the spider (L4 being the last) generally have higher pulling frictional coefficients.
 
-Another thing to notice is that the groups have different spread, what we call *within-group variance*. This is somewhat of a problem for the kinds of linear models we will explore below, since we will be assuming that around the fitted values $\hat{Y}_i$, the errors $\varepsilon_i$ are distributed identically, meaning the same variance within each group. The consequence of ignoring the different variance is that comparisons between the groups with small variances will be overly "conservative" (because the overall estimate of variance is larger than these groups), and comparisons between the groups with large variances will be overly confident.
+Another thing to notice is that the groups have different spread around their average, what we call *within-group variance*. This is somewhat of a problem for the kinds of linear models we will explore below, since we will be assuming that around the population average values, the errors $\varepsilon_i$ are distributed identically, meaning the same variance within each group. The consequence of ignoring the different variance is that comparisons between the groups with small variances will be overly "conservative" (because the overall estimate of variance is larger than these groups), and comparisons between the groups with large variances will be overly confident.
 
 If the spread is related to the location, such that groups with large values also have larger spread, a possibility is to transform the data with a function such as the `log` or `sqrt`. This looks like it could be useful here, since three of the four push groups (L1, L2, L3) have the smallest values and also the smallest spread.
 
 Alternative tests for comparing groups without transforming the values first are: t-tests without the equal variance assumption, using a "Welch" or "Satterthwaite approximation", or a test of a shift in distribution, such as the Mann-Whitney-Wilcoxon test.
 
-However, we will continue and show the different kinds of linear models using this dataset, setting aside the issue of different within-group variances.
+However, here, for simplicity of illustration, we will fit a model that assumes equal variance and show the different kinds of linear models using this dataset, setting aside the issue of different within-group variances.
 
 #### A linear model with one variable
 
@@ -83,9 +98,9 @@ imagemat(X, main="Model matrix for linear model with one variable")
 
 #### Examining the coefficients
 
-Now we will use a big chunk of code just to show how the coefficients from the linear model can be drawn as arrows. You wouldn't necessarily use this code in your daily practice, but it's helpful for visualizing what's going on in the linear model in your head.
+Now we show the coefficient estimates  from the linear model with arrows arrows (code not showns).
 
-```{r spider_main_coef, fig.cap="Diagram of the coefficients in the linear model. The green arrow indicates the Intercept term, which rises from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples, jittered horizontally to avoid overplotting."}
+```{r spider_main_coef, fig.cap="Diagram of the coefficients in the linear model. The green arrow indicates the Intercept term, which rises from zero to the mean of the reference group (here the 'pull' samples). The orange arrow indicates the difference between the push group and the pull group, which is negative in this example. The circles show the individual samples, jittered horizontally to avoid overplotting.",echo=FALSE}
 set.seed(1) #same jitter in stripchart
 stripchart(split(spider.sub$friction, spider.sub$type), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,3), ylim=c(0,2))
@@ -139,9 +154,9 @@ coefs
 
 #### Examining the coefficients
 
-We can make the same plot as before, with arrows for each of the coefficients in the model. 
+We can make the same plot as before, with arrows for each of the coefficients in the model (code not shown). 
 
-```{r spider_interactions, fig.cap="Diagram of the coefficients in the linear model. As before, the teal-green arrow represents the Intercept, which fits the mean of the reference group (here, the pull samples for leg L1). The purple, pink, and yellow-green arrows represent differences between the three other leg groups and L1. The orange arrow represents the difference between the push and pull samples for all groups."}
+```{r spider_interactions, fig.cap="Diagram of the coefficients in the linear model. As before, the teal-green arrow represents the Intercept, which fits the mean of the reference group (here, the pull samples for leg L1). The purple, pink, and yellow-green arrows represent differences between the three other leg groups and L1. The orange arrow represents the difference between the push and pull samples for all groups.",echo=FALSE}
 spider$group <- factor(paste0(spider$leg, spider$type))
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
@@ -162,7 +177,7 @@ arrows(8+a,coefs[1]+coefs[5],8+a,coefs[1]+coefs[5]+coefs[2],lwd=3,col=cols[2],le
 legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 ```
 
-Because we have 8 groups and only 5 coefficients, the fitted means (the tips of the arrows) do not line up exactly with the mean of each group, like they did for the previous example of a two group linear model.
+Because we have 8 groups and only 5 coefficients, the fitted means (the tips of the arrows) do not line up exactly with the mean of each group, like they did for the previous example of a two group linear model. 
 
 ```{r}
 s <- split(spider$friction, spider$group)
@@ -172,7 +187,7 @@ mean(s[["L1push"]])
 coefs[1] + coefs[2]
 ```
 
-However, we can demonstrate that the push vs. pull coefficient, `coefs[2]`, is now a weighted mean of the difference of means for each group. Furthermore, the weighting is determined by the sample size of each group. The math works out so simply here because the sample size is equal for the push and pull subgroups within each leg pair. If the sample sizes were not equal for push and pull within each leg pair, the weighting is uniquely determined by a formula involving the sample size of each subgroup, the total sample size, and the number of coefficients. This can be worked out from $(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top$.
+We can demonstrate that the push vs. pull coefficient, `coefs[2]`, is now a weighted mean of the difference of means for each group. Furthermore, the weighting is determined by the sample size of each group. The math works out so simply here because the sample size is equal for the push and pull subgroups within each leg pair. If the sample sizes were not equal for push and pull within each leg pair, the weighting is uniquely determined by a formula involving the sample size of each subgroup, the total sample size, and the number of coefficients. This can be worked out from $(\mathbf{X}^\top \mathbf{X})^{-1} \mathbf{X}^\top$.
 
 ```{r}
 means <- sapply(s, mean)
@@ -201,7 +216,7 @@ $$ (L3 - L1) - (L2 - L1) = L3 - L2 $$
 
 An easy way to make these contrasts of two groups is to use the `contrast` function from the *contrast* package. We just need to specify which groups we want to compare. We have to pick one of *pull* or *push* types, although the answer will not differ, as we see below.
 
-```{r}
+```{r,message=FALSE}
 library(contrast) #Available from CRAN
 L3vsL2 <- contrast(fitTL,list(leg="L3",type="pull"),list(leg="L2",type="pull"))
 L3vsL2
@@ -268,7 +283,7 @@ Here is where the plot with arrows help us see what is going on with the interac
 
 Now, as we have eight terms in the model and 8 parameters, you can check that the tips of the arrowheads are exactly equal to the group means.
 
-```{r spider_interactions2, fig.cap="Diagram of the coefficients in the linear model. In the design with interaction terms, the orange arrow now indicates the push vs pull difference only for the reference group (L1), while three new arrows (yellow, brown and grey) indicate the additionally push vs pull differences in the non-reference groups (L2, L3 and L4) with respect to the reference group."}
+```{r spider_interactions2, fig.cap="Diagram of the coefficients in the linear model. In the design with interaction terms, the orange arrow now indicates the push vs pull difference only for the reference group (L1), while three new arrows (yellow, brown and grey) indicate the additionally push vs pull differences in the non-reference groups (L2, L3 and L4) with respect to the reference group.",echo=FALSE}
 stripchart(split(spider$friction, spider$group), 
            vertical=TRUE, pch=1, method="jitter", las=2, xlim=c(0,11), ylim=c(0,2))
 cols <- brewer.pal(8,"Dark2")
@@ -330,7 +345,7 @@ We can't make this contrast using the `contrast` function shown before, but we c
 
 *Note*: there are other ways to perform contrasts using base R, but in my opinion this function is simpler to use.
 
-```{r}
+```{r,message=FALSE}
 library(multcomp) ##Available from CRAN
 C <- matrix(c(0,0,0,0,0,-1,1,0), 1)
 L3vsL2interaction <- glht(fitX, linfct=C)
@@ -338,7 +353,7 @@ summary(L3vsL2interaction)
 coefs[7] - coefs[6]
 ```
 
-#### Testing all differences of differences: Analysis of variance
+## Analysis of variance
 
 Finally, suppose that we want to know if the push vs. pull difference is *different* across leg pairs in general. Here we are not comparing any two leg pairs in particular, but rather want to know if the three interaction terms which represent differences in the push vs. pull difference are larger than we would expect them to be. We want to determine if the push vs pull difference was actually constant across the leg pairs.
 

@@ -142,7 +142,7 @@ group <- factor(c(1,1,2,2,3,3))
 model.matrix(~ group)
 ```
 
-Note thatm, now we have a third column which specifies which samples belong to the third group.
+Note that, now we have a third column which specifies which samples belong to the third group.
 
 An alternate formulation of design matrix is possible by specifying `+ 0` in the formula:
 
@@ -179,7 +179,7 @@ model.matrix(~ diet + sex)
 
 Note that the design matrix includes an intercept, a term for `diet` and a term for `sex`. We would say that this linear model accounts for differences in both the group and condition variables.
 
-As mentioned above, the above linear model that the effect of the diet is the same for both sex. We say these are an _additive_ effect. For each varable we add an effect regardless of what the other is. Another model is possible here which fits an additional term and which encodes the potential interaction of group and condition variables. We will cover interaction terms in depth in a later script.
+As mentioned above, the above linear model that the effect of the diet is the same for both sex. We say these are an _additive_ effect. For each variable we add an effect regardless of what the other is. Another model is possible here which fits an additional term and which encodes the potential interaction of group and condition variables. We will cover interaction terms in depth in a later script.
 
 The interaction model can be written in either of the following two formulas:
 
@@ -211,18 +211,18 @@ model.matrix(~ group)
 
 #### Where does model.matrix look for the data?
 
-The `model.matrix` function will grab the variable from the R globl environment, unless the data is explicitly provided as a dataframe to the `data` argument:
+The `model.matrix` function will grab the variable from the R global environment, unless the data is explicitly provided as a data frame to the `data` argument:
 
 ```{r}
 group <- 1:4
 model.matrix(~ group, data=data.frame(group=5:8))
 ```
 
-Note how the R global environment variabe `group` is ignored.
+Note how the R global environment variable `group` is ignored.
 
 #### Continuous Variables
 
-In this chapter we focus on models based on indicator values. But in certain designs we will be interested in using numeric variables in the design formula, as opposed to converting them to a factors first. For example, in the falling object example time was a continuos variable in the model and time squared was also included:
+In this chapter we focus on models based on indicator values. But in certain designs we will be interested in using numeric variables in the design formula, as opposed to converting them to a factors first. For example, in the falling object example time was a continuous variable in the model and time squared was also included:
 
 
 ```{r}
@@ -234,8 +234,8 @@ The `I` function above is necessary to specify a mathematical transformation of 
 
 In the life science we we could be interested in testing various dosages of a treatment, where we expect a specific relationship between a measured quantity and the dosage, e.g. 0 mg, 10mg, 20mg. 
 
-Note that the assumptions imposed by including continous data as covariabes are typically harded to defend and motivate than the indicator function variables. Why the indicator variables simply assume a different mean betwen two groups, continuous variables assume a very specific relationship between the outcome and predictor varaibles. 
+Note that the assumptions imposed by including continuous data as variables are typically hard to defend and motivate than the indicator function variables. Why the indicator variables simply assume a different mean between two groups, continuous variables assume a very specific relationship between the outcome and predictor variables. 
 
-In cases like the falling object we have the theory of gravitation supporting the model. In the father-son height example, because the data is bivariate normal it follows that there is a linear relationship if we condition. However, we find that continuous variables are included in linear models without justification to "adjust" for variables such as age. We highly disincourage this practice unless the data support the model being used.
+In cases like the falling object we have the theory of gravitation supporting the model. In the father-son height example, because the data is bi variate normal it follows that there is a linear relationship if we condition. However, we find that continuous variables are included in linear models without justification to "adjust" for variables such as age. We highly discourage this practice unless the data support the model being used.
 
 
