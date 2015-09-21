@@ -86,9 +86,9 @@ qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
 abline(h=-log10(max(res$p.value[index])))
 
-cat("Total genes with q-value < 0.1:",length(index),"\n",
-    "Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
-    "Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
+cat("Total genes with q-value < 0.1: ",length(index),"\n",
+    "Number of selected genes on chrY: ", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
+    "Number of selected genes on chrX: ", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
 ```
 
 We immediately not that the histogram is not flat. Instead, low p-values are over-represented. Furthermore, more than half of the genes on the final list are autosomal. We now describe two statistical solutions and try to improve on this.
@@ -153,9 +153,9 @@ qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
 abline(h=-log10(max(res$p.value[index])))
 
-cat("Total genes with q-value < 0.1:",length(index),"\n",
-    "Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
-    "Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
+cat("Total genes with q-value < 0.1: ",length(index),"\n",
+    "Number of selected genes on chrY: ", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
+    "Number of selected genes on chrX: ", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
 ```
 
 There is a great improvement in specificity (less false positives) without much loss in sensitivity (we still find many chromosom Y genes). However, we still see some bias in the histogram. In a later section we will see that month does not perfectly account for the batch effect and that better estimates are possible.
@@ -215,8 +215,8 @@ qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
 abline(h=-log10(max(res$p.value[index])))
 
-cat("Total genes with q-value < 0.1:",length(index),"\n",
-    "Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
-    "Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
+cat("Total genes with q-value < 0.1: ",length(index),"\n",
+    "Number of selected genes on chrY: ", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
+    "Number of selected genes on chrX: ", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
 ```
 
