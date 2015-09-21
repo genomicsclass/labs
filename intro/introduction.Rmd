@@ -89,7 +89,7 @@ will introduce the mathematical definition of distance and use this to
 motivate the singular value decomposition (SVD) for dimension
 reduction and multi-dimensional scaling. Once we learn this, we will
 be ready to cover hierarchical and k-means clustering. We will follow
-this with basic introduction to machine learning.
+this with a basic introduction to machine learning.
 
 We end by learning about batch effects and how component and factor
 analysis are used to deal with this challenge. In particular, we will
@@ -136,7 +136,7 @@ print(x+y)
 We will provide links that will give you access to the raw R markdown
 code so you can easily follow along with the book by programming in R.
 
-At the beginning of each chapter you will see the sentence
+At the beginning of each chapter you will see the sentence:
 
 >> The R markdown document for this section is available here.
 
