@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Projections
 
-Now that we have described the concept of dimension reduction and some of the applications of SVD and principal component analysis, we focus on more details related to the mathematics behind these. We start with _projections_. A projection is a linear models concept that helps us understand many of the mathematical operations we perform on high-dimensional data. For more details, you can review projects in a linear algebra book. Here we provide a quick review and then provide some data analysis related examples. 
+Now that we have described the concept of dimension reduction and some of the applications of SVD and principal component analysis, we focus on more details related to the mathematics behind these. We start with _projections_. A projection is a linear algebra concept that helps us understand many of the mathematical operations we perform on high-dimensional data. For more details, you can review projects in a linear algebra book. Here we provide a quick review and then provide some data analysis related examples. 
 
 As a review, remember that projections minimize the distance between points and subspace.
 
@@ -27,7 +27,7 @@ For the explanation of projections we will use the standard matrix algebra notat
 library(rafalib)
 ```
 
-If we let $Y = \begin{pmatrix} 2 \\ 3\end{pmatrix}$ we can plot it like this:
+If we let $Y = \begin{pmatrix} 2 \\ 3\end{pmatrix}$. We can plot it like this:
 
 ```{r point, fig.cap="Geometric representation of Y."}
 mypar (1,1)
@@ -46,9 +46,9 @@ Y &= \begin{pmatrix} 2 \\ 3\end{pmatrix} \\
 \end{align*}$$
 
 We say that $2$ and $3$ are the _coordinates_ and that 
-$\begin{pmatrix} 1\\ 0\end{pmatrix} \mbox{and} \begin{pmatrix} 0\\1 \end{pmatrix} \mbox{are the basis}$
+$\begin{pmatrix} 1\\ 0\end{pmatrix} \mbox{and} \begin{pmatrix} 0\\1 \end{pmatrix}$ are the bases.$
 
-Now let's define a new subspace. The red line in the plot below is subset $L$ defined by points satisfying $c \vec{v}$ with $\vec=\begin{pmatrix} 2& 1\end{pmatrix}^\top$. The projection of $\vec{y}$ onto $L$ is the closest point on $L$ to $\vec{y}$. So we need to find the $c$ that minimizes the distance between $\vec{y}$ and $c\vec{v}=(2c,c)$. In linear algebra we learn that the difference between these points is orthogonal to the space so:
+Now let's define a new subspace. The red line in the plot below is subset $L$ defined by points satisfying $c \vec{v}$ with $\vec{v}=\begin{pmatrix} 2& 1\end{pmatrix}^\top$. The projection of $\vec{y}$ onto $L$ is the closest point on $L$ to $\vec{y}$. So we need to find the $c$ that minimizes the distance between $\vec{y}$ and $c\vec{v}=(2c,c)$. In linear algebra we learn that the difference between these points is orthogonal to the space so:
 
 $$
 (\vec{y}-\hat{c}\vec{v}) \cdot \vec{v} = 0
@@ -65,7 +65,7 @@ and:
 $$\hat{c} = \frac{\vec{y}\cdot\vec{v}}
 {\vec{v}\cdot\vec{v}}$$
 
-Here $\cdot$ represents the dot product: $\,\, \vec{x} \cdot \vec{y} = x_1 y_1+\dots x_n y_n$.
+Here the dot $\cdot$ represents the dot product: $\,\, \vec{x} \cdot \vec{y} = x_1 y_1+\dots x_n y_n$.
 
 The following R code confirms this equation works:
 
@@ -120,7 +120,7 @@ $$ N c = \sum_{i=1}^N Y_i \implies \hat{c}=\bar{Y}$$
 
 ### Example: Regression is also a Projection
  
-Let us give a slightly more complicated example. Simple linear regression can also be explained with projections.  Our data $\mathbf{Y}$ (we are no longer going to use the $\vec{y}$ notation) is again an $N-dimensional$ vector and our model predicts $Y_i$ with a line $\beta_0 + \beta_1 X_i$. We want to find the $\beta_0$ and $\beta_1$ , and minimize the distance between $Y$ and the space defined by:
+Let us give a slightly more complicated example. Simple linear regression can also be explained with projections.  Our data $\mathbf{Y}$ (we are no longer going to use the $\vec{y}$ notation) is again an $N-dimensional$ vector and our model predicts $Y_i$ with a line $\beta_0 + \beta_1 X_i$. We want to find the $\beta_0$ and $\beta_1$ that minimize the distance between $Y$ and the space defined by:
 
 $$ L = \{ \beta_0 \vec{v}_0 + \beta_1 \vec{v}_1 ; \vec{\beta}=(\beta_0,\beta_1) \in \mathbb{R}^2 \}$$
 

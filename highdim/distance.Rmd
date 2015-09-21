@@ -96,7 +96,7 @@ With $\mathbf{Y}_i$ and $\mathbf{Y}_j$ columns $i$ and $j$. This result can be v
 
 ### Examples
 
-We can now use the formulas above to compute distance. Let's compute distance between samples 1 and 2, both kidneys, and then to 87, a colon.
+We can now use the formulas above to compute distance. Let's compute distance between samples 1 and 2, both kidneys, and then to sample 87, a colon.
 
 ```{r}
 x <- e[,1]
@@ -120,7 +120,7 @@ d <- dist(t(e))
 class(d)
 ```
 
-Note that this produces an object of class `dist` and to access the entries we need to coerce it into a matrix:
+Note that this produces an object of class `dist` and to access the entries using row and column indexes we need to coerce it into a matrix:
 
 ```{r}
 as.matrix(d)[1,2]
