@@ -31,7 +31,7 @@ sum(admissions$total[admissions$Gender==0]/sum(admissions$Number[admissions$Gend
 
 A chi-square test clearly rejects the hypothesis that gender and admission are independent:
 ```{r}
-##let's make a 2 x 2
+##make a 2 x 2 table
 index = admissions$Gender==1
 men = admissions[index,]
 women = admissions[!index,]
@@ -61,9 +61,8 @@ y
 The chi-square test we performed above suggests a dependence between admission and gender. Yet when the data is grouped by major, this dependence doesn't seem borne out.  What's going on? 
 
 This is called _Simpson's paradox_ .
-As we will see, males were much more likely to apply to "easy" majors. 
+As we will see, males were much more likely to apply to "easy" majors. Male and "easy" majors are confounded which we can clearly see in this plot: 
 
-Male and "easy"" majors are confounded. 
 ```{r hard_major_confounding, fig.cap="Percent of students that applied versus percent that were admitted by gender."}
 y=cbind(admissions[1:6,5],admissions[7:12,5])
 y=sweep(y,2,colSums(y),"/")*100
@@ -155,14 +154,14 @@ axis(side=2,ADDY[-1]/2+ADDY[-length(ADDY)]/2,LETTERS[1:N],tick=FALSE,las=1)
 
 #### Average after Stratifying
 
-So if we condition or stratify by major this goes away. 
+In this plot we can see that if we condition or stratify by major and then loo at differences we control for the confounder and this effect goes away. 
 ```{r admission_by_major, fig.cap="Admission percentage by major for each gender."}
 y=cbind(admissions[1:6,3],admissions[7:12,3])
 matplot(1:6,y,xaxt="n",xlab="major",ylab="percent",col=c("blue","red"),cex=1.5)
-legend("topright",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0,cex=0.75)
+legend("topright",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0)
 ```
 
-The average difference by major is 3.5% higher for women.
+The average difference by major is actually 3.5% higher for women.
 
 ```{r}
 mean(y[,1]-y[,2])
@@ -177,6 +176,7 @@ Simpson's Paradox is commonly seen in baseball statistics. Here is a well known 
 | Derek Jeter   | 12/48 (.250)   | 183/582 (.314) | 195/630 (.310)  |
 | David Justice | 104/411 (.253) | 45/140 (.321)  | 149/551 (.270)  |
 
+The confounder here is games playes. Jeter played more games during the year he batter better while the opposite is true for Justice.
 
 <a name="genomics"></a>
 
@@ -185,7 +185,6 @@ Simpson's Paradox is commonly seen in baseball statistics. Here is a well known 
 To describe the problem of confounding with a real example, we will use a dataset from [this paper](http://www.ncbi.nlm.nih.gov/pubmed/17206142) that claimed that roughly 50% of genes where differentially expressed when comparing blood from two ethnic groups. We include the data in one of our data packages:
 
 ```{r,message=FALSE}
-##Following two libraries are available from Bioconductor
 library(Biobase) ##install from Bioconductor
 library(genefilter) 
 ###Following library is available from course repository
@@ -234,7 +233,9 @@ res2 <- rowttests(geneExpression[-out,ind],droplevels(year[ind]))
 XLIM <- max(abs(c(res1$dm,res2$dm)))*c(-1,1)
 YLIM <- range(-log10(c(res1$p,res2$p)))
 mypar(1,2)
-plot(res1$dm,-log10(res1$p),xlim=XLIM,ylim=YLIM,xlab="Effect size",ylab="-log10(p-value)",main="Populations")
-plot(res2$dm,-log10(res2$p),xlim=XLIM,ylim=YLIM,xlab="Effect size",ylab="-log10(p-value)",main="2003 v 2002")
+plot(res1$dm,-log10(res1$p),xlim=XLIM,ylim=YLIM,
+     xlab="Effect size",ylab="-log10(p-value)",main="Populations")
+plot(res2$dm,-log10(res2$p),xlim=XLIM,ylim=YLIM,
+     xlab="Effect size",ylab="-log10(p-value)",main="2003 v 2002")
 ```
 

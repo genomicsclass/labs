@@ -73,11 +73,11 @@ $$
 Y_{ij} = \alpha_{i,1} W_{1,j} + \alpha_{i,2} W_{2,j} + \varepsilon_{ij}
 $$
 
-The interpretation of these parameters are as follows: $\alpha_{i,1}$ is the overall ability for student $i$ and $\alpha_{i,2}$ is the difference in ability between the two subgroups for student $i$. Can we estimate the $W$ and $\alpha$ ? 
+The interpretation of these parameters are as follows: $\alpha_{i,1}$ is the overall academic ability for student $i$ and $\alpha_{i,2}$ is the difference in ability between the STEM and humanities for student $i$. Now, can we estimate the $W$ and $\alpha$ ? 
 
 #### Factor analysis and PCA
 
-The first two principal components estimate $W_1$ and $W_2$ [we need to add reference for the math]
+It turns out that the first two principal components estimate $W_1$ and $W_2$ 
 
 ```{r}
 s <- svd(Y)

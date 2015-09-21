@@ -70,6 +70,7 @@ plot(times[o],pch=21,bg=as.numeric(batch)[o],ylab="date")
 o=order(times)
 plot(times[o],pch=21,bg=as.numeric(batch)[o],ylab="date")
 ```
+
 There is more than one day per month. Could day have an effect as well?
 
 
@@ -124,6 +125,7 @@ legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 ```
 
 <a name="sva"></a>
+
 #### Surrogate Variable Analysis
 
 An alternative is to fit models with both the covariate of interest, as well as those believed to be batches. An example of an approach that does this is Surrogate Variable Analysis (SVA).
@@ -162,7 +164,7 @@ for(b in 1:2){
 ```
 
 
-The above is an illustration of the algorithm. To actually run SVA, we follow the code. In this case, SVA picks the number of surrogate values or factors for us.
+The above is an illustration of the algorithm. To actually run SVA, we run the `sva` funtion. In this case, SVA picks the number of surrogate values or factors for us.
 
 
 ```{r}
@@ -188,7 +190,7 @@ legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 ```
 
 
-And here is a decompose of the data into sex effects, surrogate variables, and independent noise:
+And, finally, here is the dataset decomposed into sex effects, surrogate variables, and independent noise:
 
 ```{r different_sources_of_var, fig.cap="Original data split into three sources of variability estimated by SVA: sex-related signal, surrogate-variable induced structure and indepedent error.", fig.width=10.5,fig.height=5.25}
 Batch<- lmfit$coef[geneindex,3:7]%*%t(svaX[,3:7])
