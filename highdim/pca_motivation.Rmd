@@ -43,7 +43,7 @@ d=dist(t(y))
 as.matrix(d)[1,2]
 ```
 
-What if we two dimensions was too comples and we were only able to make 1 dimensional plots. Can we, for example, reduce the data to a one dimensional matrix that preserves distances between points?
+What if making two dimensional plots was too complex and we were only able to make 1 dimensional plots. Can we, for example, reduce the data to a one dimensional matrix that preserves distances between points?
 
 If we look back at the plot, and visualize a line between any pair of points, the length of this line is the distance between the two points. Note that these lines tend to go along the direction of the diagonal. We have seen before that we can "rotate" the plot so that the diagonal is in the x-axis by making a MA-plot instead:
 
