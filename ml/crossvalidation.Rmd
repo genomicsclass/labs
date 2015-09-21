@@ -9,16 +9,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 ## Cross-validation
 
-Here we describe *cross-validation*: one of the fundamental methods in machine learning for method assessment and picking parameters in a prediction / machine learning task.
+Here we describe *cross-validation*: one of the fundamental methods in machine learning for method assessment and picking parameters in a prediction or machine learning task. Suppose we have a set of observations with many features, and each observation is associated with a label. We will call this set we are given our training data. Our task is to predict the label of new samples by learning patterns in the many features. For a concrete example, let's consider gene expression values, where each gene acts as a feature, and we will be given a new set of unlabelled data (the test data) with the task of predicting the tissue type of the new samples.
 
-Suppose we have a prediction algorithm which is going to predict the class of some observations using a number of features. For example, we will use the gene expression values to predict the tissue type in our tissues gene expression dataset.
+If we choose a machine learning algorithm with a tunable parameter, we have to come up with a strategy for picking a good value for the parameter. We could try some values, and then just choose the one which performs the best on our training data, in terms of the number of errors the algorithm would make if we apply it to the samples we have been given for training. 
 
-If this algorithm has a parameter which controls the behavior, we might pick the value of this parameter which minimizes the classification error. However, trying to classify the same observations as we use to *train* the model can be misleading. In our lecture, we saw that for K-nearest neighbors, using k=1 will always give 0 classification error in the training set (because we use the single observation to classify itself). Instead, it's better to pick the parameter using the algorithms performance on a set of observations which the algorithm has never seen, a *test* set.
-
-Cross-validation is simply a method which splits the data into a number of *folds*. If we have N folds, then the algorithm typically trains on (N-1) of the folds, and test the algorithms performance on the left-out single fold. This is then repeated N times until each fold has been used as a *test* set.
-
-Let's load in the tissue gene expression dataset:
-
+Let's see what this looks like, by loading the tissue gene expression dataset:
 
 ```{r}
 library(tissuesGeneExpression)
@@ -34,17 +29,48 @@ y <- tissue[ind]
 X <- t( e[,ind] )
 ```
 
-We will use the `createFolds` function from the `caret` package to make 5 folds of the data, which are balanced over the tissues. Don't be confused that the `createFolds` function uses the same letter 'k' as the k in K-nearest neighbors. These 'k' are unrelated. The caret function `createFolds` is asking for how many folds to create, the 'N' from above. The `knn` function is asking how many closest observations to use to classify the test observations.
+Let's try out k-nearest neighbors for classification, using $k=5$. What is our average error in predicting the tissue in the training set, when we've used the same data for training and for testing?
+
+```{r}
+library(class)
+pred <- knn(train =  X, test = X, cl=y, k=5)
+mean(y != pred)
+```
+
+We have no errors in prediction in the training set with $k=5$. What if we use $k=1$?
+
+```{r}
+pred <- knn(train=X, test=X, cl=y, k=1)
+mean(y != pred)
+```
+
+Trying to classify the same observations as we use to *train* the model can be very misleading. In fact, for k-nearest neighbors, using k=1 will always give 0 classification error in the training set, because we use the single observation to classify itself. The reliable way to get a sense of the performance of an algorithm is to make it give a prediction for a sample it has never seen. And similarly, if we want to know what the best value for a tunable parameter is, we need to see how different values of the paramter perform on samples which are not in the training data.
+
+Cross-validation is a widely-used method in machine learning which solves this training and test data problem, while still using all the data for testing the predictive accuracy. It accomplishes this by splitting the data into a number of *folds*. If we have $N$ folds, then the first step of the algorithm is to train the algorithm using $(N-1)$ of the folds, and test the algorithm's accuracy on the single left-out fold. This is then repeated N times until each fold has been used as in the *test* set. If we have $M$ parameter settings to try out, then this is accomplished in an outer loop, so we have to fit the algorithm a total of $N \times M$ times.
+
+We will use the `createFolds` function from the `caret` package to make 5 folds of our gene expression data, which are balanced over the tissues. Don't be confused that the `createFolds` function uses the same letter 'k' as the 'k' in k-nearest neighbors. These 'k' are totally unrelated. The caret function `createFolds` is asking for how many folds to create, the $N$ from above. The 'k' in the `knn` function is for how many closest observations to use in classifying a new sample. Here we will create 10 folds:
 
 ```{r,message=FALSE}
 library(caret)
 set.seed(1)
 idx <- createFolds(y, k=10)
+idx
+```
+
+The folds are returned as a list of numeric indices. The first fold of data is therefore:
+
+```{r}
+y[idx[[1]]] ##the labels
+X[idx[[1]], 1:3] ##the genes (only showing the first 3 genes...)
+```
+
+We can see that in fact the tissues are fairly equally represented across the 10 folds:
+
+```{r}
 sapply(idx, function(i) table(y[i]))
 ```
 
-
-Because tissues have very different gene expression profiles, predicting tissue with all genes will be too easy. For illustration purposes we will try to predict tissue type with just two dimensional data. We will reduce dimension using `cmdscale`
+Because tissues have very different gene expression profiles, predicting tissue with all genes will be very easy. For illustration purposes we will try to predict tissue type with just two dimensional data. We will reduce the dimension of our data using `cmdscale`:
 
 ```{r mds, fig.cap="First two PCs of the tissue gene expression data with color representing tissue. We use these two PCs as our two predictors throughout."}
 library(rafalib)
@@ -54,47 +80,59 @@ plot(Xsmall,col=as.fumeric(y))
 legend("topleft",levels(factor(y)),fill=seq_along(levels(factor(y))))
 ```
 
-Now we can try out the K-nearest neighbors method on a single fold:
+Now we can try out the k-nearest neighbors method on a single fold. We provide the `knn` function with all the samples in `Xsmall` *except* those which are in the first fold. We remove these samples using the code `-idx[[1]]` inside the square brackets. We then use those samples in the test set. The `cl` argument is for the true classifications or labels (here, tissue) of the training data. We use 5 observations to classify in our k-nearest neighbor algorithm:
 
 ```{r}
-library(class)
-i=1
-pred <- knn(train =  Xsmall[ -idx[[i]] , ], test = Xsmall[ idx[[i]], ], cl=  y[ -idx[[i]] ], k=5)
-table(true=y[ idx[[i]] ], pred)
-mean(y[ idx[[i]] ] != pred)
+pred <- knn(train=Xsmall[ -idx[[1]] , ], test=Xsmall[ idx[[1]], ], cl=y[ -idx[[1]] ], k=5)
+table(true=y[ idx[[1]] ], pred)
+mean(y[ idx[[1]] ] != pred)
 ```
 
-Now we will create a loop, which tries out each value of k from 1 to 12, and runs the K-nearest neighbors algorithm on each fold. We then ask for the proportion of errors for each fold, and report the average from the 5 cross-validation folds:
+Now we have some misclassifications. How well do we do for the rest of the folds?
+
+```{r}
+for (i in 1:10) {
+  pred <- knn(train=Xsmall[ -idx[[i]] , ], test=Xsmall[ idx[[i]], ], cl=y[ -idx[[i]] ], k=5)
+  print(paste0(i,") error rate: ", round(mean(y[ idx[[i]] ] != pred),3)))
+}
+```
+
+So we can see there is some variation for each fold, with errors rates hovering around 0.1-0.3. But is `k=5` the best setting for the k parameter? In order to explore the best setting for k, we need to create an outer loop, where we try different values for k, and then calculate the average test set error across all the folds.
+
+We will try out each value of k from 1 to 12. Instead of using two `for` loops, we will use `sapply`:
 
 ```{r}
 set.seed(1)
 ks <- 1:12
 res <- sapply(ks, function(k) {
   ##try out each version of k from 1 to 12
-  
   res.k <- sapply(seq_along(idx), function(i) {
-    ##loop over each of the 5 cross-validation folds
-
+    ##loop over each of the 10 cross-validation folds
     ##predict the held-out samples using k nearest neighbors
-    pred <- knn(train = Xsmall[ -idx[[i]], ],
-                test = Xsmall[ idx[[i]], ],
-                cl = y[ -idx[[i]] ], k = k)
-
+    pred <- knn(train=Xsmall[ -idx[[i]], ],
+                test=Xsmall[ idx[[i]], ],
+                cl=y[ -idx[[i]] ], k = k)
     ##the ratio of misclassified samples
     mean(y[ idx[[i]] ] != pred)
   })
-  
-  ##average over the 5 folds
+  ##average over the 10 folds
   mean(res.k)
 })
 ```
 
-Here is a plot the mean misclassification rate for each value of k:
+Now, for each value of k, we have an associated test set error rate, from the cross-validation procedure.
+
+```{r}
+res
+```
+
+We can then plot the error rate for each value of k, which helps us to see in what region there might be a minimal error rate:
 
 ```{r misclassification_error, fig.cap="Misclassification error versus number of neighbors."}
 plot(ks, res, type="o")
 ```
 
+Remember, because the training set is a random sample, and because our fold-generation procedure involves random number generation, the "best" value of k we pick through this procedure is also a random variable. If we had new training data, and if we recreated our folds, we might get a different value for the optimal k.
 
 Finally, to show that gene expression can perfectly predict tissue, we use 5 dimensions instead of 2, which results in perfect prediction:
 
@@ -104,9 +142,9 @@ set.seed(1)
 ks <- 1:12
 res <- sapply(ks, function(k) {
   res.k <- sapply(seq_along(idx), function(i) {
-    pred <- knn(train = Xsmall[ -idx[[i]], ],
-                test = Xsmall[ idx[[i]], ],
-                cl = y[ -idx[[i]] ], k = k)
+    pred <- knn(train=Xsmall[ -idx[[i]], ],
+                test=Xsmall[ idx[[i]], ],
+                cl=y[ -idx[[i]] ], k = k)
     mean(y[ idx[[i]] ] != pred)
   })
   mean(res.k)
