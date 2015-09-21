@@ -16,7 +16,6 @@ We will motivate multi-dimensional scaling (MDS) plots with a gene expression ex
 library(rafalib)
 library(tissuesGeneExpression)
 data(tissuesGeneExpression)
-##show matrix
 colind <- tissue%in%c("kidney","colon","liver")
 mat <- e[,colind]
 group <- factor(tissue[colind])
@@ -32,7 +31,7 @@ Now that we know about SVD and matrix algebra, understanding MDS is relatively s
 $$\mathbf{Y} = \mathbf{UDV}^\top$$
 
 and assume that the sum of squares of the first two columns $\mathbf{U^\top Y=DV^\top}$ is much larger than sum of squares of all other columns. This can be written as: 
-$d_1+ d_2 \gg d_3 +\ dots + d_n$ with $d_i$ the i-th entry of the $\mathbf{D}$ matrix. When this happens then we have 
+$d_1+ d_2 \gg d_3 + \dots + d_n$ with $d_i$ the i-th entry of the $\mathbf{D}$ matrix. When this happens then we have 
 
 $$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
   \begin{pmatrix}
@@ -63,7 +62,7 @@ $$
  \end{pmatrix}
 $$
 
-If we define the following two dimensional vector:
+If we define the following two dimensional vector...
 
  $$\mathbf{Z}_i=\begin{pmatrix}
     d_{1} v_{i,1}\\
@@ -71,7 +70,7 @@ If we define the following two dimensional vector:
  \end{pmatrix}
  $$
 
-Then
+... then
 
 $$
 \begin{align*}
@@ -105,7 +104,7 @@ Note that the point separate by tissue type as expected. Now, the accuracy of th
 plot(s$d^2/sum(s$d^2))
 ```
 
-Although the first two PCs explain over 50% of the variability, there is plenty of information that this plot does not show. However, it is an incredibly useful plot for obtaining a general idea of the distance between points. Also note, that we can plot other dimensions as well to search for patterns. Here are the 3rd and 4th PCs
+Although the first two PCs explain over 50% of the variability, there is plenty of information that this plot does not show. However, it is an incredibly useful plot for obtaining, via visualization, a general idea of the distance between points. Also note, that we can plot other dimensions as well to search for patterns. Here are the 3rd and 4th PCs
 
 ```{r PC_3_and_4, fig.cap="Third and fourth principal components."}
 PC3 <- s$d[3]*s$v[,3]
@@ -121,14 +120,15 @@ Note that the 4th PC shows a strong separation within the kidney samples. Later 
 
 ### `cmdscale`
 
-Although above, we used the `svd` functions, there is a special function that is specifically made for MDS plots. It starts takes a distance object and then uses principal component analysis to provide the best approximation to this distance that can be obtained with $k$ dimensions. This function is more efficient because one does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the parameter `k`
+Although above, we used the `svd` functions, there is a special function that is specifically made for MDS plots. It takes a distance object as an argument and then uses principal component analysis to provide the best approximation to this distance that can be obtained with $k$ dimensions. This function is more efficient because one does not have to perform the full SVD which can be time consuming. By default it returns a two dimensions but we can change that through the parameter `k` which defaults to 2.
 
 ```{r mds2, fig.cap="MDS computed with cmdscale function."} 
 d <- dist(t(mat))
 mds <- cmdscale(d)
 
 mypar()
-plot(mds[,1],mds[,2],bg=as.numeric(group),pch=21,xlab="First dimension",ylab="Second dimension")
+plot(mds[,1],mds[,2],bg=as.numeric(group),pch=21,
+     xlab="First dimension",ylab="Second dimension")
 legend("bottomleft",levels(group),col=seq(along=levels(group)),pch=15)
 ```
 Note that these two approaches are equivalent up to an arbitrary sign change.
@@ -153,7 +153,7 @@ $$
 
 ### Why we substract the mean
 
-Note that in all calculations above we subtract the row means before we compute the singular value decomposition. Note that if what we are trying to do is approximate the distance between columns $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is the same as the distance between $\mathbf{Y}_i- \mathbf{\mu}$ and $\mathbf{Y}_j - \mathbf{\mu}$ since the $\mu$ cancels out when computing said distance:
+Note that in all calculations above we subtract the row means before we compute the singular value decomposition. Note that if what we are trying to do is approximate the distance between columns, the distance between  $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is the same as the distance between $\mathbf{Y}_i- \mathbf{\mu}$ and $\mathbf{Y}_j - \mathbf{\mu}$ since the $\mu$ cancels out when computing said distance:
 
 $$
 \left\{ ( \mathbf{Y}_i- \mathbf{\mu} ) - ( \mathbf{Y}_j - \mathbf{\mu} ) \right\}^\top \left\{ (\mathbf{Y}_i- \mathbf{\mu}) - (\mathbf{Y}_j - \mathbf{\mu} ) \right\} = \left\{  \mathbf{Y}_i-  \mathbf{Y}_j  \right\}^\top \left\{ \mathbf{Y}_i - \mathbf{Y}_j  \right\}
