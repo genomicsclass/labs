@@ -34,7 +34,7 @@ plot(y[1,], y[2,], xlab="Twin 1 (standardized height)",
 points(y[1,1:2], y[2,1:2], col=2, pch=16)
 ```
 
-To help with the illustration, think of this as high-throughput gene expression dat with the twin pairs representing the $N$ samples and the two heights representing gene expression from two genes. 
+To help with the illustration, think of this as high-throughput gene expression data with the twin pairs representing the $N$ samples and the two heights representing gene expression from two genes. 
 
 We are interested in the distance between any two samples. We can compute this using `dist`. For example, here is the distance between the two orange points in the figure above:
 
