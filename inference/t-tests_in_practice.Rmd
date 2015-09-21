@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 #### Introduction
 
-We will now demonstrate how to obtain a p-value in practice. We begin by loading experimental data and walking you through the steps used to form a t-statistic and compute a p-value. We can perform this task with just a few lines of code (go to end of section to see them). However, to understand the concepts, we will construct a t-statistic from "scratch".
+We will now demonstrate how to obtain a p-value in practice. We begin by loading experimental data and walking you through the steps used to form a t-statistic and compute a p-value. We can perform this task with just a few lines of code (go to the end of section to see them). However, to understand the concepts, we will construct a t-statistic from "scratch".
 
 
 #### Read in and prepare data
@@ -68,9 +68,9 @@ As explained in the previous section, the CLT tells us that for large sample siz
 So now to calculate a p-value all we need to do is ask: how often does
 a normally distributed random variable exceed `diff`? R has a built-in
 function, `pnorm`, to answer this specific question. `pnorm(a)` returns
-the probability that random variable following the standard normal
+the probability that a random variable following the standard normal
 distribution falls below `a`. To obtain the probability that it is
-larger than `a` we simply use `1-pnorm(a)`. We want to know the
+larger than `a`, we simply use `1-pnorm(a)`. We want to know the
 probability of seeing something as extreme as `diff`: either smaller
 (more negative) than `-abs(diff)` or larger than `abs(diff)`. We call
 these two regions "tails" and calculate their size:
@@ -82,7 +82,7 @@ pval <- lefttail + righttail
 print(pval)
 ```
 
-In this case the p-value is smaller than 0.05 and using the conventional cutoff of 0.05, we would call the difference _statistically significant_.
+In this case, the p-value is smaller than 0.05 and using the conventional cutoff of 0.05, we would call the difference _statistically significant_.
 
 Now there is a problem. CLT works for large samples, but is 12 large enough? A rule of thumb for CLT is that 30 is a large enough sample size (but this is just a rule of thumb). The p-value we computed is only a valid approximation if the assumptions hold, which do not seem to be the case here. However, there is another option other than using CLT.
 
@@ -90,10 +90,10 @@ Now there is a problem. CLT works for large samples, but is 12 large enough? A r
 
 ## The t-distribution in Practice
 
-As described earlier, the statistical theory offers another useful
+As described earlier, statistical theory offers another useful
 result. If the distribution of the population is normal, then we can
 work out the exact distribution of the t-statistic without the need
-for the CLT. Note that this is a big "if" given that, with small
+for the CLT. This is a big "if" given that, with small
 samples, it is hard to check if the population is normal. But for
 something like weight, we suspect that the population distribution is
 likely well approximated by normal and that we can use this
@@ -122,7 +122,7 @@ function that actually computes everything for us.
 t.test(treatment, control)
 ```
 
-To see just the p-value we can use the `$` extractor:
+To see just the p-value, we can use the `$` extractor:
 
 ```{r}
 result <- t.test(treatment,control)
@@ -135,15 +135,15 @@ CLT approximation considered the denominator of `tstat` practically
 fixed (with large samples it practically is), while the t-distribution
 approximation takes into account that the denominator (the standard
 error of the difference) is a random variable. The smaller the
-sample size, the more the demoninator varies. 
+sample size, the more the denominator varies. 
 
-It may be confusing that one approximation gave us one p-value and another gave us another, because we expect there to be just one answer. But this is not uncommon in data analysis. We used different assumptions, different approximations, and therefore we obtained different results.
+It may be confusing that one approximation gave us one p-value and another gave us another, because we expect there to be just one answer. However, this is not uncommon in data analysis. We used different assumptions, different approximations, and therefore we obtained different results.
 
 Later, in the power calculation section, we will describe type I and
 type II errors. As a preview, we will point out that the test based on
 the CLT approximation is more likely to incorrectly reject the null
 hypothesis (a false positive), while the t-distribution is more likely
-to incorrectly accept the null hypothsis (false negative).
+to incorrectly accept the null hypothesis (false negative).
 
 #### Running the t-test in practice
 
