@@ -28,7 +28,12 @@ $$
 \mbox{E}\{ (\hat{Y} - Y)^2  \mid  X=x \}
 $$ 
 
-Here, we start by describing linear regression in the context of prediction. We use the son and father height example to illustrate. In our example we are trying to predict the son's height $Y$ based on the father's $X$. Here we have only one predictor. Note that if we were asked to predict the height of a randomly selected son, we   would go with the mean:
+
+#### Regression in the context of prediction
+
+<a name="regression"></a>
+
+We use the son and father height example to illustrate how regression can be interpreted as a machine learning technique. In our example we are trying to predict the son's height $Y$ based on the father's $X$. Here we have only one predictor. Note that if we were asked to predict the height of a randomly selected son, we   would go with the average height:
 
 
 ```{r height_hist,message=FALSE,fig.cap="Histogram of son heights."}
@@ -44,7 +49,7 @@ abline(v=mean(y),col="red",lwd=2)
 
 In this case, we can also approximate the distribution of $Y$ as normal, which implies the mean maximizes the probability density. 
 
-Now imagine that we are given more information. We are told the father of this randomly selected son has a height of 71 inches (1.25 SDs taller than the average). What is our prediction now? 
+Now imagine that we are given more information. We are told the father of this randomly selected son has a height of 71 inches (1.25 SDs taller than the average). What is our prediction now? For thi
 
 
 ```{r conditional_distribution, fig.cap="Son versus father height (left) with the red lines denoting the stratum defined by conditioning on fathers being 71 inches tall. Conditional distribution: son height distribution of stratum defined by 71 inch fathers.",fig.width=10.5,fig.height=5.25}
@@ -54,11 +59,8 @@ abline(v=c(-0.35,0.35)+71,col="red")
 hist(y[x==71],xlab="Heights",nc=8,main="",xlim=range(y))
 ```
 
-<a name="regression"></a>
 
-## Stratification
-
-The best guess is still the expectation, but our strata has changed from all the data, to only the $Y$ with $X=71$. So we can stratify and take the average which is the conditional expectation. Our prediction for any $x$ is therefore:
+The best guess is still the expectation, but our strata has changed from all the data, to only the $Y$ with $X=71$. So we can stratify  and take the average which is the conditional expectation. Our prediction for any $x$ is therefore:
 
 $$
 f(x) = E(Y \mid X=x)
@@ -84,5 +86,5 @@ hist(y[x==71],xlab="Heights",nc=8,main="",xlim=range(y))
 abline(v = fit$coef[1] + fit$coef[2]*71, col=1)
 ```
 
-In this particular case the regression line provides an optimal prediction function for $Y$. But this is not generally true.
+In this particular case the regression line provides an optimal prediction function for $Y$. But this is not generally true becuase, in the typical machine learning problems, the optimal $f(x)$ is rarely a simple line.
 
