@@ -12,9 +12,9 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Smoothing 
 
-Smoothing is a very powerful technique used all across data analysis. The general idea is to group data points that are expected to have similar expectations and [RAFA]
+Smoothing is a very powerful technique used all across data analysis. The general idea is to group data points that are expected to have similar expectations and compute the average.
 
-The following data are from measurements from replicated RNA. We consider the data used in an MA-plot ( $Y$ = log ratios and $A$ = averages) and take down-sample in a way that balances the number of points for different strata of $A$:
+The following data are gene expression measurements from replicated RNA samples. We consider the data used in an MA-plot ( $Y$ = log ratios and $A$ = averages) and take down-sample in a way that balances the number of points for different strata of $A$:
 
 ```{r,cache=TRUE,message=FALSE}
 ##Following three packages are available from Bioconductor
@@ -56,7 +56,7 @@ plot(X,Y)
 
 Linear regression does not capture the apparent curvature in $f(x)$:
 
-```{r MAplot_with_regression_line, fig.cap="MAplot comparing gene expression from two arrays with fitted regression line.",fig.width=10.5,fig.height=5.25}
+```{r MAplot_with_regression_line, fig.cap="MAplot comparing gene expression from two arrays with fitted regression line. The two colors represent positive and negative residuals.",fig.width=10.5,fig.height=5.25}
 mypar()
 plot(X,Y)
 fit <- lm(Y~X)

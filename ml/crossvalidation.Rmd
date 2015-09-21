@@ -9,7 +9,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 ## Cross-validation
 
-Here we describe *cross-validation*: one of the fundamental methods in machine learning for picking parameters in a prediction / machine learning task.
+Here we describe *cross-validation*: one of the fundamental methods in machine learning for method assessment and picking parameters in a prediction / machine learning task.
 
 Suppose we have a prediction algorithm which is going to predict the class of some observations using a number of features. For example, we will use the gene expression values to predict the tissue type in our tissues gene expression dataset.
 
@@ -89,7 +89,7 @@ res <- sapply(ks, function(k) {
 })
 ```
 
-Now we can plot the mean misclassification rate for each value of k:
+Here is a plot the mean misclassification rate for each value of k:
 
 ```{r misclassification_error, fig.cap="Misclassification error versus number of neighbors."}
 plot(ks, res, type="o")

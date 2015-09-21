@@ -43,7 +43,7 @@ hc
 plot(hc,labels=tissue,cex=0.5)
 ```
 
-Does this technique "discover" the clusters defined by the different tissues? In this case, it is not easy to see the different tissues so we add colors by using the `mypclust` function from the `rafalib` package. 
+Does this technique "discover" the clusters defined by the different tissues? In this plot, it is not easy to see the different tissues so we add colors by using the `mypclust` function from the `rafalib` package. 
  
 ```{r color_dendrogram, fig.cap="Dendrogram showing hierarchical clustering of tissue gene expression data with colors denoting tissues.",fig.width=10.5,fig.height=5.25}
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue), cex=0.5)
@@ -87,7 +87,7 @@ plot(e[1,], e[2,], col=km$cluster, pch=16)
 table(true=tissue,cluster=km$cluster)
 ```
 
-We can instead perform k-means clustering using all of the genes. To visualize this, we can use an MDS plot:
+Here we do not get the separation we expect. This is very likely due to the fact the the first two genes are not informative regarding tissue type. We can instead perform k-means clustering using all of the genes. To visualize this, we can use an MDS plot:
 
 
 ```{r kmeans_mds, fig.cap="Plot of gene expression for first two PCs with color representing tissues (left) and clusters found using all genes (right).",fig.width=10.5,fig.height=5.25}
