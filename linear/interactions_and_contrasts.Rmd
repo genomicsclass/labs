@@ -96,7 +96,7 @@ library(rafalib)
 imagemat(X, main="Model matrix for linear model with one variable")
 ```
 
-#### Examining the coefficients
+#### Examining the coefficient estimates
 
 Now we show the coefficient estimates  from the linear model with arrows arrows (code not shown).
 
@@ -245,11 +245,11 @@ cT %*% beta
 
 What about the standard error and t-statistic? As before, the t-statistic is the estimate divided by the standard error. The standard error of the contrast estimate is formed by multiplying the contrast vector $\mathbf{c}$ on either side of the estimated covariance matrix, $\Sigma \equiv \mathrm{Var}(\hat{\boldsymbol{\beta}})$:
 
-$$ \sqrt{\mathbf{c^\top} \mathbf{\Sigma} \mathbf{c}} $$
+$$ \sqrt{\mathbf{c^\top} \boldsymbol{\Sigma} \mathbf{c}} $$
 
 where we saw the covariance of the coefficients earlier:
 
-$$ \mathbf{\Sigma} = \hat{\sigma}^2 (\mathbf{X}^\top \mathbf{X})^{-1}$$
+$$ \boldsymbol{\Sigma} = \hat{\sigma}^2 (\mathbf{X}^\top \mathbf{X})^{-1}$$
 
 ```{r}
 Sigma <- sum(fitTL$residuals^2)/(nrow(X) - ncol(X)) * solve(t(X) %*% X)
@@ -291,7 +291,7 @@ summary(fitX)
 coefs <- coef(fitX)
 ```
 
-#### Examining the coefficients
+#### Examining the coefficients estimates
 
 Here is where the plot with arrows helps us interpret the coefficients. The estimated interaction terms (the yellow, brown and silver arrows), are extra terms which help us fit leg-pair-specific differences in the push vs. pull difference. The orange arrow now represents the estimated push vs. pull difference for the reference leg pair, which is L1. If the interaction term is large, this means that the push vs. pull difference for that group is different than the push vs. pull difference in the reference leg pair.
 
@@ -351,13 +351,13 @@ Suppose we want to know if the push vs. pull difference is *different* for the L
 
 If we work out the math for comparing across two non-reference leg pairs, this is:
 
-<p align="center">
-(`typepush` + `typepush:legL3`) - (`typepush` + `typepush:legL2`)
-</p>
+$$
+(\mbox{`typepush`} + \mbox{`typepush:legL3`}) - (\mbox{`typepush`} + \mbox{`typepush:legL2`})
+$$
 
-<p align="center">
-= `typepush:legL3` - `typepush:legL2`
-</p>
+$$
+= \mbox{`typepush:legL3`} - \mbox{`typepush:legL2`}
+$$
 
 We can't make this contrast using the `contrast` function shown before, but we can make this comparison using the `glht` (for "general linear hypothesis test") function from the *multcomp* package. All we need to do is form a 1-row matrix which has a -1 for the `typepush:legL2` effect and a +1 for the `typepush:legL3` effect. We provide this matrix to the `linfct` (linear function) argument, and obtain a summary table for this contrast alone.
 
@@ -438,7 +438,7 @@ summary(fitG)
 coefs <- coef(fitG)
 ```
 
-#### Examining the coefficients
+#### Examining the coefficients estimates
 
 Now we have eight arrows, one for each group. The arrow tips align directly with the mean of each group:
 

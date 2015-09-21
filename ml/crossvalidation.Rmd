@@ -36,7 +36,7 @@ X <- t( e[,ind] )
 
 We will use the `createFolds` function from the `caret` package to make 5 folds of the data, which are balanced over the tissues. Don't be confused that the `createFolds` function uses the same letter 'k' as the k in K-nearest neighbors. These 'k' are unrelated. The caret function `createFolds` is asking for how many folds to create, the 'N' from above. The `knn` function is asking how many closest observations to use to classify the test observations.
 
-```{r}
+```{r,message=FALSE}
 library(caret)
 set.seed(1)
 idx <- createFolds(y, k=10)

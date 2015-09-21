@@ -218,7 +218,7 @@ By requiring a FWER $\leq$ 0.05 we are practically assuring 0 power (sensitivity
 
 Before running the simulation we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above which is necessary here due to the fact that we will be generating several simulations. Understanding this chunk of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
 
-```{r}
+```{r, message=FALSE}
 library(genefilter) ##rowttests is here
 set.seed(1)
 ##Define groups to be used with rowttests
@@ -255,7 +255,7 @@ mypar(1,1)
 hist(Qs) ##Q is a random variable, this is its distribution
 ```
 
-The FDR is the average value of $Q
+The FDR is the average value of $Q$
 ```{r}
 FDR=mean(Qs)
 print(FDR)

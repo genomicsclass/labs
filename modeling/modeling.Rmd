@@ -16,17 +16,19 @@ When we see a p-value in the literature, it means a probability distribution of 
 
 The CLT is backed by theoretical results that guarantee that the approximation is accurate. However, we cannot always use this approximation, such as when our sample size is too small. Previously, we described how the sample average can be approximated as t-distributed when the population data is approximately normal. However, there is no theoretical backing for this assumption. We are now *modeling*. In the case of height, we know from experience that this turns out to be a very good model. 
 
-But this does not imply that every dataset we collect will follow a normal distribution. Some examples are: coin tosses, the number of people who win the lottery, and US incomes. The normal is not the only parametric distribution that is available from modeling. Here we describe some useful parametric distributions and their use in genomics. For many more please consult a Statistics textbook such as [this one](https://www.stat.berkeley.edu/~rice/Book3ed/index.html). 
+But this does not imply that every dataset we collect will follow a normal distribution. Some examples are: coin tosses, the number of people who win the lottery, and US incomes. The normal is not the only parametric distribution that is available from modeling. Here we describe some of the most widely used parametric distributions and some of their uses in the life sciences. We also introduce the basics of Bayesian statistics then give a specific example of the use of hierarchical models. For much more on parametric distributions please consult a Statistics textbook such as [this one](https://www.stat.berkeley.edu/~rice/Book3ed/index.html). 
 
 ## The Binomial Distribution
 
-The first distribution we will describe is the binomial distribution. It reports the probability of observing $S=k$ heads when tossing $N$ coins as
+The first distribution we will describe is the binomial distribution. It reports the probability of observing $S=k$ successes in $N$ trails as
 
 $$
 \mbox{Pr}(S=k) = {N \choose k}p^k (1-p)^{N-k}
 $$
 
-with $p$ the probability of observing a head in one coin toss.  $S/N$ is the average of independent random variables and thus the CLT tells us that $S$ is approximately normal. This distribution is used by some of the variant callers and genotypers based on next generation sequencing.
+with $p$ the probability of success. The best known example are coin tosses with $S$ the number of heads when tossing $N$ coins. In this example $p=0.5$.  
+
+Note that $S/N$ is the average of independent random variables and thus the CLT tells us that $S$ is approximately normal when $N$ is large. This distribution has many applications in the life sciences. Recentely, it has been used by the variant callers and genotypers applied to next generation sequencing. A special case of this distribution is approximated by the Poisson distribution which we describe next. 
 
 ## The Poisson Distribution
 
