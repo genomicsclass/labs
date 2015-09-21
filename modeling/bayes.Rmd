@@ -194,7 +194,7 @@ B &= \frac{\sigma^2}{\sigma^2+\tau^2}
 \end{align*}
 $$
 
-Note that it is a weighted average of the population average $\mu$ and the observed data $Y$. The weight depends on the SD of the the population $\tau$ and the SD of our observed data $\sigma$. In the case of José Iglesias, we have:
+Note that it is a weighted average of the population average $\mu$ and the observed data $Y$. The weight depends on the SD of the the population $\tau$ and the SD of our observed data $\sigma$. This weighted average is sometimes referred to as _shrinking_ because it _shrinks_ estimates towards a prior mean. In the case of José Iglesias, we have:
 
 $$
 \begin{align*}

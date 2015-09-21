@@ -10,11 +10,23 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Conditional Probabilities and Expectations
 
-Prediction problems can be divided into categorical and continuous outcomes. However, many of the algorithms can be applied to both due to the connection between conditional probabilities and conditional expectations. 
+Prediction problems can be divided into categorical and continuous outcomes. However, many of the algorithms can be applied to both due to the connection between _conditional probabilities_ and _conditional expectations_. 
 
-In categorical problems, for example binary outcome, if we know the probability of $Y$ being a 1 for any set of predictors $X=(X_1,\dots,X_p)^\top$, we can optimize our predictions. We write this probability like this: $f(x)=\mbox{Pr}(Y=1 \mid X=x)$. Note that $Y$ is a random variable which implies that we are not guaranteed a perfect prediction (unless these probabilities are 1 or 0). You can think of this probability as the proportion of 1s in the stratum of the population with covariates $X=x$.
+For categorical data, for example binary outcomes, if we know the probability of $Y$ being any of the possible outcomes $k$ given a  set of predictors $X=(X_1,\dots,X_p)^\top$, 
 
-Now, given that the expectation is the average of all the values of $Y$, the average is equivalent to the proportion of 1s which we can interpret as the probability. So for this case, $f(x) \equiv \mbox{E}(Y \mid X=x)=\mbox{Pr}(Y=1 \mid X=x)$. The expected value has another attractive mathematical property and it is that it minimized the expected distance between the predictor $\hat{Y}$ and $Y$: $\mbox{E}\{ (\hat{Y} - Y)^2  \mid  X=x \}$. 
+$$
+f_k(x) = \mbox{Pr}(Y=k \mid X=x)
+$$
+
+we can optimize our predictions. Specifically, for any $x$ we predicting the $k$ that has the largest probability $f_k(x)$. 
+
+To simplify the exposition below, we will consider the case of binary data. In this case you can think of the probability $\mbox{Pr}(Y=1 \mid X=x)$ as the proportion of 1s in the stratum of the population for which $X=x$. Given that the expectation is the average of all $Y$ values, in this case the expectation is equivalent to the probability: $f(x) \equiv \mbox{E}(Y \mid X=x)=\mbox{Pr}(Y=1 \mid X=x)$. We therefore use only the expectation in the descriptions below as it is more general.
+
+Note also that, in general, the expected value has an attractive mathematical property and it is that  minimized the expected distance between the predictor $\hat{Y}$ and $Y$:  
+
+$$
+\mbox{E}\{ (\hat{Y} - Y)^2  \mid  X=x \}
+$$ 
 
 Here, we start by describing linear regression in the context of prediction. We use the son and father height example to illustrate. In our example we are trying to predict the son's height $Y$ based on the father's $X$. Here we have only one predictor. Note that if we were asked to predict the height of a randomly selected son, we   would go with the mean:
 
