@@ -13,7 +13,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ### Introduction
 
-We have used the example of the effects of two different diets on the weight of mice. Because in this illustrative example we have access to the population, we know that in fact there is a substantial (about 10%) difference between the average weights of the two populations:
+We have used the example of the effects of two different diets on the weight of mice. Since in this illustrative example we have access to the population, we know that in fact there is a substantial (about 10%) difference between the average weights of the two populations:
 
 ```{r,message=FALSE,echo=FALSE}
 library(downloader)
@@ -38,7 +38,7 @@ print(mu_hf - mu_control)
 print((mu_hf - mu_control)/mu_control * 100) # percent increase
 ```
 
-We have also seen that in some cases when we take a sample and perform a t-test, we don't always get a p-value smaller than 0.05. For example, here is a case were we take sample of 5 mice and don't achieve statistical significance at the 0.05 level:
+We have also seen that, in some cases, when we take a sample and perform a t-test, we don't always get a p-value smaller than 0.05. For example, here is a case were we take sample of 5 mice and don't achieve statistical significance at the 0.05 level:
 
 ```{r}
 set.seed(1)
@@ -51,18 +51,18 @@ t.test(hf,control)$p.value
 Did we make a mistake? By not rejecting the null hypothesis, are we
 saying the diet has no effect? The answer to this question is no. All
 we can say is that we did not reject the null hypothesis. But this
-does not necessarily imply that the null is true. The problem is that
-in this particular instance we don't have enough _power_, a term we
-are now going to define. If you are doing scientific research it is
+does not necessarily imply that the null is true. The problem is that,
+in this particular instance, we don't have enough _power_, a term we
+are now going to define. If you are doing scientific research, it is
 very likely that you will have to do a power calculation at some
-point. In many cases it is an ethical obligation as it can help you
+point. In many cases, it is an ethical obligation as it can help you
 avoid sacrificing mice unnecessarily or limiting the number of human
 subjects exposed to potential risk in a study. Here we explain what
 statistical power means. 
 
 ### Types Of Error
 
-Whenever we perform a statistical test we are aware that we may make a
+Whenever we perform a statistical test, we are aware that we may make a
 mistake. This is why our p-values are not 0. Under the null, there is
 always a positive, perhaps very small, but still positive chance that we
 will reject the null when it is true. If the p-value is 0.05, it will
@@ -90,7 +90,7 @@ Most journals and regulatory agencies frequently insist that results be signific
 ### Power Calculation
 
 Power is the probability of rejecting the null when the null is
-false. Now, "when the null is false" is a complicated statement
+false. Of course "when the null is false" is a complicated statement
 because it can be false in many ways.
 $\Delta \equiv \mu_Y - \mu_X$
 could be anything and the power actually depends on this parameter. It
@@ -169,7 +169,7 @@ power <- sapply(Ns,function(N){
   })
 ```
 
-For each of the three simulations the above code returns the proportion of times we reject. Not surprisingly power increases with N:
+For each of the three simulations, the above code returns the proportion of times we reject. Not surprisingly power increases with N:
 
 ```{r power_versus_sample_size, fig.cap="Power plotted against sample size."}
 plot(Ns, power, type="b")
@@ -209,8 +209,8 @@ we can make a p-value as small as we want simply by increasing
 the sample size (supposing that we have an infinite population to sample
 from). We can show this property of p-values
 by drawing larger and larger samples from our
-population and calculating p-values. This works because in our case,
-we know that the alternative hypothesis is true, because we have
+population and calculating p-values. This works because, in our case,
+we know that the alternative hypothesis is true, since we have
 access to the populations and can calculate the difference in their means.
 
 First write a function that returns a p-value for a given sample size $N$:
@@ -247,12 +247,12 @@ plot(Ns_rep, pvalues, log="y", xlab="sample size",
 abline(h=c(.01, .05), col="red", lwd=2)
 ```
 
-Note that the y-axis is log scale, and that the p-values show a
+Note that the y-axis is log scale and that the p-values show a
 decreasing trend all the way to $10^{-8}$
 as the sample size gets larger. The standard cutoffs
 of 0.01 and 0.05 are indicated with horizontal red lines.
 
-This is important to remember: p-values are not more interesting as
+It is important to remember that p-values are not more interesting as
 they become very very small. Once we have convinced ourselves to
 reject the null hypothesis at a threshold we find reasonable, having
 an even smaller p-value just means that we sampled more mice than was
@@ -265,10 +265,10 @@ has $\sqrt{N}$ (for equal sized groups, and a similar effect occurs
 when $M \neq N$). Therefore, if $\Delta$ is non-zero, the t-statistic
 will increase with $N$.
 
-A better statistic to report is therefore the effect size with
-a confidence interval, or some statistic which gives the reader a
+Therefore, a better statistic to report is the effect size with
+a confidence interval or some statistic which gives the reader a
 sense of the change in a meaningful scale. We can
-report the effect size as a percent, by dividing the difference
+report the effect size as a percent by dividing the difference
 and the confidence interval by the control population mean:
 
 ```{r}
@@ -291,7 +291,7 @@ diff / sd_pool
 ```
 
 This tells us how many standard deviations of the data the mean of the
-high-fat diet group is from the control group. And under the
-alternative hypothesis, unlike the t-statistic, which is guaranteed to
+high-fat diet group is from the control group. Under the
+alternative hypothesis, unlike the t-statistic which is guaranteed to
 increase, the effect size and Cohen's d will become more precise.
 
