@@ -27,25 +27,25 @@ reported results.
 
 Graphing data is a powerful approach to detecting these problems. We
 refer to this as _exploratory data analysis_ (EDA). Many important
-methodological contributions to existing data analysis techniques in
+methodological contributions to existing techniques in
 data analysis were initiated by discoveries made via EDA.
 In addition, EDA can lead to interesting biological discoveries which
 would otherwise be missed through simply subjecting the data to a
 battery of hypothesis tests.
-Through this book we make use of exploratory plots to motivate the analyses we
+Through this book, we make use of exploratory plots to motivate the analyses we
 choose. Here we present a general introduction to EDA using height
 data.
 
 We have already introduced some EDA approaches for _univariate_ data,
-namely the histograms and QQ-plot. Here we describe the QQ-plot in more detail and
-how some EDA and summary statistics for paired data. We also give a
+namely the histograms and qq-plot. Here we describe the qq-plot in more detail and
+some EDA and summary statistics for paired data. We also give a
 demonstration of commonly used figures that we recommend against. 
 
 ## Quantile Quantile Plots
 
 To corroborate that a theoretical distribution, for example the normal distribution, is in fact a good
 approximation, we can use quantile-quantile plots
-(QQ-plots). Quantiles are best understood by considering the special
+(qq-plots). Quantiles are best understood by considering the special
 case of percentiles. The p-th percentile of a list of a distribution
 is defined as the number q that is bigger than p% of numbers (so the inverse of
 the cumulative distribution function we defined earlier). For
@@ -69,7 +69,7 @@ abline(0,1) ##identity line
 ```
 
 Note how close these values are. Also, note that we can see these
-QQ-plots with less code (this plot has more points than the one we
+qq-plots with less code (this plot has more points than the one we
 constructed manually, and so tail-behavior can be seen more clearly).
 
 ```{r qqplot_example2, fig.cap="Second example of qqplot. Here we use the function qqnorm which computes the theoretical normal quantiles automatically."}
@@ -79,7 +79,7 @@ qqline(x)
 
 However, the `qqnorm` function plots against a standard normal distribution. This is why the line has slope `popsd(x)` and intercept `mean(x)`.
 
-In the example above, the points match the line very well. In fact, we can run Monte Carlo simulations to see that we see plots like this for data known to be normally distributed.
+In the example above, the points match the line very well. In fact, we can run Monte Carlo simulations to see plots like this for data known to be normally distributed.
 
 
 ```{r qqnorm_example, fig.cap="Example of the qqnorm function. Here we apply it to numbers generated to follow a normal distribution."}
@@ -90,11 +90,11 @@ qqline(x)
 ```
 
 We can also get a sense for how non-normally distributed data will
-look in a QQ-plot. Here we generate data from the t-distribution with
-different degrees of freedom. Note that the smaller the degrees of
+look in a qq-plot. Here we generate data from the t-distribution with
+different degrees of freedom. Notice that the smaller the degrees of
 freedom, the fatter the tails. We call these "fat tails" because if we
 plotted an empirical density or histogram, the density at the extremes would be
-higher than the theoretical curve. In the QQ-plot this can be seen in
+higher than the theoretical curve. In the qq-plot, this can be seen in
 that the curve is lower than the identity line on the left
 side and higher on the right side. This means that there are more
 extreme values than predicted by the theoretical density plotted on
@@ -114,8 +114,8 @@ for(df in dfs){
 
 ### Boxplots
 
-Data is not always normally distributed. Income is widely cited
-example. In these cases the average and standard deviation are not
+Data is not always normally distributed. Income is a widely cited
+example. In these cases, the average and standard deviation are not
 necessarily informative since one can't infer the distribution from
 just these two numbers. The properties described above are specific to
 the normal. For example, the normal distribution does not seem to be a
@@ -129,7 +129,7 @@ qqnorm(exec.pay)
 qqline(exec.pay)
 ```
 
-In addition to QQ-plots, a practical summary of data is to compute 3
+In addition to qq-plots, a practical summary of data is to compute 3
 percentiles: 25-th, 50-th (the median) and the 75-th. A boxplot shows
 these 3 values along with a 
 range of the points within median $\pm$ 1.5 (75-th percentile -
@@ -225,7 +225,7 @@ and look at all the pairs $(X,Y)$ for which $X=x$. Generally, in
 statistics we call this exercise _conditioning_. We are conditioning
 $Y$ on $X$. If a pair of random variables is approximated by a
 bivariate normal distribution, then the distribution of $Y$ conditioned
-on $X=x$ is approximated with a normal distribution no matter waht $x$ we choose. Let's
+on $X=x$ is approximated with a normal distribution no matter what $x$ we choose. Let's
 see if this holds with our height data. We show 4 different strata: 
 
 ```{r qqnorm_of_strata, fig.cap="qqplots of son heights for four strata defined by father heights.",fig.width=7.5,fig.height=7.5}
