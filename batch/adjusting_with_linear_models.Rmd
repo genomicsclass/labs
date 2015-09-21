@@ -9,9 +9,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 
-## Data Example
+## Motivation for Statistical Approaches
 
-To illustrate how we can adjust for batch effects using statistical methods, we will create a data example in which the outcome of interest is confounded with batch, but not completely. We will also select an outcome for which we have an expectation of what genes should be diferentially expressed. Namely, we make sex the outcome of interest and expect genes on the Y chromosome to be diferentially expressed. We may also see genes from the X chromosome as differentially expressed since some escape X inactivation. The example dataset is below.
+#### Data Example
+
+To illustrate how we can adjust for batch effects using statistical methods, we will create a data example in which the outcome of interest is somewhat confounded with batch, but not completely. To aid with the illustration and assessment of the methods we demonstrate, we will also select an outcome for which we have an expectation of what genes should be diferentially expressed. Namely, we make sex the outcome of interest and expect genes on the Y chromosome to be diferentially expressed. We may also see genes from the X chromosome as differentially expressed since some escape X inactivation. The data with these properties is the one included in this dataset:
 
 ```{r}
 ##available from course github repository
@@ -19,9 +21,16 @@ library(GSE5859Subset)
 data(GSE5859Subset)
 ```
 
-To illustrate the confounding, we will pick some genes to show in a heatmap plot. We pick all Y chromosome genes, some genes that we see correlate with batch, and then some randomly selected genes.
+We can see the correlation between sex and month:
+```{r}
+month <- format(sampleInfo$date,"%m")
+table(sampleInfo$group, month)
+```
 
-```{r,message=FALSE}
+
+To illustrate the confounding, we will pick some genes to show in a heatmap plot. We pick 1) all Y chromosome genes, 2) some genes that we see correlate with batch, and 3) some randomly selected genes. The image below (code not shown) shows high values in red, low values in blue, middle values in yellow. Each column is a sample and each row is one of the randomly selected genes:
+
+```{r image_of_subset, fig.cap="Image of gene expression data for genes selected to show difference in group as well as the batch effect, along with some randomly chosen genes.", message=FALSE, echo=FALSE}
 library(rafalib)
 library(RColorBrewer)
 library(genefilter)
@@ -40,23 +49,28 @@ ind0 <- setdiff(sample(seq(along=tt$dm),50),c(ind2,ind1))
 geneindex<-c(ind2,ind0,ind1)
 mat<-geneExpression[geneindex,]
 mat <- mat -rowMeans(mat)
-```
 
-The object `mat` contains the subset of the data we will show in the plots. By looking at an image we see the Y chromosome genes as well as those most affected by month:
-
-```{r image_of_subset, fig.cap="Image of gene expression data for genes selected to show difference in group as well as the batch effect, along with some randomly chosen genes."}
 icolors <- colorRampPalette(rev(brewer.pal(11,"RdYlBu")))(100)
 mypar(1,1)
-image(t(mat),xaxt="n",yaxt="n",col=icolors)
+image(1:24,1:nrow(mat), t(mat),xaxt="n",yaxt="n",col=icolors,xlab="",ylab="")
+axis(3,1:24,rep(c("F","M"),each=12),cex.axis=0.5)
+axis(1,1:24,month,cex.axis=0.5)
 ```
 
-In what follows, we will imitate the typical analysis we would do in practice. We will act as if we don't know which genes are supposed to be differentially expressed between males and females. 
+In the plot above the first 12 columns are females (1s) and the last 12 columns are males (0s). We can see some Y chromosome genes towards the top since they are blue for females and red from males. We can also see some genes that correlate with month towards the bottom of the image. Some genes are low in June (6) and high in october (10), while other do the oppossite. The month effect is not as clear as the sex effect, but it is certainly present.  
 
-#### Exploratory Data Analysis for Evaluation
+In what follows, we will imitate the typical analysis we would do in practice. We will act as if we don't know which genes are supposed to be differentially expressed between males and females, find genes that are differentially expressed, and the eveluate these methods by comparing to what we expect to be correct. Note while in the plot we only show a few genes, for the analysis we analyze 
+all 8,793.
 
-Another reason we are using the dataset described above for illustrating different approaches is because we actually have a reasonable idea of what to expect. Autosomal (not on chrX or chrY) genes on the list are likely false positives and chrY are likely true positives. ChrX genes could go either way. This gives us the opportunity to compare different procedures. Since in practice we rarely know the "truth", these evaluations are not possible. Simulations are therefore commonly used for evaluation purposes: we know the truth because we construct the data. But simulations are at risk of not capturing all the nuances of real experimental data. This dataset is an experimental dataset. 
 
-In the next sections we will use the histogram p-values  to evaluate the specificity (low false positive rates) of the batch adjustment procedures presented here. Because the autosomal genes are not expected to be differentially expressed, we should see a a flat p-value histogram. To evaluate sensitivity (low false negative rates), we will report the number of the reported genes on chrX and chrY. Below are the results for when we don't adjust and report genes with q-values smaller than 0.1. We also include a volcano plot with a horizontal dashed line separating the genes called significant from those that are not, and colors used to highlight chrX and chrY genes.
+#### Assessment Plots and Summaries
+
+For the assessment of the methods we present we will assume that 
+autosomal (not on chromosom X or Y) genes on the list are likely false positives. We will also assume that genes on chromosom Y are likely true positives. Chromosom X genes could go either way. This gives us the opportunity to estimate both specificity and sensitivity. Since in practice we rarely know the "truth", these evaluations are not possible. Simulations are therefore commonly used for evaluation purposes: we know the truth because we construct the data. However, simulations are at risk of not capturing all the nuances of real experimental data. In contrast, this dataset is an experimental dataset. 
+
+In the next sections we will use the histogram p-values  to evaluate the specificity (low false positive rates) of the batch adjustment procedures presented here. Because the autosomal genes are not expected to be differentially expressed, we should see a a flat p-value histogram. To evaluate sensitivity (low false negative rates), we will report the number of the reported genes on chromosom X and chromsome Y for which we reject the null hypothesis. We also include a volcano plot with a horizontal dashed line separating the genes called significant from those that are not, and colors used to highlight chromosome X and Y genes.
+
+Below are the results of applying a naive t-test and report genes with q-values smaller than 0.1. 
 
 ```{r pvalue_hist_and_volcano_plots, fig.cap="p-value histogram and volcano plot for comparison between sexes. The Y chromosome genes (considered to be positives) are highlighted in red. The X chromosome genes (a subset is considered to be positive) are shown in green.",fig.width=10.5,fig.height=5.25}
 library(qvalue)
@@ -72,12 +86,12 @@ qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
 abline(h=-log10(max(res$p.value[index])))
 
-cat("Total genes with q-value < 0.1:",length(index))
-cat("Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE))
-cat("Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE))
+cat("Total genes with q-value < 0.1:",length(index),"\n",
+    "Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
+    "Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
 ```
 
-The histogram is not flat. Instead, low p-values are over-represented. More than half of the genes on the final list are autosomal.
+We immediately not that the histogram is not flat. Instead, low p-values are over-represented. Furthermore, more than half of the genes on the final list are autosomal. We now describe two statistical solutions and try to improve on this.
 
 ## Adjusting for Batch Effects with Linear Models
 
@@ -139,17 +153,15 @@ qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
 abline(h=-log10(max(res$p.value[index])))
 
-cat("Total genes with q-value < 0.1:",length(index))
-cat("Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE))
-cat("Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE))
-
-
+cat("Total genes with q-value < 0.1:",length(index),"\n",
+    "Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
+    "Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
 ```
 
-There is a great improvement in specificity (less false positives) without much loss in sensitivity (we still find many chrY genes). However, we still see some bias in the histogram. In the following sections we will see that month does not perfectly account for the batch effect and that better estimates are possible.
+There is a great improvement in specificity (less false positives) without much loss in sensitivity (we still find many chromosom Y genes). However, we still see some bias in the histogram. In a later section we will see that month does not perfectly account for the batch effect and that better estimates are possible.
 
 
-## A Note on Computing Efficiency
+#### A Note on Computing Efficiency
 
 In the code above, the design matrix does not change within the iterations we are computing $(X^\top X)^{-1}$ repeatedly and applying to each gene. Instead we can perform this calculation in one matrix algebra calculation by computing it once and then obtaining all the betas by multiplying $(X^\top X)^{-1}X^\top Y$ with the columns of $Y$ representing genes in this case. The `limma` package has an implementation of this idea (using the QR decomposition). Notice how much faster this is:
 
@@ -176,7 +188,7 @@ pvals <- 2*pt(-abs(ttest),fit$df)
 
  [Combat](http://biostatistics.oxfordjournals.org/content/8/1/118.short) is a popular method and is based on using linear models to adjust for batch effects. It fits a hierarchical model to estimate and remove row specific batch effects. Combat uses a modular approach. In a first step, what is considered to be a batch effect is removed:
 
-```{r}
+```{r, message=FALSE}
 library(sva) #available from Bioconductor
 mod <- model.matrix(~sex)
 cleandat <- ComBat(geneExpression,batch,mod)
@@ -203,8 +215,8 @@ qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
 abline(h=-log10(max(res$p.value[index])))
 
-cat("Total genes with q-value < 0.1:",length(index))
-cat("Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE))
-cat("Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE))
+cat("Total genes with q-value < 0.1:",length(index),"\n",
+    "Number of selected genes on chrY:", sum(chr[index]=="chrY",na.rm=TRUE),"\n",
+    "Number of selected genes on chrX:", sum(chr[index]=="chrX",na.rm=TRUE),sep="")
 ```
 

@@ -221,12 +221,15 @@ for(k in c(1,100)){
 }
 ```
 
-Wwhen $k=1$ we make no mistakes in the training test since every point is its closest neighbor and it is equal to itself. However, we see some islands of blue in the red area that once we move to the test set are more error prone. In the case $k=100$ we do not have this problem and we also see that we improve the error rate over linear regression. We can also see that our estimate of $f(x_1,x_2)$ is closer to the truth.
+When $k=1$ we make no mistakes in the training test since every point is its closest neighbor and it is equal to itself. However, we see some islands of blue in the red area that once we move to the test set are more error prone. In the case $k=100$ we do not have this problem and we also see that we improve the error rate over linear regression. We can also see that our estimate of $f(x_1,x_2)$ is closer to the truth.
 
-### Bayes Rule
-Here is a comparison of the test and train set errors for various values of $k$. We also include the error rate that we would make if we actually knew $\mbox{E}(Y \mid X_1=x1,X_2=x_2)$ referred to as _Bayes Rule_
+#### Bayes Rule
 
-```{r bayes_rule2, fig.cap="Prediction error in train (pink) and test (green) versus number of neighbors. The yellow line represents what one obtains with Bayes Rule.",message=FALSE}
+Here we include a comparison of the test and train set errors for various values of $k$. We also include the error rate that we would make if we actually knew $\mbox{E}(Y \mid X_1=x1,X_2=x_2)$ referred to as _Bayes Rule_.
+
+We start by computing the error rates...
+
+```{r}
 ###Bayes Rule
 yhat <- apply(test,1,p)
 cat("Bayes rule prediction error in train",1-mean(round(yhat)==y),"\n")
@@ -234,15 +237,18 @@ bayes.error=1-mean(round(yhat)==y)
 train.error <- rep(0,16)
 test.error <- rep(0,16)
 for(k in seq(along=train.error)){
-  
   ##predict on train
   yhat <- knn(x,x,y,k=2^(k/2))
   train.error[k] <- 1-mean((as.numeric(yhat)-1)==y)
-  
+  ##prediction on test    
   yhat <- knn(x,test,y,k=2^(k/2))
   test.error[k] <- 1-mean((as.numeric(yhat)-1)==y)
 }
+```
 
+... and then plot the error rates against values of $k$. We also show the Bayes rules error rate as a horizontal line.
+
+```{r bayes_rule2, fig.cap="Prediction error in train (pink) and test (green) versus number of neighbors. The yellow line represents what one obtains with Bayes Rule.",message=FALSE}
 ks <- 2^(seq(along=train.error)/2)
 mypar()
 plot(ks,train.error,type="n",xlab="K",ylab="Prediction Error",log="x",ylim=range(c(test.error,train.error)))
@@ -252,6 +258,7 @@ abline(h=bayes.error,col=6)
 legend("bottomright",c("Train","Test","Bayes"),col=c(4,5,6),lty=c(2,3,1),box.lwd=0)
 ```
 
+Note that these error rates are random variables and have standard errors. In the next section we describe cross-validation which helps reduce some of this variability. However, even with this variability, the plot clearly shows the problem over over-fitting when using values lower than 20 and under-fitting with values above 100.
 
 
 

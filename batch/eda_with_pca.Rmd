@@ -11,7 +11,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ##  Discovering Batch Effects with EDA 
 
-Now that we understand PCA, we are going to demonstrate how we use it in practice with an emphasis on exploratory data analysis. To illustrate we will go through an actual dataset that has not be sanitized for teaching purposes. We start with the raw data as it was provided in the public repository. The only step we did for you is to preprocess these data and create an R package with a preformed Bioconductor object.
+Now that we understand PCA, we are going to demonstrate how we use it in practice with an emphasis on exploratory data analysis. To illustrate, we will go through an actual dataset that has not be sanitized for teaching purposes. We start with the raw data as it was provided in the public repository. The only step we did for you is to preprocess these data and create an R package with a preformed Bioconductor object.
 
 ## Gene Expression Data
 
@@ -46,7 +46,7 @@ dates <- pData(e)$date
 eth <- pData(e)$ethnicity
 ```
 
-The original dataset did not include sex in the sample information. We did this for you in the subset dataset we provided for illustrative purposes. In the code below we show how we predict the sex of each sample. The basic idea is to look at the median gene expression levels on Y chromosome genes. Males should have much higher values. We need to upload an annotation package that provides information for the features of the platform used in this experiment:
+The original dataset did not include sex in the sample information. We did this for you in the subset dataset we provided for illustrative purposes. In the code below we show how we predict the sex of each sample. The basic idea is to look at the median gene expression levels on Y chromosome genes. Males should have much higher values. To do this,  we need to upload an annotation package that provides information for the features of the platform used in this experiment:
 
 ```{r}
 annotation(e)
@@ -56,14 +56,16 @@ We need to download and install the `hgfocus.db` package and then extract the ch
 
 ```{r,message=FALSE}
 library(hgfocus.db) ##install from Bioconductor
-annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID",columns=c("CHR"))
-##for genes with multiples, pick on
+annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID",
+                columns=c("CHR"))
+##for genes with multiples, pick one
 annot <-annot[match(featureNames(e),annot$PROBEID),]
 annot$CHR <- ifelse(is.na(annot$CHR),NA,paste0("chr",annot$CHR))
+##compute median expression on chromosome Y
 chryexp<- colMeans(y[which(annot$CHR=="chrY"),])
 ```
 
-You can clearly see two modes which must be females and males:
+If we create a histogram of the median gene expression values on chromosome Y we clearly see two modes which must be females and males:
 ```{r predict_sex,fig.cap="Histogram of median expresion y-axis. We can see females and males."}
 mypar()
 hist(chryexp)
@@ -83,18 +85,11 @@ s <- svd(y)
 dim(s$v)
 ```
 
-But we can also use `prcomp` which creates an object with just the PCs and also demeans by default. Note `svd` keeps $U$ which is as large as `y` while `prcomp` does not. However, they provide practically the same principal components:
-
-
-```{r,eval=FALSE}
-pc <- prcomp(y)
-```
-
-For the rest of the code shown here we use `s`.
+We can also use `prcomp` which creates an object with just the PCs and also demeans by default. They provide practically the same principal components so we continue the analysis with the object $s$
 
 #### Variance Explained
 
-A first step in determining how much sample correlation induced_structure_ there is in the data. 
+A first step in determining how much sample correlation induced _structure_ there is in the data. 
 
 ```{r correlations, fig.cap="Image of correlations. Cell i,j  represents correlation between samples i and j. Red is high, white is 0 and red is negative."}
 library(RColorBrewer)
@@ -102,9 +97,9 @@ cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
 image ( cor(y) ,col=cols,zlim=c(-1,1))
 ```
 
-Here we are using the term _structure_ to refer to the deviation from what one would see if the samples were in fact independent from each other. 
+Here we are using the term _structure_ to refer to the deviation from what one would see if the samples were in fact independent from each other. The plot above clearly shows groups of samples that more correlated between themselves than to others.
 
-One simple exploratory plot we make to determine how many principal components we need to describe this _structure_ is the variance-explained plot. This is what the variance explained for the PCs would look like:
+One simple exploratory plot we make to determine how many principal components we need to describe this _structure_ is the variance-explained plot. This is what the variance explained for the PCs would look like if data were independent :
 
 ```{r null_variance_explained, fig.cap="Variance explained plot for simulated independent data."}
 y0 <- matrix( rnorm( nrow(y)*ncol(y) ) , nrow(y), ncol(y) )
@@ -142,7 +137,7 @@ year = factor(format(dates,"%y"))
 table(year,eth)
 ```
 
-Here is the same plot, but now with color representing year:
+So explore the possibility of date being a major source of variability by looking at the same plot, but now with color representing year:
 
 ```{r mds_plot2, fig.cap="First two PCs for gene expression data with color representing processing year."}
 cols = as.numeric(year)
@@ -152,7 +147,7 @@ plot(s$v[,1],s$v[,2],col=cols,pch=16,
 legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
 ```
 
-Year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding, it is not easy to parse out. Nonetheless, in the assessment questions and below we provide some further exploratory approaches.
+We see that year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding, it is not easy to parse out. Nonetheless, in the assessment questions and below we provide some further exploratory approaches.
 
 #### Boxplot of PCs
 
@@ -166,7 +161,7 @@ length( unique(month))
 Because there are so many months (21), it becomes complicated to use color. Instead we can stratify by month and look at boxplots of our PCs:
 
 
-```{r pc_boxplots, fig.cap="Boxplot of first four PCs stratified by month.", fig.width=10.5,fig.height=10.5}
+```{r pc_boxplots, fig.cap="Boxplot of first four PCs stratified by month.", fig.width=10.5,fig.height=7.5}
 variable <- as.numeric(month)
 mypar(2,2)
 for(i in 1:4){
@@ -175,7 +170,8 @@ for(i in 1:4){
   }
 ```
 
-Here we see that month has a very strong correlation with the first PC, as well as some of the others. In cases such as these, in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
+Here we see that month has a very strong correlation with the first PC, even when stratifying by ethnic group as well as some of the others. Remember that samples processed between 2002-2004 are 
+all from the same ethnic group. In cases such as these, in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
 
 ```{r month_PC_corr, fig.cap="Adjusted R-squared after fitting a model with each month as a factor to each PC."}
 corr <- sapply(1:ncol(s$v),function(i){
@@ -201,7 +197,8 @@ p <- length(unique(month))
 abline(h=sqrt(qf(0.995,p-1,ncol(s$v)-1)))
 ```
 
-In the assessments we will see how we can use the PCs as estimates in factor analysis to improve model estimates.
+We have seen how PCA combined with EDA can be a powerful technique to detect and understand batches. 
+In a later section we will see how we can use the PCs as estimates in factor analysis to improve model estimates.
 
 
 

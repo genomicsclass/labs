@@ -9,11 +9,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 ## Cross-validation
 
-Here we describe *cross-validation*: one of the fundamental methods in machine learning for method assessment and picking parameters in a prediction or machine learning task. Suppose we have a set of observations with many features, and each observation is associated with a label. We will call this set we are given our training data. Our task is to predict the label of new samples by learning patterns in the many features. For a concrete example, let's consider gene expression values, where each gene acts as a feature, and we will be given a new set of unlabelled data (the test data) with the task of predicting the tissue type of the new samples.
+Here we describe *cross-validation*: one of the fundamental methods in machine learning for method assessment and picking parameters in a prediction or machine learning task. Suppose we have a set of observations with many features, and each observation is associated with a label. We will call this set our training data. Our task is to predict the label of any new samples by learning patterns from the training data. For a concrete example, let's consider gene expression values, where each gene acts as a feature, and we will be given a new set of unlabelled data (the test data) with the task of predicting the tissue type of the new samples.
 
-If we choose a machine learning algorithm with a tunable parameter, we have to come up with a strategy for picking a good value for the parameter. We could try some values, and then just choose the one which performs the best on our training data, in terms of the number of errors the algorithm would make if we apply it to the samples we have been given for training. 
+If we choose a machine learning algorithm with a tunable parameter, we have to come up with a strategy for picking an optimal value for this parameter. We could try some values, and then just choose the one which performs the best on our training data, in terms of the number of errors the algorithm would make if we apply it to the samples we have been given for training. Howevever, we have seen how this leads to over-fitting.
 
-Let's see what this looks like, by loading the tissue gene expression dataset:
+Let's start by loading the tissue gene expression dataset:
 
 ```{r}
 library(tissuesGeneExpression)
@@ -29,7 +29,9 @@ y <- tissue[ind]
 X <- t( e[,ind] )
 ```
 
-Let's try out k-nearest neighbors for classification, using $k=5$. What is our average error in predicting the tissue in the training set, when we've used the same data for training and for testing?
+This data will not form part of our example.
+
+Now let's try out k-nearest neighbors for classification, using $k=5$. What is our average error in predicting the tissue in the training set, when we've used the same data for training and for testing?
 
 ```{r}
 library(class)
@@ -48,7 +50,7 @@ Trying to classify the same observations as we use to *train* the model can be v
 
 Cross-validation is a widely-used method in machine learning which solves this training and test data problem, while still using all the data for testing the predictive accuracy. It accomplishes this by splitting the data into a number of *folds*. If we have $N$ folds, then the first step of the algorithm is to train the algorithm using $(N-1)$ of the folds, and test the algorithm's accuracy on the single left-out fold. This is then repeated N times until each fold has been used as in the *test* set. If we have $M$ parameter settings to try out, then this is accomplished in an outer loop, so we have to fit the algorithm a total of $N \times M$ times.
 
-We will use the `createFolds` function from the `caret` package to make 5 folds of our gene expression data, which are balanced over the tissues. Don't be confused that the `createFolds` function uses the same letter 'k' as the 'k' in k-nearest neighbors. These 'k' are totally unrelated. The caret function `createFolds` is asking for how many folds to create, the $N$ from above. The 'k' in the `knn` function is for how many closest observations to use in classifying a new sample. Here we will create 10 folds:
+We will use the `createFolds` function from the `caret` package to make 5 folds of our gene expression data, which are balanced over the tissues. Don't be confused by the fact that the `createFolds` function uses the same letter 'k' as the 'k' in k-nearest neighbors. These 'k' are totally unrelated. The caret function `createFolds` is asking for how many folds to create, the $N$ from above. The 'k' in the `knn` function is for how many closest observations to use in classifying a new sample. Here we will create 10 folds:
 
 ```{r,message=FALSE}
 library(caret)
