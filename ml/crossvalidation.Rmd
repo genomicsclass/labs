@@ -129,7 +129,7 @@ res
 We can then plot the error rate for each value of k, which helps us to see in what region there might be a minimal error rate:
 
 ```{r misclassification_error, fig.cap="Misclassification error versus number of neighbors."}
-plot(ks, res, type="o")
+plot(ks, res, type="o",ylab="misclassification error")
 ```
 
 Remember, because the training set is a random sample, and because our fold-generation procedure involves random number generation, the "best" value of k we pick through this procedure is also a random variable. If we had new training data, and if we recreated our folds, we might get a different value for the optimal k.
@@ -149,7 +149,7 @@ res <- sapply(ks, function(k) {
   })
   mean(res.k)
 })
-plot(ks, res, type="o",ylim=c(0,0.20))
+plot(ks, res, type="o",ylim=c(0,0.20),ylab="misclassification error")
 ```
 
 Important note: we applied `cmdscale` to the entire dataset to create
