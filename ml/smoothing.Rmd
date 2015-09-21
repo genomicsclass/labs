@@ -17,7 +17,7 @@ Smoothing is a very powerful technique used all across data analysis. It is desi
 The following data are gene expression measurements from replicated RNA samples. 
 
 
-```{r,cache=TRUE,message=FALSE}
+```{r,message=FALSE}
 ##Following three packages are available from Bioconductor
 library(Biobase)
 library(SpikeIn)

@@ -158,7 +158,7 @@ qqplot(theoretical,counts)
 abline(0,1)
 ```
 
-We therefore can model the palindrome count data with a Poisson with $\lamba=5.16$. 
+We therefore can model the palindrome count data with a Poisson with $\lambda=5.16$. 
 
 ## Distributions for Positive Continuous Values
 
@@ -169,7 +169,7 @@ We want to  model the distribution of the gene-specific standard errors. Are the
 As an example, we use an experimental data that included both technical and biological replicates for gene expression measurements on mice. We can load the data and compute the gene specific sample standard error for both the technical replicates and the biological replicates
 
 
-```{r}
+```{r, message=FALSE}
 library(Biobase) ##available from Bioconductor
 library(maPooling) ##available from course github repo
 
@@ -260,7 +260,7 @@ for(d in c(1,5,10)){
 
 Now which $s_0$ and $d$ fit our data best? This is a rather advanced topic as the MLE does not perform well for this particular distribution (we refer to Smyth (2004)). The Bioconductor `limma` package provides a function to estimate these parameters:
 
-```{r}
+```{r,message=FALSE}
 library(limma)
 estimates=fitFDist(biosds^2,11)
 

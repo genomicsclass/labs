@@ -56,7 +56,7 @@ We will use the `createFolds` function from the `caret` package to make 5 folds 
 library(caret)
 set.seed(1)
 idx <- createFolds(y, k=10)
-idx
+sapply(idx, length)
 ```
 
 The folds are returned as a list of numeric indices. The first fold of data is therefore:
