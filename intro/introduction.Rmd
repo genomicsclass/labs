@@ -10,7 +10,8 @@ This book was conceived during the teaching of several HarvardX courses, coordin
 to all the students whose questions and comments helped us improve the book. The courses were
 partially funded by NIH grant R25GM114818.  We are very grateful to the National Institute of Health for its support.  
 
-A special thanks goes to all those that edited the book via GitHub pull requests.
+A special thanks goes to all those that edited the book via GitHub pull requests: vjcitn, yeredh, ste-fan, molx, kern3020, josemrecio, hcorrada, neerajt, massie, jmgore75, molecules, lzamparo, eronisko, and obicke.
+
 
 Cover image credit: this photograph is La Mina Falls, El Yunque National Forest, Puerto Rico, taken by Ron Kroetz
 https://www.flickr.com/photos/ronkroetz/14779273923
