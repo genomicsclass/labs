@@ -46,7 +46,7 @@ Y &= \begin{pmatrix} 2 \\ 3\end{pmatrix} \\
 \end{align*}$$
 
 We say that $2$ and $3$ are the _coordinates_ and that 
-$\begin{pmatrix} 1\\ 0\end{pmatrix} \mbox{and} \begin{pmatrix} 0\\1 \end{pmatrix}$ are the bases.$
+$\begin{pmatrix} 1\\ 0\end{pmatrix} \mbox{and} \begin{pmatrix} 0\\1 \end{pmatrix}$ are the bases.
 
 Now let's define a new subspace. The red line in the plot below is subset $L$ defined by points satisfying $c \vec{v}$ with $\vec{v}=\begin{pmatrix} 2& 1\end{pmatrix}^\top$. The projection of $\vec{y}$ onto $L$ is the closest point on $L$ to $\vec{y}$. So we need to find the $c$ that minimizes the distance between $\vec{y}$ and $c\vec{v}=(2c,c)$. In linear algebra we learn that the difference between these points is orthogonal to the space so:
 
