@@ -2,9 +2,7 @@
 
 # Acknowledgements
 
-The authors would like to thank Alexandra Nones for her proofreading the manuscript during its various stages.  
-Also, thanks to Karl Broman for contributing the "Plots to Avoid" section and to Stephanie Hicks for designing 
-some of the exercises.  
+The authors would like to thank Alex Nones for proofreading the manuscript during its various stages. Also, thanks to Karl Broman for contributing the "Plots to Avoid" section and to Stephanie Hicks for designing some of the exercises.  
 
 This book was conceived during the teaching of several HarvardX courses, coordinated by Heather Sternshein. We are also grateful 
 to all the students whose questions and comments helped us improve the book. The courses were
@@ -25,11 +23,7 @@ The unprecedented advance in digital technology during the second half
 of the 20th century has produced a measurement revolution that is
 transforming science. In the life sciences, data analysis is now part
 of practically every research project. Genomics, in particular, is
-being driven by new measurement technologies that permit us to observe certain molecular 
-entities for the first time. These observations are leading to
-discoveries analogous to identifying microorganisms and other breakthroughs
-permitted by the invention of the microscope. Choice examples of these
-technologies are microarrays and next generation sequencing.
+being driven by new measurement technologies that permit us to observe certain molecular entities for the first time. These observations are leading to discoveries analogous to identifying microorganisms and other breakthroughs permitted by the invention of the microscope. Choice examples of these technologies are microarrays and next generation sequencing.
 
 Scientific fields that have traditionally relied upon simple data
 analysis techniques have been turned on their heads by these
@@ -106,10 +100,10 @@ analysis.
 ## How Is This Book Different?
 
 While statistics textbooks focus on mathematics, this book focuses on
-using a computer to perform data analysis. Instead of explaining the
+using a computer to perform data analysis. This book follows the approach of [Stat Labs](https://www.stat.berkeley.edu/~statlabs/), by Deborah Nolan and Terry Speed.
+Instead of explaining the
 mathematics and theory, and then showing examples, we start by stating
-a practical data-related challenge. We then supply computer code that
-provides a solution to the problem and helps illustrate the
+a practical data-related challenge. This book also includes the computer code that provides a solution to the problem and helps illustrate the
 concepts behind the solution. By running the code yourself, and seeing
 data generation and analysis happen live, you will get a better
 intuition for the concepts, the mathematics, and the theory.

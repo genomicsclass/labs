@@ -86,8 +86,8 @@ the t-distribution is a better approximation. Our simulation results
 seem to confirm this:
 
 ```{r, ttest_v_tdist_qqplot,fig.cap="Quantile-quantile plot comparing 1000 Monte Carlo simulated t-statistics with three degrees of freedom to theoretical t-distribution."}
-qs <- (seq(0,999)+0.5)/1000
-qqplot(qt(qs,df=2*3-2),ttests,xlim=c(-6,6),ylim=c(-6,6))
+ps <- (seq(0,999)+0.5)/1000
+qqplot(qt(ps,df=2*3-2),ttests,xlim=c(-6,6),ylim=c(-6,6))
 abline(0,1)
 ```
 
