@@ -152,7 +152,7 @@ summary(fit)$coef
 
 It gives us the LSE, as well as standard errors and p-values. 
 
-Part of what we do in this course is explain the mathematics behind this function. 
+Part of what we do in this section is to explain the mathematics behind this function. 
 
 #### The least squares estimate (LSE)
 
