@@ -11,7 +11,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Power Calculations 
 
-### Introduction
+#### Introduction
 
 We have used the example of the effects of two different diets on the weight of mice. Since in this illustrative example we have access to the population, we know that in fact there is a substantial (about 10%) difference between the average weights of the two populations:
 
@@ -60,7 +60,7 @@ avoid sacrificing mice unnecessarily or limiting the number of human
 subjects exposed to potential risk in a study. Here we explain what
 statistical power means. 
 
-### Types Of Error
+#### Types Of Error
 
 Whenever we perform a statistical test, we are aware that we may make a
 mistake. This is why our p-values are not 0. Under the null, there is
@@ -83,11 +83,11 @@ made this mistake. However, in general, are we comfortable with a type
 I error rate of 1 in 4? Usually we are not.  
 
 
-### The 0.05 and 0.01 Cut-offs Are Arbitrary
+#### The 0.05 and 0.01 Cut-offs Are Arbitrary
 
 Most journals and regulatory agencies frequently insist that results be significant at the 0.01 or 0.05 levels. Of course there is nothing special about these numbers other than the fact that some of the first papers on p-values used these values as examples. Part of the goal of this book is to give readers a good understanding of what p-values and confidence intervals are so that these choices can be judged in an informed way. Unfortunately, in science, these cut-offs are applied somewhat mindlessly, but that topic is part of a complicated debate.
 
-### Power Calculation
+#### Power Calculation
 
 Power is the probability of rejecting the null when the null is
 false. Of course "when the null is false" is a complicated statement
@@ -197,7 +197,7 @@ There is no "right" power or "right" alpha level, but it is important that you u
 
 To see this clearly, you could create a plot with curves of power versus N. Show several curves in the same plot with color representing alpha level.
 
-### p-values are Arbitrary under the Alternative Hypothesis
+#### p-values are Arbitrary under the Alternative Hypothesis
 
 Another consequence of what we have learned about power is that
 p-values are somewhat arbitrary when the 

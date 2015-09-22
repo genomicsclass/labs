@@ -98,7 +98,7 @@ qqnorm(controlPopulation)
 qqline(controlPopulation)
 ```
 
-### Parametric Simulations for the Observations
+## Parametric Simulations for the Observations
 
 The technique we used to motivate random variables and the null
 distribution was a type of Monte Carlo simulation. We had access to

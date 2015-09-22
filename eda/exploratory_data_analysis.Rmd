@@ -112,7 +112,7 @@ for(df in dfs){
 
 <a name="boxplots"></a>
 
-### Boxplots
+## Boxplots
 
 Data is not always normally distributed. Income is a widely cited
 example. In these cases, the average and standard deviation are not
