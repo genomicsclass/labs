@@ -257,7 +257,7 @@ beta =  c(34,0.5)
 var(beta[1]+beta[2]*x)
 ```
 
-it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function var is simply computing the variance of the list we feed it, while the mathematical use of var is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary but when we write  $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly if we use R to compute the variance of $Y$ in our object dropping example we obtain something very different than $\sigma^2=1$ (the known variance):
+it is nowhere near 0. This is an example in which we have to be careful in distinguishing code from math. The function `var` is simply computing the variance of the list we feed it, while the mathematical definition of variance is considering only quantities that are random variables. In the R code above, `x` is not fixed at all: we are letting it vary, but when we write  $\mbox{var}(Y_i) = \sigma^2$ we are imposing, mathematically, `x` to be fixed. Similarly, if we use R to compute the variance of $Y$ in our object dropping example, we obtain something very different than $\sigma^2=1$ (the known variance):
 
 ```{r}
 n <- length(tt)
