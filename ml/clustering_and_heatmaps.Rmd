@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 # Basic Machine Learning
 
-Machine learning is a very broad topic and a highly active research area. In the life sciences, much of what is described as "precision medicine" is an application of machine learning to biomedical data. The general idea is to predict or discover outcomes from measured predictors. Can we discover new types of cancer from gene expression profiles? Or can we predict drug response from a series of genotypes? Here we give a very brief introductions to two major machine learning components: clustering and class prediction. There are many good resources to learn more about machine learning, for example [this book](http://web.stanford.edu/~hastie/local.ftp/Springer/OLD/ESLII_print4.pdf).
+Machine learning is a very broad topic and a highly active research area. In the life sciences, much of what is described as "precision medicine" is an application of machine learning to biomedical data. The general idea is to predict or discover outcomes from measured predictors. Can we discover new types of cancer from gene expression profiles? Can we predict drug response from a series of genotypes? Here we give a very brief introductions to two major machine learning components: clustering and class prediction. There are many good resources to learn more about machine learning, for example [this book](http://web.stanford.edu/~hastie/local.ftp/Springer/OLD/ESLII_print4.pdf).
 
 ## Clustering 
 
@@ -29,7 +29,7 @@ d <- dist( t(e) )
 
 <a name="hierarchical"></a>
 
-### Hierarchical Clustering
+#### Hierarchical clustering
 
 With the distance between each pair of samples computed, we need clustering algorithms to join them into groups. Hierarchical clustering is one of the many clustering algorithms available to do this. Each sample is assigned to its own group and then the algorithm continues iteratively, joining the two most similar clusters at each step, and continuing until there is just one group. While we have defined distances between samples, we have not yet defined distances between groups. There are various ways this can be done and they all rely on the individual pairwise distances. The helpfile for `hclust` includes detailed information. 
 
@@ -49,7 +49,7 @@ Does this technique "discover" the clusters defined by the different tissues? In
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue), cex=0.5)
 ```
 
-Visually, it does seem as if the clustering technique has discovered the tissues. However,  hierarchical clustering does not define specific clusters, but rather defines the dendrogram above. From the dendrogram we can decipher the distance between any two groups by looking at the height at which the two groups split into two. To define clusters we need to "cut the tree" at some distance and group all samples that are within that distance into groups below. To visualize this, we draw a horizontal line at the height we wish to cut and this defines that line. We use 120 as an example:
+Visually, it does seem as if the clustering technique has discovered the tissues. However,  hierarchical clustering does not define specific clusters, but rather defines the dendrogram above. From the dendrogram we can decipher the distance between any two groups by looking at the height at which the two groups split into two. To define clusters, we need to "cut the tree" at some distance and group all samples that are within that distance into groups below. To visualize this, we draw a horizontal line at the height we wish to cut and this defines that line. We use 120 as an example:
 
 ```{r color_dendrogram2, fig.cap="Dendrogram showing hierarchical clustering of tisuse gene expression data with colors denoting tissues. Horizontal line defines actual clusters.",fig.width=10.5,fig.height=5.25}
 myplclust(hc, labels=tissue, lab.col=as.fumeric(tissue),cex=0.5)
@@ -70,11 +70,11 @@ hclusters <- cutree(hc, k=8)
 table(true=tissue, cluster=hclusters)
 ```
 
-In both cases we do see that, with some exceptions, each tissue is uniquely represented by one of the clusters. In some instances the one tissue is spread across two tissues which is due to selecting too many clusters. Selecting the number of clusters is generally a challenging step in practice and an active area of resarch.
+In both cases we do see that, with some exceptions, each tissue is uniquely represented by one of the clusters. In some instances, the one tissue is spread across two tissues, which is due to selecting too many clusters. Selecting the number of clusters is generally a challenging step in practice and an active area of research.
 
 <a name="kmeans"></a>
 
-### K-means
+#### K-means
 
 We can also cluster with the `kmeans` function to perform k-means clustering. As an example, let's run k-means on the samples in the space of the first two genes:
 
@@ -88,13 +88,13 @@ plot(e[1,], e[2,], col=as.fumeric(tissue), pch=16)
 plot(e[1,], e[2,], col=km$cluster, pch=16)
 ```
 
-In the first plot color represents the actual tissues while in the second color represents the clusters that were defined by `kmeans`. We can see from tabulating the results that this particular clustering exercise did not perform well:
+In the first plot, color represents the actual tissues, while in the second, color represents the clusters that were defined by `kmeans`. We can see from tabulating the results that this particular clustering exercise did not perform well:
 
 ```{r}
 table(true=tissue,cluster=km$cluster)
 ```
 
-This is very likely due to the fact the the first two genes are not informative regarding tissue type. We can see this in the first plot above. If we instead perform k-means clustering using all of the genes we obtain a much improved result. To visualize this, we can use an MDS plot:
+This is very likely due to the fact the the first two genes are not informative regarding tissue type. We can see this in the first plot above. If we instead perform k-means clustering using all of the genes, we obtain a much improved result. To visualize this, we can use an MDS plot:
 
 
 ```{r kmeans_mds, fig.cap="Plot of gene expression for first two PCs with color representing tissues (left) and clusters found using all genes (right).",fig.width=10.5,fig.height=5.25}
@@ -106,7 +106,7 @@ plot(mds[,1], mds[,2])
 plot(mds[,1], mds[,2], col=km$cluster, pch=16)
 ```
 
-By tabulating the results we see that we obtain similar to those obtained with hierarchical clustering.
+By tabulating the results, we see that we obtain a similar answer to that obtained with hierarchical clustering.
 
 ```{r}
 table(true=tissue,cluster=km$cluster)
@@ -115,9 +115,9 @@ table(true=tissue,cluster=km$cluster)
 
 <a name="heatmap"></a>
 
-### Heatmaps
+#### Heatmaps
 
-Heatmaps are ubiquitous in the genomics literature. They are very useful plots for visualizing the measurements for a subset of rows over all the samples. A *dendrogram* is added on top and on the side that is created is a hierarchical clustering as we saw before. We will demonstrate how to create heatmaps from within R. Let's begin by defining a color palette:
+Heatmaps are ubiquitous in the genomics literature. They are very useful plots for visualizing the measurements for a subset of rows over all the samples. A *dendrogram* is added on top and on the side that is created with hierarchical clustering. We will demonstrate how to create heatmaps from within R. Let's begin by defining a color palette:
 
 ```{r}
 library(RColorBrewer) 
@@ -145,4 +145,4 @@ heatmap.2(e[idx,], labCol=tissue,
           col=hmcol)
 ```
 
-Note that we did not use tissue information to create this heatmap, and we can quickly see, with just 40 genes, good separation across tissues.
+We did not use tissue information to create this heatmap, and we can quickly see, with just 40 genes, good separation across tissues.
