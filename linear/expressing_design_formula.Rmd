@@ -230,7 +230,7 @@ model.matrix(~ tt + I(tt^2))
 
 The `I` function above is necessary to specify a mathematical transformation of a variable. See `?I` for more information.
 
-In the life sciences, we we could be interested in testing various dosages of a treatment, where we expect a specific relationship between a measured quantity and the dosage, e.g. 0 mg, 10mg, 20mg. 
+In the life sciences, we could be interested in testing various dosages of a treatment, where we expect a specific relationship between a measured quantity and the dosage, e.g. 0 mg, 10mg, 20mg. 
 
 The assumptions imposed by including continuous data as variables are typically hard to defend and motivate than the indicator function variables. Why the indicator variables simply assume a different mean between two groups, continuous variables assume a very specific relationship between the outcome and predictor variables. 
 
