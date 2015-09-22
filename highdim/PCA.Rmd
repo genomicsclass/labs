@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 We have already mentioned principal component analysis (PCA) above and noted its relation to the SVD. Here we provide further mathematical details. 
 
-### Example: Twin Heights
+#### Example: Twin heights
 
 We started the motivation for dimension reduction with a simulated example and showed a rotation that is very much related to PCA.
 
@@ -71,7 +71,7 @@ for(i in seq(along=w))
 points(t(Z), col=2, pch=16, cex=0.5)
 ```
 
-This relates to the difference between twins which we know is small. The sum of squares confirms this.
+This relates to the difference between twins, which we know is small. The sum of squares confirms this.
 
 Finally, let's try:
 
@@ -93,9 +93,9 @@ for(i in seq(along=w))
 points(t(Z),col=2,pch=16,cex=0.5)
 ```
 
-This is a re-scaled average height which has higher sum of squares. There is a mathematical procedure for determining which $\mathbf{v}$ maximizes the sum of squares and the SVD provides it for us.
+This is a re-scaled average height, which has higher sum of squares. There is a mathematical procedure for determining which $\mathbf{v}$ maximizes the sum of squares and the SVD provides it for us.
 
-### The Principal Components
+#### The principal components
 
 The orthogonal vector that maximizes the sum of squares:
 
@@ -115,17 +115,17 @@ $$ \mathbf{v}_2^\top \mathbf{v}_1=0$$
 
 and maximizes  $(\mathbf{rv}_2)^\top \mathbf{rv}_2$.
 
-When $Y$ is $N \times m$ we repeat to find 3rd, 4th, ..., m-th PCs
+When $Y$ is $N \times m$ we repeat to find 3rd, 4th, ..., m-th PCs.
 
-### `prcomp`
+#### `prcomp`
 
-We have shown how to obtain PCs using the SVD. However, R has a function specifically designed to find the principal components. In this case the data is centered by default. The following function: 
+We have shown how to obtain PCs using the SVD. However, R has a function specifically designed to find the principal components. In this case, the data is centered by default. The following function: 
 
 ```{r}
 pc <- prcomp( t(Y) )
 ```
 
-produces the same results as the SVD up to arbitrary sign flips
+produces the same results as the SVD up to arbitrary sign flips:
 
 ```{r pca_svd, fig.cap="Plot showing SVD and prcomp give same results.",fig.width=10.5,fig.height=5.25}
 s <- svd( Y - rowMeans(Y) )
@@ -151,7 +151,7 @@ component.
 
 
 
-Note that we take the transpose of `Y` because `prcomp` assumes the previously discussed ordering: units/samples in row and features in columns.
+We take the transpose of `Y` because `prcomp` assumes the previously discussed ordering: units/samples in row and features in columns.
 
 
 
