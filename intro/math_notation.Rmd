@@ -55,7 +55,7 @@ Note that indexing is sometimes used in conjunction with Greek letters to denote
 
 #### Infinity
 
-In the text we often talk about _asymptotic_ results. Typically, this refers to an approximation that gets better and better as the number of data points we consider gets larger and larger, with perfect approximations occurring when the number of data points is $\inf$. In practice, there is no such thing as $\infty$, but it is a convenient concept to understand. One way to think about asymptotic results is as results that become better and better as some number increases and we can pick a number so that a computer can't tell the difference between the approximation and the real number. Here is a very simple example that approximates 1/3 with decimals:
+In the text we often talk about _asymptotic_ results. Typically, this refers to an approximation that gets better and better as the number of data points we consider gets larger and larger, with perfect approximations occurring when the number of data points is $\infty$. In practice, there is no such thing as $\infty$, but it is a convenient concept to understand. One way to think about asymptotic results is as results that become better and better as some number increases and we can pick a number so that a computer can't tell the difference between the approximation and the real number. Here is a very simple example that approximates 1/3 with decimals:
 
 ```{r}
 onethird <- function(n) sum( 3/10^c(1:n))
