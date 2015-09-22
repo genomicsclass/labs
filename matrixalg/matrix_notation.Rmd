@@ -153,7 +153,7 @@ head(X)
 dim(X)
 ```
 
-The columns are filled by column. The `byrow=TRUE` argument lets us change that:
+By default, the matrices are filled column by column. The `byrow=TRUE` argument lets us change that to row by row:
 
 ```{r}
 N <- 100; p <- 5
