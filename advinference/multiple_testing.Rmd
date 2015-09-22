@@ -103,6 +103,7 @@ calls <- sapply(1:m, function(i){
           "Not Called Significant")
 })
 ```
+
 Because in this simulation we know the truth (saved in `nullHypothesis`) we can compute the entries of the table:
 
 ```{r}
@@ -190,7 +191,9 @@ pvals <- sapply(1:m, function(i){
   t.test(treatment,control)$p.value
 })
 ```
+
 ...we note that only:
+
 ```{r}
 sum(pvals < 0.05/10000)
 ```
@@ -414,6 +417,7 @@ res <- qvalue(pvals)
 qvals <- res$qvalues
 plot(pvals,qvals)
 ```
+
 we also obtain the estimate of $\hat{\pi}_0$:
 
 ```{r}
