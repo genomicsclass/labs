@@ -249,7 +249,11 @@ $$ \sqrt{\mathbf{c^\top} \boldsymbol{\Sigma} \mathbf{c}} $$
 
 where we saw the covariance of the coefficients earlier:
 
-$$ \boldsymbol{\Sigma} = \hat{\sigma}^2 (\mathbf{X}^\top \mathbf{X})^{-1}$$
+$$ 
+\boldsymbol{\Sigma} = \sigma^2 (\mathbf{X}^\top \mathbf{X})^{-1}
+$$
+
+We estimate $\sigma^2$ with the sample estimate $\hat{\sigma}^2$ described above and obtain:
 
 ```{r}
 Sigma <- sum(fitTL$residuals^2)/(nrow(X) - ncol(X)) * solve(t(X) %*% X)
