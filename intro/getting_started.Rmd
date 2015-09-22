@@ -160,7 +160,7 @@ If you did not receive any message, then you probably read in the file successfu
 
 #### Option 2: Download from within R
 
-We store many of the datasets used in this course on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the internet to your computer using R. In this example, we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory with the name of your choosing.
+We store many of the datasets used here on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the internet to your computer using R. In this example, we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory with the name of your choosing.
 
 ```{r,message=FALSE}
 library(downloader) ##use install.packages to install
