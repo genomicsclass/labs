@@ -35,7 +35,7 @@ research. However, interpreting information extracted from these
 massive and complex datasets requires sophisticated statistical skills
 as one can easily be fooled by patterns arising by chance. This has
 greatly elevated the importance of statistics and data analysis in
-the life sciences
+the life sciences.
 
 ## What Does This Book Cover?
 
