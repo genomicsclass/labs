@@ -19,7 +19,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 set.seed(1) #so that we get same results
 ```
 
-This course introduces the statistical concepts necessary to understand p-values and confidence intervals. These terms are ubiquitous in the life science literature. Let's use [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full]) as an example. 
+This chapter introduces the statistical concepts necessary to understand p-values and confidence intervals. These terms are ubiquitous in the life science literature. Let's use [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full]) as an example. 
 
 Note that the abstract has this statement: 
 
@@ -29,15 +29,15 @@ To support this claim they provide the following in the results section:
 
 > "Already during the first week after introduction of high-fat diet, body weight increased significantly more in the high-fat diet-fed mice ($+$ 1.6 $\pm$ 0.1 g) than in the normal diet-fed mice ($+$ 0.2 $\pm$ 0.1 g; P < 0.001)."
 
-What does P < 0.001 mean? What are the $\pm$ included? In this class,
-we will learn what this means and learn to compute these values in
-R. The first step is to understand what a random variable is. To do
+What does P < 0.001 mean? What are the $\pm$ included?
+We will learn what this means and learn to compute these values in
+R. The first step is to understand random variables. To do
 this, we will use data from a mouse database (provided by Karen
 Svenson via Gary Churchill and Dan Gatti and partially funded by P50
-GM070683.) We will import the data into R and explain random variables
+GM070683). We will import the data into R and explain random variables
 and null distributions using R programming. 
 
-If you already downloaded the `femaleMiceWeights` file and into your working directory, you can read it into R with just one line:
+If you already downloaded the `femaleMiceWeights` file into your working directory, you can read it into R with just one line:
 
 ```{r echo=FALSE, results="hide"}
 library(downloader) ##use install.packages to install
@@ -55,14 +55,14 @@ dat <- read.csv("femaleMiceWeights.csv")
 We are interested in determining if following a given diet makes mice
 heavier after several weeks. This data was produced by ordering 24
 mice from The Jackson Lab and randomly assigning either chow or high
-fat (hf) diet. After several weeks the scientists weighed each mice
+fat (hf) diet. After several weeks, the scientists weighed each mice
 and obtained this data (`head` just shows us the first 6 rows):
 
 ```{r}
 head(dat) 
 ``` 
 
-In RStudio, you can view the entire dataset with
+In RStudio, you can view the entire dataset with:
 
 ```{r,eval=FALSE}
 View(dat)
@@ -70,7 +70,7 @@ View(dat)
 
 So are the hf mice heavier? Mouse 24 at 20.73 grams is one the
 lightest mice, while Mouse 21 at 34.02 grams is one of the heaviest. Both are on
-the hf diet. Just from looking at the data we see there is
+the hf diet. Just from looking at the data, we see there is
 *variability*. Claims such as the one above usually refer to the
 averages. So let's look at the average of each group: 
 
@@ -92,7 +92,7 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 ## Random Variables
 
-Let's see what a random variable is. Imagine we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
+Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
 
 Read in the data either from your home directory or from dagdata:
 
@@ -148,7 +148,7 @@ print(mean(treatment) - mean(control))
 ```
 
 Now let's do it 10,000 times. We will use a "for-loop", an operation
-that lets us automate this (a simpler approach that we will learn later is to use `replicate`)
+that lets us automate this (a simpler approach that, we will learn later, is to use `replicate`).
 
 ```{r}
 n <- 10000
@@ -168,7 +168,7 @@ So what percent of the 10,000 are bigger than `obsdiff`?
 mean(null >= obsdiff)
 ```
 
-Only a small percent of the 10,000 simulations. So as skeptics what do
+Only a small percent of the 10,000 simulations. As skeptics what do
 we conclude? When there is no diet effect, we see a difference as big
 as the one we observed only 1.5% of the time. This is what is known as
 a p-value, which we will define more formally later in the book. 
@@ -185,7 +185,7 @@ library(UsingR)
 x <- father.son$fheight
 ```
 
-One approach to summarizing these numbers is to simply list them all out for the alien to see. Here are 10 randomly selected heights of 1,078.
+One approach to summarizing these numbers is to simply list them all out for the alien to see. Here are 10 randomly selected heights of 1,078:
 
 ```{r}
 round(sample(x,10),1)
@@ -219,7 +219,7 @@ proportion of values in intervals:
 $$ \mbox{Pr}(a \leq x \leq b) = F(b) - F(a) $$
 
 Plotting these heights as bars is what we call a _histogram_. It is a
-more useful plot because we are usually more interested in intervals:
+more useful plot because we are usually more interested in intervals,
 such and such percent are between 70 inches and 71 inches, etc.,
 rather than the percent less than a particular height.
 It is also easier to distinguish different types (families) of distributions
@@ -235,7 +235,7 @@ bins <- seq(smallest, largest)
 hist(x,breaks=bins,xlab="Height (in inches)",main="Adult men heights")
 ```
 
-Showing this plot to the alien is much more informative than showing numbers. With this simple plot we can approximate the number of individuals in any given interval. For example, there are about 70 individuals over six feet (72 inches) tall. 
+Showing this plot to the alien is much more informative than showing numbers. With this simple plot, we can approximate the number of individuals in any given interval. For example, there are about 70 individuals over six feet (72 inches) tall. 
 
 
 ## Probability Distribution
@@ -243,7 +243,7 @@ Showing this plot to the alien is much more informative than showing numbers. Wi
 Summarizing lists of numbers is one powerful use of distribution. An
 even more important use is describing the possible outcomes of a
 random variable. Unlike a fixed list of numbers, we don't actually observe all possible outcomes of random variables, so instead of describing proportions, we describe
-probabilities. For instance, if we pick a random height for our list,
+probabilities. For instance, if we pick a random height from our list,
 then the probability of it falling between $a$ and $b$ is denoted with: 
 
 $$ \mbox{Pr}(a \leq X \leq b) = F(b) - F(a) $$
@@ -260,7 +260,7 @@ called a _Monte Carlo_ simulation (we will provide more details on
 Monte Carlo simulation in a later section) and we obtained 10,000
 outcomes of the random variable under the null hypothesis.  Let's
 repeat the loop above, but this time let's add a point to the figure
-every time we re-run the experiment. If you run this code you can see
+every time we re-run the experiment. If you run this code, you can see
 the null distribution forming as the observed values stack on top of
 each other. 
 
@@ -289,7 +289,7 @@ hist(null, freq=TRUE)
 abline(v=obsdiff, col="red", lwd=2)
 ```
 
-An important point to keep in mind here is that while we defined $\mbox{Pr}(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $\mbox{Pr}(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation:
+An important point to keep in mind here is that while we defined $\mbox{Pr}(a)$ by counting cases, we will learn that, in some circumstances, mathematics gives us formulas for $\mbox{Pr}(a)$ that save us the trouble of computing them as we did here. One example of this powerful approach uses the normal distribution approximation.
 
 <a name="normal_distribution"></a>
 
@@ -305,7 +305,7 @@ While the formula may look intimidating, don't worry, you will never
 actually have to type it out, as it is stored in a more convenient
 form (as `pnorm` in R which sets *a* to $-\infty$, and takes *b* as an argument). 
 
-Here $\mu$ and $\sigma$ are referred to as the mean and standard
+Here $\mu$ and $\sigma$ are referred to as the mean and the standard
 deviation of the population (we explain these in more detail in
 another section). If this *normal approximation* holds for our list, then the
 population mean and variance of our list can be used in the formula
@@ -319,13 +319,13 @@ approximation works very well here:
 1 - pnorm(obsdiff,mean(null),sd(null)) 
 ```
 
-Later we will learn that there is a mathematical explanation for this. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this, we can compute the proportion of values in any interval. 
+Later, we will learn that there is a mathematical explanation for this. A very useful characteristic of this approximation is that one only needs to know $\mu$ and $\sigma$ to describe the entire distribution. From this, we can compute the proportion of values in any interval. 
 
 
 #### Summary
 
 So computing a p-value for the difference in diet for the mice was
-pretty easy, right? But why are we not done? To make the calculation
+pretty easy, right? But why are we not done? To make the calculation,
 we did the equivalent of buying all the mice available from The
 Jackson Laboratory and performing our experiment repeatedly to define
 the null distribution. Yet this is not something we can do in
@@ -343,7 +343,7 @@ code:
 set.seed(1) 
 ```
 
-Throughout this book we use random number generators. This implies that many of the results presented can actually change by chance, including the correct answer to problems. One way to ensure that results do not change is by setting R's random number generation seed. For more on the topic please read the help file:
+Throughout this book, we use random number generators. This implies that many of the results presented can actually change by chance, including the correct answer to problems. One way to ensure that results do not change is by setting R's random number generation seed. For more on the topic please read the help file:
 
 ```{r,eval=FALSE}
 ?set.seed

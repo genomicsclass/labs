@@ -10,24 +10,24 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Inference in Practice
 
-Suppose we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. If instead thousands of genes we were handed data from just one gene, we could simply apply the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+Suppose we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. If instead of thousands of genes, we were handed data from just one gene, we could simply apply the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
 
 #### p-values are random variables
 
-An important concept to remember in order to understand the concepts presented in this chapter is that p-values are random variables. To see this  consider the example in which we define a p-value from a t-test with a large enough sample size to use the CLT approximation. Then our p-value is defined as the probability that a normally distributed random variable is larger, in absolute value, than the observed t-test, call it $Z$. So for a two sided test the p-value is: 
+An important concept to remember in order to understand the concepts presented in this chapter is that p-values are random variables. To see this,  consider the example in which we define a p-value from a t-test with a large enough sample size to use the CLT approximation. Then our p-value is defined as the probability that a normally distributed random variable is larger, in absolute value, than the observed t-test, call it $Z$. So for a two sided test the p-value is: 
 
 $$
 p = 2 \{ 1 - \Phi(Z)\}
 $$
 
-In R we write:
+In R, we write:
 ```{r,eval=FALSE}
 2*(1-pnorm(Z))
 ```
 
 Now because $Z$ is a random variable and $\Phi$ is a deterministic
 function, $p$ is also a random variable. We will create a Monte Carlo
-simulation showing how the values of $p$ change. We ust`femaleControlsPopulation.csv` from earlier chapters.
+simulation showing how the values of $p$ change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
 ```{r,echo=FALSE}
 library(downloader)
@@ -78,7 +78,7 @@ g <- sampleInfo$group
 g
 ```
 
-If we were interested in a particular gene, let's arbitrarily pick the one on the 25th row, we would simply compute a t-test. To compute a p-value we will use the t-distribution approximation thuse we need the popoulation data to be approximately normal. We check this assumption with a qq-plot:
+If we were interested in a particular gene, let's arbitrarily pick the one on the 25th row, we would simply compute a t-test. To compute a p-value, we will use the t-distribution approximation and therefore we need the population data to be approximately normal. We check this assumption with a qq-plot:
 
 ```{r qqplots_for_one_gene, fig.cap="Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.",fig.width=10.5,fig.height=5.25}
 e <- geneExpression[25,]
@@ -129,9 +129,9 @@ As we will explain later in the chapter, this is to be expected: 419 is roughly 
 
 #### Faster t-test implementation
 
-Before we continue, we should point out that the above implementation is very inefficient. There are several faster implementations that perform t-test for high-throughput data. We make use of a function that is not available from CRAN but rather from the Bioconductor project. 
+Before we continue, we should point out that the above implementation is very inefficient. There are several faster implementations that perform t-test for high-throughput data. We make use of a function that is not available from CRAN, but rather from the Bioconductor project. 
 
-To download and install packages from Bioconductor. We can use the `install_bioc` function in `rafalib` to install the package:
+To download and install packages from Bioconductor, we can use the `install_bioc` function in `rafalib` to install the package:
 
 
 ```{r,eval=FALSE}

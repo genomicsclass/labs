@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ## Central Limit Theorem and t-distribution
 
 
-Below we will discuss the Central Limit Theorem (CLT) and the t-distribution, both of which help us make important calculations related to probabilities. Both are frequently used in science to test statistical hypotheses. To use these, we have to make assumptions, different ones for the CLT and the t-distribution. However, if the assumptions are true, then we are able to calculate the exact probabilities of events through the use of mathematical formula.
+Below we will discuss the Central Limit Theorem (CLT) and the t-distribution, both of which help us make important calculations related to probabilities. Both are frequently used in science to test statistical hypotheses. To use these, we have to make different assumptions from those for the CLT and the t-distribution. However, if the assumptions are true, then we are able to calculate the exact probabilities of events through the use of mathematical formula.
 
 #### Central Limit Theorem 
 
@@ -40,7 +40,7 @@ $$
 
 is approximated with a normal distribution centered at 0 and with standard deviation 1.
 
-Now we are interested in the difference between two sample averages. Here again a mathematical result helps. If we have two random variables $X$ and $Y$ with means $\mu_X$ and $\mu_Y$ and variance $\sigma_X$ and $\sigma_Y$ respectively, then we have the following result: the mean of the sum $Y + X$ is the sum of the means $\mu_Y + \mu_X$. Using one of the facts we mentioned earlier, this implies that the mean of $Y - X = Y + aX$ with $a = -1$ which implies that the mean of $Y - X$ is $\mu_Y - \mu_X$. This is intuitive. However, the next result is perhaps not as intuitive.  If $X$ and $Y$ are independent of each other, as they are in our mouse example, then the variance (SD squared) of $Y + X$ is the sum of the variances $\sigma_Y^2 + \sigma_X^2$. This implies that variance of the difference $Y - X$ is the variance of $Y + aX$ with $a = -1$ which is $\sigma^2_Y + a^2 \sigma_X^2 = \sigma^2_Y + \sigma_X^2$. So the variance of the difference is also the sum of the variances. If this seems like a counterintuitive result, remember that if $X$ and $Y$ are independent of each other, the sign does not really matter. It can be considered random: if $X$ is normal with certain variance, for example, so is $-X$.  Finally, another useful result is that the sum of normal variables is again normal.
+Now we are interested in the difference between two sample averages. Here again a mathematical result helps. If we have two random variables $X$ and $Y$ with means $\mu_X$ and $\mu_Y$ and variance $\sigma_X$ and $\sigma_Y$ respectively, then we have the following result: the mean of the sum $Y + X$ is the sum of the means $\mu_Y + \mu_X$. Using one of the facts we mentioned earlier, this implies that the mean of $Y - X = Y + aX$ with $a = -1$ , which implies that the mean of $Y - X$ is $\mu_Y - \mu_X$. This is intuitive. However, the next result is perhaps not as intuitive.  If $X$ and $Y$ are independent of each other, as they are in our mouse example, then the variance (SD squared) of $Y + X$ is the sum of the variances $\sigma_Y^2 + \sigma_X^2$. This implies that variance of the difference $Y - X$ is the variance of $Y + aX$ with $a = -1$ which is $\sigma^2_Y + a^2 \sigma_X^2 = \sigma^2_Y + \sigma_X^2$. So the variance of the difference is also the sum of the variances. If this seems like a counterintuitive result, remember that if $X$ and $Y$ are independent of each other, the sign does not really matter. It can be considered random: if $X$ is normal with certain variance, for example, so is $-X$.  Finally, another useful result is that the sum of normal variables is again normal.
 
 All this math is very helpful for the purposes of our study because we have two sample averages and are interested in the difference. Because both are normal, the difference is normal as well, and the variance (the standard deviation squared) is the sum of the two variances.
 Under the null hypothesis that there is no difference between the population averages, the difference between the sample averages $\bar{Y}-\bar{X}$, with $\bar{X}$ and $\bar{Y}$ the sample average for the two diets respectively, is approximated by a normal distribution centered at 0 (there is no difference) and with standard deviation $\sqrt{\sigma_X^2 +\sigma_Y^2}/\sqrt{N}$. 
@@ -81,13 +81,13 @@ The CLT tells us that when $M$ and $N$ are large, this random variable is normal
 
 #### The t-distribution
 
-The CLT relies on large samples; what we refer to as _asymptotic results_. When the CLT does not apply, there is another option that does not rely on asymptotic results. When the original population from which a random variable, say $Y$, is sampled is normally distributed with mean 0, then we can calculate the distribution of: 
+The CLT relies on large samples, what we refer to as _asymptotic results_. When the CLT does not apply, there is another option that does not rely on asymptotic results. When the original population from which a random variable, say $Y$, is sampled is normally distributed with mean 0, then we can calculate the distribution of: 
 
 $$
 \sqrt{N} \frac{\bar{Y}}{s_Y}
 $$
 
-Note that this is the ratio of two random variables so it is not
+This is the ratio of two random variables so it is not
 necessarily normal. The fact that the denominator can be small by
 chance increases the probability of observing large
 values. [William Sealy Gosset](http://en.wikipedia.org/wiki/William_Sealy_Gosset),
@@ -135,7 +135,7 @@ qqline(controlPopulation)
 ```
 
 The larger the sample, the more forgiving the result is to the
-weakness of this approximation. In the next section we will see that
+weakness of this approximation. In the next section, we will see that
 for this particular dataset the t-distribution works well even for
 sample sizes as small as 3. 
 

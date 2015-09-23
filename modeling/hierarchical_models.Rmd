@@ -10,16 +10,16 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Hierarchical Models
 
-In this section we use the mathematical theory which describes an approach that has become widely applied in the analysis of high-throughput data. The general idea is to build a _hierachichal model_ with two levels. One level describes variability across samples/units, and the other describes variability across features. This is similar to the baseball example in which the first level described variability across players and the second described the randomness for the success of one player. The first level of variation is accounted for by all the models and approaches we have described here, for example the model that leads to the t-test. The second level provides power by permitting us to "borrow" information from all features to inform the inference performed on each one. 
+In this section, we use the mathematical theory which describes an approach that has become widely applied in the analysis of high-throughput data. The general idea is to build a _hierachichal model_ with two levels. One level describes variability across samples/units, and the other describes variability across features. This is similar to the baseball example in which the first level described variability across players and the second described the randomness for the success of one player. The first level of variation is accounted for by all the models and approaches we have described here, for example the model that leads to the t-test. The second level provides power by permitting us to "borrow" information from all features to inform the inference performed on each one. 
 
 Here we describe one specific case that is currently the most widely
 used approach to inference with gene expression data. It is the model
 implemented by the `limma` Bioconductor package. This idea has been
-adapted to develop methods for other data types such as RNAseq such as
+adapted to develop methods for other data types such as RNAseq by, for example,
 [edgeR](http://www.ncbi.nlm.nih.gov/pubmed/19910308) and
 [DESeq2](http://www.ncbi.nlm.nih.gov/pubmed/25516281). This package
 provides an alternative to the t-test that greatly improves power by
-modeling the variance. We motivate and demonstrate the approach with
+modeling the variance. While in the baseball example we modeled averages, here we model variances. Modelling variances requires more advanced math, but the concepts are practically the same. We motivate and demonstrate the approach with
 an example. 
 
 Here is a volcano showing effect sizes and p-value from applying a t-test to data from an experiment running six replicated samples with 16 genes artificially made to be different in two groups of three samples each. These 16 genes are the only genes for which the alternative hypothesis is true. In the plot they are shown in blue.
@@ -47,23 +47,24 @@ We cut-off the range of the y-axis at 4.5, but there is one blue point with a p-
 sum( p.adjust(tt$p.value,method = "BH")[spike] < 0.05)
 ```
 
-This of course has to do with the low power associated with a sample size of three in each group. The second finding is that if we forget about inference and simply rank the genes based on t-statistic, we obtain many false positives in any rank list of size larger than 1. For example, six of the smallest 10 p-values are false positives. 
+This of course has to do with the low power associated with a sample size of three in each group. The second finding is that if we forget about inference and simply rank the genes based on the size of the t-statistic, we obtain many false positives in any rank list of size larger than 1. For example, six of the top 10 genes ranked by t-statistic are false positives. 
 
 ```{r}
-table( top50=rank(tt$p.value)<= 10, spike) 
+table( top50=rank(tt$p.value)<= 10, spike) #t-stat and p-val rank is the same
 ```
 
 In the plot we notice that these are mostly genes for which the effect size is relatively small, implying that the estimated standard error is small. We can confirm this with a plot:
 
 ```{r pval_versus_sd, fig.cap="p-values versus standard deviation estimates."}
-tt$s <- apply(exprs(rma95), 1, function(row) sqrt(.5 * (var(row[1:3]) + var(row[4:6]))))
+tt$s <- apply(exprs(rma95), 1, function(row) 
+  sqrt(.5 * (var(row[1:3]) + var(row[4:6]) ) ) )
 with(tt, plot(s, -log10(p.value), cex=.8, pch=16,
               log="x",xlab="estimate of standard deviation",
               col=cols))
 
 ```
 
-Here is where a hierarchical model can be useful. If we can make an assumption about the distribution of these variances across genes, then we can improve estimates by "adjusting" estimates that are "too small" according to this distribution. In a previous section we described how the F-distribution provides approximates the distribution of the observed variances.
+Here is where a hierarchical model can be useful. If we can make an assumption about the distribution of these variances across genes, then we can improve estimates by "adjusting" estimates that are "too small" according to this distribution. In a previous section we described how the F-distribution approximates the distribution of the observed variances.
 
 $$
 s^2 \sim s_0^2 F_{d,d_0}
@@ -79,10 +80,10 @@ $$
 
 As in the baseball example, the posterior mean _shrinks_ the observed variance $s_g^2$ towards the global variance $s_0^2$ and the weights depend on the sample size through the degrees of freedom $d$ and, in this case, the shape of the prior distribution through $d_0$. 
 
-In the plot above we can see how the variance estimate _shrink_ for 40 genes:
+In the plot above we can see how the variance estimate _shrink_ for 40 genes (code not shown):
 
 
-```{r shrinkage, fig.cap="Illustration of how estimates shrink towards the prior expectation. Forty genes spanning the range of values were selected.",message=FALSE}
+```{r shrinkage, fig.cap="Illustration of how estimates shrink towards the prior expectation. Forty genes spanning the range of values were selected.",message=FALSE, echo=FALSE}
 library(limma)
 fit <- lmFit(rma95, model.matrix(~ fac))
 ebfit <- ebayes(fit)
@@ -99,9 +100,12 @@ segments((tt$s^2)[idx],rep(.1,n),
          ebfit$s2.post[idx],rep(.9,n))
 ```
 
-An important aspect of this adjustment is that genes having a very small sample deviation close to 0 are no longer close to 0. We can now create a version of the t-test that instead of the sample standard deviation uses this posterior mean or "shrunken" estimate of the variance. We refer to these as _moderated_ t-tests. Once we do this, the improvements can be seen clearly in the volcano plot:
+An important aspect of this adjustment is that genes having a sample standard deviation close to 0 are no longer close to 0 (the shrink towards $s_0$ ). We can now create a version of the t-test that instead of the sample standard deviation uses this posterior mean or "shrunken" estimate of the variance. We refer to these as _moderated_ t-tests. Once we do this, the improvements can be seen clearly in the volcano plot:
 
-```{r volcano-plot2, message=FALSE, fig.cap="Volcano plot for moderated t-test comparing two groups. Spiked-in genes are denoted with blue. Among the rest of the genes, those with p-value < 0.01 are denoted with red."}
+```{r volcano-plot2, message=FALSE, fig.cap="Volcano plot for moderated t-test comparing two groups. Spiked-in genes are denoted with blue. Among the rest of the genes, those with p-value < 0.01 are denoted with red.",message=FALSE}
+library(limma)
+fit <- lmFit(rma95, model.matrix(~ fac))
+ebfit <- ebayes(fit)
 limmares <- data.frame(dm=coef(fit)[,"fac2"], p.value=ebfit$p.value[,"fac2"])
 with(limmares, plot(dm, -log10(p.value),cex=.8, pch=16,
      col=cols,xlab="difference in means",

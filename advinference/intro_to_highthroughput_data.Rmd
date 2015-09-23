@@ -15,7 +15,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Introduction
 
-High-throughput technologies have changed basic biology and the biomedical sciences from data poor disciplines to data intensive ones. A specific example comes from research fields interested in understanding gene expression. Gene expression is the process in which DNA, the blueprint for life, is copied into RNA, the templates for the synthesis of proteins, the building blocks for life. In the 1990s, the analysis of gene expression data amounted to spotting black dots on a piece of paper or extracting a few numbers from standard curves. With high-throughput technologies, such as microarrays, this suddenly changed to sifting through tens of thousands of numbers. More recently, RNA-Sequencing has further increased data complexity. Biologists went from using their eyes or simple summaries to categorize results to having thousands (and now millions) of measurements per sample to analyze. In this chapter we will focus on statistical inference in the context of high-throughput measurements. Specifically, we focus on the problem of detecting differences in groups using statistical tests and quantifying uncertainty in a meaningful way. We also introduce exploratory data analysis techniques that should be used in conjuction with inference when analyzing high-throughput data. In later chapters we will study the statistics behind clustering, machine learning, factor analysis and multi-level modeling. 
+High-throughput technologies have changed basic biology and the biomedical sciences from data poor disciplines to data intensive ones. A specific example comes from research fields interested in understanding gene expression. Gene expression is the process in which DNA, the blueprint for life, is copied into RNA, the templates for the synthesis of proteins, the building blocks for life. In the 1990s, the analysis of gene expression data amounted to spotting black dots on a piece of paper or extracting a few numbers from standard curves. With high-throughput technologies, such as microarrays, this suddenly changed to sifting through tens of thousands of numbers. More recently, RNA-Sequencing has further increased data complexity. Biologists went from using their eyes or simple summaries to categorize results, to having thousands (and now millions) of measurements per sample to analyze. In this chapter, we will focus on statistical inference in the context of high-throughput measurements. Specifically, we focus on the problem of detecting differences in groups using statistical tests and quantifying uncertainty in a meaningful way. We also introduce exploratory data analysis techniques that should be used in conjunction with inference when analyzing high-throughput data. In later chapters, we will study the statistics behind clustering, machine learning, factor analysis and multi-level modeling. 
 
 Since there is a vast number of available public datasets, we use several gene expression examples. Nonetheless, the statistical techniques you will learn have also proven useful in other fields that make use of high-throughput technologies. Technologies such as microarrays, next generation sequencing, fRMI, and mass spectrometry all produce data to answer questions for which what we learn here will be indispensable. 
 
@@ -31,16 +31,16 @@ library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 ```
 
-We will aslo be installing Bioconductorpac
+
 #### The three tables
 
-Most of the data we use as examples in this class are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of feature are genes, single base locations of the genome, genomic regions, or image pixel intensities. Each specific measurement product is defined by a specific set of features. For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
+Most of the data we use as examples in this book are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of feature are genes, single base locations of the genome, genomic regions, or image pixel intensities. Each specific measurement product is defined by a specific set of features. For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
 
 A specific study will typically use one product to make measurements on several experimental units, such as individuals. The most common experimental unit will be the individual, but they can also be defined by other entities, for example different parts of a tumor. We often call the experimental units _samples_ following experimental jargon. It is important that these are not confused with samples as referred to in previous chapters, for example "random sample". 
 
 So a high-throughput experiment is usually defined by three tables: one with the high-throughput measurements and two tables with information about the columns and rows of this first table respectively.
 
-Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an $n \times m$ matrix with $n$ the number of units and $m$ the number of features. In R the convention has been to store the transpose of these matrices. 
+Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an $n \times m$ matrix, with $n$ the number of units and $m$ the number of features. In R, the convention has been to store the transpose of these matrices. 
 
 Here is an example from a gene expression dataset:
 
@@ -50,7 +50,7 @@ data(GSE5859Subset) ##this loads the three tables
 dim(geneExpression)
 ```
 
-We have RNA expression measurements for 8793 genes from blood taken from 24 individuals (the experimental units). For most statistical analysis we will also need information about the individuals. For example, in this case the data was originally collected to compare gene expression across ethnic groups. However, we have created a subset of this dataset for illustration and separated the data into two groups:
+We have RNA expression measurements for 8793 genes from blood taken from 24 individuals (the experimental units). For most statistical analyses, we will also need information about the individuals. For example, in this case the data was originally collected to compare gene expression across ethnic groups. However, we have created a subset of this dataset for illustration and separated the data into two groups:
 
 
 ```{r}
@@ -77,4 +77,4 @@ The table includes an ID that permits us to connect the rows of this table with 
 ```{r}
 head(match(geneAnnotation$PROBEID,rownames(geneExpression)))
 ```
-The table also includes biological information about the features; namely chromosome location and the gene "name" used by biologists.
+The table also includes biological information about the features, namely chromosome location and the gene "name" used by biologists.

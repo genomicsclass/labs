@@ -28,7 +28,7 @@ treatment <- filter(dat,Diet=="hf") %>% select(Bodyweight) %>% unlist
 obsdiff <- mean(treatment)-mean(control)
 ```
 
-In previous sections, we showed parametric approaches that helped determine if the observed difference was significant. Permutation tests take advantage of the fact that if we randomly shuffle the cases and control labels, then the null is true. So we shuffle the case and control labels and assume that the ensuing distribution approximates the null distribution. Here is how we generate a null distribution by shuffling the data 1,000 times:
+In previous sections, we showed parametric approaches that helped determine if the observed difference was significant. Permutation tests take advantage of the fact that if we randomly shuffle the cases and control labels, then the null is true. So we shuffle the cases and control labels and assume that the ensuing distribution approximates the null distribution. Here is how we generate a null distribution by shuffling the data 1,000 times:
 
 ```{r diff_hist, fig.cap="Histogram of difference between averages from permutations. Vertical line shows the observed difference."}
 N <- 12

@@ -21,7 +21,7 @@ the [Comprehensive R Archive Network](https://cran.r-project.org/)
 (CRAN). It is relatively straightforward, but if you need further help
 you can try the following resources: 
 
-* [Installing R on Windows](https://github.com/genomicsclass/windows#installing-r). 
+* [Installing R on Windows](https://github.com/genomicsclass/windows#installing-r) 
 * [Installing R on Mac](http://youtu.be/Icawuhf0Yqo)
 * [Installing R on Ubuntu](http://cran.r-project.org/bin/linux/ubuntu/README)
 
@@ -41,7 +41,7 @@ The first homework assignment is to complete an R tutorial to
 familiarize yourself with the basics of programming and R syntax. 
 To follow this book you should be familiar with the difference between lists (including data frames) and numeric vectors, for-loops, how to create functions, and how to use the `sapply` and `replicate` functions. 
 
-If you are already familiar with R you can skip to the next section. Otherwise, you should go through the [swirl](http://swirlstats.com/) tutorial, which teaches you R programming and data science interactively, at your own pace, and in the R console. Once you have R installed you can install `swirl` and run it the following way: 
+If you are already familiar with R, you can skip to the next section. Otherwise, you should go through the [swirl](http://swirlstats.com/) tutorial, which teaches you R programming and data science interactively, at your own pace and in the R console. Once you have R installed, you can install `swirl` and run it the following way: 
 
 ```{r, eval=FALSE}
 install.packages("swirl")
@@ -156,11 +156,11 @@ Once you have this file in your working directory, then you can simply read it i
 dat <- read.csv("femaleMiceWeights.csv")
 ```
 
-If you did not receive any message then you probably read in the file successfully.
+If you did not receive any message, then you probably read in the file successfully.
 
 #### Option 2: Download from within R
 
-We store many of the datasets used in this course on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the internet to your computer using R. In this example we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory, and with the name, of your choosing.
+We store many of the datasets used here on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the internet to your computer using R. In this example, we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory with the name of your choosing.
 
 ```{r,message=FALSE}
 library(downloader) ##use install.packages to install
@@ -174,7 +174,7 @@ We can then read it in like this:
 dat <- read.csv(filename)
 ```
 
-Many of the datasets we include in this book are available in custom-built packages available from GitHub. The reason we use GitHub rather than CRAN is that on GitHub we do not have to vet packages, which gives us much more flexibility. 
+Many of the datasets we include in this book are available in custom-built packages from GitHub. The reason we use GitHub, rather than CRAN, is that on GitHub we do not have to vet packages, which gives us much more flexibility. 
 
 To install packages from GitHub you will need to install the `devtools` package:
 
@@ -184,14 +184,14 @@ install.packages("devtools")
 
 Note to Windows users: to use devtools you will have to also install `Rtools`. In general you will need to install packages as administrator. One way to do this is to start R as administrator. If you do not have permission to do this, then it is a bit [more complicated](http://www.magesblog.com/2012/04/installing-r-packages-without-admin.html). 
 
-Now yoy are ready to install a package from GitHub. For this we use a different function:
+Now you are ready to install a package from GitHub. For this we use a different function:
 
 ```{r,message=FALSE,eval=FALSE}
 library(devtools)
 install_github("genomicsclass/dagdata")
 ```
 
-The file we are working with is actually included in this package. So once you install the package, the file is on your computer. However, finding it is requires advanced knowledge. Here are the lines of code:
+The file we are working with is actually included in this package. Once you install the package, the file is on your computer. However, finding it requires advanced knowledge. Here are the lines of code:
 
 ```{r}
 dir <- system.file(package="dagdata") #extracts the location of package

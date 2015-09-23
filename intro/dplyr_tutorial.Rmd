@@ -8,21 +8,21 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-### What is dplyr?
+## What is dplyr?
 
 dplyr is a powerful R-package to transform and summarize tabular data with rows and columns. For another explanation of dplyr see the dplyr package vignette: [Introduction to dplyr](http://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html)
 
-### Why Is It Useful?
+## Why Is It Useful?
 
 The package contains a set of functions (or "verbs") that perform common data manipulation operations such as filtering for rows, selecting specific columns, re-ordering rows, adding new columns and summarizing data. 
 
 In addition, dplyr contains a useful function to perform another common task which is the "split-apply-combine" concept.  We will discuss that in a little bit. 
 
-### How Does It Compare To Using Base Functions R?
+## How Does It Compare To Using Base Functions R?
 
 If you are familiar with R, you are probably familiar with base R functions such as split(), subset(), apply(), sapply(), lapply(), tapply() and aggregate(). Compared to base functions in R, the functions in dplyr are easier to work with, are more consistent in the syntax and are targeted for data analysis around data frames, instead of just vectors. 
 
-### How Do I Get dplyr? 
+## How Do I Get dplyr? 
 
 To install dplyr:
 
@@ -84,7 +84,7 @@ dplyr verbs | Description
 
 The two most basic functions are `select()` and `filter()`, which selects columns and filters rows respectively. 
 
-### Selecting Columns Using `select()`
+## Selecting Columns Using `select()`
 
 Select a set of columns: the name and the sleep\_total columns. 
 
@@ -120,7 +120,7 @@ Some additional options to select columns based on a specific criteria include:
 
 
 
-### Selecting Rows Using `filter()`
+## Selecting Rows Using `filter()`
 
 Filter the rows for mammals that sleep a total of more than 16 hours. 
 
@@ -167,7 +167,7 @@ You will soon see how useful the pipe operator is when we start to combine many 
 Now that you know about the pipe operator (%>%), we will use it throughout the rest of this tutorial. 
 
 
-### Arrange Or Re-order Rows Using `arrange()`
+## Arrange Or Re-order Rows Using `arrange()`
 
 To arrange (or re-order) rows by a particular column, such as the taxonomic order, list the name of the column you want to arrange the rows by:
 
@@ -203,7 +203,7 @@ msleep %>%
 ```
 
 
-### Create New Columns Using `mutate()`
+## Create New Columns Using `mutate()`
 
 The `mutate()` function will add new columns to the data frame. Create a new column called rem_proportion, which is the ratio of rem sleep to total amount of sleep. 
 
@@ -223,7 +223,7 @@ msleep %>%
     head
 ```
 
-### Create summaries of the data frame using `summarise()`
+## Create summaries of the data frame using `summarise()`
 
 The `summarise()` function will create summary statistics for a given column in the data frame such as finding the mean. For example, to compute the average number of hours of sleep, apply the `mean()` function to the column sleep\_total and call the summary value avg\_sleep. 
 
@@ -243,7 +243,7 @@ msleep %>%
 ```
 
     
-### Group operations using `group_by()`
+## Group operations using `group_by()`
 
 The `group_by()` verb is an important function in dplyr. As we mentioned before it's related to concept of "split-apply-combine". We literally want to split the data frame by some variable (e.g. taxonomic order), apply a function to the individual data frames and then combine the output.   
 
