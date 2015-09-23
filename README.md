@@ -7,6 +7,8 @@ We have decided to drop the `course1` style of directory structure, as the numbe
 is still in flux. We are now using a modular structure. See `renaming_map.md` for how courses
 were remapped to new names.
 
+#### Book versions
+
 Compiled versions of this document as HTML can be found here:
 
 http://genomicsclass.github.io/book/
@@ -17,7 +19,7 @@ https://leanpub.com/dataanalysisforthelifesciences/
 
 #### Pull requests and issues
 
-We greatly appreciate all of our readers who contributed pull requests!
+We greatly appreciate all of our readers who contribute pull requests!
 
 If you want to contribute through pull request, please first clone a *new version* of the repo. If you have a version of the repo from 2014, it will contain some large data objects, which accidentally snuck in, and we won't be able to accept your pull request.
 
