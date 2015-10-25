@@ -5,7 +5,7 @@ Note that this file is also included in the 'dagdata' package. If you have the p
 dir <- system.file(package="dagdata")
 list.files(dir)
 list.files(file.path(dir,"extdata"))
-filename <- file.path(dir,"extdata/miceweights.csv")
+filename <- file.path(dir,"extdata/mice_pheno.csv")
 dat <- read.csv(filename)
 ```
 
