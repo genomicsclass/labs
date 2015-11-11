@@ -137,7 +137,19 @@ approximation takes into account that the denominator (the standard
 error of the difference) is a random variable. The smaller the
 sample size, the more the denominator varies. 
 
+
 It may be confusing that one approximation gave us one p-value and another gave us another, because we expect there to be just one answer. However, this is not uncommon in data analysis. We used different assumptions, different approximations, and therefore we obtained different results.
+
+Specifically in this example, we calculate pvalue manually using normal distribution (`pnorm`), while `t.test` using t distribution (`pt`). By default `t.test` using `Welch Two Sample t-test` which is even more conserved than `Standard Student's t-test` without equal variance assumption.
+
+
+Using `pt` to calculate pvalue will equals to `Standard Student's t-test`.
+
+```{r}
+2*(1-pt(tstat, df=length(treatment)+length(control)-2))
+t.test(treatment, control, var.equal=T)
+```
+
 
 Later, in the power calculation section, we will describe type I and
 type II errors. As a preview, we will point out that the test based on
