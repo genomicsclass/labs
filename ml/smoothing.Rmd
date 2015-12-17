@@ -176,7 +176,7 @@ for(i in seq(along=centers)){
 
 The final result is a smoother fit than the bin smoother since we use larger sample sizes to estimate our local parameters (code not shown):
 
-```{r loess_final, fig.cap="MA-plot with curve obtained with by loess shown.", fig.width=10.5,fig.height=5.25,echo=FALSE}
+```{r loess_final, fig.cap="MA-plot with curve obtained with by loess.", fig.width=10.5,fig.height=5.25,echo=FALSE}
 mypar (1,1)
 plot(X,Y,col="darkgrey",pch=16)
 lines(centers,smooth,col="black",lwd=3)

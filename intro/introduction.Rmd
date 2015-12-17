@@ -2,10 +2,10 @@
 
 # Acknowledgements
 
-The authors would like to thank Alex Nones for proofreading the manuscript during its various stages. Also, thanks to Karl Broman for contributing the "Plots to Avoid" section and to Stephanie Hicks for designing some of the exercises.  
+The authors would like to thank Alex Nones for proofreading the manuscript during its various stages. Also, thanks to Karl Broman for contributing the "Plots to Avoid" section and to Stephanie Hicks for designing some of the exercises. Finally, thanks to John Kimmel and three anonymous referees for excellent feedback and constructive criticism of the book.
 
 This book was conceived during the teaching of several HarvardX courses, coordinated by Heather Sternshein. We are also grateful 
-to all the students whose questions and comments helped us improve the book. The courses were
+to our TAs, Idan Ginsburg and Stephanie Chan, and all the students whose questions and comments helped us improve the book. The courses were
 partially funded by NIH grant R25GM114818.  We are very grateful to the National Institute of Health for its support.  
 
 A special thanks goes to all those that edited the book via GitHub pull requests: vjcitn, yeredh, ste-fan, molx, kern3020, josemrecio, hcorrada, neerajt, massie, jmgore75, molecules, lzamparo, eronisko, and obicke.
@@ -36,6 +36,17 @@ massive and complex datasets requires sophisticated statistical skills
 as one can easily be fooled by patterns arising by chance. This has
 greatly elevated the importance of statistics and data analysis in
 the life sciences.
+
+
+## Who will find this book useful?
+
+This book was written with the many life science researchers who are becoming data analysts due to the increased reliance on data described above. If you are performing your own analysis you have probably computed p-values, applied Bonferroni corrections, performed principal component  analysis,made a heatmap, or used one or more of the techniques listed in the next section. If you don't quite understand what these techniques are actually doing or if you not sure if you are using them appropriately, this book is for you. 
+
+Although the content of the book is mostly focused on advanced statistical concepts we start by covering the basics to make sure all readers have a strong grounding on the fundamental statistical concepts required for all data analysis. I find that many introductory statistics courses are though in a way that makes it hard to relate the concepts to data analysis. Our approach ensures that you learn the connection between practice and theory. For this reason, the first two chapters, Inference and Exploratory Data Analysis, are appropriate for an introductory undergraduate statistics or data science course. After these two chapters the level of statistical sophistication ramps up relatively fast.
+
+Although the typical reader of this book will have a masters or PhD, we try keep the mathematical content at undergraduate introductory level. You do not need calculus to use this book. However, we do introduce and use linear algebra which is considered more advanced than calculus. By explaining linear algebra in context of data analysis we believe you will be able to learn the basics without knowing calculus. The harder part may be getting use to the symbols and notation. More on this below.
+
+
 
 ## What Does This Book Cover?
 
