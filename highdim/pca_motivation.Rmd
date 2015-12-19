@@ -18,7 +18,7 @@ We will describe powerful techniques for exploratory data analysis based on _dim
 
 #### Example: Reducing two dimensions to one
 
-We consider an example with twin heights. Here we simulate 100 two dimensional points that represent the number of standard deviations each individual is from the mean height. Each pair of points is a pair of twins:
+We consider an example with twin heights. Here we simulate 100 two dimensional points that represent the number of standard deviations each individual is from the mean height. Each point is a pair of twins:
 
 ```{r simulate twin heights, fig.cap="Simulated twin pair heights.",echo=FALSE,message=FALSE}
 library(rafalib)
