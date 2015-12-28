@@ -135,7 +135,7 @@ The functions that read and write files (there are several in R) assume you mean
 
 We find that the simplest way to organize yourself is to start a Project in RStudio (Click on "File" and "New Project"). When creating the project, you will select a folder to be associated with it. You can then download all your data into this folder. Your working directory will be this folder.
 
-
+ 
 #### Option 1: Download file with your browser to your working directory
 
 
