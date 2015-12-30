@@ -43,7 +43,7 @@ If you already downloaded the `femaleMiceWeights` file into your working directo
 library(downloader) ##use install.packages to install
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
 filename <- "femaleMiceWeights.csv"
-if (!file.exists(filenames)) download(url, destfile=filename)
+if (!file.exists(filename)) download(url, destfile=filename)
 ```
 
 ```{r}
