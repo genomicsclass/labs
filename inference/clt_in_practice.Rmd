@@ -21,7 +21,7 @@ Let's use our data to see how well the central limit theorem approximates sample
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- "mice_pheno.csv"
-download(url,destfile=filename)
+if (!file.exists(filename)) download(url,destfile=filename)
 ```
 
 ```{r}

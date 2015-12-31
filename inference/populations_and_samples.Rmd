@@ -27,7 +27,7 @@ type. Here we download and read in this dataset:
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- "mice_pheno.csv"
-download(url,destfile=filename)
+if (!file.exists(filename)) download(url,destfile=filename)
 dat <- read.csv(filename)
 ```
 
