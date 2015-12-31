@@ -166,7 +166,7 @@ We store many of the datasets used here on [GitHub](https://github.com/genomicsc
 library(downloader) ##use install.packages to install
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
 filename <- "femaleMiceWeights.csv" 
-download(url, destfile=filename)
+if (!file.exists(filename)) download(url, destfile=filename)
 ```
 
 We can then read it in like this:
