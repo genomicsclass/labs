@@ -14,5 +14,5 @@ dat <- read.csv(filename)
 
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- tempfile()
-download.file(url,destfile=filename,method="curl")
+if (!file.exists(filename)) download.file(url,destfile=filename,method="curl")
 dat <- read.csv(filename)

@@ -20,7 +20,7 @@ library(downloader)
 ##Download the data from
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/astronomicalunit.csv"
 filename <- tempfile() 
-download(url, destfile=filename)
+if (!file.exists(filename)) download(url, destfile=filename)
 dat <- read.csv(filename)
 year <-  jitter(dat[,2]) ##add jitter so points are not on top of each other
 
