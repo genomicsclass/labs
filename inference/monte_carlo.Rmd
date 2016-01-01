@@ -25,8 +25,8 @@ As an example, let's use a Monte Carlo simulation to compare the CLT to the t-di
 library(rafalib)
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
-filename <- tempfile()
-if(!file.exists(filename)) download(url,destfile=filename)
+filename <- "mice_pheno.csv"
+if (!file.exists(filename)) download(url,destfile=filename)
 ```
 
 ```{r,message=FALSE}
