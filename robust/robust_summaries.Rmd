@@ -37,7 +37,7 @@ median(x)
 The median absolute deviation (MAD) is a robust summary for the standard deviation. It is defined by computing the differences between each point and the median, and then taking the median of their absolute values:
 
 $$
- 1.4826 \mbox{median}\{| X_i - \mbox{median}(X_i)|\}
+ 1.4826 \mbox{median} \lvert X_i - \mbox{median}(X_i) \rvert
 $$
 
 The number $1.4826$ is a scaling factor such that the MAD is an unbiased 
