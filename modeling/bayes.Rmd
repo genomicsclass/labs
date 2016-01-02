@@ -23,7 +23,7 @@ $$
 
 with $+$ meaning a positive test and $D$ representing if you actually have the disease (1) or not (0).
 
-Suppose we select a random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$ The cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.0025$. To answer this question we will use Bayes Theorem, which in general tells us that:
+Suppose we select a random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$ The cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.00025$. To answer this question we will use Bayes Theorem, which in general tells us that:
 
 $$
 \mbox{Pr}(A \mid B)  =  \frac{\mbox{Pr}(B \mid A)\mbox{Pr}(A)}{\mbox{Pr}(B)} 
@@ -41,7 +41,7 @@ $$
 Plugging in the numbers we get:
 
 $$
-\frac{0.99 \cdot 0.0025}{0.99 \cdot 0.0025 + 0.01 \cdot (.9975)}  =  0.02 
+\frac{0.99 \cdot 0.00025}{0.99 \cdot 0.00025 + 0.01 \cdot (.99975)}  =  0.02 
 $$
 
 This says that despite the test having 0.99 accuracy, the probability of having the disease given a positive test is only 0.02. This may appear counterintuitive to some. The reason this is the case is because we have to factor in the very rare probability that a person, chosen at random, has the disease. To illustrate this we run a Monte Carlo simulation.
