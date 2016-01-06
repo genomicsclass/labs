@@ -209,7 +209,13 @@ The variance can be shown to be:
 
 $$
 \mbox{var}(\theta\mid y) = \frac{1}{1/\sigma^2+1/\tau^2}
-= \frac{1}{1/.110^2 + 1/.027^2} = 0.026
+= \frac{1}{1/.110^2 + 1/.027^2} = 0.00069 
+
+$$
+and in this case the standard deviation is:
+$$
+\mbox{sd}(\theta\mid y) = sqrt(var(\theta\mid y) = 0.026 
+
 $$
 
 So we started with a frequentist 95% confidence interval that ignored data from other players and summarized just José's data: .450 $\pm$ 0.220. Then we used an Bayesian approach that incorporated data from other players and other years to obtain a posterior probability. This is actually referred to as an empirical Bayes approach because we used data to construct the prior. From the posterior we can report what is called a 95% credible interval by reporting a region, centered at the mean, with a 95% chance of occurring. In our case, this turns out to be: .285 $\pm$ 0.052.
