@@ -16,7 +16,7 @@ The concept of distance is quite intuitive. For example, when we cluster animals
 
 ![Clustering of animals](images/handmade/animals.png)
 
-Many of the analyses we perform with high-dimensional data relate directly or indirectly to distance. Many clustering and machine learning techniques rely on being able to define distance, using features or predictors. For example, to create _heatmaps_, which are widely used in genomics and other highthroughput fields, a distance is computed explicitly. 
+Many of the analyses we perform with high-dimensional data relate directly or indirectly to distance. Many clustering and machine learning techniques rely on being able to define distance, using features or predictors. For example, to create _heatmaps_, which are widely used in genomics and other high-throughput fields, a distance is computed explicitly. 
 
 ![Example of heatmap](images/handmade/Heatmap.png)
 
@@ -84,6 +84,7 @@ $$
 \mbox{dist}(h,g) = \sqrt{ \sum_{i=1}^{189} (Y_{h,i}-Y_{g,i})^2 }
 $$
 
+Note: In practice, distance between features are typically applied after standardizing the data for each feature. This is equivalent to computing one minus the correlation. This is done because the differences in overall levels between features are often not due to biological effects but technical ones. More details on this topic can be found in [this presentation](http://master.bioconductor.org/help/course-materials/2002/Summer02Course/Distance/distance.pdf).
 
 #### Distance with matrix algebra
 

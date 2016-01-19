@@ -32,7 +32,7 @@ head(dat)
 Start by selecting only female mice since males and females have
 different weights. We will select three mice from each population.
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%  
   select(Bodyweight) %>% unlist
@@ -48,11 +48,7 @@ mu_control <- mean(controlPopulation)
 print(mu_hf - mu_control)
 ```
 
-Compute the population standard deviations as well. We do not use the
-R function `sd` because this would compute the estimates that divide by the
-sample size - 1 and we want the population estimates.
-
-We can see that with R code:
+We can compute the population standard deviations of, say, a vector $x$ as well. However, we do not use the R function `sd` because this function actually does not compute the population standard deviation $\sigma_x$. Instead, `sd` assumes the main argument is a random sample, say $X$, and provides an estimate of $\sigma_x$, defined by $s_X$ above. As shown in the equations above actual final answer differs because on divides by the sample size and the other by the sample size minus one. We can see that with R code:
 
 ```{r}
 x <- controlPopulation

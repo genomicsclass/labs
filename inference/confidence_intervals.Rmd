@@ -177,15 +177,12 @@ for (i in 1:B) {
 }
 ```
 
-Despite the intervals being larger ( we are dividing by $\sqrt{5}$
+Despite the intervals being larger (we are dividing by $\sqrt{5}$
 instead of $\sqrt{30}$ ), we see many more intervals not covering
 $\mu_X$. This is because the CLT is incorrectly telling us that the
-distribution of the `mean(chow)` is approximately normal when, in fact,
-it has a fatter tail (the parts of the distribution going to
-$\pm \infty$). This mistake affects us in the calculation of `Q`, which
-assumes a normal distribution and uses `qnorm`. The t-distribution
-might be more appropriate. All we have to do is re-run the above, but
-change how we calculate `Q` to use `qt` instead of `qnorm`.
+distribution of the `mean(chow)` is approximately normal with standard deviation 1 when, in fact,
+it has a larger standard deviation and a fatter tail (the parts of the distribution going to
+$\pm \infty$). This mistake affects us in the calculation of `Q`, which assumes a normal distribution and uses `qnorm`. The t-distribution might be more appropriate. All we have to do is re-run the above, but change how we calculate `Q` to use `qt` instead of `qnorm`.
 
 ```{r confidence_interval_tdist_n5,fig.cap="We show 250 random realizations of 95% confidence intervals, but now for a smaller sample size. The confidence is now based on the t-distribution approximation. The color denotes if the interval fell on the parameter or not.",fig.height=8}
 mypar()

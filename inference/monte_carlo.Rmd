@@ -41,7 +41,8 @@ We will build a function that automatically generates a t-statistic under the nu
 ```{r}
 ttestgenerator <- function(n) {
   #note that here we have a false "high fat" group where we actually
-  #sample from the nonsmokers. this is because we are modeling the *null*
+  #sample from the chow or control population. 
+  #This is because we are modeling the null.
   cases <- sample(controlPopulation,n)
   controls <- sample(controlPopulation,n)
   tstat <- (mean(cases)-mean(controls)) / 

@@ -198,7 +198,9 @@ shows the median, not the mean). This line is similar to the *regression
 line*, with a slope that is related to the correlation, as we will learn
 below. 
 
-## Bi-variate Normal Distribution
+## Bivariate Normal Distribution
+
+Correlation is a widely used summary statistic in the life sciences. However, it is often misused or misinterpreted. To properly interprete correlation we actually have to understand the bivariate normal distribution.
 
 A pair of random variables $(X,Y)$ is considered to be approximated by
 bivariate normal when the proportion of values below, for example $a$

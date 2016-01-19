@@ -94,13 +94,19 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
 
-Read in the data either from your home directory or from dagdata:
-
+The first step is to read in the data. You can do this by downloading the data and using the `read.csv` function as above. Another, more advanced approach, is to download the data directly from within R: 
 ```{r}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename <- "femaleControlsPopulation.csv"
+filename <- "femaleControlsPopulation.csv" 
+##check if file exists and if it does not, download it:
 if (!file.exists(filename)) download(url,destfile=filename)
+```
+
+We will include code such as the above throughout the book because it provides a way for readers to cut and paste code that automatically downloads the data.
+
+Once the file is in your home directory you can read in to R:
+```{r}
 population <- read.csv(filename)
 population <- unlist(population) # turn it into a numeric
 ```
@@ -197,9 +203,9 @@ Scanning through these numbers, we start to get a rough idea of what the entire 
 
 $$ F(a) \equiv \mbox{Pr}(x \leq a) $$
 
-This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ECDF). We can plot $F(a)$ versus $a$ like this:
+This is called the cumulative distribution function (CDF). When the CDF is derived from data, as opposed to theoretically, we also call it the empirical CDF (ECDF). The ECDF for the height data looks like this:
 
-```{r ecdf,fig.cap="Empirical cummulative distribution function for height."}
+```{r ecdf,fig.cap="Empirical cummulative distribution function for height.", echo=FALSE}
 smallest <- floor( min(x) )
 largest <- ceiling( max(x) )
 values <- seq(smallest, largest,len=300)
@@ -210,10 +216,7 @@ plot(values, heightecdf(values), type="l",
 
 #### Histograms
 
-The `ecdf` function is a function that returns a function, which is
-not typical behavior of R functions. For that reason, we won't discuss
-it further here. Furthermore, the `ecdf` is actually not as popular as
-histograms, which give us the same information, but show us the
+Although the empirical CDF concept is widely discussed in statistics textbooks, the plot is actually not very popular in practice. The reason is that histograms give us the same information and are easier to interpret. Histograms show us the
 proportion of values in intervals: 
 
 $$ \mbox{Pr}(a \leq x \leq b) = F(b) - F(a) $$

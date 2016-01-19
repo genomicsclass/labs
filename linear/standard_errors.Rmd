@@ -123,7 +123,7 @@ Other than that, this quantity does not have a useful interpretation in practice
 
 <a name="varcov"></a>
 
-#### Variance-covariance matrix
+#### Variance-covariance matrix (Advanced)
 
 As a first step we need to define the *variance-covariance matrix*, $\boldsymbol{\Sigma}$. For a vector of random variables, $\mathbf{Y}$, we define $\boldsymbol{\Sigma}$ as the matrix with the $i,j$ entry:
 
@@ -173,7 +173,7 @@ $$\sigma^2\mathbf{(X^\top X)^{-1}}$$
 
 The diagonal of the square root of this matrix contains the standard error of our estimates. 
 
-#### Estimating $\sigma^2$
+#### Estimating $\sigma^2$ 
 
 To obtain an actual estimate in practice from the formulas above, we need to estimate $\sigma^2$. Previously we estimated the standard errors from the sample. However, the sample standard deviation of $Y$ is not $\sigma$ because $Y$ also includes variability introduced by the deterministic part of the model: $\mathbf{X}\boldsymbol{\beta}$. The approach we take is to use the residuals. 
 

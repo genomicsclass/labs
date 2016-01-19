@@ -126,7 +126,7 @@ hmcol <- colorRampPalette(brewer.pal(9, "GnBu"))(100)
 
 Now, pick the genes with the top variance over all samples:
 
-```{r}
+```{r, message=FALSE}
 library(genefilter)
 rv <- rowVars(e)
 idx <- order(-rv)[1:40]
