@@ -17,12 +17,12 @@ Suppose we were given high-throughput gene expression data that was measured for
 An important concept to remember in order to understand the concepts presented in this chapter is that p-values are random variables. To see this,  consider the example in which we define a p-value from a t-test with a large enough sample size to use the CLT approximation. Then our p-value is defined as the probability that a normally distributed random variable is larger, in absolute value, than the observed t-test, call it $Z$. So for a two sided test the p-value is: 
 
 $$
-p = 2 \{ 1 - \Phi(Z)\}
+p = 2 \{ 1 - \Phi(\mid Z \mid)\}
 $$
 
 In R, we write:
 ```{r,eval=FALSE}
-2*(1-pnorm(Z))
+2*( 1-pnorm( abs(Z) ) )
 ```
 
 Now because $Z$ is a random variable and $\Phi$ is a deterministic
@@ -61,7 +61,7 @@ This implies that:
 
 $$
 \begin{align*}
-\mbox{Pr}(p < p_a) &= \mbox{Pr}[ \Phi(p) < \Phi(p_a) ] \\
+\mbox{Pr}(p < p_a) &= \mbox{Pr}[ \Phi^{-1}(p) < \Phi^{-1}(p_a) ] \\
   & = \mbox{Pr}(Z < a) = p_a
 \end{align*}
 $$

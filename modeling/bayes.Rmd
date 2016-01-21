@@ -23,7 +23,7 @@ $$
 
 with $+$ meaning a positive test and $D$ representing if you actually have the disease (1) or not (0).
 
-Suppose we select a random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$ The cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.0025$. To answer this question we will use Bayes Theorem, which in general tells us that:
+Suppose we select a random person and they test positive, what is the probability that they have the disease?  We write this as $\mbox{Prob}(D=1 \mid +)?$ The cystic fibrosis rate is 1 in 3,900 which implies that  $\mbox{Prob}(D=1)=0.00025$. To answer this question we will use Bayes Theorem, which in general tells us that:
 
 $$
 \mbox{Pr}(A \mid B)  =  \frac{\mbox{Pr}(B \mid A)\mbox{Pr}(A)}{\mbox{Pr}(B)} 
@@ -41,7 +41,7 @@ $$
 Plugging in the numbers we get:
 
 $$
-\frac{0.99 \cdot 0.0025}{0.99 \cdot 0.0025 + 0.01 \cdot (.9975)}  =  0.02 
+\frac{0.99 \cdot 0.00025}{0.99 \cdot 0.00025 + 0.01 \cdot (.99975)}  =  0.02 
 $$
 
 This says that despite the test having 0.99 accuracy, the probability of having the disease given a positive test is only 0.02. This may appear counterintuitive to some. The reason this is the case is because we have to factor in the very rare probability that a person, chosen at random, has the disease. To illustrate this we run a Monte Carlo simulation.
@@ -168,7 +168,7 @@ Now, let's use this model for José's data. Suppose we want to predict his innat
 $$
 \begin{align*}
 \theta &\sim N(.275, .027^2) \\
-Y \mid \theta &\sim N(\theta, .110^2) 
+Y \mid \theta &\sim N(\theta, .111^2) 
 \end{align*}
 $$
 
@@ -199,8 +199,8 @@ It is a weighted average of the population average $\mu$ and the observed data $
 $$
 \begin{align*}
 \mbox{E}(\theta \mid Y=.450) &= B \times .275 + (1 - B) \times .450 \\
-&= .275 + (1 - B)(.450 - .260) \\
-B &=\frac{.110^2}{.110^2 + .027^2} = 0.943\\
+&= .275 + (1 - B)(.450 - .275) \\
+B &=\frac{.111^2}{.111^2 + .027^2} = 0.944\\
 \mbox{E}(\theta \mid Y=450) &\approx .285
 \end{align*}
 $$
@@ -209,10 +209,9 @@ The variance can be shown to be:
 
 $$
 \mbox{var}(\theta\mid y) = \frac{1}{1/\sigma^2+1/\tau^2}
-= \frac{1}{1/.110^2 + 1/.027^2} = 0.026
+= \frac{1}{1/.111^2 + 1/.027^2} = 0.00069
 $$
-
-So we started with a frequentist 95% confidence interval that ignored data from other players and summarized just José's data: .450 $\pm$ 0.220. Then we used an Bayesian approach that incorporated data from other players and other years to obtain a posterior probability. This is actually referred to as an empirical Bayes approach because we used data to construct the prior. From the posterior we can report what is called a 95% credible interval by reporting a region, centered at the mean, with a 95% chance of occurring. In our case, this turns out to be: .285 $\pm$ 0.052.
+and the standard deviation is therefore $0.026$. So we started with a frequentist 95% confidence interval that ignored data from other players and summarized just José's data: .450 $\pm$ 0.220. Then we used an Bayesian approach that incorporated data from other players and other years to obtain a posterior probability. This is actually referred to as an empirical Bayes approach because we used data to construct the prior. From the posterior we can report what is called a 95% credible interval by reporting a region, centered at the mean, with a 95% chance of occurring. In our case, this turns out to be: .285 $\pm$ 0.052.
 
 The Bayesian credible interval suggests that if another team is impressed by the .450 observation, we should consider trading José as we are predicting he will be just slightly above average. Interestingly, the Red Sox traded José to the Detroit Tigers in July. Here are the José Iglesias batting averages for the next five months. 
 

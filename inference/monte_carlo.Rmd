@@ -114,7 +114,7 @@ deviation), and plug these into a model (here the normal
 distribution).  This is actually the most common form of Monte Carlo
 simulation. 
 
-For the case of weights, we could use our knowledge that mice typically weigh 24 ounces with a SD of about 3.5 ounces, and that the distribution is approximately normal, to generate population data:
+For the case of weights, we could use our knowledge that mice typically weigh 24 grams with a SD of about 3.5 grams, and that the distribution is approximately normal, to generate population data:
 
 
 ```{r}
