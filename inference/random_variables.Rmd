@@ -50,6 +50,13 @@ if (!file.exists(filename)) download(url, destfile=filename)
 dat <- read.csv("femaleMiceWeights.csv")
 ```
 
+Remember that a quick way to read the data, without downloading it is by using the url:
+
+```{r,eval=FALSE}
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dat <- read.csv(url)
+```
+
 #### Our first look at data
 
 We are interested in determining if following a given diet makes mice
@@ -94,8 +101,7 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
 
-The first step is to read in the data. You can do this by downloading the data and using the `read.csv` function as above. Another, more advanced approach, is to download the data directly from within R: 
-```{r}
+```{r, echo=FALSE}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename <- "femaleControlsPopulation.csv" 
@@ -103,12 +109,12 @@ filename <- "femaleControlsPopulation.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
 ```
 
-We will include code such as the above throughout the book because it provides a way for readers to cut and paste code that automatically downloads the data.
+The first step is to download the data from [here](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv) into your working directory and then read it into R: 
 
-Once the file is in your home directory you can read in to R:
 ```{r}
-population <- read.csv(filename)
-population <- unlist(population) # turn it into a numeric
+population <- read.csv("femaleControlsPopulation.csv")
+# use unlist to turn it into a numeric vector
+population <- unlist(population) 
 ```
 
 Now let's sample 12 mice three times and see how the average changes.

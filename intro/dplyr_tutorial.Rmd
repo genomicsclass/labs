@@ -43,11 +43,8 @@ The msleep (mammals sleep) data set contains the sleep times and weights for a s
 Download the msleep data set in CSV format from [here](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv), and then load into R:
 
 ```{r}
-library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/msleep_ggplot2.csv"
-filename <- "msleep_ggplot2.csv"
-if (!file.exists(filename)) download(url,filename)
-msleep <- read.csv("msleep_ggplot2.csv")
+msleep <- read.csv(url)
 head(msleep)
 ```
 

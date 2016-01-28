@@ -30,17 +30,14 @@ function, $p$ is also a random variable. We will create a Monte Carlo
 simulation showing how the values of $p$ change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
 ```{r,echo=FALSE}
-library(downloader)
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename <- "femaleControlsPopulation.csv"
-if (!file.exists(filename)) download(url,destfile=filename)
+filename <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 ```
 
 We read in the data, and use `replicate` to repeatedly create p-values.
 
 ```{r pvalue_hist, fig.cap="P-value histogram for 10,000 tests in which null hypothesis is true."}
 set.seed(1)
-population = unlist( read.csv("femaleControlsPopulation.csv") )
+population = unlist( read.csv(filename) )
 N <- 12
 B <- 10000
 pvals <- replicate(B,{

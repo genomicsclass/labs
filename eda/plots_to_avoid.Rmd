@@ -98,7 +98,7 @@ drawing many outliers when the data is in the range of millions.
 Let's recreate these barplots as boxplots. First let's download the data:
 
 ```{r}
-library("downloader")
+library(downloader)
 filename <- "fig1.RData"
 url <- "https://github.com/kbroman/Talk_Graphs/raw/master/R/fig1.RData"
 if (!file.exists(filename)) download(url,filename)
@@ -287,11 +287,8 @@ This plot can be made better by simply using color to distinguish the three line
 
 ```{r colors-for-different-lines, fig.cap="This plot demonstrates that using color is more than enough to distinguish the three lines."}
 ##First read data
-library(downloader)
-filename <- "fig8dat.csv"
 url <- "https://github.com/kbroman/Talk_Graphs/raw/master/R/fig8dat.csv"
-if (!file.exists(filename)) download(url, filename)
-x <- read.table(filename, sep=",", header=TRUE)
+x <- read.csv(url)
 
 ##Now make alternative plot
 plot(x[,1],x[,2],xlab="log Dose",ylab="Proportion survived",ylim=c(0,1),
@@ -386,7 +383,7 @@ Turning tables into graphs. The American Statistician 56:121-130
 
 The use of correlation to summarize reproducibility has become widespread in, for example, genomics. Despite its English language definition, mathematically, correlation is not necessarily informative with regards to reproducibility.  Here we briefly describe three major problems.
 
-The most egregious related mistake is to compute correlations of data that is not approximated by bi-variate normal data. As described above, averages, standard deviations and correlations are popular summary statistics for two-dimensional data because, for the bivariate normal distribution, these five parameters fully describe the distribution. However, there are many examples of data that are not well approximated by bivariate normal data. Gene expression data, for example, tends to have a distribution with a very fat right tail.
+The most egregious related mistake is to compute correlations of data that is not approximated by bi-variate normal data. As described above, averages, standard deviations and correlations are popular summary statistics for two-dimensional data because, for the bivariate normal distribution, these five parameters fully describe the distribution. However, there are many examples of data that are not well approximated by bivariate normal data. Raw gene expression data, for example, tends to have a distribution with a very fat right tail.
 
 The standard way to quantify reproducibility between two sets of replicated measurements, say $x_1,\dots,x_n$ and $y_1,\dots,y_n$, is simply to compute the distance between them:
 
@@ -415,7 +412,7 @@ with $\rho$ the correlation. So we see the direct relationship between distance 
 Yet another reason correlation is not an optimal metric for reproducibility is the lack of units. To see this, we use a formula that relates the correlation of a variable with that variable, plus what is interpreted here as deviation: $x$ and $y=x+d$. The larger the variance of $d$, the less $x+d$ reproduces $x$. Here the distance metric would depend only on the variance of $d$ and would summarize reproducibility. However, correlation depends on the variance of $x$ as well. If $d$ is independent of $x$, then
 
 $$
-cor(x,y) = \frac{1}{\sqrt{1+\mbox{var}(d)/\mbox{var}(x)}}
+\mbox{cor}(x,y) = \frac{1}{\sqrt{1+\mbox{var}(d)/\mbox{var}(x)}}
 $$
 
 This suggests that correlations near 1 do not necessarily imply reproducibility. Specifically, irrespective of the variance of $d$, we can make the correlation arbitrarily close to 1 by increasing the variance of $x$.
