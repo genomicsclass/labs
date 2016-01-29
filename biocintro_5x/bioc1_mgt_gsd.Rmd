@@ -74,9 +74,11 @@ cls
 
 It is easy to make an informative plot of hybridization date
 by ethnicity of sample source using standard R:
+
 ```{r lket,fig=TRUE}
 boxplot(date~factor(ethnicity), data=sampleInfo, ylab="chip date")
 ```
+
 What if we want to look at expression of the gene BRCA2 by ethnicity?
 We have to do several things:  
 
