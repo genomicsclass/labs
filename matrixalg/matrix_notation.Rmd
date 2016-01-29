@@ -77,7 +77,7 @@ This section explains the notation used above. It turns out that we can borrow t
 In the falling object, father-son heights, and mouse weight examples, the random variables associated with the data were represented by $Y_1,\dots,Y_n$. We can think of this as a vector. In fact, in R we are already doing this:
 
 ```{r,message=FALSE}
-library(UsingR)
+data(father.son,package="UsingR")
 y=father.son$fheight
 head(y)
 ```

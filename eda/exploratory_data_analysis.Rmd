@@ -54,7 +54,7 @@ We can compute the percentiles for our list of heights:
 
 ```{r definingHeights, message=FALSE}
 library(rafalib)
-library(father.son,package="UsingR") ##available from CRAN
+data(father.son,package="UsingR") ##available from CRAN
 x <- father.son$fheight
 ```
 
@@ -123,8 +123,9 @@ good approximation for the direct compensation for 199 United States
 CEOs in the year 2000.
 
 ```{r execpay, fig.width=10.5, fig.height=5.25, fig.cap="Histogram and QQ-plot of executive pay."}
+data(exec.pay,package="UsingR")
 mypar(1,2)
-hist(exec.pay) ##in UsingR package
+hist(exec.pay) 
 qqnorm(exec.pay)
 qqline(exec.pay)
 ```
