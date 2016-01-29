@@ -232,7 +232,7 @@ $$ (\mbox{L3} - \mbox{L1}) - (\mbox{L2} - \mbox{L1}) = \mbox{L3} - \mbox{L2 }$$
 
 An easy way to make these contrasts of two groups is to use the `contrast` function from the *contrast* package. We just need to specify which groups we want to compare. We have to pick one of *pull* or *push* types, although the answer will not differ, as we will see below.
 
-```{r,message=FALSE}
+```{r,message=FALSE,warning=FALSE}
 library(contrast) #Available from CRAN
 L3vsL2 <- contrast(fitTL,list(leg="L3",type="pull"),list(leg="L2",type="pull"))
 L3vsL2
@@ -336,7 +336,7 @@ legend("right",names(coefs),fill=cols,cex=.75,bg="white")
 
 Again we will show how to combine estimated coefficients from the model using contrasts. For some simple cases, we can use the contrast package. Suppose we want to know the push vs. pull effect for the L2 leg pair samples. We can see from the arrow plot that this is the orange arrow plus the yellow arrow. We can also specify this comparison with the `contrast` function:
 
-```{r,message=FALSE}
+```{r,message=FALSE,message=FALSE}
 library(contrast) ##Available from CRAN
 L2push.vs.pull <- contrast(fitX,
                    list(leg="L2", type = "push"), 

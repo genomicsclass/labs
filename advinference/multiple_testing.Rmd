@@ -411,7 +411,7 @@ However, instead of doing this, we compute a _q-value_ for each test. If a featu
 
 In R, this can be computed with the `qvalue` function in the `qvalue` package:
 
-```{r qval_vs_pval,fig.cap="Q-values versus p-values."}
+```{r qval_vs_pval,fig.cap="Q-values versus p-values.",warning=FALSE}
 library(qvalue)
 res <- qvalue(pvals)
 qvals <- res$qvalues

@@ -35,7 +35,7 @@ hfPopulation <- filter(dat,Sex == "F" & Diet == "hf") %>%
 mu_hf <- mean(hfPopulation)
 mu_control <- mean(controlPopulation)
 print(mu_hf - mu_control)
-print((mu_hf - mu_control)/mu_control * 100) # percent increase
+print((mu_hf - mu_control)/mu_control * 100) #percent increase
 ```
 
 We have also seen that, in some cases, when we take a sample and perform a t-test, we don't always get a p-value smaller than 0.05. For example, here is a case were we take sample of 5 mice and don't achieve statistical significance at the 0.05 level:

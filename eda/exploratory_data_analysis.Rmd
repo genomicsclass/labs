@@ -53,8 +53,8 @@ example, the median 50-th percentile is the median.
 We can compute the percentiles for our list of heights:
 
 ```{r definingHeights, message=FALSE}
-library(UsingR) ##available from CRAN
 library(rafalib)
+library(father.son,package="UsingR") ##available from CRAN
 x <- father.son$fheight
 ```
 
@@ -159,8 +159,7 @@ well approximated by the normal distribution. This summary, however,
 fails to describe an important characteristic of the data. 
 
 ```{r scatterplot, fig.cap="Heights of father and son pairs plotted against each other."}
-library(UsingR)
-data("father.son")
+data(father.son,package="UsingR")
 x=father.son$fheight
 y=father.son$sheight
 plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=paste("correlation =",signif(cor(x,y),2)))

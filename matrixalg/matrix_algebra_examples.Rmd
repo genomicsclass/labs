@@ -48,7 +48,7 @@ $$
 Note that we are multiplying by the scalar $1/N$. In R, we multiply matrix using `%*%`:
 
 ```{r,message=FALSE}
-library(UsingR)
+data(father.son,package="UsingR")
 y <- father.son$sheight
 print(mean(y))
 

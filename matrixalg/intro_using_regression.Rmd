@@ -49,7 +49,7 @@ With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon$
 Now imagine you are Francis Galton in the 19th century and you collect paired height data from fathers and sons. You suspect that height is inherited. Your data:
 
 ```{r,message=FALSE}
-library(UsingR)
+data(father.son,package="UsingR")
 x=father.son$fheight
 y=father.son$sheight
 ```

@@ -113,7 +113,7 @@ The first step is to download the data from [here](https://raw.githubusercontent
 
 ```{r}
 population <- read.csv("femaleControlsPopulation.csv")
-# use unlist to turn it into a numeric vector
+##use unlist to turn it into a numeric vector
 population <- unlist(population) 
 ```
 
@@ -193,7 +193,7 @@ We have explained what we mean by *null* in the context of null hypothesis, but 
 The simplest way to think of a *distribution* is as a compact description of many numbers. For example, suppose you have measured the heights of all men in a population. Imagine you need to describe these numbers to someone that has no idea what these heights are, such as an alien that has never visited Earth. Suppose all these heights are contained in the following dataset:
 
 ```{r definingHeights, message=FALSE}
-library(UsingR)
+data(father.son,package="UsingR")
 x <- father.son$fheight
 ```
 

@@ -53,7 +53,7 @@ Cross-validation is a widely-used method in machine learning, which solves this 
 
 We will use the `createFolds` function from the `caret` package to make 5 folds of our gene expression data, which are balanced over the tissues. Don't be confused by the fact that the `createFolds` function uses the same letter 'k' as the 'k' in k-nearest neighbors. These 'k' are totally unrelated. The caret function `createFolds` is asking for how many folds to create, the $N$ from above. The 'k' in the `knn` function is for how many closest observations to use in classifying a new sample. Here we will create 10 folds:
 
-```{r,message=FALSE}
+```{r,message=FALSE,warning=FALSE}
 library(caret)
 set.seed(1)
 idx <- createFolds(y, k=10)

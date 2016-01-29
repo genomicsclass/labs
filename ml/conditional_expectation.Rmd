@@ -39,8 +39,7 @@ We use the son and father height example to illustrate how regression can be int
 ```{r height_hist,message=FALSE,fig.cap="Histogram of son heights."}
 library(rafalib)
 mypar(1,1)
-library(UsingR)
-data("father.son")
+data(father.son,package="UsingR")
 x=round(father.son$fheight) ##round to nearest inch
 y=round(father.son$sheight)
 hist(y,breaks=seq(min(y),max(y)))
