@@ -70,7 +70,7 @@ Here we will show how we can compute the standard error without a Monte Carlo si
 In the father and son height examples, we have randomness because we have a random sample of father and son pairs. For the sake of illustration, let's assume that this is the entire population:
 
 ```{r,message=FALSE}
-library(UsingR)
+data(father.son,package="UsingR")
 x <- father.son$fheight
 y <- father.son$sheight
 n <- length(y)

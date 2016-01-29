@@ -107,7 +107,7 @@ res <-rowttests(cleandat,factor(sex))
 This does remove the batch effect, but it seems we have also removed much of the biological effect we are interested in. In fact, no genes have q-value <0.1 anymore.
 
 
-```{r pval_hist_and_volcano_after_removing_PCs, fig.cap="p-value histogram and volcano plot after blindly removing the first two PCs.",fig.width=10.5,fig.height=5.25,message=FALSE}
+```{r pval_hist_and_volcano_after_removing_PCs, fig.cap="p-value histogram and volcano plot after blindly removing the first two PCs.",fig.width=10.5,fig.height=5.25,message=FALSE,warning=FALSE}
 library(qvalue)
 mypar(1,2)
 hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))

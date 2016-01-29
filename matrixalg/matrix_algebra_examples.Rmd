@@ -48,7 +48,7 @@ $$
 Note that we are multiplying by the scalar $1/N$. In R, we multiply matrix using `%*%`:
 
 ```{r,message=FALSE}
-library(UsingR)
+data(father.son,package="UsingR")
 y <- father.son$sheight
 print(mean(y))
 
@@ -207,7 +207,7 @@ Remember that the least squares are like a square (multiply something by itself)
 Let's see how it works in R:
 
 ```{r}
-library(UsingR)
+data(father.son,package="UsingR")
 x=father.son$fheight
 y=father.son$sheight
 X <- cbind(1,x)

@@ -71,7 +71,7 @@ In the next sections, we will use the histogram p-values  to evaluate the specif
 
 Below are the results of applying a naive t-test and report genes with q-values smaller than 0.1. 
 
-```{r pvalue_hist_and_volcano_plots, fig.cap="p-value histogram and volcano plot for comparison between sexes. The Y chromosome genes (considered to be positives) are highlighted in red. The X chromosome genes (a subset is considered to be positive) are shown in green.",fig.width=10.5,fig.height=5.25}
+```{r pvalue_hist_and_volcano_plots, fig.cap="p-value histogram and volcano plot for comparison between sexes. The Y chromosome genes (considered to be positives) are highlighted in red. The X chromosome genes (a subset is considered to be positive) are shown in green.",fig.width=10.5,fig.height=5.25,warning=FALSE}
 library(qvalue)
 res <- rowttests(geneExpression,as.factor( sampleInfo$group ))
 mypar(1,2)

@@ -80,19 +80,17 @@ packages. Many of these functions are stored in CRAN. Note that these
 packages are vetted: they are checked for common errors and they must have
 a dedicated maintainer. You can easily install packages from within R if you know
 the name of the packages. As an example, we are going to install the
-packages `rafalib` and `downloader` which we use in our first data
+package `rafalib` which we use in our first data
 analysis examples: 
 
 ```{r,eval=FALSE}
 install.packages("rafalib")
-install.packages("downloader")
 ```
 
 We can then load the package into our R sessions using the `library` function:
 
 ```{r}
 library(rafalib)
-library(downloader)
 ```
 
 From now on you will see that we sometimes load packages without
@@ -135,22 +133,28 @@ The functions that read and write files (there are several in R) assume you mean
 
 We find that the simplest way to organize yourself is to start a Project in RStudio (Click on "File" and "New Project"). When creating the project, you will select a folder to be associated with it. You can then download all your data into this folder. Your working directory will be this folder.
 
- 
-#### Option 1: Download file with your browser to your working directory
-
-
+#### Option 1: Read file over the internet
 You can navigate to the `femaleMiceWeights.csv` file by visiting the
 data directory of dagdata on
 [GitHub](https://github.com/genomicsclass/dagdata/tree/master/inst/extdata). If you navigate to the file, you need to click on *Raw* on the
-upper right hand corner of the data and then use your browser's "Save
-As" function to ensure that the downloaded file is in a CSV
-format. Some browsers add an extra suffix to your filename by
-default. You do not want this. You want your file to be named
-`femaleMiceWeights.csv`. 
+upper right hand corner of the page. 
 
 ![GitHub page screenshot](images/handmade/screenshot1.png)
 
-Once you have this file in your working directory, then you can simply read it in like this:
+Now you can copy and paste the URL and use this as the argument to `read.csv`:
+
+```{r,message=FALSE}
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dat <- read.csv(url)
+```
+
+#### Option 2: Download file with your browser to your working directory
+
+There are reasons for wanting to keep a local copy of the file. For example, you may want to run the analysis while not connected to internet or you may want to assure reproducibility regardless of the file being available on the original site. To download the file, as in option 1 you can navigate to the `femaleMiceWeights.csv`. In this option we use your browser's "Save
+As" function to ensure that the downloaded file is in a CSV
+format. Some browsers add an extra suffix to your filename by
+default. You do not want this. You want your file to be named
+`femaleMiceWeights.csv`. Once you have this file in your working directory, then you can simply read it in like this:
 
 ```{r,eval=FALSE}
 dat <- read.csv("femaleMiceWeights.csv")
@@ -158,7 +162,7 @@ dat <- read.csv("femaleMiceWeights.csv")
 
 If you did not receive any message, then you probably read in the file successfully.
 
-#### Option 2: Download from within R
+#### Option 3: Download the file from within R
 
 We store many of the datasets used here on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the internet to your computer using R. In this example, we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory with the name of your choosing.
 
@@ -169,10 +173,12 @@ filename <- "femaleMiceWeights.csv"
 if (!file.exists(filename)) download(url, destfile=filename)
 ```
 
-We can then read it in like this:
+We can then proceed as in option 2:
 ```{r}
 dat <- read.csv(filename)
 ```
+
+#### Option 4: Download the data package (Advanced)
 
 Many of the datasets we include in this book are available in custom-built packages from GitHub. The reason we use GitHub, rather than CRAN, is that on GitHub we do not have to vet packages, which gives us much more flexibility. 
 

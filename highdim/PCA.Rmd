@@ -45,7 +45,7 @@ Let's try $\mathbf{u}=(1,0)^\top$. This projection simply gives us the height of
 ```{r projection_not_PC1, fig.align="Data projected onto space spanned by (1 0).", fig.width=6.5,fig.height=6.5}
 mypar(1,1)
 plot(t(Y), xlim=thelim, ylim=thelim,
-     main=paste("Sum of squares :",round(crossprod(Y[,1]),1)))
+     main=paste("Sum of squares :",round(crossprod(Y[1,]),1)))
 abline(h=0)
 apply(Y,2,function(y) segments(y[1],0,y[1],y[2],lty=2))
 points(Y[1,],rep(0,ncol(Y)),col=2,pch=16,cex=0.75)
