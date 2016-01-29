@@ -6,6 +6,10 @@ title: IRanges and GRanges
 ```{r options, echo=FALSE}
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(IRanges)
+library(GenomicRanges)
+})
 ```
 
 The IRanges and GRanges objects are core components of the Bioconductor infrastructure for defining *integer ranges* in general (IRanges), and specifically for addressing locations in the genome and hence including chromosome and strand information (GRanges). Here we will briefly explore what these objects are and a subset of the operations which manipulate IRanges and GRanges.
@@ -26,7 +30,7 @@ ir
 start(ir)
 end(ir)
 width(ir)
-# for detailed information on the class:
+# for detailed information on the IRanges class:
 # ?IRanges
 ```
 
