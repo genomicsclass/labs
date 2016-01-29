@@ -21,14 +21,17 @@ diets, with weight being the outcome of interest. We consider this
 population to be fixed, and the randomness comes from the
 sampling. One reason we have been using this dataset as an example is
 because we happen to have the weights of all the mice of this
-type. Here we download and read in this dataset:
+type. We download [this](https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv) file to our working directory and read in to R:
 
-```{r,message=FALSE}
+```{r,message=FALSE,echo=FALSE}
 library(downloader)
 url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv"
 filename <- "mice_pheno.csv"
 if (!file.exists(filename)) download(url,destfile=filename)
-dat <- read.csv(filename)
+```
+
+```{r}
+dat <- read.csv("mice_pheno.csv")
 ```
 
 We can then access the population values and determine, for example, how many we have. Here we compute the size of the control population:
