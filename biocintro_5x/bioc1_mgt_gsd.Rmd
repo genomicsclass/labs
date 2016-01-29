@@ -12,11 +12,15 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ```{r setup,echo=FALSE,results="hide"}
 suppressPackageStartupMessages({
+library(RNAseqData.HNRNPC.bam.chr14)
 library(BiocStyle)
+library(Rsamtools)
 library(Biobase)
 library(GSE5859)
 library(annotate)
 library(BiocParallel)
+library(GenomicAlignments)
+library(S4Vectors)
 })
 ```
 
