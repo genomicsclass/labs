@@ -101,7 +101,7 @@ and gene annotation), ensuring that they are properly coordinated.
 
 ```{r dochks,fig=TRUE}
 all.equal(colnames(geneExpression), sampleInfo$filename)
-all.equal(rownames(geneExpression), sampleInfo$PROBEID)
+all.equal(rownames(geneExpression), geneAnnotation$PROBEID)
 ind = which(geneAnnotation$SYMBOL=="BRCA2")
 boxplot(geneExpression[ind,]~sampleInfo$ethnicity, ylab="BRCA2 by hgfocus")
 ```
