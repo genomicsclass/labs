@@ -1,0 +1,137 @@
+---
+title: "Management of genome-scale data"
+author: "Vince Carey"
+layout: page
+---
+
+```{r options, echo=FALSE}
+suppressMessages({
+suppressWarnings({
+suppressPackageStartupMessages({
+library(knitr)
+})
+})
+})
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
+```{r setup,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(erma)
+library(GenomicFiles)
+library(rtracklayer)
+library(grid)
+})
+})
+```
+
+# Introduction
+
+We have seen some very basic and relatively small scale
+data management problems solved fairly straightforwardly
+with the ExpressionSet class and with GenomicFiles
+for a collection of BAM alignment files.
+
+- S4 classes help control complexity and ensure coherence among components.
+- R packages are further used to centralize data, software utilities, and documentation.  Later in the course we will demonstrate how to build such packages.
+
+To conclude this section on data management we address a
+problem that does not have an obviously optimal solution.
+We consider the dilemma between packaging serialized instances
+of GRanges, and packaging indexed compressed text files
+that can naturally be processed with parallel computing using
+GenomicFiles.
+
+# erma: epigenomic road map adventures
+
+To foster improved interpretation of effects of DNA variants,
+we are interested in epigenomic variation among cell types.
+Information on analysis of ChIP-seq experiments has been
+collected in the NIH epigenomic road map, with hundreds of different
+cell-type-specific and mark-specific files archived for public use.
+
+What is an efficient way to manage such data?  One experimental
+approach is provided in the [erma](http://www.bioconductor.org/packages/erma)
+package.  
+
+## A collection of BED files
+
+Statistical 'imputation' of chromatin states has been performed
+as reported by Ernst and Kellis using data on a large number of cell lines.
+
+```{r lker}
+library(erma)
+ef = dir(system.file("bed_tabix", package="erma"), patt="bed.gz$")
+length(ef)
+head(ef)
+```
+
+## GenomicFiles for managing; improving the naming
+
+We regard names of files as immutable, but the vector of paths
+to the bed files can be named more informatively.  The metadata
+can be obtained through the `makeErmaSet` function.
+
+```{r mes}
+mm = makeErmaSet()
+mm
+head(colData(mm))
+names(files(mm)) = colData(mm)$Epigenome.Mnemonic
+head(files(mm))
+```
+
+## What can we do
+
+The following table indicates how configurations of
+various types of chromatin
+marks are combined to infer the state of a
+chromosomal segment.
+
+```{r lkxy,fig=TRUE}
+library(png)
+im = readPNG(system.file("pngs/emparms.png", package="erma"))
+grid.raster(im)
+```
+
+The files in the erma package contain tilings of
+genomes for 31 different cell lines, with assignments of
+tiles to chromatin states according to the state map shown above.
+
+Here's an example of state labeling in the promoter regions for
+two genes,
+BRCA2 and EOMES.
+
+```{r lkbr,fig=TRUE}
+stateProfile(mm, "BRCA2")
+```
+
+```{r lkbr2,fig=TRUE}
+stateProfile(mm, "EOMES")
+```
+
+The two genes differ both in terms of prevalent
+state in the promoter region, and in terms of cell-type
+to cell-type consistency.
+
+## Parallelized targeted queries
+
+The visualizations are nice, but we want to be
+able to program over the files to extract information
+for downstream use.  Here we simply tabulate
+the states present for each cell type.
+`reduceByFile` assigns files to available cores
+or hosts for parallel processing.
+
+```{r lkbp}
+gm = promoters(range(genemodel("BRCA2"))) # 2000 upstream, 200 down by default
+library(BiocParallel)
+register(MulticoreParam(workers=2))
+library(GenomicFiles)
+ans = reduceByFile( gm, files(mm), MAP=function(range,file) {
+   table( import(file, genome="hg19", which=range)$name ) } )
+ans= unlist(ans, recursive=FALSE)
+names(ans) = colData(mm)$Epigenome.Mnemonic
+ans[1:4]
+```
