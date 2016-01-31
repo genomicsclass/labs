@@ -1,5 +1,5 @@
 ---
-title: "Management of genome-scale data"
+title: "Managing and processing large numbers of BED files"
 author: "Vince Carey"
 layout: page
 ---
@@ -31,11 +31,11 @@ library(grid)
 
 We have seen some very basic and relatively small scale
 data management problems solved fairly straightforwardly
-with the ExpressionSet class and with GenomicFiles
+with the ExpressionSet class and with BamFileList
 for a collection of BAM alignment files.
 
 - S4 classes help control complexity and ensure coherence among components.
-- R packages are further used to centralize data, software utilities, and documentation.  Later in the course we will demonstrate how to build such packages.
+- R packages are further used to coordinate and distribute data, software utilities, and documentation.  Later in the course we will demonstrate how to build such packages.
 
 To conclude this section on data management we address a
 problem that does not have an obviously optimal solution.
@@ -43,6 +43,16 @@ We consider the dilemma between packaging serialized instances
 of GRanges, and packaging indexed compressed text files
 that can naturally be processed with parallel computing using
 GenomicFiles.
+
+Why is this a dilemma?  In certain contexts, GRanges instances for
+large numbers of features will be very large, can take significant
+time to load, and can consume significant quantities of RAM.  This
+can lead to difficulties in using these representations on cluster nodes
+with limited RAM.  If the data are kept on disk in an indexed format
+allowing random access, transforming targeted extracts of file content
+into GRanges on an as-needed basis may produce better performance
+for certain applications.  One reason for creating the erma package
+is to acquire data on the tradeoffs between these different approaches.
 
 # erma: epigenomic road map adventures
 
@@ -82,12 +92,24 @@ names(files(mm)) = colData(mm)$Epigenome.Mnemonic
 head(files(mm))
 ```
 
-## What can we do
+# Tabulating chromatin state assignments
+
+## An overview of the states and marks used to define them
 
 The following table indicates how configurations of
 various types of chromatin
 marks are combined to infer the state of a
-chromosomal segment.
+chromosomal segment.  Abbreviations used indicate inferred existence of
+an active TSS (TssA), upstream and downstream promoters of two types,
+(PromU, PromD1, PromD2), Transcription that is 5' or 3' preferential
+or simply strong or weak (Tx5', Tx3', Tx, TxWk), jointly transcribed
+and regulatory (TxReg), transcribed with preference and enhancer
+activity, possibly weak (TxEnh5', TxEnh3', TxEnhW), active enhancers
+of two types, possibly flanking or weak (EnhA1, EnhA2, EnhAF, EnhW1, EnhW2)
+or facilitated by H3K27ac (EnhAc), primary DNase (DNase), ZNF genes
+and repeats (ZNF/Rpts), heterochromatin (Het), promoters of
+bivalent or poised type (PromP, PromBiv), repressed polycomb (ReprPC)
+or quiescent (Quies).
 
 ```{r lkxy,fig=TRUE}
 library(png)
@@ -135,3 +157,23 @@ ans= unlist(ans, recursive=FALSE)
 names(ans) = colData(mm)$Epigenome.Mnemonic
 ans[1:4]
 ```
+
+So we see that there is cell-type specific variation in the
+numbers and types of
+states imputed to genomic sequence in the promoter region
+of a given gene.  In exercises we will consider how to develop
+other summaries of potential interest in this manner.
+
+# Summary
+
+We have shown how we can 
+
+- "leave on disk" large numbers of indexed textual representations of genomic annotation or experimental result,
+- use R packaging to simplify identification of paths to these resources,
+- use GenomicFiles to manage metadata about the files,
+- use reduceByFile to process file contents in parallel.
+
+Such technique provides a certain level of scalability by avoiding construction,
+saving and loading of large R object serializations.  In certain applications
+with large numbers of clusters with limited RAM, such strategy may
+be highly cost-effective.
