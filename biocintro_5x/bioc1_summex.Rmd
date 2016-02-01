@@ -1,0 +1,174 @@
+---
+title: "SummarizedExperiment class in depth"
+author: "Vince Carey"
+layout: page
+---
+
+```{r options, echo=FALSE}
+suppressMessages({
+suppressWarnings({
+suppressPackageStartupMessages({
+library(knitr)
+})
+})
+})
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+
+```{r setup,echo=FALSE,results="hide"}
+suppressMessages({
+suppressWarnings({
+suppressPackageStartupMessages({
+library(Homo.sapiens)
+library(ph525x)
+library(SummarizedExperiment)
+library(GenomicFiles)
+library(rtracklayer)
+library(grid)
+library(RNAseqData.HNRNPC.bam.chr14)
+library(Rsamtools)
+library(Biobase)
+library(annotate)
+library(BiocParallel)
+library(GenomicAlignments)
+library(S4Vectors)
+library(Homo.sapiens)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+})
+})
+})
+```
+
+# Introduction
+
+In the data management overview, we applied `summarizeOverlaps` to
+the set of BAM files in RNAseqData.HNRNPC.bam.chr14.  Let's do it
+again to focus on the object that is returned.
+
+## BAM files to SummarizedExperiment for a single region
+
+```{r dosumm, cache=TRUE}
+library(RNAseqData.HNRNPC.bam.chr14)
+bfp = RNAseqData.HNRNPC.bam.chr14_BAMFILES
+library(Rsamtools)
+bfl = BamFileList(file=bfp)
+hnrnpcLoc = GRanges("chr14", IRanges(21677296, 21737638))
+library(GenomicAlignments)
+library(BiocParallel)
+register(SerialParam())
+hnse = summarizeOverlaps(hnrnpcLoc,bfl)
+hnse
+```
+
+`hnse` is an instance of `r class(hnse)`.  This class is like
+an ExpressionSet but has more facilities (and more modern
+facilities) for managing assay summaries and metadata.
+A visual schematic follows:
+
+```{r lkseee,fig=TRUE,echo=FALSE}
+library(ph525x)
+summex()
+```
+
+Effective use of SummarizedExperiment instances involves learning
+about methods that have been defined for them.
+In order to get at the read/region overlap counts for HNRNPC, we apply
+the `assay` method:
+```{r lkcounts}
+assay(hnse)
+```
+This is a bare-bones representation of the result.  The sample
+identifiers have been propagated to column names of the matrix
+of counts, but information on the region examined is lost in
+this display.
+
+## Metadata opportunities in the SummarizedExperiment
+
+The `hnse` object has a little more information.
+```{r lkrr}
+rowRanges(hnse)
+seqinfo(hnse)
+metadata(hnse)
+```
+We can do better.  We will set up the analysis differently
+so that the output is more comprehensive and self-describing.
+# Making SummarizedExperiment more effective by enriching the inputs to summarizing methods
+
+## Defining regions of interest, with metadata
+
+We have seen that it is sufficient to define a single GRanges
+to drive `summarizeOverlaps` over a set of BAM files.  We'd
+like to preserve more metadata about the regions examined.
+We'll use the TxDb infrastructure, to be described in more detail
+later, to get a structure defining gene regions on chr14.
+We'll also use the Homo.sapiens annotation package to add
+gene symbols.
+```{r getr}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
+gr14 = genes(txdb, vals=list(tx_chrom="chr14"))
+gr14$symbol = mapIds(Homo.sapiens, keys=gr14$gene_id, keytype="ENTREZID",
+   column="SYMBOL")
+gr14
+```
+
+## Defining the sample characteristics for the BAM files
+
+We have three distinct preparations, one for control and two for knockdown.
+We will use the GenomicFiles infrastructure to bind the sample level
+metadata.
+```{r setupcol}
+char = rep(c("hela_wt", "hela_hkd"), each=4)
+bff = GenomicFiles(files=path(bfl))
+colData(bff)$condition = char
+sid = c(1,1,1,1,2,2,3,3)
+bff$sample = sid
+bff
+```
+
+## Comparing read overlaps, preserving metadata
+
+We'll look at 5 genes, including HNRNPC.  After computing, we
+bind the sample-level data back into the result.
+```{r redo,cache=TRUE}
+hnse = summarizeOverlaps(gr14[c(1:4,305)],files(bff))
+colData(hnse) = cbind(colData(hnse), colData(bff))
+hnse
+assay(hnse)
+```
+Note that row identifiers are now present with the count matrix.
+
+A simple sanity check:
+```{r lkbo,fig=TRUE}
+par(mfrow=c(2,2))
+for (i in 2:5) {
+  boxplot(assay(hnse)[i,]~hnse$condition, ylab=rowRanges(hnse)$symbol[i])
+}
+```
+
+# Converting from ExpressionSet
+
+This is easy, but more work will be needed to allow
+subsetting of array probes based on genomic range queries.
+```{r lknse}
+library(ALL)
+data(ALL)
+allse = makeSummarizedExperimentFromExpressionSet(ALL)
+allse
+rowRanges(allse)
+```
+
+# Summary
+
+The RangedSummarizedExperiment class instantiates some of the key
+principles of Bioconductor data structure design:
+
+* Assay data and metadata on sample characteristics (colData) are bound together in a coordinated way
+* Matrix-like subsetting works directly on both assay and sample data
+* Range-based subsetting works for assay components addressible by genomic coordinates
+* Arbitrary metadata on assay features can be provided in the mcols(rowRanges(se))
+* Arbitrary general metadata can be provided through `metadata(se)<-`
+ 
+We'll learn more about adaptations of SummarizedExperiment to perform
+specifically for multistage processing and analysis of RNA-seq experiments later in the course.
