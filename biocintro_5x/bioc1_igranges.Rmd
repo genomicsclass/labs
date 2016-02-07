@@ -1,0 +1,303 @@
+---
+layout: page
+title: IRanges and GRanges
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(IRanges)
+library(GenomicRanges)
+})
+```
+
+The IRanges and GRanges objects are core components of the Bioconductor infrastructure for defining *integer ranges* in general (IRanges), and specifically for addressing locations in the genome and hence including chromosome and strand information (GRanges). Here we will briefly explore what these objects are and a subset of the operations which manipulate IRanges and GRanges.
+
+## IRanges
+
+First we load the IRanges package. This is included in the base installation of Bioconductor, but as with all Bioconductor packages it can be installed with `biocLite`. R will print out a bunch of messages when you load IRanges about objects which are masked from other packages. This is part of the normal loading process. Here we print these messages, although on some other book pages we suppress the messages for cleanliness:
+
+```{r}
+library(IRanges)
+```
+
+The `IRanges` function defines interval ranges. If you provide it with two numbers, these are the start and end of a inclusive range, e.g. $[5,10] = \{ 5,6,7,8,9,10 \}$, which has *width* 6. When referring to the size of a range, the term *width* is used, instead of *length*.
+
+```{r}
+ir <- IRanges(5,10)
+ir
+start(ir)
+end(ir)
+width(ir)
+# for detailed information on the IRanges class:
+# ?IRanges
+```
+
+A single *IRanges* object can hold more than one range. We do this by specifying vector to the `start` and `end` arguments. 
+
+```{r}
+IRanges(start=c(3,5,17), end=c(10,8,20))
+```
+
+We will continue to work with the single range $[5,10]$ though. We can look up a number of *intra-range* methods for IRanges objects, which mean that the operations work on each range independently. For example, we can shift all the ranges two integers to the left. By left and right, we refer to the direction on the integer number line: $\{ \dots, -2, -1, 0, 1, 2, \dots \}$. Compare `ir` and `shift(ir, -2)`:
+
+```{r}
+# full details on the intra-range methods:
+# ?"intra-range-methods"
+ir
+shift(ir, -2)
+```
+
+Here we show the result of a number of different operations applied to `ir`, with a picture below.
+
+```{r}
+ir
+narrow(ir, start=2)
+narrow(ir, end=5)
+flank(ir, width=3, start=TRUE, both=FALSE)
+flank(ir, width=3, start=FALSE, both=FALSE)
+flank(ir, width=3, start=TRUE, both=TRUE)
+ir * 2
+ir * -2
+ir + 2
+ir - 2
+resize(ir, 1)
+```
+
+Those same operations plotted in a single window. The red bar shows the shadow of the original range `ir`. The best way to get the hang of these operations is to try them out yourself in the console on ranges you define yourself.
+
+```{r echo=FALSE}
+# set up a plotting window so we can look at range operations
+plot(0,0,xlim=c(0,23),ylim=c(0,13),type="n",xlab="",ylab="",xaxt="n")
+axis(1,0:15)
+abline(v=0:14 + .5,col=rgb(0,0,0,.5))
+
+# plot the original IRange
+plotir <- function(ir,i) { arrows(start(ir)-.5,i,end(ir)+.5,i,code=3,angle=90,lwd=3) }
+plotir(ir,1)
+
+# draw a red shadow for the original IRange
+polygon(c(start(ir)-.5,start(ir)-.5,end(ir)+.5,end(ir)+.5),c(-1,15,15,-1),col=rgb(1,0,0,.2),border=NA)
+
+# draw the different ranges
+plotir(shift(ir,-2), 2)
+plotir(narrow(ir, start=2), 3)
+plotir(narrow(ir, end=5), 4)
+plotir(flank(ir, width=3, start=TRUE, both=FALSE), 5)
+plotir(flank(ir, width=3, start=FALSE, both=FALSE), 6)
+plotir(flank(ir, width=3, start=TRUE, both=TRUE), 7)
+plotir(ir * 2, 8)
+plotir(ir * -2, 9)
+plotir(ir + 2, 10)
+plotir(ir - 2, 11)
+plotir(resize(ir, 1), 12)
+
+text(rep(15,12), 1:12, c("ir","shift(ir,-2)","narrow(ir,start=2)",
+                         "narrow(ir,end=5)",
+                         "flank(ir, start=T, both=F)",
+                         "flank(ir, start=F, both=F)",
+                         "flank(ir, start=T, both=T)",
+                         "ir * 2","ir * -2","ir + 2","ir - 2",
+                         "resize(ir, 1)"), pos=4)
+
+```
+
+There are also a set of *inter-range* methods. These are operations which work on a set of ranges, and the output depends on all the ranges, thus distinguishes these methods from the *intra-range* methods, for which the other ranges in the set do not change the output. This is best explained with some examples. The `range` function gives the integer range from the start of the leftmost range to the end of the rightmost range:
+
+```{r}
+# full details on the inter-range methods:
+# ?"inter-range-methods"
+(ir <- IRanges(start=c(3,5,17), end=c(10,8,20)))
+range(ir)
+```
+
+The `reduce` function collapses the ranges, so that integers are covered by only one range in the output.
+
+```{r}
+reduce(ir)
+```
+
+The `gaps` function gives back the ranges of integers which are in `range(ir)` but not covered by any of the ranges in `ir`:
+
+```{r}
+gaps(ir)
+```
+
+The `disjoin` function breaks up the ranges in `ir` into discrete ranges. This is best explained with examples, but here is the formal definition first:
+
+> returns a disjoint object, by finding the union of the
+> end points in ‘x’. In other words, the result consists of a range
+> for every interval, of maximal length, over which the set of
+> overlapping ranges in ‘x’ is the same and at least of size 1.
+
+```{r}
+disjoin(ir)
+```
+
+Note that this is not a comprehensive list. Check the man pages we listed above, and the best way to get the hang of the functions is to try them out on some ranges you construct yourself. Note that most of the functions are defined both for IRanges and for GRanges, which will be described below.
+
+<a name="granges"></a>
+
+## GRanges
+
+*GRanges* are objects which contain *IRanges* and two more important pieces of information:
+
+* the chromosome we are referring to (called `seqnames` in Bioconductor)
+* the strand of DNA we are referring to
+
+Strand can be specified as plus "+" or minus "-", or left unspecified with "\*". Plus strand features have the biological direction from left to right on the number line, and minus strand features have the biological direction from right to left. In terms of the *IRanges*, plus strand features go from `start` to `end`, and minus strand features go from `end` to `start`. This may seem a bit confusing at first, but this is required because `width` is defined as `end - start + 1`, and negative width ranges are not allowed. Because DNA has two strands, which have an opposite directionality, strand is necessary for uniquely referring to DNA.
+
+With an *IRange*, a chromosome name, and a strand, we can be sure we are uniquely referring to the same region and strand of the DNA molecule as another researcher, given that we are using the same build of *genome*. There are other pieces of information which can be contained within a GRanges object, but the two above are the most important.
+
+```{r message=FALSE}
+library(GenomicRanges)
+```
+
+Let's create a set of two ranges on a made-up chromosome, *chrZ*. And we will say that these ranges refer to the genome *hg19*. Because we have not linked our genome to a database, we are allowed to specify a chromosome which does not really exist in *hg19*.
+
+```{r}
+gr <- GRanges("chrZ", IRanges(start=c(5,10),end=c(35,45)),
+              strand="+", seqlengths=c(chrZ=100L))
+gr
+genome(gr) <- "hg19"
+gr
+```
+
+Note the `seqnames` and `seqlengths` which we defined in the call above:
+
+```{r}
+seqnames(gr)
+seqlengths(gr)
+```
+
+We can use the `shift` function as we did with the IRanges. However, notice the warning when we try to shift the range beyond the length of the chromosome:
+
+```{r}
+shift(gr, 10)
+shift(gr, 80)
+```
+
+If we `trim` the ranges, we obtain the ranges which are left, disregarding the portion that stretched beyond the length of the chromosome:
+
+```{r}
+trim(shift(gr, 80))
+```
+
+We can add columns of information to each range using the `mcols` function (stands for *metadata columns*). Note: this is also possible with IRanges. We can remove the columns by assigning `NULL`.
+
+```{r}
+mcols(gr)
+mcols(gr)$value <- c(-1,4)
+gr
+mcols(gr)$value <- NULL
+```
+
+### GRangesList
+
+Especially when referring to genes, it is useful to create a *list* of GRanges. This is useful for representing groupings, for example the [exons](http://en.wikipedia.org/wiki/Exon) which belong to each gene. The elements of the list are the genes, and within each element the exon ranges are defined as GRanges.
+
+```{r}
+gr2 <- GRanges("chrZ",IRanges(11:13,51:53))
+grl <- GRangesList(gr, gr2)
+grl
+```
+
+The length of the *GRangesList* is the number of *GRanges* object within. To get the length of each GRanges we call `elementLengths`. We can index into the list using typical list indexing of two square brackets.
+
+```{r}
+length(grl)
+elementLengths(grl)
+grl[[1]]
+```
+
+If we ask the `width`, the result is an *IntegerList*. If we apply `sum`, we get a numeric vector of the sum of the widths of each GRanges object in the list.
+
+```{r}
+width(grl)
+sum(width(grl))
+```
+
+We can add metadata columns as before, now one row of metadata for each GRanges object, not for each range. It doesn't show up when we print the GRangesList, but it is still stored and accessible with `mcols`.
+
+```{r}
+mcols(grl)$value <- c(5,7)
+grl
+mcols(grl)
+```
+
+### findOverlaps and %over%
+
+We will demonstrate two commonly used methods for comparing GRanges objects. First we build two sets of ranges:
+
+```{r}
+(gr1 <- GRanges("chrZ",IRanges(c(1,11,21,31,41),width=5),strand="*"))
+(gr2 <- GRanges("chrZ",IRanges(c(19,33),c(38,35)),strand="*"))
+```
+
+`findOverlaps` returns a *Hits* object which contains the information about which ranges in the query (the first argument) overlapped which ranges in the subject (the second argument). There are many options for specifying what kind of overlaps should be counted.
+
+```{r}
+fo <- findOverlaps(gr1, gr2)
+fo
+queryHits(fo)
+subjectHits(fo)
+```
+
+Another way of getting at overlap information is to use `%over%` which returns a logical vector of which ranges in the first argument overlapped any ranges in the second.
+
+```{r}
+gr1 %over% gr2
+gr1[gr1 %over% gr2]
+```
+
+Note that both of these are *strand-specific*, although `findOverlaps` has an `ignore.strand` option.
+
+```{r}
+gr1 <- GRanges("chrZ",IRanges(1,10),strand="+")
+gr2 <- GRanges("chrZ",IRanges(1,10),strand="-")
+gr1 %over% gr2
+```
+
+### Rle and Views
+
+Lastly, we give you a short glimpse into two related classes defined in IRanges, the *Rle* and *Views* classes. *Rle* stands for *run-length encoding*, which is a form of compression for repetitive data. Instead of storing: $[1,1,1,1]$, we would store the number 1, and the number of repeats: 4. The more repetitive the data, the greater the compression with *Rle*.
+
+We use `str` to examine the internal structure of the Rle, to show it is only storing the numeric values and the number of repeats
+
+```{r}
+(r <- Rle(c(1,1,1,0,0,-2,-2,-2,rep(-1,20))))
+str(r)
+as.numeric(r)
+```
+
+A *Views* object can be thought of as "windows" looking into a sequence. 
+
+```{r}
+(v <- Views(r, start=c(4,2), end=c(7,6)))
+```
+
+Note that the internal structure of the Views object is just the original object, and the *IRanges* which specify the windows. The great benefit of Views is when the original object is not stored in memory, in which case the Views object is a lightweight class which helps us reference subsequences, without having to load the entire sequence into memory.
+
+```{r}
+str(v)
+```
+
+## Footnotes
+
+For more information about the `GenomicRanges` package, check out the PLOS Comp Bio paper, which the authors of GenomicRanges published:
+
+http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118
+
+Also the software vignettes have a lot of details about the functionality. Check out the "An Introduction to GenomicRanges" vignette. All of the vignette PDFs are available here:
+
+```{r eval=FALSE}
+browseVignettes("GenomicRanges")
+```
+
+Or the help pages here:
+
+```{r eval=FALSE}
+help(package="GenomicRanges", help_type="html")
+```
+
