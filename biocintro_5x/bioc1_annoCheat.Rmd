@@ -1,0 +1,109 @@
+---
+title: "Genomic annotation in Bioconductor: Cheat sheet"
+author: "Vince"
+date: "March 19, 2015"
+output: html_document
+layout: page
+toc: yes
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+# Summarizing the key genome annotation resources in Bioconductor
+
+## Executive summary
+
+### Organism-oriented annotation
+
+For biological annotation, generally sequence or gene based, there
+are three key types of package
+
+* Reference sequence packages: BSgenome.[Organism].[Curator].[BuildID]
+* Gene model database packages: TxDb.[Organism].[Curator].[BuildID].[Catalog],
+   and, EnsDb.[Organism].[version], for Ensembl-derived annotation
+* Annotation map package: org.[Organism2let].[Institution].db
+
+wherever brackets are used, you must substitute an appropriate token.
+You can survey all annotation packages at [the annotation page](http://bioconductor.org/packages/release/BiocViews.html#___AnnotationData).
+
+Packages Homo.sapiens, Mus.musculus and Rattus.norvegicus are specialized
+integrative annotation resources with an evolving interface.  
+
+### Systems biology oriented annotation
+
+Packages GO.db, KEGG.db, KEGGREST, and reactome.db are primarily
+intended as organism-independent resources organizing genes into
+groups.  However, there are organism-specific mappings between
+gene-oriented annotation and these resources, that involve specific
+abbreviations and symbol conventions.  These are described
+when these packages are used.
+
+## Names for organisms and their abbreviations
+
+The standard Linnaean taxonomy is used very generally.  So you
+need to know that
+
+* Human = *Homo sapiens*
+* Mouse = *Mus musculus*
+* Rat = *Rattus norvegicus*
+* Yeast = *Saccharomyces cerevisiae*
+* Zebrafish = *Danio rerio*
+* Cow = *Bos taurus*
+
+and so on.  We use two sorts of abbreviations.  For
+Biostrings-based packages, the contraction of first
+and second names is used
+
+* Human = Hsapiens
+* Mouse = Mmusculus
+* Rat = Rnorvegicus
+* Yeast = Scerevisiae ...
+
+For NCBI-based annotation maps, we contract further
+
+* Human = Hs
+* Mouse = Mm
+* Rat = Rn
+* Yeast = Sc ...
+
+## Genomic sequence
+
+These packages have four-component names that specify the reference build used
+
+* Human = BSgenome.Hsapiens.UCSC.hg19
+* Mouse = BSgenome.Mmusculus.UCSC.mm10
+* Rat = BSgenome.Rnorvegicus.UCSC.rn5
+* Yeast = BSgenome.Scerevisiae.UCSC.sacCer3
+
+## Gene models
+
+These packages have five-component names that specify the reference build used and
+the gene catalog
+
+* Human = TxDb.Hsapiens.UCSC.hg19.knownGene
+* Mouse = TxDb.Mmusculus.UCSC.mm10.knownGene
+* Rat = TxDb.Rnorvegicus.UCSC.rn5.knownGene
+* Yeast = TxDb.Scerevisiae.UCSC.sacCer3.sgdGene
+
+Additional packages that are relevant are
+
+* Human = TxDb.Hsapiens.UCSC.hg38.knownGene
+* Human = EnsDb.Hsapiens.v75 -- related to hg19/GRCh37
+
+## Annotation maps
+
+These packages have four component names, with two components fixed.  The
+variable components indicate organism and curating institution.
+
+* Human = org.Hs.eg.db
+* Mouse = org.Mm.eg.db
+* Rat = org.Rn.eg.db
+* Yeast = org.Sc.sgd.db
+
+## Additional options
+
+There are often alternative curating institutions available such as
+Ensembl.
