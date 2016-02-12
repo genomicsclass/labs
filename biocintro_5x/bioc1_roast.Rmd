@@ -1,0 +1,192 @@
+---
+layout: page
+title: Gene set testing
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+<a name="roast"></a>
+
+# Gene set testing
+
+Here, we will explore software for testing differential expression in a set of genes. These tests differ from the gene-by-gene tests we saw previously. Again, the gene set testing software we will use lives in the `limma` package.
+
+We download an experiment from the GEO website, using the `getGEO` function from the `GEOquery` package:
+
+```{r,message=FALSE}
+library(GEOquery)
+g <- getGEO("GSE34313")
+e <- g[[1]]
+```
+
+This dataset is hosted by GEO at the following link: <http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE34313>
+
+The experiment is described in the paper by [Masuno 2011](#foot).
+
+Briefly, the investigators applied a glucocorticoid hormone to cultured human airway smooth muscle. The glucocorticoid hormone is used to treat asthma, as it reduces the inflammation response, however it has many other effects throughout the different tissues of the body.
+
+The groups are defined in the `characteristics_ch1.2` variable:
+
+```{r}
+e$condition <- e$characteristics_ch1.2
+levels(e$condition) <- c("dex24","dex4","control")
+table(e$condition)
+```
+
+By examining boxplots, we can guess that the data has already been normalized somehow, and on the GEO site the investigators report that they normalized using Agilent software.
+
+We will subset to the control samples and the samples treated with dexamethasone (the hormone) after 4 hours.
+
+```{r}
+boxplot(exprs(e), range=0)
+names(fData(e))
+lvls <- c("control", "dex4")
+es <- e[,e$condition %in% lvls]
+es$condition <- factor(es$condition, levels=lvls)
+```
+
+The following lines run the linear model in `limma`. We note that the top genes are common immune-response genes (CSF2, LIF, CCL2, IL6). Also present is FKBP5, a gene which regulates and is regulated by the protein which receives the glucocorticoid hormone.
+
+```{r,message=FALSE}
+library(limma)
+design <- model.matrix(~ es$condition)
+fit <- lmFit(es, design=design)
+fit <- eBayes(fit)
+tt <- topTable(fit, coef=2, genelist=fData(es)$GENE_SYMBOL)
+tt
+```
+
+
+We will use the [ROAST method](#foot) for gene set testing. We can test a single gene set by looking up the genes which contain a certain GO ID, and providing this to the `roast` function. We will show how to get such lists of genes associated with a GO ID in the next chunk.
+
+The roast function performs an advanced statistical technique, *rotation of residuals*, in order to generate a sense of the null distribution for the test statistic. The test statistics in this case is the summary of the scores from each gene. The tests are *self-contained* because only the summary for a single set is used, whereas other gene set tests might compare a set to all the other genes in the dataset, e.g., a *competitive* gene set test.
+
+The result here tells us that the *immune response* genes are significantly down-regulated, and additionally, mixed up and down.
+
+```{r}
+# Immune response
+idx <- grep("GO:0006955", fData(es)$GO_ID)
+length(idx)
+r1 <- roast(es, idx, design)
+# ?roast
+r1
+```
+
+<a name="mroast"></a>
+
+## Testing multiple gene sets
+
+We can also use the `mroast` function to perform multiple roast tests. First we need to create a list, which contains the indices of genes in the ExpressionSet for each of a number of gene sets. We will use the `org.Hs.eg.db` package to gather the gene set information.
+
+```{r}
+# biocLite("org.Hs.eg.db")
+library(org.Hs.eg.db)
+org.Hs.egGO2EG
+go2eg <- as.list(org.Hs.egGO2EG)
+head(go2eg)
+```
+
+The following code unlists the list, then gets matches for each Entrez gene ID to the index in the ExpressionSet. Finally, we rebuild the list.
+
+```{r}
+govector <- unlist(go2eg)
+golengths <- sapply(go2eg, length)
+head(fData(es)$GENE)
+idxvector <- match(govector, fData(es)$GENE)
+table(is.na(idxvector))
+idx <- split(idxvector, rep(names(go2eg), golengths))
+go2eg[[1]]
+fData(es)$GENE[idx[[1]]]
+```
+
+We need to clean this list such that there are no `NA` values. We also clean it to remove gene sets which have less than 10 genes.
+
+```{r}
+idxclean <- lapply(idx, function(x) x[!is.na(x)])
+idxlengths <- sapply(idxclean, length)
+idxsub <- idxclean[idxlengths > 10]
+length(idxsub)
+```
+
+The following line of code runs the multiple ROAST test. This can take about 3 minutes.
+
+```{r}
+r2 <- mroast(es, idxsub, design)
+head(r2)
+r2 <- r2[order(r2$PValue.Mixed),]
+```
+
+We can use the `GO.db` annotation package to extract the GO terms for the top results, by the *mixed* test.
+
+```{r}
+# biocLite("GO.db")
+library(GO.db)
+columns(GO.db)
+keytypes(GO.db)
+GOTERM[[rownames(r2)[1]]]
+r2tab <- select(GO.db, keys=rownames(r2)[1:10],
+                columns=c("GOID","TERM","DEFINITION"), 
+                keytype="GOID")
+r2tab[,1:2]
+```
+
+We can also look for the top results using the standard p-value and in the *up* direction.
+
+```{r}
+r2 <- r2[order(r2$PValue),]
+r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Up"][1:10],
+                columns=c("GOID","TERM","DEFINITION"), 
+                keytype="GOID")
+r2tab[,1:2]
+```
+
+Again but for the *down* direction.
+
+```{r}
+r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Down"][1:5],
+                columns=c("GOID","TERM","DEFINITION"), 
+                keytype="GOID")
+r2tab[,1:2]
+```
+
+
+## Footnotes <a name="foot"></a>
+
+### Methods within the limma package
+
+Wu D, Lim E, Vaillant F, Asselin-Labat ML, Visvader JE, Smyth GK. "ROAST: rotation gene set tests for complex microarray experiments". Bioinformatics. 2010.
+<http://www.ncbi.nlm.nih.gov/pubmed/20610611>
+
+Di Wu and Gordon K. Smyth, "Camera: a competitive gene set test accounting for inter-gene correlation" Nucleic Acids Research, 2012.
+<http://nar.oxfordjournals.org/content/40/17/e133>
+
+### GSEA
+
+Subramanian A1, Tamayo P, Mootha VK, Mukherjee S, Ebert BL, Gillette MA, Paulovich A, Pomeroy SL, Golub TR, Lander ES, Mesirov JP, "Gene set enrichment analysis: a knowledge-based approach for interpreting genome-wide expression profiles" Proc Natl Acad Sci U S A. 2005.
+<http://www.ncbi.nlm.nih.gov/pubmed/16199517>
+
+### Correlation within gene sets
+
+William T. Barry, Andrew B. Nobel, and Fred A. Wright, "A statistical framework for testing functional categories in microarray data" Ann. Appl. Stat, 2008.
+<http://projecteuclid.org/euclid.aoas/1206367822>
+
+William Barry has a package `safe` in Bioconductor for gene set testing with resampling.
+<http://www.bioconductor.org/packages/release/bioc/html/safe.html>
+
+Daniel M Gatti, William T Barry, Andrew B Nobel, Ivan Rusyn and Fred A Wright, "Heading Down the Wrong Pathway: on the Influence of Correlation within Gene Sets", BMC Genomics, 2010.
+<http://www.biomedcentral.com/1471-2164/11/574#B24>
+
+### Gene sets and power
+
+The following article points out an issue with gene set testing: the power to detect differential expression for an individual gene depends on the number of NGS reads which align to that gene, which depends on the transcript length among other factors.
+
+Alicia Oshlack* and Matthew J Wakefield, "Transcript length bias in RNA-seq data confounds systems biology", Biology Direct, 2009.
+<http://www.biologydirect.com/content/4/1/14>
+
+### The dataset used in this lab
+
+Masuno K, Haldar SM, Jeyaraj D, Mailloux CM, Huang X, Panettieri RA Jr, Jain MK, Gerber AN., "Expression profiling identifies Klf15 as a glucocorticoid target that regulates airway hyperresponsiveness". Am J Respir Cell Mol Biol. 2011.
+<http://www.ncbi.nlm.nih.gov/pubmed/21257922>
