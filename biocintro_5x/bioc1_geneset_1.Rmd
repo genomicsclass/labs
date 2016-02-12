@@ -157,7 +157,7 @@ rug(tt[ind],col=2)
 
 Note that the gene set distribution shifts a bit to the left providing evidence that the distribution of the t-statistics in this gene set is different from the distribution for all genes. So how do we quantify this observation? How do we assess uncertainty.
 
-The first published approach to performing gene set analysis [Virtaneva 2001](#foot) used the Wilcox Mann-Whitney tests discussed in a previous unit. The basic idea was to test if the difference between cases and controls was generally bigger in a given gene set compared to the rest of the genes. The Wilcox compares the ranks in the gene sets are generally above the median. 
+The first published approach to performing gene set analysis [Virtaneva 2001](#foot) used the Wilcoxon Mann-Whitney tests discussed in a previous unit. The basic idea was to test if the difference between cases and controls was generally bigger in a given gene set compared to the rest of the genes. The Wilcoxon compares the ranks in the gene sets are generally above the median. 
 
 Here we compute the Wilcoxon test for each gene set. We then standardize the Wilcoxon statistic to have mean 0 and standard deviation 1. Note that the central limit theorem tell us that if the gene sets are large enough and the effect size for each gene are independent of each other then these statistics will follow a normal distribution. 
 
