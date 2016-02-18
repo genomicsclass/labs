@@ -1,0 +1,76 @@
+---
+layout: page
+title: shiny for interactive visualization of multivariate data
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(shiny)
+library(cluster)
+library(ph525x)
+})
+})
+```
+
+## Running the dfHclust function
+
+### The main display layout
+
+The ph525x package includes the `dfHclust` function.  This
+takes a `data.frame` instance as sole argument and starts
+a browser session.  You can try it directly with
+
+```{r lkb,eval=FALSE}
+library(ph525x)
+dfHclust(mtcars)
+```
+
+There is a sidebar panel on the left that accepts selections
+for
+
+* `distance` for object proximity
+* `clustering method` to form the hierarchy through object agglomeration
+* `height` for cutting the cluster dendrogram into groups of objects
+* features to use for computation of object distance
+
+In this application, the objects are cars with different manufacturer
+and model types; the features are structural or operating characteristics
+of cars.  Note that the application starts with certain defaults:
+
+* euclidean distance
+* ward.D as the agglomeration procedure
+* 40 as the cut height
+* the first two variables as features
+
+The main panel to the right includes tabs for three types of display:
+
+* tree for the clustering dendrogram
+* pairs plot for direct pairwise scatterplot visualization 
+* silhouette plot for assessing cluster quality at the selected cutting height
+
+To fully understand the quantities displayed in the "tree" and "silh"
+tabs, you should review the definitions of distance, clustering method, 
+and silhouette until you feel comfortable explaining these to a non-statistician.
+
+* Distance measures are very important in multivariate analysis
+* Hierarchical clustering procedures are complex; see the 
+[definition of Ward's method](https://en.wikipedia.org/wiki/Ward%27s_method) in Wikipedia for a clear exposition of one important approach
+* Silhouette is defined clearly in the man page for `silhouette` in the `cluster` package
+
+### Interacting with the display
+
+Notice that the defaults lead to a tree with three main lobes in the
+panel displayed when the 
+"tree" tab is selected.  The panel for the "silh" tab shows 
+a measure of cluster membership for each observation in the dataset.
+
+* note that the average silhouette width at the defaults for mtcars is 0.56
+* if, leaving all other selections alone, you change the "Select height for cut" value to 70, the silhouette plot changes to show an average silhouette of 0.59 -- an improvement, but now we have only two clusters, and one observation with a negative silhouette value
+* for an amusing observation, set the distance to "euclidean" and the clustering method to `single` -- now the closest neighbor to the Mercedes 450 SLC is the AMC Javelin.  I guess the Javelin wasn't such a bad car after all....
+
