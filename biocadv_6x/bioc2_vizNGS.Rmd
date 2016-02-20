@@ -7,6 +7,14 @@ title: Visualizing NGS data
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
+```{r getpack,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(pasillaBamSubset)
+library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+})
+})
+```
 
 We will use the following libraries to demonstrate visualization of NGS data.
 
