@@ -52,7 +52,7 @@ symbols for these genes.
 ```{r done}
 allg = genes(txdb)
 esrraAddr = genes(txdb, vals=list(gene_id=2101)) # redundant...
-esrraNeigh = subsetByOverlaps(allg, esrraAddr+500000) 
+esrraNeigh = subsetByOverlaps(allg, esrraAddr+500000)
 esrraNeigh$symbol = mapIds(Homo.sapiens, keys=esrraNeigh$gene_id, keytype="ENTREZID",
   column="SYMBOL")
 ```
@@ -68,7 +68,7 @@ We obtain the ESRRA binding data for the GM12878 EBV-transformed
 B-cell and subset to events near our group of genes.
 ```{r gete}
 data(GM12878)
-sc = subsetByOverlaps(GM12878, esrraNeigh)
+sc = subsetByOverlaps(GM12878, range(esrraNeigh))
 sc
 ```
 
