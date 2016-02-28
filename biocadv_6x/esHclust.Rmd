@@ -90,7 +90,7 @@ A heatmap of the 50 genes identified as most discriminating by
 this simple F testing approach is:
 
 ```{r lkheat,fig=TRUE}
-heatmap(ef1$coef[order(ef1$F,decreasing=TRUE)[1:50],-1], cexCol=.8)
+print(heatmap(ef1$coef[order(ef1$F,decreasing=TRUE)[1:50],-1], cexCol=.8))
 ```
 
 This is a visualization of mean expression relative to a
@@ -99,7 +99,7 @@ raw data:
 
 ```{r lkh2,fig=TRUE}
 sig50 = rownames(ef1$coef[order(ef1$F,decreasing=TRUE)[1:50],])
-heatmap(exprs(tgeES[sig50,]))
+print(heatmap(exprs(tgeES[sig50,])))
 ```
 
 This is all very informal, using only default values for heatmap presentations.
