@@ -6,6 +6,14 @@ title: "A shiny app for clustering using genes in ExpressionSet"
 ```{r options, echo=FALSE}
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(Biobase)
+library(randomForest)
+library(MLInterfaces)
+library(tissuesGeneExpression)
+library(limma)
+library(ph525x)
+})
 ```
 
 
