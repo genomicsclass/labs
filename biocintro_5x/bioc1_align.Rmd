@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Biological versus technical variability
+title: "Notes on video of mapping RNA-seq reads"
 ---
 
 ```{r options, echo=FALSE}
