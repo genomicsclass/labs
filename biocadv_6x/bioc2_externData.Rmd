@@ -10,6 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```{r getpacksa,echo=FALSE,results="hide"}
 suppressPackageStartupMessages({
 suppressMessages({
+suppressWarnings({
 library(AnnotationDbi)
 library(ggbio)
 library(gwascat)
@@ -22,6 +23,7 @@ library(rtracklayer)
 library(Rsamtools)
 library(h5vc)
 library(rhdf5)
+})
 })
 })
 ```
