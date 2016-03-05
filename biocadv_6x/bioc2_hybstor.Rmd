@@ -88,7 +88,7 @@ registerDoParallel(cores=2)
 ut2 = unix.time(l2 <- storeApply(m, length))
 ut2
 print(sum(unlist(l2)))
-all.equal(l1, l2)
+all.equal(unlist(l1), unlist(l2))
 ```
 We see that doubling the number of processors halves the
 time required to get the length of each component of the archive.
