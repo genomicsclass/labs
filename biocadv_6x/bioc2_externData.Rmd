@@ -145,6 +145,7 @@ unix systems are available in [Wikipedia](http://en.wikipedia.org/wiki/Sort_(Uni
 on most unix systems for details.
 
 Here's how we carried out the activities of the video:
+
 ```
 # check file
 head ENCFF001VEH.narrowPeak
@@ -158,6 +159,7 @@ tabix -p bed bcell.narrowPeak.gz
 tabix bcell.narrowPeak.gz chr22:1-20000000
 # yields only two records on chr22
 ```
+
 In R we made use of the compressed and indexed version
 as follows:
 ```{r dot,eval=FALSE}
