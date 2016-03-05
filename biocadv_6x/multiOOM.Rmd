@@ -33,7 +33,7 @@ we give a very rudimentary account of this here.
 ## The harness
 
 It is common to speak of a program that drives other programs
-as a "harness" (see (wikipedia)[https://en.wikipedia.org/wiki/Test_harness)
+as a "harness" (see [wikipedia](https://en.wikipedia.org/wiki/Test_harness)
 for related discussion).  We have such a program in ph525x:
 
 ```{r lkph}
