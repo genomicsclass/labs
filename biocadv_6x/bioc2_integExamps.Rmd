@@ -8,6 +8,8 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 ```{r getpacksa,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+suppressMessages({
 library(AnnotationDbi)
 library(ggbio)
 library(gwascat)
@@ -16,6 +18,8 @@ library(ERBS)
 library(OrganismDbi)
 library(harbChIP)
 library(yeastCC)
+})
+})
 ```
 
 ## Integrative analysis examples
@@ -24,6 +28,7 @@ In this document we'll review a few approaches to using genome-scale data of dif
 types to reason about certain focused questions.
  
 <a name="yeasttfs"></a>
+
 ### TF binding and expression co-regulation in yeast
 
 An example of integrative analysis can be found in a paper
@@ -114,6 +119,7 @@ significance, but have focused on how the data
 types are brought together.
 
 <a name="gwastf"></a>
+
 ### TF binding and genome-wide DNA-phenotype associations in humans
 
 Genetic epidemiology has taken advantage of high-throughput
@@ -188,6 +194,7 @@ observation consistent with the play of chance in our
 work with these data?  We will examine this in the exercises.
 
 <a name="geo"></a>
+
 ### Harvesting GEO for families of microarray archives
 
 The NCBI Gene Expression Omnibus is a basic resource for
@@ -198,7 +205,9 @@ GEO datasets.
 The GEOmetadb database is a 240MB download that decompresses to 3.6 GB
 of SQLite.  Once you have acquired the GEOmetadb.sqlite file using
 the `getSQLiteFile` function, you can create a connection
-and start interrogating the database locally.
+and start interrogating the database locally.  Here we
+use an environment variable to establish the location of the database.
+Use your operating system environment variables to emulate this.
 
 ```{r dosq}
 library(RSQLite)
