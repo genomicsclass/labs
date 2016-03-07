@@ -32,6 +32,8 @@ Concretely, an R package is a structured collection of folders,
 organized and populated according to the rules of
 [Writing R Extensions](http://cran.r-project.org/doc/manuals/r-release/R-exts.html).
 
+<a name="skel"></a>
+
 ### A new software package with `package.skeleton`
 
 We can create our own packages using `package.skeleton`.  We'll illustrate that now
@@ -77,6 +79,8 @@ streamline the code in `juxta` to make use of inter-package
 symbol transfer by properly writing the DESCRIPTION and NAMESPACE
 files for the package, but leave this for an advanced course in
 software development.
+
+<a name="org"></a>
 
 ### A new annotation package with OrganismDbi
 
