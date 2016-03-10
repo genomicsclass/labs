@@ -1,0 +1,108 @@
+---
+layout: page
+title: "A view of genetic heterogeneity between and within cancer types"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(ph525x)
+library(RTCGAToolbox)
+})
+```
+
+
+## Introduction
+
+We will use data in the ph525x package on mutations in
+breast cancer and rectal adenocarcinoma to illustrate
+some issues in dealing with mutations data from TCGA.
+A basic objective is construction of a "rainfall plot".
+An example is Figure 6 from [Alexandrov et al. 2013](http://www.pubmedcentral.nih.gov/articlerender.fcgi?artid=3776390&tool=pmcentrez&rendertype=abstract):
+
+```{r lkkat,fig=TRUE,echo=FALSE}
+kataegis()
+```
+
+These plots include data from deeply sequenced individual tumors,
+and we'd like to understand how to construct them using
+tools from Bioconductor.
+
+## The mutation data frames from RTCGAToolbox
+
+The `readMuts` data are from the 20150402 TCGA production.
+```{r lkread}
+library(ph525x)
+data(readMuts)
+dim(readMuts)
+data(brcaMuts)
+dim(brcaMuts)
+```
+
+## Mutation types and their contents
+
+```{r lkrmut}
+table(readMuts$Variant_Type)
+with(readMuts, head(Reference_Allele[Variant_Type=="DEL"]))
+```
+
+## Tabulating substitution types
+
+The following function enumerates substitutions according to
+the [COSMIC convention](http://cancer.sanger.ac.uk/cosmic/signatures):
+"The profile of each signature is displayed using the six substitution subtypes: C>A, C>G, C>T, T>A, T>C, and T>G (all substitutions are referred to by the pyrimidine of the mutated Watson–Crick base pair)."
+
+```{r dosubt}
+ subt = function(ref, a1, a2) {
+        alt = ifelse(a1 != ref, a1, a2)
+        tmp = ref
+        needsw = which(alt %in% c("C", "T"))
+        ref[needsw] = alt[needsw]
+        alt[needsw] = tmp[needsw]
+        paste(ref, alt, sep = ">")
+    }
+with(readMuts[readMuts$Variant_Type=="SNP",],
+   table(subt(Reference_Allele, Tumor_Seq_Allele1, Tumor_Seq_Allele2)))
+```
+
+A>G and G>A substitutions are not included in kataegis plots.
+
+To define the colors used for substitutions:
+
+```{r lkkac}
+ph525x:::kataColors
+```
+
+## Total genomic distance
+
+The mutation locations reported are not particularly convenient for genome-wide
+plotting as the distances are all relative to chromosome start.
+The following hidden function computes total distance relative
+to start of chr1, assuming that the data are held in GRanges.
+```{r lktg}
+ph525x:::totalgd
+```
+
+## A demo plot for four tumors
+
+The rainfall function will organize the input data by sample, and
+samples can, in the present version, be selected according to
+their position in an ordering based on number of mutations reported.
+The default plots the sample with the greatest number of mutations.
+The oind parameter allows selection of samples further down in the
+ordering.  We embellish the plot with a simple kernel estimate
+of the density of mutations along the chromosomes.  The
+function invisibly returns a list of items related to the plot.
+
+```{r do4f,fig=TRUE,fig.height=8}
+rainouts = list()
+par(mfrow=c(4,1),mar=c(4,5,1,1))
+for (i in 1:4) rainouts[[i]] = rainfall(readMuts, oind=i)
+```
+
+```{r lkrao}
+str(rainouts[[1]])
+```
+
+
