@@ -62,7 +62,7 @@ dat <- read.csv(url)
 We are interested in determining if following a given diet makes mice
 heavier after several weeks. This data was produced by ordering 24
 mice from The Jackson Lab and randomly assigning either chow or high
-fat (hf) diet. After several weeks, the scientists weighed each mice
+fat (hf) diet. After several weeks, the scientists weighed each mouse
 and obtained this data (`head` just shows us the first 6 rows):
 
 ```{r}
@@ -75,7 +75,7 @@ In RStudio, you can view the entire dataset with:
 View(dat)
 ```
 
-So are the hf mice heavier? Mouse 24 at 20.73 grams is one the
+So are the hf mice heavier? Mouse 24 at 20.73 grams is one of the
 lightest mice, while Mouse 21 at 34.02 grams is one of the heaviest. Both are on
 the hf diet. Just from looking at the data, we see there is
 *variability*. Claims such as the one above usually refer to the
@@ -99,7 +99,7 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 ## Random Variables
 
-Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
+Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special dataset that we are using here to illustrate concepts. 
 
 ```{r, echo=FALSE}
 library(downloader)
