@@ -34,7 +34,7 @@ estimated effect size and the uncertainty associated with this
 estimate. Here we use the mice data to illustrate the concept behind
 confidence intervals. 
 
-#### Confidence Interval For Population Mean
+#### Confidence Interval for Population Mean
 
 Before we show how to construct a confidence interval for the
 difference between the two groups, we will
@@ -82,7 +82,7 @@ print(se)
 
 <a name="interval"></a>
 
-#### Defining The Interval
+#### Defining the Interval
 
 A 95% confidence interval (we can use percentages other than 95%) is a
 random interval with a 95% probability of falling on the parameter we
