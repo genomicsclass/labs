@@ -49,9 +49,9 @@ mad(x)
 
 #### Spearman correlation
 
-Earlier we saw that the correlation is also sensitive to outliers. Here we construct a independent list of numbers, but for which a similar mistake was made for the same entry:
+Earlier we saw that the correlation is also sensitive to outliers. Here we construct an independent list of numbers, but for which a similar mistake was made for the same entry:
 
-```{r, scatter_plot_showing_outlier,fig.cap="scatterplot showing bivariate normal data with one signal outlier resulting in large values in both dimensions."}
+```{r, scatter_plot_showing_outlier,fig.cap="Scatterplot showing bivariate normal data with one signal outlier resulting in large values in both dimensions."}
 set.seed(1)
 x=c(rnorm(100,0,1)) ##real distribution
 x[23] <- 100 ##mistake made in 23th measurement
@@ -59,16 +59,18 @@ y=c(rnorm(100,0,1)) ##real distribution
 y[23] <- 84 ##similar mistake made in 23th measurement
 library(rafalib)
 mypar()
-plot(x,y,main=paste0("correlation=",round(cor(x,y),3)),pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
+plot(x,y,main=paste0("correlation=",round(cor(x,y),3)),
+     pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
 abline(0,1)
 ```
 
 The Spearman correlation follows the general idea of median and MAD, that of using quantiles.  The idea is simple: we convert each dataset to ranks and then compute correlation:
 
-```{r spearman_corr_illustration, fig.cap="scatterplot of original data (left) and ranks (right). Spearman correlation reduces the influence of outliers by considering the ranks instead of original data.",fig.width=10.5,fig.height=5.25}
+```{r spearman_corr_illustration, fig.cap="Scatterplot of original data (left) and ranks (right). Spearman correlation reduces the influence of outliers by considering the ranks instead of original data.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
 plot(x,y,main=paste0("correlation=",round(cor(x,y),3)),pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
-plot(rank(x),rank(y),main=paste0("correlation=",round(cor(x,y,method="spearman"),3)),pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
+plot(rank(x),rank(y), main=paste0("correlation=",round(cor(x,y,method="spearman"),3)),
+     pch=21,bg=1,xlim=c(-3,100),ylim=c(-3,100))
 abline(0,1)
 ```
 
@@ -95,7 +97,7 @@ ratios <- x / y
 ```
 
 Reporting ratios or fold changes are common in the life
-science. Suppose you are studying ratio data showing, say, gene
+sciences. Suppose you are studying ratio data showing, say, gene
 expression before and after treatment. You are given ratio data so
 values larger than 1 imply gene expression was higher after the
 treatment. If the treatment has no effect, we should see as many
@@ -110,7 +112,7 @@ logratios <- log2(ratios)
 hist(logratios)
 ```
 
-The problem here is that ratios are not symmetrical around 1. For example, 1/32 is much closer to 1 than 32/1. Taking logs takes care of this problem. The log of ratios are of course symmetric around 0 because:
+The problem here is that ratios are not symmetrical around 1. For example, 1/32 is much closer to 1 than 32/1. Using the log takes care of this problem. The log of ratios are of course symmetric around 0 because:
 
 $$\log(x/y) = \log(x)-\log(y) = -(\log(y)-\log(x)) = \log(y/x)$$
 
@@ -131,7 +133,7 @@ abline(h=1)
 ```
 
 
-In the life science, the log transformation is also commonly used
+In the life sciences, the log transformation is also commonly used
 because (multiplicative) fold changes are the most widely used quantification of
 interest. Note that a fold change of 100 can be a ratio of 100/1 or
 1/100. However, 1/100 is much closer to 1 (no fold change) than 100:
