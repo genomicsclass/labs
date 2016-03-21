@@ -41,9 +41,9 @@ plot(tt,d,ylab="Distance in meters",xlab="Time in seconds")
 
 He does not know the exact equation, but by looking at the plot above he deduces that the position should follow a parabola. So he models the data with:
 
-$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
+$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n $$
 
-With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon$ accounting for measurement error. This is a linear model because it is a linear combination of known quantities (th $x$ s) referred to as predictors or covariates and unknown parameters (the $\beta$ s). 
+With $Y_i$ representing location, $x_i$ representing the time, and $\varepsilon_i$ accounting for measurement error. This is a linear model because it is a linear combination of known quantities (th $x$ s) referred to as predictors or covariates and unknown parameters (the $\beta$ s). 
 
 #### Father & son heights
 Now imagine you are Francis Galton in the 19th century and you collect paired height data from fathers and sons. You suspect that height is inherited. Your data:
@@ -62,9 +62,9 @@ plot(x,y,xlab="Father's height",ylab="Son's height")
 
 The sons' heights do seem to increase linearly with the fathers' heights. In this case, a model that describes the data is as follows:
 
-$$ Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N $$
+$$ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, i=1,\dots,N $$
 
-This is also a linear model with $x_i$ and $Y_i$, the father and son heights respectively, for the $i$-th pair and $\varepsilon$ a term to account for the extra variability. Here we think of the fathers' heights as the predictor and being fixed (not random) so we use lower case. Measurement error alone can't explain all the variability seen in $\varepsilon$. This makes sense as there are other variables not in the model, for example, mothers' heights, genetic randomness, and environmental factors.
+This is also a linear model with $x_i$ and $Y_i$, the father and son heights respectively, for the $i$-th pair and $\varepsilon_i$ a term to account for the extra variability. Here we think of the fathers' heights as the predictor and being fixed (not random) so we use lower case. Measurement error alone can't explain all the variability seen in $\varepsilon_i$. This makes sense as there are other variables not in the model, for example, mothers' heights, genetic randomness, and environmental factors.
 
 #### Random samples from multiple populations
 
@@ -138,7 +138,7 @@ lines(tt,f,col=2)
 
 But we were pretending to be Galileo and so we don't know the parameters in the model. The data does suggest it is a parabola, so we model it as such:
 
-$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon, i=1,\dots,n $$
+$$ Y_i = \beta_0 + \beta_1 x_i + \beta_2 x_i^2 + \varepsilon_i, i=1,\dots,n $$
 
 How do we find the LSE?
 

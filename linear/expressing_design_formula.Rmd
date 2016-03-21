@@ -14,7 +14,7 @@ Here we will show how to use the two R functions, `formula`
 and `model.matrix`, in order to produce *design matrices* (also known as *model matrices*) for a variety of linear models. For example, in the mouse diet examples we wrote the model as
 
 $$ 
-Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N 
+Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, i=1,\dots,N 
 $$
 
 with $Y_i$ the weights 
