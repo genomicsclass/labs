@@ -37,17 +37,17 @@ One of the most famous examples of hypothesis testing was performed by
 An acquaintance of Fisher's claimed that she could tell if milk was added
 before or after tea was poured. Fisher gave her four pairs of
 cups of tea: one with milk poured first, the other after. The order
-was randomized. Say she picked 3 out 4 correctly, do we believe
+was randomized. Say she picked 3 out of 4 correctly, do we believe
 she has a special ability? Hypothesis testing helps answer this
 question by quantifying what happens by chance. This example is called
-the "Lady tasting tea" experiment (and, as it turns out, Fisher's friend
+the "Lady Tasting Tea" experiment (and, as it turns out, Fisher's friend
 was a scientist herself, [Muriel Bristol](https://en.wikipedia.org/wiki/Muriel_Bristol)).
 
 The basic question we ask is: if the tester is actually guessing, what
 are the chances that she gets 3 or more correct? Just as we have done
 before, we can compute a probability under the null hypothesis that she
-is guessing four of each. If we assume this null hypothesis, we can
-think of this particular examples as picking 4 balls out of an urn
+is guessing 4 of each. If we assume this null hypothesis, we can
+think of this particular example as picking 4 balls out of an urn
 with 4 green (correct answer) and 4 red (incorrect answer) balls.
 
 Under the null hypothesis that she is simply guessing, each ball
@@ -63,7 +63,7 @@ it uses the *hypergeometric distribution*.
 
 #### Two By Two Tables
 
-The data from the experiment above can be summarized by a 2 by 2 table:
+The data from the experiment above can be summarized by a two by two table:
 
 ```{r}
 tab <- matrix(c(3,1,1,3),2,2)
@@ -92,8 +92,8 @@ the test performed on the tea taster. However, in that example the
 number of green and red balls is experimentally fixed and the number
 of answers given for each category is also fixed. Another way to say
 this is that the sum of the rows and the sum of the columns are
-fixed. This defines constraints on the possible ways we can fill the 2
-by 2 table and also permits us to use the hypergeometric
+fixed. This defines constraints on the possible ways we can fill the two
+by two table and also permits us to use the hypergeometric
 distribution. In general, this is not the case. Nonetheless, there is
 another approach, the Chi-squared test, which is described below. 
 
@@ -124,7 +124,7 @@ table(genotype)
 table(disease)
 ```
 
-If you you feed the function two factors, it will tabulate all possible pairs and thus create the two by two table:
+If you provide the function with two factors, it will tabulate all possible pairs and thus create the two by two table:
 
 ```{r}
 tab <- table(genotype,disease)
@@ -177,7 +177,7 @@ chisq.test(tab)$p.value
 
 As mentioned earlier, reporting only p-values is not an appropriate
 way to report the results of your experiment. Many genetic association
-studies seem to over emphasize p-values. They have large sample sizes
+studies seem to overemphasize p-values. They have large sample sizes
 and report impressively small p-values.  Yet when one looks closely at
 the results, we realize odds ratios are quite modest: barely bigger
 than 1. In this case the difference of having genotype AA/Aa or aa
@@ -196,7 +196,7 @@ tab<-tab*10
 chisq.test(tab)$p.value
 ```
 
-#### Confidence Intervals For The Odd Ratio
+#### Confidence Intervals for the Odds Ratio
 
 Computing confidence intervals for the OR is not mathematically
 straightforward. Unlike other statistics, for which we can derive
@@ -218,7 +218,7 @@ coeftab<- summary(fit)$coef
 coeftab
 ```
 
-The second row of the table shown above gives you the estimate and SE of the log odds ratio. Mathematical theory tells us the this estimate is approximately normally distributed. We can therefore form a confidence interval and then exponentiate to provide a confidence interval for the OR.
+The second row of the table shown above gives you the estimate and SE of the log odds ratio. Mathematical theory tells us that this estimate is approximately normally distributed. We can therefore form a confidence interval and then exponentiate to provide a confidence interval for the OR.
 
 ```{r}
 ci <- coeftab[2,1] + c(-2,2)*coeftab[2,2]
