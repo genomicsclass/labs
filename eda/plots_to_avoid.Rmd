@@ -14,13 +14,13 @@ set.seed(1)
 library(rafalib)
 ```
 
-## Plots To Avoid 
+## Plots to Avoid 
 
-This section is based on a talk by [Karl W. Broman](http://kbroman.org/) titled "How to Display Data Badly", in which he described how the default plots offered by Microsoft Excel "obscure your data and annoy your readers" ([here](http://kbroman.org/pages/talks.html) is a link to a collection of Karl Broman's talks). His lecture was inspired by the 1984 paper by H. Wainer: How to display data badly. American Statistician 38(2): 137--147. Dr. Wainer was the first to elucidate the principles of the bad display of data. However, according to Karl, "The now widespread use of Microsoft Excel has resulted in remarkable advances in the field." Here we show examples of "bad plots" and how to improve them in R.
+This section is based on a talk by [Karl W. Broman](http://kbroman.org/) titled "How to Display Data Badly," in which he described how the default plots offered by Microsoft Excel "obscure your data and annoy your readers" ([here](http://kbroman.org/pages/talks.html) is a link to a collection of Karl Broman's talks). His lecture was inspired by the 1984 paper by H. Wainer: How to display data badly. American Statistician 38(2): 137--147. Dr. Wainer was the first to elucidate the principles of the bad display of data. However, according to Karl Broman, "The now widespread use of Microsoft Excel has resulted in remarkable advances in the field." Here we show examples of "bad plots" and how to improve them in R.
 
 #### General principles
 
-The aims of good data graphics is to display data accurately and clearly. According to Karl, some rules for displaying data *badly* are:
+The aim of good data graphics is to display data accurately and clearly. According to Karl Broman, some rules for displaying data *badly* are:
 
 *  Display as little information as possible.
 *  Obscure what you do show (with chart junk).
@@ -70,11 +70,11 @@ following a horizontal line to the x-axis. Do avoid a 3D version since
 it obfuscates the plot, making it more difficult to find the
 percentages by eye.
 
-![3D version](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig2b.png)
+![3D version.](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig2b.png)
 
 Even worse than pie charts are donut plots.
 
-![Donut plot](http://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Donut-Chart.svg/360px-Donut-Chart.svg.png)
+![Donut plot.](http://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Donut-Chart.svg/360px-Donut-Chart.svg.png)
 
 The reason is that by removing the center, we remove one of the visual cues for determining the different areas: the angles. There is no reason to ever use a donut plot to display data.
 
@@ -87,7 +87,7 @@ group means; an antenna is added at the top to represent standard
 errors. This plot is simply showing two numbers per group and the
 plot adds nothing: 
 
-![Bad bar plots](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig1c.png)
+![Bad bar plots.](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig1c.png)
 
 Much more informative is to summarize with a boxplot. If the number of
 points is small enough, we might as well add them to the plot. When
@@ -115,11 +115,11 @@ boxplot(dat,xlab="Group",ylab="Response",cex=0)
 stripchart(dat,vertical=TRUE,method="jitter",pch=16,add=TRUE,col=1)
 ```
 
-Notice how much more we see here: the center, spread, range and the points themselves. In the barplot, we only see the mean and the SE, and the SE has more to do with sample size, than with the spread of the data.
+Notice how much more we see here: the center, spread, range, and the points themselves. In the barplot, we only see the mean and the SE, and the SE has more to do with sample size than with the spread of the data.
 
 This problem is magnified when our data has outliers or very large tails. In the plot below, there appears to be very large and consistent differences between the two groups:
 
-![Bar plots with outliers](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig3c.png)
+![Bar plots with outliers.](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig3c.png)
 
 However, a quick look at the data demonstrates that this difference is mostly driven by just two points. A version showing the data in the log-scale is much more informative. 
 
@@ -186,7 +186,7 @@ When new technologies or laboratory techniques are introduced, we are often show
 
 In the plot on the left, we see the original data which shows very high correlation. Yet the data follows a distribution with very fat tails. Furthermore, 95% of the data is below the green line. The plot on the right is in the log scale:
 
-```{r correlation-not-replication, fig.cap="Gene expression data from two replicated samples. Left is in original scale and right is in log scale.",fig.width=10.5 , fig.height=5.25,message=FALSE,echo=FALSE}
+```{r correlation-not-replication, fig.cap="Gene expression data from two replicated samples. Left is in original scale and right is in log scale.", fig.width=10.5, fig.height=5.25, message=FALSE, echo=FALSE}
 ##Both these libraries are available from Bioconductor
 library(Biobase) ##install with install_bioc
 library(SpikeInSubset) 
@@ -211,7 +211,8 @@ plot(r,g,lwd=2,cex=0.2,pch=16,
      main=paste0("corr=",signif(cor(r,g),3)))
 abline(0,1,col=2,lwd=2)
 ```
-Note that do not show the code here as it is rather complex but we explain how to make MA plots in a latter chapter. 
+
+Note that we do not show the code here as it is rather complex but we explain how to make MA plots in a later chapter. 
 
 Although the correlation is reduced in the log-scale, it is very close to 1 in both cases. Does this mean these data are reproduced? To examine how well the second vector reproduces the first, we need to study the differences. We therefore should plot that instead. In this plot, we plot the difference (in the log scale) versus the average:
 
@@ -239,9 +240,9 @@ purposes.
 
 #### Barplots for paired data
 
-A common task in data analysis is the comparison of two groups. When the dataset is small and data are paired, such as the outcomes before and after a treatment, two color barplots are unfortunately often used to display the results:
+A common task in data analysis is the comparison of two groups. When the dataset is small and data are paired, such as the outcomes before and after a treatment, two-color barplots are unfortunately often used to display the results.
 
-![Barplot for two variables](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig6r_e.png)
+![Barplot for two variables.](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig6r_e.png)
 
 There are better ways of showing these data to illustrate that there is an increase after treatment. One is to simply make a scatter plot, which shows that most points are above the identity line. Another alternative is to plot the differences against the before values.
 
@@ -281,7 +282,7 @@ boxplot(before,after,names=c("Before","After"),ylab="Response")
 
 The figure below shows three curves. Pseudo 3D is used, but it is not clear why. Maybe to separate the three curves? Notice how difficult it is to determine the values of the curves at any given point:
 
-![Gratuitous 3-D](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig8b.png)
+![Gratuitous 3-D.](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig8b.png)
 
 This plot can be made better by simply using color to distinguish the three lines:
 
@@ -320,9 +321,9 @@ ym <- apply(y, 1, mean)
 zm <- apply(z, 1, mean)
 ```
 
-In this example, we generate data with a simulation. We are studying a dose-response relationship between two groups: treatment and control. We have three groups of measurements for both control and treatment. Comparing treatment and control using the common barplot:
+In this example, we generate data with a simulation. We are studying a dose-response relationship between two groups: treatment and control. We have three groups of measurements for both control and treatment. Comparing treatment and control using the common barplot.
 
-![Ingoring important factors](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig9d.png)
+![Ignoring important factors.](https://raw.githubusercontent.com/kbroman/Talk_Graphs/master/Figs/fig9d.png)
 
 Instead, we should show each curve. We can use color to distinguish treatment and control, and dashed and solid lines to distinguish the original data from the mean of the three groups.
 
@@ -338,7 +339,7 @@ legend("bottomleft", lwd=2, col=c(1, 2), c("Control", "Treated"))
 
 #### Too many significant digits
 
-By default, statistical software like R return many significant digits. This does not mean we should report them. Cutting and pasting directly from R is a bad idea since you might end up showing a table, such as the one below, comparing the heights of basketball players:
+By default, statistical software like R returns many significant digits. This does not mean we should report them. Cutting and pasting directly from R is a bad idea since you might end up showing a table, such as the one below, comparing the heights of basketball players:
 
 ```{r}
 heights <- cbind(rnorm(8,73,3),rnorm(8,73,3),rnorm(8,80,3),
@@ -362,7 +363,7 @@ In general, you should follow these principles:
 * Be accurate and clear.
 * Let the data speak.
 * Show as much information as possible, taking care not to obscure the message.
-* Science not sales: avoid unnecessary frills (esp. gratuitous 3D).
+* Science not sales: avoid unnecessary frills (especially gratuitous 3D).
 * In tables, every digit should be meaningful. Don't drop ending 0's.
 
 Some further reading:
@@ -374,7 +375,7 @@ Graphics Press.
 * WS Cleveland (1993) Visualizing data. Hobart Press.
 * WS Cleveland (1994) The elements of graphing data. CRC Press.
 * A Gelman, C Pasarica, R Dodhia (2002) Let's practice what we preach:
-Turning tables into graphs. The American Statistician 56:121-130
+Turning tables into graphs. The American Statistician 56:121-130.
 * NB Robbins (2004) Creating more effective graphs. Wiley.
 * [Nature Methods columns](http://bang.clearscience.info/?p=546) 
 
