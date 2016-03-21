@@ -114,7 +114,7 @@ $$
 has a probability of 95%. 
 
 Be aware that it is the edges of the interval 
-$\bar{X} \pm 2 s_X / \sqrt{N}$ , not $\mu_X$ , 
+$\bar{X} \pm 2 s_X / \sqrt{N}$, not $\mu_X$, 
 that are random. Again, the definition of
 the confidence interval is that 95% of *random intervals* will contain
 the true, fixed value $\mu_X$. For a specific interval that has been
@@ -155,7 +155,7 @@ You can run this repeatedly to see what happens. You will see that in about 5% o
 
 <a name="smallsample"></a>
 
-#### Small Sample Size And The CLT
+#### Small Sample Size and the CLT
 
 For $N=30$, the CLT works very well. However, if $N=5$, do these confidence intervals work as well? We used the CLT to create our intervals, and with $N=5$ it may not be as useful an approximation. We can confirm this with a simulation:
 

@@ -38,7 +38,7 @@ print(mu_hf - mu_control)
 print((mu_hf - mu_control)/mu_control * 100) #percent increase
 ```
 
-We have also seen that, in some cases, when we take a sample and perform a t-test, we don't always get a p-value smaller than 0.05. For example, here is a case were we take sample of 5 mice and don't achieve statistical significance at the 0.05 level:
+We have also seen that, in some cases, when we take a sample and perform a t-test, we don't always get a p-value smaller than 0.05. For example, here is a case where we take a sample of 5 mice and don't achieve statistical significance at the 0.05 level:
 
 ```{r}
 set.seed(1)
@@ -60,7 +60,7 @@ avoid sacrificing mice unnecessarily or limiting the number of human
 subjects exposed to potential risk in a study. Here we explain what
 statistical power means. 
 
-#### Types Of Error
+#### Types of Error
 
 Whenever we perform a statistical test, we are aware that we may make a
 mistake. This is why our p-values are not 0. Under the null, there is
@@ -197,7 +197,7 @@ There is no "right" power or "right" alpha level, but it is important that you u
 
 To see this clearly, you could create a plot with curves of power versus N. Show several curves in the same plot with color representing alpha level.
 
-#### p-values are Arbitrary under the Alternative Hypothesis
+#### p-values Are Arbitrary under the Alternative Hypothesis
 
 Another consequence of what we have learned about power is that
 p-values are somewhat arbitrary when the 
