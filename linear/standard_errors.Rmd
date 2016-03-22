@@ -249,7 +249,7 @@ We have shown how we can obtain standard errors for our estimates. However, as w
 
 #### Code versus math
 
-The standard approach to writing linear models either assume the $\mathbf{X}$ are fixed or that we are conditioning on them. Thus  $\mathbf{X} \boldsymbol{\beta}$ has no variance as the $\mathbf{X}$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following:
+The standard approach to writing linear models either assume the values in $\mathbf{X}$ are fixed or that we are conditioning on them. Thus  $\mathbf{X} \boldsymbol{\beta}$ has no variance as the $\mathbf{X}$ is considered fixed. This is why we write $\mbox{var}(Y_i) = \mbox{var}(\varepsilon_i)=\sigma^2$. This can cause confusion in practice because if you, for example, compute the following:
 
 ```{r}
 x =  father.son$fheight

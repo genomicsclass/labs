@@ -21,7 +21,7 @@ Linear algebra notation actually simplifies the mathematical descriptions and ma
 
 The main point of this entire exercise is to show how we can write the models above using matrix notation, and then explain how this is useful for solving the least squares equation. We start by simply defining notation and matrix multiplication, but bear with us since we eventually get back to the practical application.
 
-## Solving System of Equations
+## Solving Systems of Equations
 
 Linear algebra was created by mathematicians to solve systems of linear equations such as this:
 
@@ -72,7 +72,7 @@ $$
 
 This section explains the notation used above. It turns out that we can borrow this notation for linear models in statistics as well.
 
-## Vectors, Matrices and Scalars
+## Vectors, Matrices, and Scalars
 
 In the falling object, father-son heights, and mouse weight examples, the random variables associated with the data were represented by $Y_1,\dots,Y_n$. We can think of this as a vector. In fact, in R we are already doing this:
 

@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 
-## Co-linearity
+## Collinearity
 
 If an experiment is designed incorrectly we may not be able to estimate the parameters of interest. Similarly, when analyzing data we may incorrectly decide to use a model that can't be fit. If we are using linear models then we can detect these problems mathematically by looking for collinearity in the design matrix.
 
@@ -224,7 +224,7 @@ This implies that a unique least squares estimate is not achievable.
 
 ## Rank
 
-The _rank_ of a matrix columns is the number of columns that are independent of all the others. If the rank is smaller than the number of columns, then the LSE are not unique. In R. we can obtain the rank of matrix with the function `qr`, which we will describe in more detail in a following section.
+The _rank_ of a matrix columns is the number of columns that are independent of all the others. If the rank is smaller than the number of columns, then the LSE are not unique. In R, we can obtain the rank of matrix with the function `qr`, which we will describe in more detail in a following section.
 
 ```{r}
 Sex <- c(0,0,0,0,1,1,1,1)
