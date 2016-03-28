@@ -30,7 +30,7 @@ Now that we know about SVD and matrix algebra, understanding MDS is relatively s
 
 $$\mathbf{Y} = \mathbf{UDV}^\top$$
 
-and assume that the sum of squares of the first two columns $\mathbf{U^\top Y=DV^\top}$ is much larger than sum of squares of all other columns. This can be written as: 
+and assume that the sum of squares of the first two columns $\mathbf{U^\top Y=DV^\top}$ is much larger than the sum of squares of all other columns. This can be written as: 
 $d_1+ d_2 \gg d_3 + \dots + d_n$ with $d_i$ the i-th entry of the $\mathbf{D}$ matrix. When this happens, we then have:
 
 $$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
@@ -125,12 +125,12 @@ Although we used the `svd` functions above, there is a special function that is 
 ```{r mds2, fig.cap="MDS computed with cmdscale function."} 
 d <- dist(t(mat))
 mds <- cmdscale(d)
-
 mypar()
 plot(mds[,1],mds[,2],bg=as.numeric(group),pch=21,
      xlab="First dimension",ylab="Second dimension")
 legend("bottomleft",levels(group),col=seq(along=levels(group)),pch=15)
 ```
+
 These two approaches are equivalent up to an arbitrary sign change.
 
 ```{r mds_same_as_svd, fig.cap="Comparison of MDS first two PCs to SVD first two PCs.",fig.width=10.5,fig.height=5.25}

@@ -30,13 +30,14 @@ Y = \begin{pmatrix} 2 \\
 \end{pmatrix} 
 $$
 
-and noted that $2$ and $3$ are the _coordinates_
+and noted that $2$ and $3$ are the _coordinates_.
 
 
-```{r,fig.align="center",fig.width=4,fig.height=4}
+```{r,fig.cap="Plot of (2,3) as coordinates along Dimension 1 (1,0) and Dimension 2 (0,1)."}
 library(rafalib)
 mypar()
-plot(c(-2,4),c(-2,4),xlab="Dimension 1",ylab="Dimension 2",type="n",xaxt="n",yaxt="n",bty="n")
+plot(c(-2,4),c(-2,4),xlab="Dimension 1",ylab="Dimension 2",
+     type="n",xaxt="n",yaxt="n",bty="n")
 text(rep(0,6),c(c(-2,-1),c(1:4)),as.character(c(c(-2,-1),c(1:4))),pos=2)
 text(c(c(-2,-1),c(1:4)),rep(0,6),as.character(c(c(-2,-1),c(1:4))),pos=1)
 abline(v=0,h=0)
@@ -60,10 +61,11 @@ $$Z = \begin{pmatrix} 2.5 \\ -1 \end{pmatrix}$$
 
 Graphically, we can see that the coordinates are the projections to the spaces defined by the new basis:
 
-```{r,fig.align="center",fig.width=4,fig.height=4}
+```{r,fig.cap="Plot of (2,3) as a vector in a rotatated space, relative to the original dimensions."}
 library(rafalib)
 mypar()
-plot(c(-2,4),c(-2,4),xlab="Dimension 1",ylab="Dimension 2",type="n",xaxt="n",yaxt="n",bty="n")
+plot(c(-2,4),c(-2,4),xlab="Dimension 1",ylab="Dimension 2",
+     type="n",xaxt="n",yaxt="n",bty="n")
 text(rep(0,6),c(c(-2,-1),c(1:4)),as.character(c(c(-2,-1),c(1:4))),pos=2)
 text(c(c(-2,-1),c(1:4)),rep(0,6),as.character(c(c(-2,-1),c(1:4))),pos=1)
 abline(v=0,h=0)
@@ -101,7 +103,7 @@ $Z$ and $Y$ carry the same information, but in a different _coordinate system_.
 
 Here are 100 two dimensional points $Y$
 
-```{r twin-heights,fig.caption="Twin 2 heights versus twin 1 heights.",echo=FALSE,message=FALSE}
+```{r twin-heights,fig.cap="Twin 2 heights versus twin 1 heights.",echo=FALSE,message=FALSE}
 library(MASS)
 n = 100
 mypar()
@@ -112,7 +114,7 @@ plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized 
 
 Here are the rotations: $Z = A^{-1} Y$
 
-```{r twin-heights-rotated,fig.caption="Rotation of twin 2 heights versus twin 1 heights.",echo=FALSE,message=FALSE}
+```{r twin-heights-rotated,fig.cap="Rotation of twin 2 heights versus twin 1 heights.",echo=FALSE,message=FALSE}
 A = matrix(c(0.5,1,0.5,-1),2,2)
 z = A%*%y
 mypar()
@@ -121,7 +123,5 @@ plot(z[1,],z[2,],xlab="Average",ylab="Difference",xlim=c(-3,3),ylim=c(-3,3))
 
 What we have done here is rotate the data so that the first coordinate of $Z$ is the average height, while the second is the difference between twin heights. 
 
-We have used the singular value decomposition to find principal components. It is sometimes useful to think of the SVD as a rotation, for example $\mathbf{U}^\top \mathbf{Y}$, that gives us a new coordinate system $\mathbf{DV}^\top$ in which the dimensions are ordered by how much variance they explain. 
-
-
+We have used the singular value decomposition to find principal components. It is sometimes useful to think of the SVD as a rotation, for example $\mathbf{U}^\top \mathbf{Y}$, that gives us a new coordinate system $\mathbf{DV}^\top$ in which the dimensions are ordered by how much variance they explain.
 

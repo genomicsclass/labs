@@ -49,9 +49,9 @@ We can immediately see that applying the SVD results in a transformation very si
 round(sqrt(2) * s$u , 3)
 ```
 
-The plot we showed after the rotation, was showing what we call the _principal components_: the second plotted against the first. To obtain the principal components from the SVD, we simply need the columns of the rotation $\mathbf{U}^\top\mathbf{Y}$ :
+The plot we showed after the rotation was showing what we call the _principal components_: the second plotted against the first. To obtain the principal components from the SVD, we simply need the columns of the rotation $\mathbf{U}^\top\mathbf{Y}$ :
 
-```{r PCAplot, fig.cap="Second PC plotted against first PC for the twins height data"}
+```{r PCAplot, fig.cap="Second PC plotted against first PC for the twins height data."}
 PC1 = s$d[1]*s$v[,1]
 PC2 = s$d[2]*s$v[,2]
 plot(PC1,PC2,xlim=c(-3,3),ylim=c(-3,3))
@@ -93,7 +93,7 @@ If we look at the sum of squares of $\mathbf{UD}$, we see that the last few are 
 plot(s$d)
 ```
 
-This implies that the last columns of `V` have a very small effect on the reconstruction of `Y`. To see this, consider the extreme example in which the last entry of $V$ is 0. In this case the last column of $V$ is not needed at all. Because of the way the SVD is created, the columns of $V$, have less and less influence on the reconstruction of $Y$. You commonly see this described as "explaining less variance". This implies that for a large matrix, by the time you get to the last columns, it is possible that there is not much left to "explain" As an example, we will look at what happens if we remove the four last columns:
+This implies that the last columns of `V` have a very small effect on the reconstruction of `Y`. To see this, consider the extreme example in which the last entry of $V$ is 0. In this case the last column of $V$ is not needed at all. Because of the way the SVD is created, the columns of $V$ have less and less influence on the reconstruction of $Y$. You commonly see this described as "explaining less variance". This implies that for a large matrix, by the time you get to the last columns, it is possible that there is not much left to "explain" As an example, we will look at what happens if we remove the four last columns:
 
 ```{r}
 k <- ncol(U)-4
@@ -102,7 +102,7 @@ resid <- Y - Yhat
 max(abs(resid))
 ```
 
-The largest residual is practically 0, meaning that we `Yhat` is practically the same as `Y`, yet we need 4 less dimensions to transmit the information.
+The largest residual is practically 0, meaning that we `Yhat` is practically the same as `Y`, yet we need 4 fewer dimensions to transmit the information.
 
 By looking at $d$, we can see that, in this particular dataset, we can obtain a good approximation keeping only 94 columns. The following plots are useful for seeing how much of the variability is explained by each column:
 
