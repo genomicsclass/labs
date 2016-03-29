@@ -146,7 +146,8 @@ hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))
 points(res$dm[which(chr=="chrX")],-log10(res$p.value[which(chr=="chrX")]),col=1,pch=16)
-points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,xlab="Effect size",ylab="-log10(p-value)")
+points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,
+       xlab="Effect size",ylab="-log10(p-value)")
 legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 qvals <- qvalue(res$p.value)$qvalue
 index <- which(qvals<0.1)
