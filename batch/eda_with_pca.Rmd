@@ -56,13 +56,14 @@ We need to download and install the `hgfocus.db` package and then extract the ch
 
 ```{r,message=FALSE}
 library(hgfocus.db) ##install from Bioconductor
-annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID",
-                columns=c("CHR"))
-##for genes with multiples, pick one
-annot <-annot[match(featureNames(e),annot$PROBEID),]
-annot$CHR <- ifelse(is.na(annot$CHR),NA,paste0("chr",annot$CHR))
-##compute median expression on chromosome Y
-chryexp<- colMeans(y[which(annot$CHR=="chrY"),])
+map2gene <- mapIds(hgfocus.db, keys=featureNames(e),
+                   column="ENTREZID", keytype="PROBEID",
+                   multiVals="first")
+library(Homo.sapiens)
+map2chr <- mapIds(Homo.sapiens, keys=map2gene,
+                  column="TXCHROM", keytype="ENTREZID",
+                  multiVals="first")
+chryexp <- colMeans(y[which(unlist(map2chr)=="chrY"),])
 ```
 
 If we create a histogram of the median gene expression values on chromosome Y, we clearly see two modes which must be females and males:
