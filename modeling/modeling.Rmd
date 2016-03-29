@@ -276,7 +276,9 @@ The fitted models do appear to provide a reasonable approximation, as demonstrat
 mypar(1,2)
 qqplot(theoretical,observed)
 abline(0,1)
-tmp=hist(biosds,main=paste("s_0 =", signif(estimates[[1]],2), "d =", signif(estimates[[2]],2)), xlab="sd", ylab="density", freq=FALSE, nc=100, xlim=c(0,1), ylim=c(0,9))
+tmp=hist(biosds,main=paste("s_0 =", signif(estimates[[1]],2),
+                  "d =", signif(estimates[[2]],2)),
+  xlab="sd", ylab="density", freq=FALSE, nc=100, xlim=c(0,1), ylim=c(0,9))
 dd=df(sds^2/estimates$scale,11,estimates$df2)
 k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
 lines(sds, dd*k, type="l", col=2, lwd=2)
