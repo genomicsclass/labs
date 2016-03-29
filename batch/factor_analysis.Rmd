@@ -114,7 +114,7 @@ cors=cor(Y-rowMeans(Y))
 cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
 
 mypar()
-image(1:n,1:n,cors,xaxt="n",yaxt="n",col=cols,xlab="",ylab="",zlim=c(-1,1))
+image(1:n,1:n,cors,col=cols,xlab="samples",ylab="samples",zlim=c(-1,1))
 ```
 
 Two factors will not be enough to model the observed correlation structure. However, a more general factor model can be useful:
