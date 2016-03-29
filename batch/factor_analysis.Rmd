@@ -103,7 +103,7 @@ The important lesson here is that when we have correlated units, the standard li
 
 In high-throughput data, it is quite common to see correlation structure. For example, notice the complex correlations we see across samples in the plot below. These are the correlations for a gene expression experiment with columns ordered by date:
 
-```{r gene_expression_correlations, fig.cap="Image of correlations. Cell i,j  represents correlation between samples i and j. Red is high, white is 0 and red is negative.",message=FALSE}
+```{r gene_expression_correlations, fig.cap="Image of correlations. Cell (i,j)  represents correlation between samples i and j. Red is high, white is 0 and red is negative.",message=FALSE}
 library(Biobase)
 library(GSE5859)
 data(GSE5859)
