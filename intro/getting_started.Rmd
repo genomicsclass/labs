@@ -141,10 +141,17 @@ upper right hand corner of the page.
 
 ![GitHub page screenshot.](images/handmade/screenshot1.png)
 
-Now you can copy and paste the URL and use this as the argument to `read.csv`:
+Now you can copy and paste the URL and use this as the argument to `read.csv`.
+Here we break the URL into a base directory and a filename and then combine
+with `paste0` because the URL would otherwise be too long for the page.
+We use `paste0` because we want to put the strings together as is, if you were
+specifying a file on your machine you should use the smarter function, `file.path`,
+which knows the difference between Windows and Mac file path connectors.
+You can specify the URL using a single string to avoid this extra step.
 
 ```{r,message=FALSE}
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
+url <- paste0(dir, "femaleMiceWeights.csv")
 dat <- read.csv(url)
 ```
 
@@ -168,8 +175,9 @@ We store many of the datasets used here on [GitHub](https://github.com/genomicsc
 
 ```{r,message=FALSE}
 library(downloader) ##use install.packages to install
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
 filename <- "femaleMiceWeights.csv" 
+url <- paste0(dir, filename)
 if (!file.exists(filename)) download(url, destfile=filename)
 ```
 

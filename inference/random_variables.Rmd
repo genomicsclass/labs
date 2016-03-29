@@ -41,8 +41,9 @@ If you already downloaded the `femaleMiceWeights` file into your working directo
 
 ```{r echo=FALSE, results="hide"}
 library(downloader) ##use install.packages to install
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
 filename <- "femaleMiceWeights.csv"
+url <- paste0(dir, filename)
 if (!file.exists(filename)) download(url, destfile=filename)
 ```
 
@@ -53,7 +54,9 @@ dat <- read.csv("femaleMiceWeights.csv")
 Remember that a quick way to read the data, without downloading it is by using the url:
 
 ```{r,eval=FALSE}
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
+filename <- "femaleMiceWeights.csv"
+url <- paste0(dir, filename)
 dat <- read.csv(url)
 ```
 
@@ -103,8 +106,9 @@ Let's explore random variables further. Imagine that we actually have the weight
 
 ```{r, echo=FALSE}
 library(downloader)
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename <- "femaleControlsPopulation.csv" 
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
+filename <- "femaleControlsPopulation.csv"
+url <- paste0(dir, filename)
 ##check if file exists and if it does not, download it:
 if (!file.exists(filename)) download(url,destfile=filename)
 ```
