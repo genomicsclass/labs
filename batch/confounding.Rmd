@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Confounding
 
-Batch effects have the most devastating effects when they are _counfounded_ with outcomes of interest. Here we described confounding and how it relates to data interpretation.
+Batch effects have the most devastating effects when they are _confounded_ with outcomes of interest. Here we describe confounding and how it relates to data interpretation.
 
 "Correlation is not causation" is one of the most important lessons you should take from this or any other data analysis course. A common example for why this statement is so often true is confounding. Simply stated confounding occurs when we observe a correlation or association between $X$ and $Y$, but  this is strictly the result of both $X$ and $Y$ depending on an extraneous variable $Z$. Here we describe Simpson's paradox, an example based on a famous legal case, and an example of confounding in high-throughput biology.
 
@@ -55,7 +55,7 @@ y
 Notice that we no longer see a clear gender bias. 
 The chi-square test we performed above suggests a dependence between admission and gender. Yet when the data is grouped by major, this dependence seems to disappear.  What's going on? 
 
-This is an example of _Simpson's paradox_ . A plot showing the percentages that applied to a major against the percent that get into that major, for males and females starts to point to an explanation.
+This is an example of _Simpson's paradox_. A plot showing the percentages that applied to a major against the percent that get into that major, for males and females starts to point to an explanation.
 
 ```{r hard_major_confounding, fig.cap="Percent of students that applied versus percent that were admitted by gender."}
 y=cbind(admissions[1:6,5],admissions[7:12,5])
@@ -64,7 +64,9 @@ x=rowMeans(cbind(admissions[1:6,3],admissions[7:12,3]))
 
 library(rafalib)
 mypar()
-matplot(x,y,xlab="percent that gets in the major",ylab="percent that applies to major",col=c("blue","red"),cex=1.5)
+matplot(x,y,xlab="percent that gets in the major",
+        ylab="percent that applies to major",
+        col=c("blue","red"),cex=1.5)
 legend("topleft",c("Male","Female"),col=c("blue","red"),pch=c("1","2"),box.lty=0)
 ```
 
@@ -163,7 +165,7 @@ The average difference by major is actually 3.5% higher for women.
 mean(y[,1]-y[,2])
 ```
 
-#### Simpson's paradox in baseball
+#### Simpson's Paradox in baseball
 
 Simpson's Paradox is commonly seen in baseball statistics. Here is a well known example in which David Justice had a higher batting average than Derek Jeter in both 1995 and 1996, but Jeter had a higher overall average:
 
@@ -176,7 +178,7 @@ The confounder here is games played. Jeter played more games during the year he 
 
 <a name="genomics"></a>
 
-## Confounding: High-throughput Example
+## Confounding: High-Throughput Example
 
 To describe the problem of confounding with a real example, we will use a dataset from [this paper](http://www.ncbi.nlm.nih.gov/pubmed/17206142) that claimed that roughly 50% of genes where differentially expressed when comparing blood from two ethnic groups. We include the data in one of our data packages:
 
