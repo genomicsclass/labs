@@ -81,8 +81,8 @@ then median and MAD are recommended over the mean and standard
 deviation counterparts. However, there are examples in which robust
 statistics are less powerful than the non-robust versions.
 
-We also note that there is a [large statistical literature](#foot) on
-Robust Statistics that go far beyond the median and the MAD. 
+We also note that there is a large statistical literature on
+robust statistics that go far beyond the median and the MAD.
 
 #### Symmetry of log ratios
 
