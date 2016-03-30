@@ -18,7 +18,7 @@ The concept of distance is quite intuitive. For example, when we cluster animals
 
 Many of the analyses we perform with high-dimensional data relate directly or indirectly to distance. Many clustering and machine learning techniques rely on being able to define distance, using features or predictors. For example, to create _heatmaps_, which are widely used in genomics and other high-throughput fields, a distance is computed explicitly. 
 
-![Example of heatmap. [Image Source: Heatmap, Gaeddal, 01.28.2007](http://commons.wikimedia.org/wiki/File:Heatmap.png)](images/handmade/Heatmap.png)
+![Example of heatmap. Image Source: Heatmap, Gaeddal, 01.28.2007 Wikimedia Commons](images/handmade/Heatmap.png)
 
 In these plots the measurements, which are stored in a matrix, are
 represented with colors after the columns and rows have been
