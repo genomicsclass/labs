@@ -1,14 +1,14 @@
 # R and Bioconductor links
 
-* [Central R Archive Network](http://cran.rstudio.com/)
+* [Central R Archive Network (CRAN)](http://cran.rstudio.com/)
 * [RStudio](http://www.rstudio.com/)
 * [Bioconductor](http://bioconductor.org/install)
 
-We will allow either R 3.1.3 or R 3.2.0 for this class, as we have been using R 3.1.3 for previous classes and R 3.2.0 was just released before this class started.
+We will allow either R version 3.1.3, 3.2.0 or 3.2.4 for this class.
 
-R 3.1.3 is linked to Bioconductor version 3.0
-
-R 3.2.0 is linked to Bioconductor version 3.1
+* R 3.1.3 is linked to Bioconductor version 3.0
+* R 3.2.0 is linked to Bioconductor version 3.1
+* R 3.2.4 is linked to Bioconductor version 3.2
 
 Once you have installed R, running the following lines in your console will install Bioconductor:
 
