@@ -89,3 +89,10 @@ For more details on the *DEXSeq* software, see the vignette and the paper, which
 ```{r eval=FALSE}
 browseVignettes("DEXSeq")
 ```
+
+We conclude by adding the session information:
+
+```{r}
+sessionInfo()
+```
+
