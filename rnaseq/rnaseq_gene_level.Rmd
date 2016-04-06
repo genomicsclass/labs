@@ -192,14 +192,14 @@ Now we will use a more sophisticated transformation, which is similar to the var
 
 ```{r}
 rld <- rlog(dds)
-plot(assay(rld)[,1], assay(rld)[,2], cex=.1)
+plot(assay(rld)[,1:2], cex=.1)
 ```
 
 Another transformation for stabilizing variance in the *DESeq2* package is `varianceStabilizingTransformation`. These two tranformations are similar, the *rlog* might perform a bit better when the size factors vary widely, and the *varianceStabilizingTransformation* is much faster when there are many samples.
 
 ```{r}
 vsd <- varianceStabilizingTransformation(dds)
-plot(assay(vsd)[,1], assay(rld)[,2], cex=.1)
+plot(assay(vsd)[,1:2], cex=.1)
 ```
 
 We can examine the standard deviation of rows over the mean for the *log plus pseudocount* and the *rlog*. Note that the genes with high variance for the *log* come from the genes with lowest mean. If these genes were included in a distance calculation, the high variance at the low count range might overwhelm the signal at the higher count range.
