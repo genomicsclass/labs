@@ -103,7 +103,7 @@ The important lesson here is that when we have correlated units, the standard li
 
 In high-throughput data, it is quite common to see correlation structure. For example, notice the complex correlations we see across samples in the plot below. These are the correlations for a gene expression experiment with columns ordered by date:
 
-```{r gene_expression_correlations, fig.cap="Image of correlations. Cell i,j  represents correlation between samples i and j. Red is high, white is 0 and red is negative.",message=FALSE}
+```{r gene_expression_correlations, fig.cap="Image of correlations. Cell (i,j)  represents correlation between samples i and j. Red is high, white is 0 and red is negative.",message=FALSE}
 library(Biobase)
 library(GSE5859)
 data(GSE5859)
@@ -114,7 +114,7 @@ cors=cor(Y-rowMeans(Y))
 cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
 
 mypar()
-image(1:n,1:n,cors,xaxt="n",yaxt="n",col=cols,xlab="",ylab="",zlim=c(-1,1))
+image(1:n,1:n,cors,col=cols,xlab="samples",ylab="samples",zlim=c(-1,1))
 ```
 
 Two factors will not be enough to model the observed correlation structure. However, a more general factor model can be useful:

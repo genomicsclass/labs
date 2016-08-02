@@ -11,14 +11,13 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 Here we give a brief introduction to the main task of machine learning:
 class prediction. In fact, many refer to class prediction as machine
-learning and we sometimes use the two terms interchangeably. We give a very brief introduction to this vast topic, focusing on some specific examples.
+learning and we sometimes use the two terms interchangeably.
+We give a very brief introduction to this vast topic, focusing on some specific examples.
 
 Some of the examples we give here are motivated by those in the excellent
 textbook *The Elements of Statistical Learning: Data Mining, Inference, and
-Prediction*, by Trevor Hastie, Robert Tibshirani and Jerome Friedman. A
-free PDF of this book can be found at the following URL: 
-
-<http://statweb.stanford.edu/~tibs/ElemStatLearn/>
+Prediction*, by Trevor Hastie, Robert Tibshirani and Jerome Friedman,
+which can be found [here](http://statweb.stanford.edu/~tibs/ElemStatLearn/).
 
 Similar to inference in the context of regression, Machine Learning (ML) studies the relationships between outcomes $Y$ and covariates $X$. In ML, we call $X$ the predictors or features. The main difference between ML and inference is that, in ML, we are interested mainly in predicting $Y$ using $X$. Statistical models are used, but while in inference we estimate and interpret model parameters, in ML they are mainly a means to an end: predicting $Y$. 
 
@@ -26,7 +25,7 @@ Here we introduce the main concepts needed to understand ML, along with two spec
 
 In a previous section, we covered the very simple one-predictor case. However, most of ML is concerned with cases with more than one predictor. For illustration purposes, we move to a case in which $X$ is two dimensional and $Y$ is binary. We simulate a situation with a non-linear relationship using an example from the Hastie, Tibshirani and Friedman book. In the plot below, we show the actual values of $f(x_1,x_2)=E(Y \mid X_1=x_1,X_2=x_2)$ using colors. The following code is used to create a relatively complex conditional probability function. We create the test and train data we use later (code not shown). Here is the plot of $f(x_1,x_2)$ with red representing values close to 1, blue representing values close to 0, and yellow values in between.
 
-```{r conditional_prob, fig.cap="Probability of Y=1 as a function of X1 and X2. Red is close to 1, yellow close 0.5 nad blue close to 0.", echo=FALSE}
+```{r conditional_prob, fig.cap="Probability of Y=1 as a function of X1 and X2. Red is close to 1, yellow close to 0.5, and blue close to 0.", echo=FALSE}
 library(rafalib)
 library(RColorBrewer)
 hmcol <- colorRampPalette(rev(brewer.pal(11, "Spectral")))(100)
@@ -94,7 +93,7 @@ points(newx,col=colshat,pch=16,cex=0.35)
 
 If we show points for which $E(Y \mid X=x)>0.5$ in red and the rest in blue, we see the boundary region that denotes the boundary in which we switch from predicting 0 to 1.
 
-```{r bayes_rule,fig.cap="Bayes rule. The line devides part of the space for which probability is larger than 0.5 (red) and lower than 0.5 (blue).",echo=FALSE}
+```{r bayes_rule,fig.cap="Bayes rule. The line divides part of the space for which probability is larger than 0.5 (red) and lower than 0.5 (blue).",echo=FALSE}
 mypar()
 
 colshat[bayesrule>=0.5] <- mycols[2]
@@ -106,13 +105,13 @@ contour(tmpx,tmpy,matrix(round(bayesrule),GS,GS),levels=c(1,2),
         add=TRUE,drawlabels=FALSE)
 ```
 
-The above plots relate to the "truth" that we do not get to see. Most ML methodology is concerned with estimating $f(x)$. A typical first step in usually to consider a sample, referred to the training set, to estimate $f(x)$. We will review two specific ML techniques. First, we need to review the main concept we use to evaluate the performance of these methods. 
+The above plots relate to the "truth" that we do not get to see. Most ML methodology is concerned with estimating $f(x)$. A typical first step is usually to consider a sample, referred to as the training set, to estimate $f(x)$. We will review two specific ML techniques. First, we need to review the main concept we use to evaluate the performance of these methods. 
 
 #### Training and test sets
 
 In the code (not shown) for the first plot in this chapter, we created a test and a training set. We plot them here:
 
-```{r test_train, fig.cap="Training data (left) and test data (right)", fig.width=10.5,fig.height=5.25}
+```{r test_train, fig.cap="Training data (left) and test data (right).", fig.width=10.5,fig.height=5.25}
 #x, test, cols, and coltest were created in code that was not shown
 #x is training x1 and x2, test is test x1 and x2
 #cols (0=blue, 1=red) are training observations
@@ -174,7 +173,7 @@ points(newx,col=colshat,pch=16,cex=0.35)
 points(test,bg=cols,pch=21)
 ```
 
-The error rates in the test and train sets are quite similar. Thus, we do not seem to be over-training. This is not surprising as we are fitting a 2 parameter model to 400 data points. However, note that the boundary is a line. Because we are fitting a plane to the data, there is no other option here. The linear regression method is too rigid. The rigidity makes it stable and avoids over training, but it also keeps the model from adapting to the non-linear relationship between $Y$ and $X$. We saw this before in the smoothing section. The next ML technique we consider is similar to the smoothing techniques described before.
+The error rates in the test and train sets are quite similar. Thus, we do not seem to be over-training. This is not surprising as we are fitting a 2 parameter model to 400 data points. However, note that the boundary is a line. Because we are fitting a plane to the data, there is no other option here. The linear regression method is too rigid. The rigidity makes it stable and avoids over-training, but it also keeps the model from adapting to the non-linear relationship between $Y$ and $X$. We saw this before in the smoothing section. The next ML technique we consider is similar to the smoothing techniques described before.
 
 <a name="knn"></a>
 
@@ -196,6 +195,7 @@ for(k in c(1,100)){
 ```
 
 To visualize why we make no errors in the train set and many errors in the test set when $k=1$ and obtain more stable results from $k=100$, we show the prediction regions (code not shown):
+
 ```{r knn, fig.cap="Prediction regions obtained with kNN for k=1 (top) and k=200 (bottom). We show both train (left) and test data (right).", fig.width=10.5,fig.height=10.5,message=FALSE,echo=FALSE}
 library(class)
 mypar(2,2)
@@ -251,14 +251,15 @@ for(k in seq(along=train.error)){
 ```{r bayes_rule2, fig.cap="Prediction error in train (pink) and test (green) versus number of neighbors. The yellow line represents what one obtains with Bayes Rule.",message=FALSE}
 ks <- 2^(seq(along=train.error)/2)
 mypar()
-plot(ks,train.error,type="n",xlab="K",ylab="Prediction Error",log="x",ylim=range(c(test.error,train.error)))
+plot(ks,train.error,type="n",xlab="K",ylab="Prediction Error",log="x",
+     ylim=range(c(test.error,train.error)))
 lines(ks,train.error,type="b",col=4,lty=2,lwd=2)
 lines(ks,test.error,type="b",col=5,lty=3,lwd=2)
 abline(h=bayes.error,col=6)
 legend("bottomright",c("Train","Test","Bayes"),col=c(4,5,6),lty=c(2,3,1),box.lwd=0)
 ```
 
-Note that these error rates are random variables and have standard errors. In the next section we describe cross-validation which helps reduce some of this variability. However, even with this variability, the plot clearly shows the problem over over-fitting when using values lower than 20 and under-fitting with values above 100.
+Note that these error rates are random variables and have standard errors. In the next section we describe cross-validation which helps reduce some of this variability. However, even with this variability, the plot clearly shows the problem of over-fitting when using values lower than 20 and under-fitting with values above 100.
 
 
 

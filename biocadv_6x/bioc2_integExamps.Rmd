@@ -1,0 +1,239 @@
+---
+layout: page
+title: "Some examples of integrative analysis"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+```{r getpacksa,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+suppressMessages({
+library(AnnotationDbi)
+library(ggbio)
+library(gwascat)
+library(GenomicRanges)
+library(ERBS)
+library(OrganismDbi)
+library(harbChIP)
+library(yeastCC)
+})
+})
+```
+
+## Integrative analysis examples
+
+In this document we'll review a few approaches to using genome-scale data of different
+types to reason about certain focused questions.
+ 
+<a name="yeasttfs"></a>
+
+### TF binding and expression co-regulation in yeast
+
+An example of integrative analysis can be found in a paper
+of [Lee and Rinaldi](http://www.ncbi.nlm.nih.gov/pubmed/12399584)
+in connection with the regulatory program of the yeast 
+cell cycle.  There are two key experimental components:
+
+- Protein binding patterns: based on ChIP-chip experiments, we can determine
+the gene promoter regions to which transcription factors bind.
+
+- Expression patterns: based on timed observations of gene expression in a yeast colony
+we can identify times at which groups of genes reach maximal expression.
+
+
+Figure 5 of the paper indicates that the Mbp1 transcription
+factor played a role in regulating expression in the transition
+from G1 to S phases of the cell cycle.  The ChIP-chip data is
+in the `harbChIP` package.
+
+```{r lkh}
+library(harbChIP)
+data(harbChIP)
+harbChIP
+```
+This is a well-documented data object, and we can read the abstract
+of the paper directly.
+
+```{r lka}
+abstract(harbChIP)
+```
+
+Let's find MBP1 and assess the distribution of reported binding affinity
+measures.  The sample names of the ExpressionSet (structure
+used for convenience
+even though the data are not expression data)
+are the names of the proteins "chipped" onto the yeast
+promoter array.
+
+```{r lkm2,fig=TRUE}
+mind = which(sampleNames(harbChIP)=="MBP1")
+qqnorm(exprs(harbChIP)[,mind], main="MBP1 binding")
+```
+
+The shape of the qq-normal plot is indicative of
+a strong
+departure from Gaussianity in the distribution
+of binding scores, with a very long right tail.
+We'll focus on the top five genes.
+
+```{r lkfour}
+topb = featureNames(harbChIP)[ order(
+  exprs(harbChIP)[,mind], decreasing=TRUE)[1:5] ]
+topb
+library(org.Sc.sgd.db)
+select(org.Sc.sgd.db, keys=topb, keytype="ORF",
+  columns="COMMON")
+```
+
+Our conjecture is that these genes will exhibit
+similar expression trajectories, peaking well
+within the first half of cell cycle
+for the yeast strain studied.
+
+We will subset the cell cycle expression data from
+the `yeastCC` package to a colony whose cycling was
+synchronized using alpha pheromone.
+
+```{r doalp,fig=TRUE}
+library(yeastCC)
+data(spYCCES)
+alp = spYCCES[, spYCCES$syncmeth=="alpha"]
+par(mfrow=c(1,1))
+plot(exprs(alp)[ topb[1], ]~alp$time, lty=1,
+   type="l", ylim=c(-1.5,1.5), lwd=2, ylab="Expression",
+    xlab="Minutes elapsed")
+for (i in 2:5) lines(exprs(alp)[topb[i],]~alp$time, lty=i, lwd=2)
+legend(75,-.5, lty=1:10, legend=topb, lwd=2, cex=.6, seg.len=4)
+```
+
+We have the impression that at least three of these
+genes reach peak expression roughly together near times
+20 and 80 minutes.  There is considerable variability.
+A data filtering and visualization pattern is emerging
+by which genes bound by a given transcription factor
+can be assessed for coregulation of expression.  We
+have not entered into the assessment of statistical
+significance, but have focused on how the data
+types are brought together.
+
+<a name="gwastf"></a>
+
+### TF binding and genome-wide DNA-phenotype associations in humans
+
+Genetic epidemiology has taken advantage of high-throughput
+genotyping (mostly using genotyping arrays supplemented with
+model-based genotype imputation) to develop the concept of
+"genome-wide association study" (GWAS).  Here a cohort is assembled
+and individuals are distinguished in terms of disease status or
+phenotype measurement, and the genome is searched for variants
+exhibiting statistical association with disease status or phenotypic
+class or value.  An example of a GWAS result can be
+seen with the gwascat package, which includes selections from the [NHGRI
+GWAS catalog](https://www.genome.gov/26525384), which has recently
+moved to EBI-EMBL.
+
+```{r likgw}
+library(gwascat)
+data(gwrngs19)
+gwrngs19[100]
+mcols(gwrngs19[100])[,c(2,7,8,9,10,11)]
+```
+
+This shows the complexity involved in recording information about
+a replicated genome-wide association finding.  There are many
+fields recorded, by the key elements are the name and location of
+the SNP, and the phenotype to which it is apparently linked.
+In this case, we are talking about rheumatoid arthritis.
+
+We will now consider the relationship between ESRRA binding
+in B-cells and phenotypes for which GWAS associations
+have been reported.  
+
+It is tempting to proceed as follows.  We simply
+compute overlaps between the binding peak regions
+and the catalog GRanges.
+```{r lkgml} 
+library(ERBS)
+data(GM12878)
+fo = findOverlaps(GM12878, gwrngs19)
+fo
+sort(table(gwrngs19$Disease.Trait[ 
+    subjectHits(fo) ]), decreasing=TRUE)[1:5]
+```
+The problem with this is that `gwrngs19` is a set of *records* of
+GWAS hits.  There are cases of SNP that are associated
+with multiple phenotypes, and there are cases of multiple studies that find
+the same result for a given SNP.  It is easy to get 
+a sense of the magnitude of the problem using `reduce`.
+
+```{r lkresss}
+length(gwrngs19)-length(reduce(gwrngs19))
+```
+So our strategy will be to find overlaps with the
+reduced version of `gwrngs19` and then come back
+to enumerate phenotypes at unique SNPs occupying binding sites.
+```{r lkov}
+fo = findOverlaps(GM12878, reduce(gwrngs19))
+fo
+ovrngs = reduce(gwrngs19)[subjectHits(fo)]
+phset = lapply( ovrngs, function(x)
+  unique( gwrngs19[ which(gwrngs19 %over% x) ]$Disease.Trait ) )
+sort(table(unlist(phset)), decreasing=TRUE)[1:5]
+```
+
+What can explain this observation?  We see that there
+are commonly observed DNA variants in locations where ESRRA tends
+to bind.  Do individuals with particular genotypes
+of SNPs in these areas have higher risk of disease
+because the presence of the variant allele 
+interferes with ESRRA function and leads to
+arthritis or abnormal cholesterol levels?   Or is this
+observation consistent with the play of chance in our
+work with these data?  We will examine this in the exercises.
+
+<a name="geo"></a>
+
+### Harvesting GEO for families of microarray archives
+
+The NCBI Gene Expression Omnibus is a basic resource for
+integrative bioinformatics.  The Bioconductor GEOmetadb
+package helps with discovery and characterization of
+GEO datasets.
+
+The GEOmetadb database is a 240MB download that decompresses to 3.6 GB
+of SQLite.  Once you have acquired the GEOmetadb.sqlite file using
+the `getSQLiteFile` function, you can create a connection
+and start interrogating the database locally.  Here we
+use an environment variable to establish the location of the database.
+Use your operating system environment variables to emulate this.
+
+```{r dosq}
+library(RSQLite)
+lcon = dbConnect(SQLite(), Sys.getenv("GEOMETADB_SQLITE_PATH"))
+dbListTables(lcon)
+```
+
+We will build a query that returns all the GEO GSE entries
+that have the phrase "pancreatic cancer" in their titles.
+Because GEO uses uninformative labels for array platforms,
+we will retrieve a field that records the Bioconductor array
+annotation package name so that we know what technology was
+in use.  We'll tabulate the various platforms used.
+
+```{r doquer}
+vbls = "gse.gse, gse.title, gpl.gpl, gpl.bioc_package"
+req1 = " from gse join gse_gpl on gse.gse=gse_gpl.gse"
+req2 = " join gpl on gse_gpl.gpl=gpl.gpl"
+goal = " where gse.title like '%pancreatic%cancer%'"
+quer = paste0("select ", vbls, req1, req2, goal)
+lkpc = dbGetQuery(lcon, quer)
+dim(lkpc)
+table(lkpc$bioc_package)
+```
+
+We won't insist that you take the GEOmetadb.sqlite download/expansion,
+but if you do, variations on the query string constructed above
+can assist you with targeted identification of GEO datasets 
+for analysis and reinterpretation.

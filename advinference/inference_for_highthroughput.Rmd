@@ -96,7 +96,7 @@ The qq-plots show that the data is well approximated by the normal approximation
 t.test(e[g==1],e[g==0])$p.value
 ```
 
-To answer the question for each gene, we simply do repeat the above for each gene. Here we will define our own function and use `apply`:
+To answer the question for each gene, we simply repeat the above for each gene. Here we will define our own function and use `apply`:
 
 ```{r}
 myttest <- function(x) t.test(x[g==1],x[g==0],var.equal=TRUE)$p.value

@@ -80,7 +80,7 @@ $$
 
 As in the baseball example, the posterior mean _shrinks_ the observed variance $s_g^2$ towards the global variance $s_0^2$ and the weights depend on the sample size through the degrees of freedom $d$ and, in this case, the shape of the prior distribution through $d_0$. 
 
-In the plot above we can see how the variance estimate _shrink_ for 40 genes (code not shown):
+In the plot above we can see how the variance estimates _shrink_ for 40 genes (code not shown):
 
 
 ```{r shrinkage, fig.cap="Illustration of how estimates shrink towards the prior expectation. Forty genes spanning the range of values were selected.",message=FALSE, echo=FALSE}
@@ -100,7 +100,7 @@ segments((tt$s^2)[idx],rep(.1,n),
          ebfit$s2.post[idx],rep(.9,n))
 ```
 
-An important aspect of this adjustment is that genes having a sample standard deviation close to 0 are no longer close to 0 (the shrink towards $s_0$ ). We can now create a version of the t-test that instead of the sample standard deviation uses this posterior mean or "shrunken" estimate of the variance. We refer to these as _moderated_ t-tests. Once we do this, the improvements can be seen clearly in the volcano plot:
+An important aspect of this adjustment is that genes having a sample standard deviation close to 0 are no longer close to 0 (they shrink towards $s_0$). We can now create a version of the t-test that instead of the sample standard deviation uses this posterior mean or "shrunken" estimate of the variance. We refer to these as _moderated_ t-tests. Once we do this, the improvements can be seen clearly in the volcano plot:
 
 ```{r volcano-plot2, message=FALSE, fig.cap="Volcano plot for moderated t-test comparing two groups. Spiked-in genes are denoted with blue. Among the rest of the genes, those with p-value < 0.01 are denoted with red.",message=FALSE}
 library(limma)

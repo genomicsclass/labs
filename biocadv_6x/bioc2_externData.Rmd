@@ -1,0 +1,255 @@
+---
+layout: page
+title: "Working with data external to R"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+```{r getpacksa,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+suppressMessages({
+suppressWarnings({
+library(AnnotationDbi)
+library(ggbio)
+library(gwascat)
+library(GenomicRanges)
+library(ERBS)
+library(OrganismDbi)
+library(harbChIP)
+library(yeastCC)
+library(rtracklayer)
+library(Rsamtools)
+library(h5vc)
+library(rhdf5)
+})
+})
+})
+```
+
+## Packages that provide access to data external to R
+
+There are numerous R packages that include or facilitate
+access to entities that are not R functions or data objects.  
+Why is this important in genome-scale statistical computing?
+
+* We typically do not want to ingest large genomic datasets _in toto_ --
+loading them into R and dealing with the large implied RAM 
+image may not be cost-effective.
+
+* We can often obtain answers to questions by operating on only
+a slice, or iterating over a sequence of slices, so that
+a holistic representation of the data in R is not necessary.
+
+* We may want to use tools other than R to interact with the
+data, in which case it is wise to
+represent the data in a standardized format with APIs for diverse languages.
+
+
+So far
+the most common examples of external data arise with the annotation packages
+that employ relational databases to serve data to R sessions.
+We'll now give more details on the RDBMS approach, and
+will discuss potential roles for tabix and HDF5 for
+data on genomic coordinates.
+
+
+<a name="sqlite"></a>
+
+### SQLite as the back end
+
+SQL stands for Structured Query Language.  This is a highly
+regimented language used for working with relational databases.
+Knowledge of SQL permits us to work with databases in Microsoft Access,
+Oracle, Postgres, and other relational data stores.
+The basic idea of relational databases is that data we are interested
+in can be stored in rectangular tables, with rows thought of as records
+and columns thought of as attributes.  Our primary activities with
+a database are choosing attributes of interest (this is carried
+out with the SQL operation called "SELECT"), specifying the tables
+where these attributes should be looked up (with "FROM" or "USING" 
+clauses), and filtering records (with "WHERE" clauses).  We'll
+have an example below.
+
+SQLite is an open-source relational database system that
+requires no special configuration or infrastructure.  We can
+interact with SQLite databases and tables through R's database interface
+package (DBI) and the RSQLite package that implements the
+interface protocol for SQLite.  Here's an example.
+We'll look at the database underlying the GO.db annotation package.
+
+```{r lkgo}
+library(GO.db)
+```
+There is a file on disk containing all the annotation data.
+```{r lkconn}
+GO.db$conn@dbname
+```
+We can list the tables present in the database.  We pass
+the connection object to `dbListTables`.
+```{r lkm3}
+dbListTables( GO.db$conn )
+```
+
+Everything else that we are concerned with involves constructing
+SQL queries and executing them in the database.  You can
+have a look at the [SQLite web page](http://www.sqlite.org) for background and details
+on valid query syntax.
+
+Here we sample records from the table that manages
+terms corresponding to GO categories using a limit clause.
+```{r  lkl}
+dbGetQuery( GO.db$conn, "select * from go_term limit 5")
+```
+
+The `dbGetQuery` function will return a data.frame instance.
+Why don't we just manage the annotation as a data.frame?  There
+are several reasons.  First, for very large data tables, just
+loading the data into an R session can be time consuming and
+interferes with interactivity.  Second, SQLite includes
+considerable infrastructure that optimizes query resolution, particularly
+when multiple tables are being joined.  It is better to capitalize
+on that investment than to add tools for query optimization to the
+R language.
+
+Fortunately, if you are not interested in direct interaction with
+the RDBMS, you can pretend it is not there, and just work with the
+high-level R annotation functions that we have described.
+
+<a name="tabix"></a>
+
+### Tabix-indexed text or BAM as the back end
+
+Our example data for import (narrowPeak files in the ERBS package)
+was low volume and we have no problem importing the entire contents
+of each file into R.  In certain cases, very large quantities
+of data may be provided in narrowPeak or other genomic file formats
+like bed or bigWig, and it will be cumbersome to import the
+entire file.  
+
+The [Tabix utilities](http://samtools.sourceforge.net/tabix.shtml) 
+for compressing and indexing textual files
+presenting data on genomic coordinates can be used through the
+Rsamtools and rtracklayer packages.  Once the records have been
+sorted and compressed, Tabix indexing allows us to make targeted
+queries of the data in the files.  We can traverse a file
+in chunks to keep our memory footprint small; we can even process
+multiple chunks in parallel in certain settings.
+
+We will illustrate some of these ideas in the video.  An important
+bit of knowledge is that you can sort a bed file, on a unix system,
+with the command `sort -k1,1 -k2,2g -o ...`, and this is a necessary
+prelude to Tabix indexing.  Some details on the sort utility for
+unix systems are available in [Wikipedia](http://en.wikipedia.org/wiki/Sort_(Unix)); you can also use `man sort`
+on most unix systems for details.
+
+Here's how we carried out the activities of the video:
+
+```
+# check file
+head ENCFF001VEH.narrowPeak
+# sort
+sort -k1,1 -k2,2g -o bcell.narrowPeak ENCFF001VEH.narrowPeak
+# compress
+bgzip bcell.narrowPeak
+# index
+tabix -p bed bcell.narrowPeak.gz
+# generates the bcell.narrowPeak.gz.tbi
+tabix bcell.narrowPeak.gz chr22:1-20000000
+# yields only two records on chr22
+```
+
+In R we made use of the compressed and indexed version
+as follows:
+```{r dot,eval=FALSE}
+library(Rsamtools)
+library(rtracklayer)
+targ = import.bedGraph("bcell.narrowPeak.gz", which=GRanges("chr22", IRanges(1,2e7)))
+```
+This is a targeted import.  We do not import the contents of the entire
+file but just the records that reside in the `which` range.
+
+<a name="hdf5"></a>
+
+### HDF5
+
+The [HDF5 system](https://www.hdfgroup.org/) "provides a unique suite of technologies and supporting services that make possible the management of large and complex data collections. Its mission is to advance and support Hierarchical Data Format (HDF) technologies and ensure long-term access to HDF data." (From the
+linked web site.)  There is a BioHDF project mentioned on the web site
+but it seems to have been inactive for some time.
+
+Bioconductor packages are available for adoption of HDF5 infrastructure
+and deployment of HDF5 against various genomic analysis problems.  We'll
+examine an approach to managing information on genomic variants
+in the `h5vc` package.
+
+```{r geth}
+library(h5vc)
+library(rhdf5)
+tallyFile <- system.file( "extdata", "example.tally.hfs5", 
+    package = "h5vcData")
+h5ls(tallyFile)
+```
+
+This shows that the example data (managed in HDF5 format)
+covers 90 megabases of information on six samples in two
+different studies.  The notation `12 x 6 x 2 x 90354753`
+corresponds to bases x samples x strands x locations.
+The number of bases here allows for 4 nucleotides, insertion,
+and deletion, each with a possible special value for "low quality".
+
+Sample data are bound in the HDF5 container.
+```{r gets}
+sampleData <- getSampleData( tallyFile, "/ExampleStudy/16" )
+sampleData
+```
+
+We can extract coverage and read count data on a
+1000 base region from one experiment:
+```{r getddd}
+data <- h5readBlock(
+  filename = tallyFile,
+  group = "/ExampleStudy/16",
+  names = c( "Coverages", "Counts" ),
+  range = c(29000000,29001000)
+  )
+str(data)
+```
+
+An important application is visualization of departures from
+reference sequence in selected regions.
+
+```{r dodat,fig=TRUE}
+  sampleData <- getSampleData( tallyFile, "/ExampleStudy/16" )
+  position <- 29979628
+  windowsize <- 30
+  samples <- sampleData$Sample[sampleData$Patient == "Patient8"]
+  data <- h5readBlock(
+    filename = tallyFile,
+    group = "/ExampleStudy/16",
+    names = c("Coverages", "Counts", "Deletions", "Reference"),
+    range = c(position - windowsize, position + windowsize)
+  )
+  #Plotting with position and windowsize
+  p <- mismatchPlot(
+    data = data,
+    sampledata = sampleData,
+    samples = samples,
+    windowsize = windowsize,
+    position = position
+  )
+  print(p)
+```
+
+## Conclusions
+
+We've seen how RDBMS, tabix, and HDF5 can be used to manage
+large data volumes, supporting relatively seamless targeted
+ingestion to R sessions for analysis and visualization.
+Another approach of interest uses objects in R to mediate
+access to raw flat files: this is pursued by the
+[ff](http://ff.r-forge.r-project.org/) and
+[bigmemory](https://cran.r-project.org/web/packages/bigmemory/index.html)
+packages.  Both of these projects have add-on packages to
+support analytics in R in memory-efficient ways, and are worthy
+of exploration.

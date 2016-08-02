@@ -173,6 +173,7 @@ is designed and used.
 
 Motivations underlying the ExpressionSet design are many.  A
 few of the most important are
+
 * to reduce complexity of programming with complex assay, annotation, and sample-level information,
 * to support simple and idiomatic filtering of features and samples,
 * to control memory consumption as assay data are passed to analytical functions.

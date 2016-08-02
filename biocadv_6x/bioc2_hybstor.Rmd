@@ -1,0 +1,133 @@
+---
+layout: page
+title: "Sharded GRanges: a hybrid in/out of memory strategy for large sets of ranges"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(Biobase)
+library(geuvStore)
+library(gQTLBase)
+library(gQTLstats)
+library(foreach)
+library(doParallel)
+library(ph525x)
+})
+```
+
+
+## Introduction
+
+We've looked at a number of approaches to
+working with data external to R:
+
+* HDF5, which manages groups of multidimensional arrays on disk
+* sqlite, a zero-configuration relational database
+* tabix, a simple approach to indexing records on genomic coordinates
+
+Here I want to describe an approach that seems useful for millions
+of ranges annotated in the course of searching for variants that
+affect gene expression at the population level.  The approach
+is based on a concept of storing data in "shards", homogeneous small
+fragments that can be quickly loaded and unloaded, discoverable
+by index and traversable in parallel.
+
+## Motivation: An integrative view of associations in GEUVADIS
+
+The [GEUVADIS study](http://www.nature.com/nature/journal/v501/n7468/full/nature12531.html) is an intensive multiomic study of gene expression in multiple
+populations.  We want to make use of the data from this study to
+investigate variants affecting genes of interest, with one tool
+an interactive graphical utility illustrated in the video:
+
+```{r lkgg,fig=TRUE}
+library(ph525x)
+ggshot()
+```
+
+We want to be able to select genes by symbol and explore names
+and epigenetic contexts of variants whose content is associated with
+expression variation.  It is useful to have the variants annotated
+using GRanges, but a very large GRanges object (there are hundreds
+of millions of SNP-gene associations recorded) can be unwieldy.
+Solutions using RDBMS or HDF5 may be viable but more infrastructure
+for rapidly searching such stores using genomic coordinates,
+and for converting query results to GRanges will be needed.
+
+BatchJobs was used to generate the association tests, and it
+produces
+an organized system of "sharded" GRanges recording the
+associations along with metadata about the associated features.
+This system can be stored in a package, exemplified by geuvStore.
+
+## A quick look at geuvStore
+
+The association test results are organized using a BatchJobs
+registry that is wrapped in an S4 class called ciseStore.
+```{r lkgv}
+library(geuvStore)
+m = makeGeuvStore()
+class(m)
+m
+```
+
+The show method for m probes into the store and retrieves one record
+from one GRanges instance.
+
+## Scalable traversal
+
+The traversal of all GRanges available in this selection is
+governed by foreach loops.
+```{r lksca, cache=TRUE}
+library(gQTLBase)
+ut1 = unix.time(l1 <- storeApply(m, length))
+ut1
+library(doParallel)
+registerDoParallel(cores=2)
+ut2 = unix.time(l2 <- storeApply(m, length))
+ut2
+print(sum(unlist(l2)))
+all.equal(unlist(l1), unlist(l2))
+```
+We see that doubling the number of processors halves the
+time required to get the length of each component of the archive.
+With large numbers of cores, we can quickly assemble information
+about many variants.
+
+## Scalable histogram construction
+
+When the histogram bins are fixed, divide and conquer can be
+used to assemble a histogram in parallel over many chunks.
+
+```{r lkhhh,cache=TRUE}
+registerDoParallel(cores=1)
+unix.time(ll <- storeToHist(m, getter=function(x)log(mcols(x)$chisq+1), breaks=c(0,seq(.1,5,.1),10)))
+registerDoParallel(cores=2)
+unix.time(ll <- storeToHist(m, getter=function(x)log(mcols(x)$chisq+1), breaks=c(0,seq(.1,5,.1),10)))
+```
+
+## Indexing for targeted retrievals
+
+The ciseStore class includes two maps: one from range to shard number,
+another from gene identifier to shard number.  This allows rapid
+retrievals.
+
+```{r lkex}
+myr = GRanges(2, IRanges(1975.7e5, width=50000))
+extractByRanges(m, myr)
+```
+
+## Conclusions
+
+geuvStore is a complex architecture that aims to provide a
+partly baked representation of quantities from genome-scale
+surveys that can be scalably surveyed and integrated.  This
+is accomplished by keeping ranges for association scores
+and metadata in small sharded GRanges with some simple indexes,
+retrieval utilities, and with support for parallelized traversal
+and summary.  It would be very nice to achieve these aims with
+a more homogeneous underlying architecture such as HDF5, and
+this may be possible as file-backed SummarizedExperiments come
+on line.
+

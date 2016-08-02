@@ -1,0 +1,93 @@
+---
+layout: page
+title: "Gviz for plotting data with genomic features"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+It is often of interest to display observed data in the
+context of genomic reference information.  We'll examine how to 
+do this with the ESRRA binding data and Gviz.
+
+First we load up relevant data and annotation packages along with
+Gviz.
+
+```{r getl,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(ERBS)
+library(Gviz)
+library(Homo.sapiens)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+})
+})
+```
+```{r getp}
+library(ERBS)
+library(Gviz)
+library(Homo.sapiens)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
+```
+
+## Genes in the vicinity of ESRRA
+
+How can we identify a slice of the human genome containing
+ESRRA and some neighboring genes?  There are various approaches;
+we'll start by obtaining the ENTREZ identifier.
+
+```{r getid}
+library(Homo.sapiens)
+eid = select(Homo.sapiens, keys="ESRRA", keytype="SYMBOL", columns="ENTREZID")
+eid
+```
+
+Now we obtain the addresses for the ESRRA gene body,
+collect addresses of neighboring genes, and bind in the
+symbols for these genes.
+
+```{r done}
+allg = genes(txdb)
+esrraAddr = genes(txdb, vals=list(gene_id=2101)) # redundant...
+esrraNeigh = subsetByOverlaps(allg, esrraAddr+500000)
+esrraNeigh$symbol = mapIds(Homo.sapiens, keys=esrraNeigh$gene_id, keytype="ENTREZID",
+  column="SYMBOL")
+```
+
+A quick check on the task with Gviz:
+```{r lknei,fig=TRUE}
+plotTracks(GeneRegionTrack(esrraNeigh, showId=TRUE))
+```
+
+## The ESRRA binding peaks in this region
+
+We obtain the ESRRA binding data for the GM12878 EBV-transformed
+B-cell and subset to events near our group of genes.
+```{r gete}
+data(GM12878)
+sc = subsetByOverlaps(GM12878, range(esrraNeigh))
+sc
+```
+
+## Computing an ideogram to give context on the chromosome
+
+This computation is slow.
+```{r doid,cache=TRUE}
+idxTrack = IdeogramTrack(genome="hg19", chr="chr11")
+```
+
+## Putting it all together
+
+We start at the top with the ideogram to identify chromosome and
+region on chromosome to which we are zooming with observational
+and structural information.
+
+```{r dofull,fig=TRUE}
+plotTracks(list(idxTrack, GenomeAxisTrack(), 
+   DataTrack(sc[,7], name="ESRRA peak values"), 
+   GeneRegionTrack(esrraNeigh, showId=TRUE,
+         name="genes near ESRRA"), GenomeAxisTrack()))
+```

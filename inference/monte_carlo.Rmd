@@ -36,7 +36,7 @@ controlPopulation <- filter(dat,Sex == "F" & Diet == "chow") %>%
   select(Bodyweight) %>% unlist
 ```
 
-We will build a function that automatically generates a t-statistic under the null hypothesis for a any sample size of `n`.
+We will build a function that automatically generates a t-statistic under the null hypothesis for a sample size of `n`.
 
 ```{r}
 ttestgenerator <- function(n) {

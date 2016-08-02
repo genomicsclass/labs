@@ -56,17 +56,18 @@ We need to download and install the `hgfocus.db` package and then extract the ch
 
 ```{r,message=FALSE}
 library(hgfocus.db) ##install from Bioconductor
-annot <- select(hgfocus.db, keys=featureNames(e), keytype="PROBEID",
-                columns=c("CHR"))
-##for genes with multiples, pick one
-annot <-annot[match(featureNames(e),annot$PROBEID),]
-annot$CHR <- ifelse(is.na(annot$CHR),NA,paste0("chr",annot$CHR))
-##compute median expression on chromosome Y
-chryexp<- colMeans(y[which(annot$CHR=="chrY"),])
+map2gene <- mapIds(hgfocus.db, keys=featureNames(e),
+                   column="ENTREZID", keytype="PROBEID",
+                   multiVals="first")
+library(Homo.sapiens)
+map2chr <- mapIds(Homo.sapiens, keys=map2gene,
+                  column="TXCHROM", keytype="ENTREZID",
+                  multiVals="first")
+chryexp <- colMeans(y[which(unlist(map2chr)=="chrY"),])
 ```
 
 If we create a histogram of the median gene expression values on chromosome Y, we clearly see two modes which must be females and males:
-```{r predict_sex,fig.cap="Histogram of median expresion y-axis. We can see females and males."}
+```{r predict_sex,fig.cap="Histogram of median expression y-axis. We can see females and males."}
 mypar()
 hist(chryexp)
 ```
@@ -91,10 +92,11 @@ We can also use `prcomp` which creates an object with just the PCs and also deme
 
 A first step in determining how much sample correlation induced _structure_ there is in the data. 
 
-```{r correlations, fig.cap="Image of correlations. Cell i,j  represents correlation between samples i and j. Red is high, white is 0 and red is negative."}
+```{r correlations, fig.cap="Image of correlations. Cell (i,j)  represents correlation between samples i and j. Red is high, white is 0 and red is negative."}
 library(RColorBrewer)
 cols=colorRampPalette(rev(brewer.pal(11,"RdBu")))(100)
-image ( cor(y) ,col=cols,zlim=c(-1,1))
+n <- ncol(y)
+image(1:n,1:n,cor(y),xlab="samples",ylab="samples",col=cols,zlim=c(-1,1))
 ```
 
 Here we are using the term _structure_ to refer to the deviation from what one would see if the samples were in fact independent from each other. The plot above clearly shows groups of samples that are more correlated between themselves than to others.

@@ -22,14 +22,14 @@ Those of us dealing with data almost always have a series of numbers. To describ
 x <- 1:5
 ```
 
-can be generally represented like this $x_1, x_2, x_3, x_4, x_5$. We use dots to simplify this $x_1,\dots,x_5$ and indexing to simplify even more $x_i, i=1,\dots,5$. If we want to describe a procedure for a list of any size $n$ , we write $x_i, i=1,\dots,n$. 
+can be generally represented like this $x_1, x_2, x_3, x_4, x_5$. We use dots to simplify this $x_1,\dots,x_5$ and indexing to simplify even more $x_i, i=1,\dots,5$. If we want to describe a procedure for a list of any size $n$, we write $x_i, i=1,\dots,n$. 
 
 We sometimes have two indexes. For example, we may have several measurements (blood pressure, weight, height, age, cholesterol level) for 100 individuals. We can then use double indexes: $x_{i,j}, i=1,\dots,100, j=1,\dots,5$. 
 
 
 #### Summation
 
-A very common operation in data analysis is to sum several numbers. This is comes up, for example, when we compute averages and standard deviations. If we have many numbers, there is a mathematical notation that makes it quite easy to express the following:
+A very common operation in data analysis is to sum several numbers. This comes up, for example, when we compute averages and standard deviations. If we have many numbers, there is a mathematical notation that makes it quite easy to express the following:
 
 ```{r}
 n <- 1000
@@ -75,7 +75,7 @@ We only use these a couple of times so you can skip this section if you prefer. 
 
 For certain statistical operations, we need to figure out areas under the curve. For example, for a function $f(x)$ ... 
 
-```{r intergrals, fig.cap=" ",echo=FALSE}
+```{r intergrals, fig.cap="Integral of a function.",echo=FALSE}
 f <- dnorm
 x <- seq(-4,4,length=100)
 plot(x, f(x), type="l")

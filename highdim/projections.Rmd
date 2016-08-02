@@ -14,9 +14,9 @@ Now that we have described the concept of dimension reduction and some of the ap
 
 As a review, remember that projections minimize the distance between points and subspace.
 
-![Illustration of projection](http://upload.wikimedia.org/wikipedia/commons/8/84/Linalg_projection_3.png)
+![Illustration of projection.](http://upload.wikimedia.org/wikipedia/commons/8/84/Linalg_projection_3.png)
 
-In the figure above, the arrow on top is pointing to a point in space. In this particular cartoon, the space is two dimensional, but we should be thinking abstractly. The space is represented by the Cartesian plan and the line on which the little person stands is a subspace of points. The projection to this subspace is the place that is closest to the original point. Geometry tells us that we can find this closest point by dropping a perpendicular line (dotted line) from the point to the space. The little person is standing on the projection.  The amount this person had to walk from the origin to the new projected point is referred to as _the coordinate_. 
+We illustrate projections using a figure, in which the arrow on top is pointing to a point in space. In this particular cartoon, the space is two dimensional, but we should be thinking abstractly. The space is represented by the Cartesian plan and the line on which the little person stands is a subspace of points. The projection to this subspace is the place that is closest to the original point. Geometry tells us that we can find this closest point by dropping a perpendicular line (dotted line) from the point to the space. The little person is standing on the projection.  The amount this person had to walk from the origin to the new projected point is referred to as _the coordinate_. 
 
 For the explanation of projections, we will use the standard matrix algebra notation for points: $\vec{y} \in \mathbb{R}^N$ is a point in $N$-dimensional space and $L \subset \mathbb{R}^N$ is smaller subspace. 
 
@@ -94,7 +94,7 @@ L = \{ c \vec{v}; c \in \mathbb{R}\}$$
 
 In this space, all components of the vectors are the same number, so we can think of this space as representing the constants: in the projection each dimension will be the same value. So what $c$ minimizes the distance between $c\vec{v}$ and $\vec{y}$ ? 
 
-When talking about problems like this, we sometimes use 2 dimensional figures such as the one above. We simply abstract and think of $\vec{y}$ as a point in $N-dimensions$ and $L$ as a subspace defined by a smaller number of values, in this case just one: $c$. 
+When talking about problems like this, we sometimes use two dimensional figures such as the one above. We simply abstract and think of $\vec{y}$ as a point in $N-dimensions$ and $L$ as a subspace defined by a smaller number of values, in this case just one: $c$. 
 
 Getting back to our question, we know that the projection is: 
 
@@ -120,7 +120,7 @@ $$ N c = \sum_{i=1}^N Y_i \implies \hat{c}=\bar{Y}$$
 
 #### Example: Regression is also a projection
  
-Let us give a slightly more complicated example. Simple linear regression can also be explained with projections.  Our data $\mathbf{Y}$ (we are no longer going to use the $\vec{y}$ notation) is again an $N-dimensional$ vector and our model predicts $Y_i$ with a line $\beta_0 + \beta_1 X_i$. We want to find the $\beta_0$ and $\beta_1$ that minimize the distance between $Y$ and the space defined by:
+Let us give a slightly more complicated example. Simple linear regression can also be explained with projections.  Our data $\mathbf{Y}$ (we are no longer going to use the $\vec{y}$ notation) is again an *N*-dimensional vector and our model predicts $Y_i$ with a line $\beta_0 + \beta_1 X_i$. We want to find the $\beta_0$ and $\beta_1$ that minimize the distance between $Y$ and the space defined by:
 
 $$ L = \{ \beta_0 \vec{v}_0 + \beta_1 \vec{v}_1 ; \vec{\beta}=(\beta_0,\beta_1) \in \mathbb{R}^2 \}$$
 

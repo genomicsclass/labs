@@ -1,0 +1,40 @@
+---
+layout: page
+title: Bioconductor for genome-scale data -- quick intro
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(Biobase)
+library(GSE5859)
+library(annotate)
+library(BiocParallel)
+library(VariantAnnotation)
+library(BSgenome.Hsapiens.UCSC.hg19)
+})
+})
+```
+
+# PH525.6x: Basic premise and overview
+
+You know to manipulate and analyze data using R, and
+you understand a considerable amount about statistical modeling.
+If you've taken PH525.5x, you've gotten significant background
+on current agendas in computational biology, and have learned
+how to deal with genomic data from the management, annotation,
+and analysis perspectives.
+
+In this course, we will use Bioconductor as the foundation
+of demonstrations and exercises in
+* methods for interactive visualization of genome-scale data with the shiny and ggvis packages;
+* programming strategies for scalable bioinformatics with multicore and cluster computing infrastructure;
+* integrative management and analysis of multiassay experiments, with illustrations from The Cancer Genome Atlas (TCGA);
+* approaches to improving reproducibility of genome-scale analyses;
+
+One week will be devoted to each of these topics.

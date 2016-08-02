@@ -1,0 +1,55 @@
+---
+layout: page
+title: "Some final comments on genome-scale visualization"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(Biobase)
+library(randomForest)
+library(MLInterfaces)
+library(tissuesGeneExpression)
+library(limma)
+library(ph525x)
+library(RCircos)
+})
+```
+
+
+## RCircos
+
+RCircos is not distributed in Bioconductor, but can
+be useful for developing compact displays of interactions
+among genomic elements.  I am unaware of any interfaces between
+Bioconductor data classes and RCircos, and this topic deserves
+attention.
+
+In the ph525x package we have added a selection of trans-eQTL
+findings from Westra et al. Nature 2013 (doi: 10.1038/ng.2756).
+We show a few SNP-gene associations from this study:
+```{r lksn,fig=TRUE}
+library(ph525x)
+data(westraTransSel)
+westraTransSel[1:3]
+sglToCircos(westraTransSel[1:5])
+```
+
+## ComplexHeatmap
+
+ComplexHeatmap has a very nice vignette addressing many
+issues in combining heatmaps and repurposing the heatmap 
+concept.  The oncoprint example in the vignette is particularly
+compelling.
+
+## WebGL and interaction with data
+
+In the short concluding video we use the MLInterfaces plspinHcube
+function to illustrate several aspects of interactivity: GUI for
+tuning, mouse-controlled rotation, and mouseover for point interrogation.
+
+## EpiViz
+
+The epivizr package is capable of substantial feats of data integration and
+higher-level data interactivity.

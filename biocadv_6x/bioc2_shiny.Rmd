@@ -1,0 +1,274 @@
+---
+layout: page
+title: shiny for interactive visualization of multivariate data
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressMessages({
+suppressPackageStartupMessages({
+library(shiny)
+library(cluster)
+library(ph525x)
+})
+})
+})
+```
+
+## Interaction beyond the "read-eval-print" loop
+
+Working do with R through the command line imposes
+a certain laborious sequentiality to everything we do.
+The advantage to this mode of data-analytic computing is
+that every step is defined by code and every result can be
+viewed (and traced) as a sequence of explicit function evaluations on
+a well-defined environment.
+
+An alternative mode of data-analytic computing uses
+graphical user interfaces (GUIs) in which mouse movements
+and button clicks are the primary means of specifying 
+computations.  This mode of interaction is sequential and
+traceable as well, but the path from mouse click to data-analytic
+function is technically complex and we will not pursue the
+matter any further.
+
+The Rstudio group has produced a package called `shiny` [URL](shiny.rstudio.com) that
+simplifies the creation of browser-driven GUIs for specific
+data-analytic activities.  In this lab we'll explore some of
+the potential of this package.  We've added a "shiny app" to
+the ph525x package that we'll now investigate.
+
+## Running the dfHclust function
+
+### The main display layout
+
+The ph525x package includes the `dfHclust` function.  This
+takes a `data.frame` instance as sole argument and starts
+a browser session.  You can try it directly with
+
+```{r lkb,eval=FALSE}
+library(ph525x)
+dfHclust(mtcars)
+```
+
+There is a sidebar panel on the left that accepts selections
+for
+
+* `distance` for object proximity
+* `clustering method` to form the hierarchy through object agglomeration
+* `height` for cutting the cluster dendrogram into groups of objects
+* features to use for computation of object distance
+
+In this application, the objects are cars with different manufacturer
+and model types; the features are structural or operating characteristics
+of cars.  Note that the application starts with certain defaults:
+
+* euclidean distance
+* ward.D as the agglomeration procedure
+* 40 as the cut height
+* the first two variables as features
+
+The main panel to the right includes tabs for three types of display:
+
+* tree for the clustering dendrogram
+* pairs plot for direct pairwise scatterplot visualization 
+* silhouette plot for assessing cluster quality at the selected cutting height
+
+To fully understand the quantities displayed in the "tree" and "silh"
+tabs, you should review the definitions of distance, clustering method, 
+and silhouette until you feel comfortable explaining these to a non-statistician.
+
+* Distance measures are very important in multivariate analysis
+* Hierarchical clustering procedures are complex; see the 
+[definition of Ward's method](https://en.wikipedia.org/wiki/Ward%27s_method) in Wikipedia for a clear exposition of one important approach
+* Silhouette is defined clearly in the man page for `silhouette` in the `cluster` package
+
+### Interacting with the display
+
+Notice that the defaults lead to a tree with three main lobes in the
+panel displayed when the 
+"tree" tab is selected.  The panel for the "silh" tab shows 
+a measure of cluster membership for each observation in the dataset,
+using the height-to-cut setting to partition the data using the tree.
+
+* note that the average silhouette width at the defaults for mtcars is 0.56
+* if, leaving all other selections alone, you change the "Select height for cut" value to 70, the silhouette plot changes to show an average silhouette of 0.59 -- an improvement, but now we have only two clusters, and one observation with a negative silhouette value
+* for an amusing observation, set the distance to "euclidean" and the clustering method to `single` -- now the closest neighbor to the Mercedes 450 SLC is the AMC Javelin.  I guess the Javelin wasn't such a bad car after all....
+
+## A view of the code
+
+In this subsection we will break up the main `dfHclust` function and
+explain its elements.  The code was written in a very naive manner but
+even so has three virtues:
+
+* it is relatively short and self-contained
+* it works and does something useful in interactive data exploration
+* it is easy to extend by replicating and modifying short subparts
+
+Some aspects that are likely to need improvement
+
+* handling of global variables for use in the `ui` component
+* excessive repetition of data.frame subsetting in the `server` component
+
+### Starting out
+
+We have a simple fixed interface and fail if we don't get a data.frame
+with at least two columns.  We fail if the necessary software is
+not in place.
+```
+dfHclust = function(df) {
+# validate input
+   stopifnot(inherits(df, "data.frame"))
+   stopifnot(ncol(df)>1)
+# obtain software
+   require(shiny)
+   require(cluster)
+```
+### Some vectors to populate interface option sets
+
+```
+# global variables ... 
+   nms = names(df)
+   cmeths = c("ward.D", "ward.D2",
+             "single", "complete", "average", "mcquitty",
+             "median", "centroid")
+   dmeths = c("euclidean", "maximum", "manhattan", "canberra",
+             "binary")
+```
+
+### The layout of the user interface
+
+There are several high-level options that can control
+the browser interface.  We'll use a flexible approach
+called `fluidPage`; see also the shinydashboard package.
+
+```
+#
+# main shiny components: ui and server
+#   ui: defines page layout and components
+#   server: defines operations
+#
+   ui <- fluidPage(
+#
+# we will have four components on sidebar: selectors for 
+# distance, agglomeration method, height for tree cut, and variables to use
+```
+
+#### Title and sidebar
+```
+#
+     titlePanel(paste(substitute(df), "hclust")),
+     sidebarPanel(
+          helpText(paste("Select distance:" )),
+          fluidRow(
+             selectInput("dmeth", NULL, choices=dmeths,
+               selected=dmeths[1])),
+          helpText(paste("Select clustering method:" )),
+          fluidRow(
+             selectInput("meth", NULL, choices=cmeths,
+               selected=cmeths[1])),
+          helpText(paste("Select height for cut:" )),
+          fluidRow(
+             numericInput("cutval", NULL, value=40, min=0, max=Inf, step=1)),
+          helpText(paste("Select variables for clustering from", substitute(df), ":" )),
+          fluidRow(
+             checkboxGroupInput("vars", NULL, choices=nms,
+               selected=nms[1:2]))
+            ),
+```
+#### Tabs for the primary displays
+
+```
+#
+# main panel is a simple plot
+#
+     mainPanel(
+       tabsetPanel(
+        tabPanel("tree", 
+         plotOutput("plot1")),
+        tabPanel("pairs", 
+         plotOutput("pairsplot")),
+        tabPanel("silh", 
+         plotOutput("silplot"))
+         )
+       )
+  )  # end fluidPage
+```
+
+### Defining the server
+   
+```
+#
+# a function with up to three arguments (input, output, session)
+# can be used to define the server component of the app
+# renderPlot makes it reactive, so when input components are altered,
+# data frame in use and plot are updated
+#
+   server <- function(input, output) {
+     output$plot1 <- renderPlot({
+       xv = df[,input$vars]
+       plot(hclust(dist(data.matrix(xv),method=input$dmeth), method=input$meth),
+         xlab=paste(input$dmeth, "distance;", input$meth, "clustering"))
+       abline(h=input$cutval, lty=2, col="gray")
+     })
+     output$pairsplot <- renderPlot({
+       xv = df[,input$vars]
+       pairs(data.matrix(xv))
+     })
+     output$silplot <- renderPlot({
+       xv = df[,input$vars]
+       dm = dist(data.matrix(xv),method=input$dmeth)
+       hc = hclust(dist(data.matrix(xv),method=input$dmeth), method=input$meth)
+       ct = cutree(hc, h=input$cutval)
+       plot(silhouette(ct, dm))
+     })
+   }
+   
+   shinyApp(ui, server)
+}
+```
+
+## Some gory details
+
+A "shiny app" consists of two main components, a user interface and
+a server function.  To use the infrastructure the `shiny`
+library must be attached to an R session.
+The application can be started in various ways; we use
+`shinyApp` and supply two arguments, `ui` and `server`.
+
+* `ui` is an instance of `shiny.tag.list`.  You can get a feel
+for this by inspecting the result of `fluidPage()`.
+
+* `server` is a function of three arguments `input`, `output`
+and `session`; the latter is optional.  `input` is a list
+with bindings given values in the `ui` component, and `output`
+will be populated with elements in the server for rendering in
+the UI.
+
+### An example with fluidPage
+
+To appreciate what shiny is doing for you, try the following:
+
+```{r liks, eval=FALSE}
+library(shiny)
+fluidPage(
+  titlePanel("a title"),
+  sidebarPanel(
+    selectInput("seli1", "some letters", letters[1:4])
+    )
+  )
+```
+
+Set `sink(file="dem.html")` and run the above code again.  Then
+issue `sink(NULL); browseURL("dem.html")`.  R will fire up the browser
+and show a fairly anemic page.  There will be a select control with
+options a, ..., d.  This particular example would be easy to code by
+hand, but the `selectInput` function allows you to develop controls
+with choices defined by any R vector.  Furthermore, high-level
+R functions are defined to allow different kinds of input, which
+may be driven by mouse events.

@@ -1,0 +1,326 @@
+---
+layout: page
+title: "Working with TCGA data: clinical, expression, mutation and methylation"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+suppressWarnings({
+library(ph525x)
+library(microbenchmark)
+library(survival)
+library(RTCGAToolbox)
+})
+})
+```
+
+## Introduction
+
+TCGA, [The Cancer Genome Atlas](http://cancergenome.nih.gov/), assembles
+multi-omic data on many tumor samples.
+
+We will discuss how to work with data
+acquired using the [RTCGAToolbox](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0106397)
+ package.  A substantial part of the
+effort of illustrating this system resides in the downloading
+of large resources from the archive.  The vignette for the toolbox
+package describes high-level utilities for analysis; here we'll focus
+on data harmonization and manual analysis.
+
+Here's an illustration of the download effort for three data types in
+rectal adenoma:
+
+```{r lkdl,eval=FALSE}
+library(ph525x)
+firehose()
+```
+
+## The integrative object
+
+We used the commands
+
+```{r lklk,eval=FALSE}
+library(RTCGAToolbox)
+readData = getFirehoseData (dataset="READ", runDate="20150402",forceDownload = TRUE,
+    Clinic=TRUE, Mutation=TRUE, Methylation=TRUE, RNAseq2_Gene_Norm=TRUE)
+```
+```{r getd,echo=FALSE,results="hide"}
+if (!exists("readData")) load("/Users/stvjc/Teaching/EDX_2016/readData.rda")
+```
+
+which takes about 10 minutes to acquire and save on a good wireless connection.
+The show method for the object prints
+
+```{r lkrdddd}
+readData
+```
+
+and hides the dimensionalities of the two methylation assays.  These
+can be found via
+
+```
+> lapply(readData@Methylation, function(x) dim(x@DataMatrix))
+[[1]]
+[1] 27578    76
+
+[[2]]
+[1] 485577    109
+```
+
+## A view of the clinical data
+
+A complete understanding of the dataset would require attention to the
+method by which the "cohort" of tumors was assembled, including
+establishment of a common time origin for disease progression or death event times,
+along with details on tumor
+sampling and assay procedures.  For the purposes of this course, we'll
+assume that we can meaningfully combine all the data that we've retrieved.
+
+### Selecting a severity measure
+```{r getc}
+clin = getData(readData, "Clinical")
+names(clin)
+```
+
+The severity of the disease will be indicated in pathology variables.
+T staging refers to size and invasiveness of tumor, N staging refers
+to presence of cancer cells in various lymph nodes.
+
+```{r lkpa}
+with(clin, table(pathology_T_stage, pathology_N_stage))
+```
+
+We see that there is variability in both staging measures.  We'll
+reduce the T staging to avoid small class sizes.
+
+```{r lkta}
+clin$t_stage = factor(substr(clin$pathology_T_stage,1,2))
+table(clin$t_stage)
+```
+
+### Defining survival times
+
+We'll guess that the vital status variable corresponds to status
+at last followup and that the days to last followup are recorded
+from a common origin in the diagnostic process.  Patient presents,
+tumor is graded and staged, and the followup calendar begins.
+
+The following Kaplan-Meier display is a crude sanity check, showing
+that tumor stage 1 has no observed events, stages 2 and 3 are ordered
+as we would expect for the first 1000 days or so, and then the
+curves cross; the data are sparse.
+
+```{r getsur,fig=TRUE}
+library(survival)
+ev = 1*(clin$vital == 1)
+fut = as.numeric(clin$days_to_last_followup)
+su = Surv(fut, ev)
+plot(survfit(su~t_stage, data=clin), lwd=2, lty=1:4, xlim=c(0,2000))
+ntab = table(clin$t_stage)
+ns = paste("[n=", ntab, "]", sep="")
+legend(100, .4, lty=1:4, lwd=2, legend=paste(levels(clin$t_stage), ns))
+```
+
+### Introducing mutation data
+
+```{r mut}
+mut = getData(readData, "Mutations")
+dim(mut)
+table(mut$Variant_Classification)
+```
+
+Let's order genes by the number of missense or nonsense mutations
+recorded.
+
+```{r omut}
+gt = table(mut$Hugo, mut$Variant_Classification)
+mn = apply(gt[,12:13], 1, sum)
+omn = order(mn, decreasing=TRUE)
+gt[omn[1:20], c(12:13,17,18)]
+```
+
+The fact that KRAS and TP53 are in this list gives another
+crude sanity check.  
+
+## Multiomics 101: Can we combine the mutation and clinical data?
+
+It isn't straightforward because sample identifiers are not shared.
+
+```{r lkid}
+clin[1:4,1:3]
+mut[1:4,c(1,16)]
+```
+
+We'll guess that the following transformation produces the appropriate
+identifier for the mutation data.
+
+```{r lktx}
+mid = tolower(substr(mut[,16],1,12))
+mid = gsub("-", ".", mid)
+mean(mid %in% rownames(clin))
+mut$sampid = mid
+```
+
+Let's simply summarize the total mutation burden per individual.
+```{r totm}
+nmut = sapply(split(mut$sampid, mut$sampid),length)
+nmut[1:4]
+length(nmut)
+dim(clin)
+```
+
+We see that not all individuals with clinical data had a mutation study.
+We'll subset the clinical data and visualize the distribution of
+mutation counts by tumor stage.
+
+```{r combo,fig=TRUE}
+clinwmut = clin[names(nmut),]
+clinwmut$nmut = nmut
+with(clinwmut, boxplot(split(nmut, t_stage), log="y"))
+```
+
+## The expression data
+
+There is no experiment-level metadata shipped with the
+data, but we understand that this is illumina hiseq
+RNA-sequencing with transcript abundance estimation via RSEM.
+How the data were transformed to gene level needs to be
+investigated.
+
+```{r lkrnaseq}
+rnaseq = getData(readData, "RNASeq2GeneNorm")
+rnaseq[1:4,1:4]
+```
+
+Again we'll have to transform the sample identifier strings.
+
+```{r doidsr}
+rid = tolower(substr(colnames(rnaseq),1,12))
+rid = gsub("-", ".", rid)
+mean(rid %in% rownames(clin))
+colnames(rnaseq) = rid
+```
+
+Sadly there is not much overlap between mutation and expression data.
+
+```{r lkov}
+intersect(rid,mid)
+```
+
+We note some duplicated transformed identifiers; it is not obvious
+which of the duplicates to keep, so we drop the second.
+
+```{r lkdup,fig=TRUE}
+which(duplicated(colnames(rnaseq)))
+pairs(log2(rnaseq[101:200,c(10:11,20,21,22,23,50,55)]))
+rnaseq = rnaseq[,-which(duplicated(colnames(rnaseq)))]
+```
+
+Let's create an ExpressionSet:
+
+```{r make}
+library(Biobase)
+readES = ExpressionSet(log2(rnaseq+1))
+pData(readES) = clin[sampleNames(readES),]
+readES
+```
+
+There is one individual here with missing tumor stage, and
+we will simply eliminate that individual.
+
+```{r exc}
+readES = readES[,-97]
+```
+
+## Relating tumor stage to gene expression variation
+
+We'll use a very crude categorical approach and an
+alternative will be explored in exercises.  We'll use moderated F tests
+to test the null hypothesis of common mean expression
+across tumor stages.
+
+```{r dolim}
+library(limma)
+mm = model.matrix(~t_stage, data=pData(readES))
+f1 = lmFit(readES, mm)
+ef1 = eBayes(f1)
+topTable(ef1, 2:4)
+```
+
+```{r lkgns,fig=TRUE}
+boxplot(split(exprs(readES)["LOC100128977",], readES$t_stage))
+```
+
+## Introducing the 450k methylation data
+
+The 450k data has
+complicating conditions in common with the expression data -- identifiers
+in need of transformation, duplicates, and only partial match to clinical data.
+
+```{r getmet}
+me450k = getData(readData, "Methylation", 2)
+fanno = me450k[,1:3]
+me450k = data.matrix(me450k[,-c(1:3)])
+med = tolower(substr(colnames(me450k),1,12))
+med = gsub("-", ".", med)
+mean(med %in% rownames(clin))
+sum(duplicated(med))
+todrop = which(duplicated(med))
+me450k = me450k[,-todrop]
+med = med[-todrop]
+colnames(me450k) = med
+ok = intersect(rownames(clin), colnames(me450k))
+me450kES = ExpressionSet(me450k[,ok])
+pData(me450kES) = clin[ok,]
+fData(me450kES) = fanno
+me450kES = me450kES[,-which(is.na(me450kES$t_stage))]
+```
+
+Do the 450k measures of DNA methylation associated with gene g correlate with
+variation of expression of g?  We need to synchronize the two datasets.
+
+```{r nsyn}
+ok = intersect(sampleNames(me450kES), sampleNames(readES))
+meMatch = me450kES[,ok]
+esMatch = readES[,ok]
+```
+
+Given these definitions, we can write a helper function
+
+```{r docorv,fig=TRUE}
+corv = function (sym, mpick = 3) 
+{
+    mind = which(fData(meMatch)[, 1] == sym)
+    if (length(mind) > mpick) 
+        mind = mind[1:mpick]
+    eind = which(featureNames(esMatch) == sym)
+    dat = cbind(t(exprs(meMatch)[mind, , drop = FALSE]), t(exprs(esMatch)[eind, 
+        , drop = FALSE]), t_stage = jitter(as.numeric(esMatch$t_stage)))
+    bad = apply(dat, 2, function(x) all(is.na(x)))
+    if (any(bad)) 
+        dat = dat[, -which(bad)]
+    pairs(dat)
+}
+corv("ZNF300")  # learned about it from firebrowse.org
+```
+
+## Conclusions
+
+TCGA is an obvious candidate for infrastructure development to support
+multiomic analysis.  We have seen some of the challenges that arise
+when even a nicely developed tool like RTCGAToolbox is used to acquire the data:
+we must be alert to mismatched sample identifier labels, missing data,
+inadequate documentation of sample provenance and assay conduct, and so on.
+Human effort is invariably required; standards for data quality must go beyond
+numerical accuracy and address transparency and usability.
+
+By suitably varying code snippets in this document, you can get access
+to multiomic data of additional modalities (including microRNA, copy number
+variation, and proteomics).  As you discover new approaches to interpreting
+these measures to create biological insight, please communicate them to the
+world by adding packages or workflows to Bioconductor.
+
+
+

@@ -5,7 +5,7 @@ title: Brief Introduction to `dplyr`
 
 ## Brief Introduction to `dplyr`
 
-The learning curve for R syntax is slow. One of the more difficult aspects that requires some getting used to is subsetting data tables. The `dplyr` packages brings these tasks closer to English and we are therefore going to introduce two simple functions: one is used to subset and the other to select columns.
+The learning curve for R syntax is slow. One of the more difficult aspects that requires some getting used to is subsetting data tables. The `dplyr` package brings these tasks closer to English and we are therefore going to introduce two simple functions: one is used to subset and the other to select columns.
 
 Take a look at the dataset we read in:
 ```{r}
