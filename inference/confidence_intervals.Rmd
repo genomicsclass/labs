@@ -227,7 +227,7 @@ difference. Instead of writing $\bar{Y} - \bar{X}$ repeatedly, let's
 define this difference as a new variable 
 $d \equiv \bar{Y} - \bar{X}$ . 
 
-Suppose you use CLT and report $d \pm 2 s_d/\sqrt{N}$ as a
+Suppose you use CLT and report $d \pm 2 s_d/\sqrt{N}$, with $s_d = \sqrt{s_X^2+s_Y^2}$, as a
 95% confidence interval for the difference and this interval does not
 include 0 (a false positive).
 Because the interval does not include 0, this implies that either
@@ -257,6 +257,9 @@ controlIndex <- which(dat$Diet=="chow")
 treatmentIndex <- which(dat$Diet=="hf")
 control <- dat[controlIndex,2]
 treatment <- dat[treatmentIndex,2]
+```
+
+```{r}
 t.test(treatment,control)$conf.int
 ```
 
