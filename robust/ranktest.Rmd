@@ -45,7 +45,7 @@ stripchart(list(x,y),vertical=TRUE,ylim=c(-7,7),ylab="Observations",pch=21,bg=1)
 abline(h=0)
 
 xrank<-rank(c(x,y))[seq(along=x)]
-yrank<-rank(c(x,y))[-seq(along=y)]
+yrank<-rank(c(x,y))[-seq(along=x)]
 
 stripchart(list(xrank,yrank),vertical=TRUE,ylab="Ranks",pch=21,bg=1,cex=1.25)
 
