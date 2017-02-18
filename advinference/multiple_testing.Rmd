@@ -128,11 +128,11 @@ VandS <- replicate(B,{
   })
 ```
 
-This motivates the definition of error rates. We can, for example, estimate probability that $V$ is larger than 0. This is interpreted as the probability of making at least one type I error among the 10,000 tests. In the simulation above, $V$ was much larger than 1 in every single simulation, so we suspect this probability is very practically 1. When $m=1$, this probability is equivalent to the p-value. When we have a multiple tests situation, we call it the Family Wide Error Rate (FWER) and it relates to a technique that is widely used: The Bonferroni Correction.
+This motivates the definition of error rates. We can, for example, estimate probability that $V$ is larger than 0. This is interpreted as the probability of making at least one type I error among the 10,000 tests. In the simulation above, $V$ was much larger than 1 in every single simulation, so we suspect this probability is very practically 1. When $m=1$, this probability is equivalent to the p-value. When we have a multiple tests situation, we call it the Family Wise Error Rate (FWER) and it relates to a technique that is widely used: The Bonferroni Correction.
 
 ## The Bonferroni Correction 
 
-Now that we have learned about the Family Wide Error Rate (FWER), we describe what we can actually do to control it.  In practice, we want to choose a _procedure_ that guarantees the FWER is smaller than a predetermined value such as 0.05. We can keep it general and instead of 0.05, use $\alpha$ in our derivations.
+Now that we have learned about the Family Wise Error Rate (FWER), we describe what we can actually do to control it.  In practice, we want to choose a _procedure_ that guarantees the FWER is smaller than a predetermined value such as 0.05. We can keep it general and instead of 0.05, use $\alpha$ in our derivations.
 
 Since we are now describing what we do in practice, we no longer have the advantage of knowing _the truth_. Instead, we pose a procedure and try to estimate the FWER.  Let's consider the naive procedure: "reject all the hypotheses with p-value <0.01". For illustrative purposes we will assume all the tests are independent (in the case of testing diets this is a safe assumption; in the case of genes it is not so safe since some groups of genes act together). Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are independent random variables so: 
 
@@ -140,7 +140,7 @@ $$
 \begin{align*}
 \mbox{Pr}(\mbox{at least one rejection}) &= 1 -\mbox{Pr}(\mbox{no rejections}) \\
 &= 1 - \prod_{i=1}^{1000} \mbox{Pr}(p_i>0.01) \\
-&= 1-0.95^{1000} \approx 1
+&= 1-0.99^{1000} \approx 1
 \end{align*}
 $$
 
@@ -158,9 +158,9 @@ So what do we do to make the probability of a mistake lower than $\alpha$ ? Usin
 
 $$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{10000}$$
 
-and solving for $k$, we get $1-(1-k)^{10000}=0.05 \implies k = 1-0.95^{1/10000} \approx 0.000005$
+and solving for $k$, we get $1-(1-k)^{10000}=0.01 \implies k = 1-0.99^{1/10000} \approx 1e-6$
 
-This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 0.000005". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
+This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 1e-6". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
 
 A problem with Sidak's procedure is that it assumes the tests are independent. It therefore only controls FWER when this assumption holds. The Bonferroni correction is more general in that it controls FWER even if the tests are not independent. 
 As with Sidak's procedure we start by noting that: 
@@ -217,11 +217,11 @@ pvals <- sapply(1:m, function(i){
 sum(pvals < 0.05/10000)
 ```
 
-By requiring a FWER $\leq$ 0.05, we are practically assuring 0 power (sensitivity). In many applications, this specificity requirement is over-kill. A widely used alternative to the FWER is the false discover rate (FDR). The idea behind FDR is to focus on the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept here, we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
+By requiring a FWER $\leq$ 0.05, we are practically assuring 0 power (sensitivity). In many applications, this specificity requirement is over-kill. A widely used alternative to the FWER is the false discovery rate (FDR). The idea behind FDR is to focus on the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept here, we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
 
 #### Vectorizing code
 
-Before running the simulation, we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above, which is necessary here due to the fact that we will be generating several simulations. Understanding this chunk of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
+Before running the simulation, we are going to _vectorize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above, which is necessary here due to the fact that we will be generating several simulations. Understanding this chunk of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
 
 ```{r, message=FALSE}
 library(genefilter) ##rowttests is here
