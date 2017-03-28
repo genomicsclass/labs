@@ -34,7 +34,7 @@ This implies that:
 $$
 \frac{1}{N}
 \mathbf{A}^\top Y = \frac{1}{N}
-\begin{pmatrix}1&1&,\dots&1\end{pmatrix}
+\begin{pmatrix}1&1&\dots&1\end{pmatrix}
 \begin{pmatrix}
 Y_1\\
 Y_2\\
