@@ -1,6 +1,7 @@
 ---
+title: "Biological versus technical variability"
+output: pdf_document
 layout: page
-title: Biological versus technical variability
 ---
 
 ```{r options, echo=FALSE}
@@ -72,8 +73,10 @@ i=11425;j=11878
 pooled_y=exprs(maPooling[,pooled])
 pooled_g=factor(as.numeric(grepl("b",names(pooled))))
 mypar(1,2)
-stripchart(split(pooled_y[i,],pooled_g),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 1",xlab="Group",pch=15)
-stripchart(split(pooled_y[j,],pooled_g),vertical=TRUE,method="jitter",col=c(1,2),main="Gene 2",xlab="Group",pch=15)
+stripchart(split(pooled_y[i,],pooled_g),vertical=TRUE,method="jitter",col=c(1,2),
+           main="Gene 1",xlab="Group",pch=15)
+stripchart(split(pooled_y[j,],pooled_g),vertical=TRUE,method="jitter",col=c(1,2),
+           main="Gene 2",xlab="Group",pch=15)
 ```
 
 Note that if we compute a t-test from these values we obtain highly significant results
