@@ -156,8 +156,10 @@ register(MulticoreParam(workers=2))
 library(GenomicFiles)
 ans = reduceByFile( gm, files(mm), MAP=function(range,file) {
    table( import(file, genome="hg19", which=range)$name ) } )
+# alternate approach; reboot macbook if above hangs, or use:
+#ans = lapply(  files(mm), function(x) {
+#   table( import(x, genome="hg19", which=gm)$name ) } )
 ans= unlist(ans, recursive=FALSE)
-names(ans) = colData(mm)$Epigenome.Mnemonic
 ans[1:4]
 ```
 
