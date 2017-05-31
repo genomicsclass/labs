@@ -1,6 +1,7 @@
 ---
+title: "IRanges and GRanges"
+output: pdf_document
 layout: page
-title: IRanges and GRanges
 ---
 
 ```{r options, echo=FALSE}

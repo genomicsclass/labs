@@ -1,8 +1,10 @@
 ---
-title: "Genomic annotation in Bioconductor: The general situation"
+title: 'Genomic annotation in Bioconductor: The general situation'
 author: "Vince"
 date: "March 19, 2015"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 layout: page
 toc: yes
 ---
@@ -26,6 +28,7 @@ library(png)
 library(KEGGREST)
 library(GO.db)
 library(org.Hs.eg.db)
+library(DBI)
 })
 ```
 
