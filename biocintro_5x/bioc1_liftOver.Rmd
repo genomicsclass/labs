@@ -43,16 +43,38 @@ We can illustrate this with gene addresses created for hg38,
 the current reference build.  We want to translate them
 for comparison to addresses asserted for hg19.
 
-We need a "chain file", uncompressed.  You can
+## Acquiring a chain file
+
+Address translation between reference builds can be specified
+using a [chain format file](https://genome.ucsc.edu/goldenpath/help/chain.html).  Two ways of getting the chain file are:
+
+### Direct manual acquisition
+
+You can
 get it from the following URL, and use gunzip on your
 system to uncompress in your home dir, if you would
 like to emulate the commands below.
 
 "ftp://hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz"
 
+### Acquisition through AnnotationHub
+
+This is fully programmatic but may involve acquiring and caching
+a metadata database with the AnnotationHub package.
+
+```{r doviaah}
+library(AnnotationHub)
+ah = AnnotationHub()
+q1 = query(ah, c("chain")) # list all resources with 'chain' in metadata
+q1
+q2 = query(ah, c("chain", "hg38ToHg19")) # the one we want
+ch = ah[[names(q2)]]
+```
+
 ```{r domyimport}
 library(rtracklayer)
-ch = import.chain("~/hg38ToHg19.over.chain")
+# following only if you do not use AnnotationHub
+# ch = import.chain("~/hg38ToHg19.over.chain")
 ch
 str(ch[[1]])
 ```
