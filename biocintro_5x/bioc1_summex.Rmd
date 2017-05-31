@@ -107,7 +107,8 @@ gene symbols.
 ```{r getr}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
-gr14 = genes(txdb, vals=list(tx_chrom="chr14"))
+seqlevels(txdb) = "chr14"
+gr14 = genes(txdb)
 gr14$symbol = mapIds(Homo.sapiens, keys=gr14$gene_id, keytype="ENTREZID",
    column="SYMBOL")
 gr14
