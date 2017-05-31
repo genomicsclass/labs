@@ -203,11 +203,11 @@ grl <- GRangesList(gr, gr2)
 grl
 ```
 
-The length of the *GRangesList* is the number of *GRanges* object within. To get the length of each GRanges we call `elementLengths`. We can index into the list using typical list indexing of two square brackets.
+The length of the *GRangesList* is the number of *GRanges* object within. To get the length of each GRanges we call `elementNROWS`. We can index into the list using typical list indexing of two square brackets.
 
 ```{r}
 length(grl)
-elementLengths(grl)
+elementNROWS(grl)
 grl[[1]]
 ```
 
