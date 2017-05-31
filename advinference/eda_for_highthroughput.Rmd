@@ -35,7 +35,7 @@ randomData <- matrix(rnorm(n*m),m,n)
 nullpvals <- rowttests(randomData,g)$p.value
 ```
 
-As we described earlier, reporting only p-values is a mistake when we can also report effect sizes. With high-throughput data, we can visualize the results by making a _volcano plot_. The idea behind a volcano plot is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis we plot the effect size. By using - log (base 10), the "highly significant" features appear at the top of the plot. Using log also permits us to better distinguish between small and very small p-values, for example 0.01 and $10^6$.  Here is the volcano plot for our results above:
+As we described earlier, reporting only p-values is a mistake when we can also report effect sizes. With high-throughput data, we can visualize the results by making a _volcano plot_. The idea behind a volcano plot is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis we plot the effect size. By using -log (base 10), the "highly significant" features appear at the top of the plot. Using log also permits us to better distinguish between small and very small p-values, for example 0.01 and $10^6$.  Here is the volcano plot for our results above:
 
 ```{r volcano_plot, fig.align="Volcano plot. Negative log (base 10) p-values plotted against effect size estimates."}
 plot(results$dm,-log10(results$p.value),
@@ -46,7 +46,7 @@ Many features with very small p-values, but small effect sizes as we see here, a
 
 #### p-value Histograms
 
-Another plot we can create to get an overall idea of the results is to make histograms of p-values. When we generate completely null data the histogram follows a uniform distribution. With our original data set we see a higher frequency of smaller p-values. 
+Another plot we can create to get an overall idea of the results is to make histograms of p-values. When we generate completely null data the histogram follows a uniform distribution. With our original dataset we see a higher frequency of smaller p-values. 
 
 ```{r pval-hist, fig.cap="P-value histogram. We show a simulated case in which all null hypotheses are true (left) and p-values from the gene expression described above.",fig.width=10.5,fig.height=5.25}
 library(rafalib)
@@ -55,7 +55,7 @@ hist(nullpvals,ylim=c(0,1400))
 hist(pvals,ylim=c(0,1400))
 ```
 
-When we expect most hypothesis to be null and don't see a uniform p-value distribution, it might be indicative of unexpected properties, such as correlated samples. 
+When we expect most hypotheses to be null and don't see a uniform p-value distribution, it might be indicative of unexpected properties, such as correlated samples. 
 
 If we permute the outcomes and calculate p-values then, if the samples are independent, we should see a uniform distribution. With these data we do not:
 
@@ -76,7 +76,7 @@ library(Biobase)
 library(GSE5859) 
 data(GSE5859) 
 ge <- exprs(e) ##ge for gene expression
-ge[,49] <- ge[,49]/log2(exp(1)) ##immitate error
+ge[,49] <- ge[,49]/log2(exp(1)) ##imitate error
 ```
 
 A quick look at a summary of the distribution using boxplots immediately highlights the mistake:

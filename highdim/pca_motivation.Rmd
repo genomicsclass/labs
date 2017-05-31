@@ -57,10 +57,12 @@ z = rbind( z1, z2) #matrix now same dimensions as y
 thelim <- c(-3,3)
 mypar(1,2)
 
-plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized height)",xlim=thelim,ylim=thelim)
+plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",
+     ylab="Twin 2 (standardized height)",
+     xlim=thelim,ylim=thelim)
 points(y[1,1:2],y[2,1:2],col=2,pch=16)
 
-plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Differnece in height")
+plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
 points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ```
 
@@ -107,7 +109,7 @@ A = \frac{1}{\sqrt{2}}
 \end{pmatrix}
 $$
 
-then the SD of the columns of $Y$ are the same as the variance of the columns $Z$. Also, notice that $A^{-1}A=I$. We call matrices with this properties _orthogonal_ and it guarantees the SD-preserving properties described above. The distances are now exactly preserved:
+then the SD of the columns of $Y$ are the same as the variance of the columns $Z$. Also, notice that $A^{-1}A=I$. We call matrices with these properties _orthogonal_ and it guarantees the SD-preserving properties described above. The distances are now exactly preserved:
 
 ```{r rotation_preserves_dist, fig.cap="Distance computed from original data and after rotation is the same."}
 A <- 1/sqrt(2)*matrix(c(1,1,1,-1),2,2)
@@ -115,7 +117,7 @@ z <- A%*%y
 d <- dist(t(y))
 d2 <- dist(t(z))
 mypar(1,1)
-plot(as.numeric(d),as.numeric(d2)) #as.numeric turns distnaces into long vector
+plot(as.numeric(d),as.numeric(d2)) #as.numeric turns distances into long vector
 abline(0,1,col=2)
 ```
 
@@ -125,14 +127,16 @@ We call this particular transformation a _rotation_ of `y`.
 mypar(1,2)
 
 thelim <- c(-3,3)
-plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",ylab="Twin 2 (standardized height)",xlim=thelim,ylim=thelim)
+plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",
+     ylab="Twin 2 (standardized height)",
+     xlim=thelim,ylim=thelim)
 points(y[1,1:2],y[2,1:2],col=2,pch=16)
 
-plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Differnece in height")
+plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
 points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ```
 
-The reason we applied this transformation in the first place was because we noticed that to compute the distances between points, we followed a direction along the diagonal in the original plot, which after the rotation falls on the horizontal, or the the first dimension of `z`. So this rotation actually achieves what we originally wanted: we can preserve the distances between points with just one dimension. Let's remove the second dimension of `z` and recompute distances:
+The reason we applied this transformation in the first place was because we noticed that to compute the distances between points, we followed a direction along the diagonal in the original plot, which after the rotation falls on the horizontal, or the first dimension of `z`. So this rotation actually achieves what we originally wanted: we can preserve the distances between points with just one dimension. Let's remove the second dimension of `z` and recompute distances:
 
 
 ```{r approx_dist, fig.cap="Distance computed with just one dimension after rotation versus actual distance."}
@@ -142,7 +146,7 @@ plot(as.numeric(d),as.numeric(d3))
 abline(0,1)
 ```
 
-The distance computed with just the one dimensions provides a very good approximation to the actual distance and a very useful dimension reduction: from 2 dimensions to 1. This first dimension of the transformed data is actually the first _principal component_. This idea motivates the use of principal component analysis (PCA) and the singular value decomposition (SVD) to achieve dimension reduction more generally. 
+The distance computed with just the one dimension provides a very good approximation to the actual distance and a very useful dimension reduction: from 2 dimensions to 1. This first dimension of the transformed data is actually the first _principal component_. This idea motivates the use of principal component analysis (PCA) and the singular value decomposition (SVD) to achieve dimension reduction more generally. 
 
 #### Important note on a difference to other explanations
 

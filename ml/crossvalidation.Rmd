@@ -100,7 +100,7 @@ for (i in 1:10) {
 }
 ```
 
-So we can see there is some variation for each fold, with errors rates hovering around 0.1-0.3. But is `k=5` the best setting for the k parameter? In order to explore the best setting for k, we need to create an outer loop, where we try different values for k, and then calculate the average test set error across all the folds.
+So we can see there is some variation for each fold, with error rates hovering around 0.1-0.3. But is `k=5` the best setting for the k parameter? In order to explore the best setting for k, we need to create an outer loop, where we try different values for k, and then calculate the average test set error across all the folds.
 
 We will try out each value of k from 1 to 12. Instead of using two `for` loops, we will use `sapply`:
 
@@ -139,7 +139,7 @@ Remember, because the training set is a random sample and because our fold-gener
 
 Finally, to show that gene expression can perfectly predict tissue, we use 5 dimensions instead of 2, which results in perfect prediction:
 
-```{r misclassification_error2, fig.cap="Misclassification error versus number of neighbors when we use five dimensions instead of 2."}
+```{r misclassification_error2, fig.cap="Misclassification error versus number of neighbors when we use 5 dimensions instead of 2."}
 Xsmall <- cmdscale(dist(X),k=5)
 set.seed(1)
 ks <- 1:12

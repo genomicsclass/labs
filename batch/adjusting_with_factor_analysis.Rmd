@@ -63,19 +63,17 @@ Here is a plot of dates for each sample, with color representing month:
 times <-sampleInfo$date 
 mypar(1,1)
 o=order(times)
-plot(times[o],pch=21,bg=as.numeric(batch)[o],ylab="date")
-o=order(times)
-plot(times[o],pch=21,bg=as.numeric(batch)[o],ylab="date")
+plot(times[o],pch=21,bg=as.numeric(batch)[o],ylab="Date")
 ```
 
 We note that there is more than one day per month. Could day have an effect as well? We can use PCA and EDA to try to answer this question. Here is a plot of the first principal component ordered by date:
 
-```{r PC1_versus_time, fig.cap="First PC plotted against ordered by date with colors representing month."}
+```{r PC1_versus_time, fig.cap="First PC plotted against order by date with colors representing month."}
 s <- svd(y)
 mypar(1,1)
 o<-order(times)
 cols <- as.numeric( batch)
-plot(s$v[o,1],pch=21,cex=1.25,bg=cols[o],ylab="First PC",xaxt="n",xlab="")
+plot(s$v[o,1],pch=21,cex=1.25,bg=cols[o],ylab="First PC",xlab="Date order")
 legend("topleft",c("Month 1","Month 2"),col=1:2,pch=16,box.lwd=0)
 ```
 
@@ -114,7 +112,8 @@ hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))
 points(res$dm[which(chr=="chrX")],-log10(res$p.value[which(chr=="chrX")]),col=1,pch=16)
-points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,xlab="Effect size",ylab="-log10(p-value)")
+points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,
+       xlab="Effect size",ylab="-log10(p-value)")
 legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 
 qvals <- qvalue(res$p.value)$qvalue
@@ -189,7 +188,8 @@ hist(res$p.value[which(!chr%in%c("chrX","chrY") )],main="",ylim=c(0,1300))
 
 plot(res$dm,-log10(res$p.value))
 points(res$dm[which(chr=="chrX")],-log10(res$p.value[which(chr=="chrX")]),col=1,pch=16)
-points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,xlab="Effect size",ylab="-log10(p-value)")
+points(res$dm[which(chr=="chrY")],-log10(res$p.value[which(chr=="chrY")]),col=2,pch=16,
+       xlab="Effect size",ylab="-log10(p-value)")
 legend("bottomright",c("chrX","chrY"),col=1:2,pch=16)
 
 
@@ -204,7 +204,7 @@ cat("Total genes with q-value < 0.1: ",length(index),"\n",
 
 To visualize what SVA achieved, below is a visualization of the original dataset decomposed into sex effects, surrogate variables, and independent noise estimated by the algorithm (code not shown):
 
-```{r different_sources_of_var, fig.cap="Original data split into three sources of variability estimated by SVA: sex-related signal, surrogate-variable induced structure and indepedent error.", fig.width=10.5,fig.height=5.25,echo=FALSE}
+```{r different_sources_of_var, fig.cap="Original data split into three sources of variability estimated by SVA: sex-related signal, surrogate-variable induced structure, and independent error.", fig.width=10.5,fig.height=5.25,echo=FALSE}
 Batch<- lmfit$coef[geneindex,3:7]%*%t(svaX[,3:7])
 Signal<-lmfit$coef[geneindex,1:2]%*%t(svaX[,1:2])
 error <- geneExpression[geneindex,]-Signal-Batch

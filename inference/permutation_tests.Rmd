@@ -16,7 +16,7 @@ set.seed(1)
 
 Suppose we have a situation in which none of the standard mathematical statistical approximations apply. We have computed a summary statistic, such as the difference in mean, but do not have a useful approximation, such as that provided by the CLT. In practice, we do not have access to all values in the population so we can't perform a simulation as done above. Permutation tests can be useful in these scenarios. 
 
-We are back to the scenario were we only have 10 measurements for each group.
+We are back to the scenario where we only have 10 measurements for each group.
 
 ```{r,message=FALSE}
 dat=read.csv("femaleMiceWeights.csv")
@@ -77,7 +77,7 @@ abline(v=obsdiff, col="red", lwd=2)
 
 Now the observed difference is not significant using this approach. Keep in mind that there is no theoretical guarantee that the null distribution estimated from permutations approximates the actual null distribution. For example, if there is a real difference between the populations, some of the permutations will be unbalanced and will contain some samples that explain this difference. This implies that the null distribution created with permutations will have larger tails than the actual null distribution. This is why permutations result in conservative p-values. For this reason, when we have few samples, we can't do permutations. 
 
-Note also that permutations tests still have assumptions: samples are
+Note also that permutation tests still have assumptions: samples are
 assumed to be independent and "exchangeable". If there is hidden
 structure in your data, then permutation tests can result in estimated
 null distributions that underestimate the size of tails because the

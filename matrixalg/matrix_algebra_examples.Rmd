@@ -34,7 +34,7 @@ This implies that:
 $$
 \frac{1}{N}
 \mathbf{A}^\top Y = \frac{1}{N}
-\begin{pmatrix}1&1&,\dots&1\end{pmatrix}
+\begin{pmatrix}1&1&\dots&1\end{pmatrix}
 \begin{pmatrix}
 Y_1\\
 Y_2\\
@@ -130,7 +130,7 @@ $$
 Then we can write the model:
 
 $$ 
-Y_i = \beta_0 + \beta_1 x_i + \varepsilon, i=1,\dots,N 
+Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, i=1,\dots,N 
 $$
 
 as: 

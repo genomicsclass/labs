@@ -12,7 +12,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 One often overlooked complication with high-throughput studies is batch effects, which occur because measurements are affected by laboratory conditions, reagent lots, and personnel differences. This becomes a major problem when batch effects are confounded with an outcome of interest and lead to incorrect conclusions. In this chapter, we describe batch effects in detail: how to detect, interpret, model, and adjust for batch effects.
 
-Batch effects are the biggest challenge faced by genomics research, especially in the context of precision medicine. The presence of batch effects in one form or another have been reported among most, if not all, high-throughput technologies [Leek et al. (2010) Nature Reviews Genetics 11, 733-739]. But batch effects are not specific to genomics technology. In fact, in a 1972 paper, WJ Youden describes batch effects in the context of empirical estimates of physical constants. He pointed out the "subjective character of present estimates" of physical constants and how estimates changed from laboratory to laboratory. For example, in Table 1, Youden shows the following estimates of the astronomical unit from different laboratories. The reports included an estimate of spread (what we now would call a confidence interval).
+Batch effects are the biggest challenge faced by genomics research, especially in the context of precision medicine. The presence of batch effects in one form or another has been reported among most, if not all, high-throughput technologies [Leek et al. (2010) Nature Reviews Genetics 11, 733-739]. But batch effects are not specific to genomics technology. In fact, in a 1972 paper, WJ Youden describes batch effects in the context of empirical estimates of physical constants. He pointed out the "subjective character of present estimates" of physical constants and how estimates changed from laboratory to laboratory. For example, in Table 1, Youden shows the following estimates of the astronomical unit from different laboratories. The reports included an estimate of spread (what we now would call a confidence interval).
 
 ```{r astronomical_units,echo=FALSE,message=FALSE,fig.cap="Estimates of the astronomical unit with estimates of spread, versus year it was reported. The two laboratories that reported more than one estimate are shown in color."}
 library(rafalib)
@@ -99,7 +99,7 @@ se <- sd(dat[,3]) / sqrt(nrow(dat))
 ```
 
 ```{r,echo=FALSE}
-cat("95% confidence interaval is: [",avg-1.96*se,",", avg+1.96*se,"]")
+cat("95% confidence interval is: [",avg-1.96*se,",", avg+1.96*se,"]")
 cat("which does include the current estimate is:",current)
 ```
 

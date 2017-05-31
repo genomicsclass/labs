@@ -19,7 +19,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 set.seed(1) #so that we get same results
 ```
 
-This chapter introduces the statistical concepts necessary to understand p-values and confidence intervals. These terms are ubiquitous in the life science literature. Let's use [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full]) as an example. 
+This chapter introduces the statistical concepts necessary to understand p-values and confidence intervals. These terms are ubiquitous in the life science literature. Let's use [this paper](http://diabetes.diabetesjournals.org/content/53/suppl_3/S215.full) as an example. 
 
 Note that the abstract has this statement: 
 
@@ -41,8 +41,9 @@ If you already downloaded the `femaleMiceWeights` file into your working directo
 
 ```{r echo=FALSE, results="hide"}
 library(downloader) ##use install.packages to install
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
 filename <- "femaleMiceWeights.csv"
+url <- paste0(dir, filename)
 if (!file.exists(filename)) download(url, destfile=filename)
 ```
 
@@ -53,7 +54,9 @@ dat <- read.csv("femaleMiceWeights.csv")
 Remember that a quick way to read the data, without downloading it is by using the url:
 
 ```{r,eval=FALSE}
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
+filename <- "femaleMiceWeights.csv"
+url <- paste0(dir, filename)
 dat <- read.csv(url)
 ```
 
@@ -62,7 +65,7 @@ dat <- read.csv(url)
 We are interested in determining if following a given diet makes mice
 heavier after several weeks. This data was produced by ordering 24
 mice from The Jackson Lab and randomly assigning either chow or high
-fat (hf) diet. After several weeks, the scientists weighed each mice
+fat (hf) diet. After several weeks, the scientists weighed each mouse
 and obtained this data (`head` just shows us the first 6 rows):
 
 ```{r}
@@ -75,7 +78,7 @@ In RStudio, you can view the entire dataset with:
 View(dat)
 ```
 
-So are the hf mice heavier? Mouse 24 at 20.73 grams is one the
+So are the hf mice heavier? Mouse 24 at 20.73 grams is one of the
 lightest mice, while Mouse 21 at 34.02 grams is one of the heaviest. Both are on
 the hf diet. Just from looking at the data, we see there is
 *variability*. Claims such as the one above usually refer to the
@@ -99,12 +102,13 @@ If we repeat the experiment, we obtain 24 new mice from The Jackson Laboratory a
 
 ## Random Variables
 
-Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special data set that we are using here to illustrate concepts. 
+Let's explore random variables further. Imagine that we actually have the weight of all control female mice and can upload them to R. In Statistics, we refer to this as *the population*. These are all the control mice available from which we sampled 24. Note that in practice we do not have access to the population. We have a special dataset that we are using here to illustrate concepts. 
 
 ```{r, echo=FALSE}
 library(downloader)
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename <- "femaleControlsPopulation.csv" 
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
+filename <- "femaleControlsPopulation.csv"
+url <- paste0(dir, filename)
 ##check if file exists and if it does not, download it:
 if (!file.exists(filename)) download(url,destfile=filename)
 ```

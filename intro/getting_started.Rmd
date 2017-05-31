@@ -133,24 +133,31 @@ The functions that read and write files (there are several in R) assume you mean
 
 We find that the simplest way to organize yourself is to start a Project in RStudio (Click on "File" and "New Project"). When creating the project, you will select a folder to be associated with it. You can then download all your data into this folder. Your working directory will be this folder.
 
-#### Option 1: Read file over the internet
+#### Option 1: Read file over the Internet
 You can navigate to the `femaleMiceWeights.csv` file by visiting the
 data directory of dagdata on
 [GitHub](https://github.com/genomicsclass/dagdata/tree/master/inst/extdata). If you navigate to the file, you need to click on *Raw* on the
 upper right hand corner of the page. 
 
-![GitHub page screenshot](images/handmade/screenshot1.png)
+![GitHub page screenshot.](images/handmade/screenshot1.png)
 
-Now you can copy and paste the URL and use this as the argument to `read.csv`:
+Now you can copy and paste the URL and use this as the argument to `read.csv`.
+Here we break the URL into a base directory and a filename and then combine
+with `paste0` because the URL would otherwise be too long for the page.
+We use `paste0` because we want to put the strings together as is, if you were
+specifying a file on your machine you should use the smarter function, `file.path`,
+which knows the difference between Windows and Mac file path connectors.
+You can specify the URL using a single string to avoid this extra step.
 
 ```{r,message=FALSE}
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
+url <- paste0(dir, "femaleMiceWeights.csv")
 dat <- read.csv(url)
 ```
 
 #### Option 2: Download file with your browser to your working directory
 
-There are reasons for wanting to keep a local copy of the file. For example, you may want to run the analysis while not connected to internet or you may want to assure reproducibility regardless of the file being available on the original site. To download the file, as in option 1 you can navigate to the `femaleMiceWeights.csv`. In this option we use your browser's "Save
+There are reasons for wanting to keep a local copy of the file. For example, you may want to run the analysis while not connected to the Internet or you may want to ensure reproducibility regardless of the file being available on the original site. To download the file, as in option 1, you can navigate to the `femaleMiceWeights.csv`. In this option we use your browser's "Save
 As" function to ensure that the downloaded file is in a CSV
 format. Some browsers add an extra suffix to your filename by
 default. You do not want this. You want your file to be named
@@ -164,12 +171,13 @@ If you did not receive any message, then you probably read in the file successfu
 
 #### Option 3: Download the file from within R
 
-We store many of the datasets used here on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the internet to your computer using R. In this example, we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory with the name of your choosing.
+We store many of the datasets used here on [GitHub](https://github.com/genomicsclass/). You can save these files directly from the Internet to your computer using R. In this example, we are using the `download.file` function in the `downloader` package to download the file to a specific location and then read it in. We can assign it a random name and a random directory using the function `tempfile`, but you can also save it in directory with the name of your choosing.
 
 ```{r,message=FALSE}
 library(downloader) ##use install.packages to install
-url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv"
+dir <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/"
 filename <- "femaleMiceWeights.csv" 
+url <- paste0(dir, filename)
 if (!file.exists(filename)) download(url, destfile=filename)
 ```
 

@@ -131,11 +131,11 @@ qqline(exec.pay)
 ```
 
 In addition to qq-plots, a practical summary of data is to compute 3
-percentiles: 25-th, 50-th (the median) and the 75-th. A boxplot shows
+percentiles: 25th, 50th (the median) and the 75th. A boxplot shows
 these 3 values along with a 
-range of the points within median $\pm$ 1.5 (75-th percentile -
-25th-percentile). Values outside this range are shown as points and
-sometimes refereed to as _outliers_. 
+range of the points within median $\pm$ 1.5 (75th percentile -
+25th percentile). Values outside this range are shown as points and
+sometimes referred to as _outliers_. 
 
 ```{r fig.width=6, fig.height=6, fig.cap="Simple boxplot of executive pay."}
 boxplot(exec.pay, ylab="10,000s of dollars", ylim=c(0,400))
@@ -147,7 +147,7 @@ show many distributions in one plot, by lining them up, side by side. We will se
 
 <a name="scatterplots"></a>
 
-## Scatterplots And Correlation
+## Scatterplots and Correlation
 
 The methods described above relate to _univariate_ variables. In the
 biomedical sciences, it is common to be interested in the relationship
@@ -163,20 +163,22 @@ fails to describe an important characteristic of the data.
 data(father.son,package="UsingR")
 x=father.son$fheight
 y=father.son$sheight
-plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=paste("correlation =",signif(cor(x,y),2)))
+plot(x,y, xlab="Father's height in inches", 
+     ylab="Son's height in inches", 
+     main=paste("correlation =",signif(cor(x,y),2)))
 ```
 
 The scatter plot shows a general trend: the taller the father, the
 taller the son. A summary of this trend is the correlation coefficient,
-which in this cases is 0.5. We will motivate this statistic by trying to
+which in this case is 0.5. We will motivate this statistic by trying to
 predict the son's height using the father's height.
 
 ## Stratification
 
-Suppose we are asked to guess the height of randomly select sons. The
+Suppose we are asked to guess the height of randomly selected sons. The
 average height, 68.7 inches, is the value with the highest proportion
 (see histogram) and would be our prediction. But what if we are told
-that the father is 72 inches tall, do we sill guess 68.7? 
+that the father is 72 inches tall, do we still guess 68.7? 
 
 The father is taller than average. Specifically, he is 1.75
 standard deviations taller than the average father. So should we
@@ -200,7 +202,7 @@ below.
 
 ## Bivariate Normal Distribution
 
-Correlation is a widely used summary statistic in the life sciences. However, it is often misused or misinterpreted. To properly interprete correlation we actually have to understand the bivariate normal distribution.
+Correlation is a widely used summary statistic in the life sciences. However, it is often misused or misinterpreted. To properly interpret correlation we actually have to understand the bivariate normal distribution.
 
 A pair of random variables $(X,Y)$ is considered to be approximated by
 bivariate normal when the proportion of values below, for example $a$

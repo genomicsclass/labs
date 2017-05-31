@@ -33,16 +33,14 @@ In the context of high-throughput data we can make several type I errors and sev
 |Alternative True   | $S$  | $m_1-S$    | $m_1$    |   
 |True   | $R$  |  $m-R$ | $m$  |
 
-To describe the entries in the table, let's use as an example a dataset representing measurements from 10,000 genes, which means that the total number of tests that we are conducting is: $m=10,000$. The number of genes for which the null hypothesis is true, which in most cases represent the "non-interesting" genes, is $m_0$, while the number of genes for which the null hypothesis is false is $m_1$. For this we can also say that the _alternative hypothesis_ is true. In general, we are interested in _detecting_ as many as the cases for which the alternative hypothesis is true (true positives), without incorrectly detecting cases for which the null hypothesis is true (false positives). For most high-throughput experiments, we assume that $m_0$ is much greater than $m_1$. For example, we test 10,000 expecting 100 genes or less to be _interesting_. This would imply that $m_1 \leq 100$ and $m_0 \geq 19,900$. 
+To describe the entries in the table, let's use as an example a dataset representing measurements from 10,000 genes, which means that the total number of tests that we are conducting is: $m=10,000$. The number of genes for which the null hypothesis is true, which in most cases represent the "non-interesting" genes, is $m_0$, while the number of genes for which the null hypothesis is false is $m_1$. For this we can also say that the _alternative hypothesis_ is true. In general, we are interested in _detecting_ as many as possible of the cases for which the alternative hypothesis is true (true positives), without incorrectly detecting cases for which the null hypothesis is true (false positives). For most high-throughput experiments, we assume that $m_0$ is much greater than $m_1$. For example, we test 10,000 expecting 100 genes or less to be _interesting_. This would imply that $m_1 \leq 100$ and $m_0 \geq 19,900$. 
 
 Throughout this chapter we refer to _features_ as the units being tested. In genomics, examples of features are genes, transcripts, binding sites, CpG sites, and SNPs. In the table, $R$ represents the total number of features that we call significant after applying our procedure, while $m-R$ is the total number of genes we don't call significant. The rest of the table contains important quantities that are unknown in practice.
 
 * $V$ represents the number of type I errors or false positives. Specifically, $V$ is the number of features for which the null hypothesis is true, that we call significant.
 * $S$ represents the number of true positives. Specifically, $S$ is the number of features for which the alternative is true, that we call significant. 
 
-This implies that there are $m_1-S$ type II errors or _false negatives_ and $m_0-V$ true negatives. 
-
-Keep in mind that if we only ran one test, a p-value is simply the probability that $V=1$ when $m=m_0=1$. Power is the probability of $S=1$ when $m=m_1=1$. In this very simple case, we wouldn't bother making the table above, but now we show how defining the terms in the table helps in practice the high-dimensional context.
+This implies that there are $m_1-S$ type II errors or _false negatives_ and $m_0-V$ true negatives. Keep in mind that if we only ran one test, a p-value is simply the probability that $V=1$ when $m=m_0=1$. Power is the probability of $S=1$ when $m=m_1=1$. In this very simple case, we wouldn't bother making the table above, but now we show how defining the terms in the table helps for the high-dimensional setting.
 
   
 #### Data example
@@ -75,11 +73,13 @@ Although in practice we do not know the fact that no diet works, in this simulat
 ```{r}
 sum(pvals < 0.05) ##This is R
 ```
+
 These many false positives are not acceptable in most contexts.
 
 Here is more complicated code showing results where 10% of the diets are effective with an average effect size of $\Delta= 3$ ounces. 
-Studying this code carefully will help understand the meaning of the table above.
+Studying this code carefully will help us understand the meaning of the table above.
 First let's define _the truth_:
+
 ```{r}
 alpha <- 0.05
 N <- 12
@@ -92,6 +92,7 @@ delta <- 3
 ```
 
 Now we are ready to simulate 10,000 tests, perform a t-test on each, and record if we rejected the null hypothesis or not:
+
 ```{r}
 set.seed(1)
 calls <- sapply(1:m, function(i){
@@ -127,11 +128,11 @@ VandS <- replicate(B,{
   })
 ```
 
-This motivates the definition of error rates. We can, for example, estimate probability that $V$ is larger than 0. This is interpreted as the probability of making at least one type I error among the 10,000 tests. In the simulation above, $V$ was much larger than 1 in every single simulation, so we suspect this probability is very practically 1. When $m=1$, this probability is equivalent to the p-value. When we have a multiple tests situation, we call it the Family Wide Error Rate (FWER) and it relates to a technique that is widely used: The Bonferroni Correction.
+This motivates the definition of error rates. We can, for example, estimate probability that $V$ is larger than 0. This is interpreted as the probability of making at least one type I error among the 10,000 tests. In the simulation above, $V$ was much larger than 1 in every single simulation, so we suspect this probability is very practically 1. When $m=1$, this probability is equivalent to the p-value. When we have a multiple tests situation, we call it the Family Wise Error Rate (FWER) and it relates to a technique that is widely used: The Bonferroni Correction.
 
 ## The Bonferroni Correction 
 
-Now that we have learned about the Family Wide Error Rate (FWER), we describe what we can actually do to control it.  In practice, we want to choose a _procedure_ that guarantees the FWER is smaller than a predetermined value such as 0.05. We can keep it general and instead of 0.05, use $\alpha$ in our derivations.
+Now that we have learned about the Family Wise Error Rate (FWER), we describe what we can actually do to control it.  In practice, we want to choose a _procedure_ that guarantees the FWER is smaller than a predetermined value such as 0.05. We can keep it general and instead of 0.05, use $\alpha$ in our derivations.
 
 Since we are now describing what we do in practice, we no longer have the advantage of knowing _the truth_. Instead, we pose a procedure and try to estimate the FWER.  Let's consider the naive procedure: "reject all the hypotheses with p-value <0.01". For illustrative purposes we will assume all the tests are independent (in the case of testing diets this is a safe assumption; in the case of genes it is not so safe since some groups of genes act together). Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are independent random variables so: 
 
@@ -139,7 +140,7 @@ $$
 \begin{align*}
 \mbox{Pr}(\mbox{at least one rejection}) &= 1 -\mbox{Pr}(\mbox{no rejections}) \\
 &= 1 - \prod_{i=1}^{1000} \mbox{Pr}(p_i>0.01) \\
-&= 1-0.95^{1000} \approx 1
+&= 1-0.99^{1000} \approx 1
 \end{align*}
 $$
 
@@ -157,9 +158,9 @@ So what do we do to make the probability of a mistake lower than $\alpha$ ? Usin
 
 $$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{10000}$$
 
-and solving for $k$, we get $1-(1-k)^{10000}=0.05 \implies k = 1-0.95^{1/10000} \approx 0.000005$
+and solving for $k$, we get $1-(1-k)^{10000}=0.01 \implies k = 1-0.99^{1/10000} \approx 1e-6$
 
-This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 0.000005". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
+This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 1e-6". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
 
 A problem with Sidak's procedure is that it assumes the tests are independent. It therefore only controls FWER when this assumption holds. The Bonferroni correction is more general in that it controls FWER even if the tests are not independent. 
 As with Sidak's procedure we start by noting that: 
@@ -197,12 +198,13 @@ pvals <- sapply(1:m, function(i){
 ```{r}
 sum(pvals < 0.05/10000)
 ```
-are called significant after applying the Bonferroni procedure, despite having 1000 diets that work. 
+
+are called significant after applying the Bonferroni procedure, despite having 1,000 diets that work. 
 
 
 ## False Discovery Rate 
 
-There are many situations for which requiring an FWER of 0.05 does not make sense as it is much too strict. For example, consider the very common exercise of running a preliminary small study to determine a handful of candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow up studies with many more samples on just the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a resounding success. With a small sample size, the only way to achieve a FWER $\leq$ 0.05 is with an empty list of genes. We already saw in the previous section that despite 1,000 diets being effective, we ended up with a list with just 2. Change the sample size to 6 and you very likely get 0:
+There are many situations for which requiring an FWER of 0.05 does not make sense as it is much too strict. For example, consider the very common exercise of running a preliminary small study to determine a handful of candidate genes. This is referred to as a _discovery_ driven project or experiment. We may be in search of an unknown causative gene and more than willing to perform follow-up studies with many more samples on just the candidates. If we develop a procedure that produces, for example, a list of 10 genes of which 1 or 2 pan out as important, the experiment is a resounding success. With a small sample size, the only way to achieve a FWER $\leq$ 0.05 is with an empty list of genes. We already saw in the previous section that despite 1,000 diets being effective, we ended up with a list with just 2. Change the sample size to 6 and you very likely get 0:
 
 ```{r}
 set.seed(1)
@@ -215,11 +217,11 @@ pvals <- sapply(1:m, function(i){
 sum(pvals < 0.05/10000)
 ```
 
-By requiring a FWER $\leq$ 0.05, we are practically assuring 0 power (sensitivity). In many applications, this specificity requirement is over-kill. A widely used alternative to the FWER is the false discover rate (FDR). The idea behind FDR is to focus on the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept here, we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
+By requiring a FWER $\leq$ 0.05, we are practically assuring 0 power (sensitivity). In many applications, this specificity requirement is over-kill. A widely used alternative to the FWER is the false discovery rate (FDR). The idea behind FDR is to focus on the random variable $Q \equiv V/R$ with $Q=0$ when $R=0$ and $V=0$. Note that $R=0$ (nothing called significant) implies $V=0$ (no false positives). So $Q$ is a random variable that can take values between 0 and 1 and we can define a rate by considering the average of $Q$. To better understand this concept here, we compute $Q$ for the procedure: call everything p-value < 0.05 significant.
 
 #### Vectorizing code
 
-Before running the simulation, we are going to _vectortize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above, which is necessary here due to the fact that we will be generating several simulations. Understanding this chunk of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
+Before running the simulation, we are going to _vectorize_ the code. This means that instead of using `sapply` to run `m` tests, we will create a matrix with all data in one call to sample. This code runs several times faster than the code above, which is necessary here due to the fact that we will be generating several simulations. Understanding this chunk of code and how it is equivalent to the code above using `sapply` will take a you long way in helping you code efficiently in R.
 
 ```{r, message=FALSE}
 library(genefilter) ##rowttests is here
@@ -282,7 +284,7 @@ polygon(c(0,0.05,0.05,0),c(0,0,h$counts[1],h$counts[1]),col="grey")
 abline(h=m0/20)
 ```
 
-The first bar (grey) on the left represents cases with p-values smaller than 0.05. From the horizontal line we can infer that about 1/2 are false positives. This is in agreement with an FDR of 0.50.  If we look at the bar for 0.01, we can see a lower FDR, as expected, but would call less features significant.
+The first bar (grey) on the left represents cases with p-values smaller than 0.05. From the horizontal line we can infer that about 1/2 are false positives. This is in agreement with an FDR of 0.50.  If we look at the bar for 0.01, we can see a lower FDR, as expected, but would call fewer features significant.
 
 ```{r pval_hist2, fig.cap="Histogram of p-values with breaks at every 0.01. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups."}
 h <- hist(pvals,breaks=seq(0,1,0.01))
@@ -352,7 +354,7 @@ FDR=mean(Qs)
 print(FDR)
 ```
 
-The FDR is lower than 0.05. This is to be expected because we need to be conservative to assure the FDR $\leq$ 0.05 for any value of $m_0$, such as for the extreme case where every hypothesis tested is null: $m=m_0$. If you re-do the simulation above for this case, you will find that the FDR increases. 
+The FDR is lower than 0.05. This is to be expected because we need to be conservative to ensure the FDR $\leq$ 0.05 for any value of $m_0$, such as for the extreme case where every hypothesis tested is null: $m=m_0$. If you re-do the simulation above for this case, you will find that the FDR increases. 
 
 We should also note that in ...
 ```{r}
@@ -411,7 +413,7 @@ However, instead of doing this, we compute a _q-value_ for each test. If a featu
 
 In R, this can be computed with the `qvalue` function in the `qvalue` package:
 
-```{r qval_vs_pval,fig.cap="Q-values versus p-values.",warning=FALSE}
+```{r qval_vs_pval,fig.cap="q-values versus p-values.",warning=FALSE}
 library(qvalue)
 res <- qvalue(pvals)
 qvals <- res$qvalues

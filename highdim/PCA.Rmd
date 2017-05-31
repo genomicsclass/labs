@@ -38,7 +38,7 @@ points(Y[1,1:2], Y[2,1:2], col=2, pch=16)
 Here we explain specifically what are the principal components (PCs).
 
 Let $\mathbf{Y}$ be $2 \times N$ matrix representing our data. The analogy is that we measure expression from 2 genes and each column is a sample. Suppose we are given the task of finding a  $2 \times 1$ vector $\mathbf{u}_1$ such that $\mathbf{u}_1^\top \mathbf{v}_1 = 1$
-and it maximizes $$(\mathbf{u}_1^\top\mathbf{Y})^\top (\mathbf{u}_1^\top\mathbf{Y})$$. This can be viewed as a projection of each sample or column of $\mathbf{Y}$ into the subspace spanned by $\mathbf{u}_1$. So we are looking for a transformation in which the coordinates show high variability.
+and it maximizes $(\mathbf{u}_1^\top\mathbf{Y})^\top (\mathbf{u}_1^\top\mathbf{Y})$. This can be viewed as a projection of each sample or column of $\mathbf{Y}$ into the subspace spanned by $\mathbf{u}_1$. So we are looking for a transformation in which the coordinates show high variability.
 
 Let's try $\mathbf{u}=(1,0)^\top$. This projection simply gives us the height of twin 1 shown in orange below. The sum of squares is shown in the title.
 

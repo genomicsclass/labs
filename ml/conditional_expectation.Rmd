@@ -22,7 +22,7 @@ we can optimize our predictions. Specifically, for any $x$ we predict the $k$ th
 
 To simplify the exposition below, we will consider the case of binary data. You can think of the probability $\mbox{Pr}(Y=1 \mid X=x)$ as the proportion of 1s in the stratum of the population for which $X=x$. Given that the expectation is the average of all $Y$ values, in this case the expectation is equivalent to the probability: $f(x) \equiv \mbox{E}(Y \mid X=x)=\mbox{Pr}(Y=1 \mid X=x)$. We therefore use only the expectation in the descriptions below as it is more general.
 
-In general, the expected value has an attractive mathematical property and it is that  minimized the expected distance between the predictor $\hat{Y}$ and $Y$:  
+In general, the expected value has an attractive mathematical property, which is that it minimizes the expected distance between the predictor $\hat{Y}$ and $Y$: 
 
 $$
 \mbox{E}\{ (\hat{Y} - Y)^2  \mid  X=x \}
@@ -53,7 +53,8 @@ Let's imagine that we are given more information. We are told that the father of
 
 ```{r conditional_distribution, fig.cap="Son versus father height (left) with the red lines denoting the stratum defined by conditioning on fathers being 71 inches tall. Conditional distribution: son height distribution of stratum defined by 71 inch fathers.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
-plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=paste("correlation =",signif(cor(x,y),2)))
+plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",
+     main=paste("correlation =",signif(cor(x,y),2)))
 abline(v=c(-0.35,0.35)+71,col="red")
 hist(y[x==71],xlab="Heights",nc=8,main="",xlim=range(y))
 ```
@@ -75,7 +76,8 @@ and if we estimate these five parameters from the sample, we get the regression 
 
 ```{r regression, fig.cap="Son versus father height showing predicted heights based on regression line (left). Conditional distribution with vertical line representing regression prediction.",fig.width=10.5,fig.height=5.25}
 mypar(1,2)
-plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",main=paste("correlation =",signif(cor(x,y),2)))
+plot(x,y,xlab="Father's height in inches",ylab="Son's height in inches",
+     main=paste("correlation =",signif(cor(x,y),2)))
 abline(v=c(-0.35,0.35)+71,col="red")
 
 fit <- lm(y~x)
