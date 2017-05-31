@@ -63,7 +63,7 @@ in hg38.
 ```{r get38}
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 tx38 = TxDb.Hsapiens.UCSC.hg38.knownGene
-seqlevels(tx38, force=TRUE) = "chr1"
+seqlevels(tx38) = "chr1"
 g1_38 = genes(tx38)
 ```
 
