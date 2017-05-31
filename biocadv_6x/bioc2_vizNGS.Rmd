@@ -12,6 +12,7 @@ suppressWarnings({
 suppressPackageStartupMessages({
 library(pasillaBamSubset)
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
+library(org.Dm.eg.db)
 })
 })
 ```
@@ -102,14 +103,17 @@ Suppose we are interested in visualizing the gene *lgs*. We can extract it from 
 
 ```{r}
 # biocLite("biomaRt")
-library(biomaRt)
-m <- useMart("ensembl", dataset = "dmelanogaster_gene_ensembl")
-lf <- listFilters(m)
-lf[grep("name", lf$description, ignore.case=TRUE),]
-map <- getBM(mart = m,
-  attributes = c("ensembl_gene_id", "flybasename_gene"),
-  filters = "flybasename_gene", 
-  values = "lgs")
+#library(biomaRt)
+#m <- useMart("ensembl", dataset = "dmelanogaster_gene_ensembl")
+#lf <- listFilters(m)
+#lf[grep("name", lf$description, ignore.case=TRUE),]
+#map <- getBM(mart = m,
+#  attributes = c("ensembl_gene_id", "flybasename_gene"),
+#  filters = "flybasename_gene", 
+#  values = "lgs")
+#map
+library(org.Dm.eg.db)
+map = select(org.Dm.eg.db, keys="lgs", keytype="SYMBOL", columns=c("ENTREZID", "ENSEMBL"))
 map
 ```
 
@@ -118,7 +122,7 @@ Now we extract the exons for each gene, and then the exons for the gene *lgs*.
 ```{r}
 library(GenomicFeatures)
 grl <- exonsBy(TxDb.Dmelanogaster.UCSC.dm3.ensGene, by="gene")
-gene <- grl[[map$ensembl_gene_id[1]]]
+gene <- grl[[map[1,]$ENSEMBL]]
 gene
 ```
 

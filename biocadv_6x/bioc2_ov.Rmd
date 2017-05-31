@@ -32,9 +32,9 @@ and analysis perspectives.
 
 In this course, we will use Bioconductor as the foundation
 of demonstrations and exercises in
-* methods for interactive visualization of genome-scale data with the shiny and ggvis packages;
+* methods for genome-scale data visualization including interactive graphics with the shiny and ggvis packages;
 * programming strategies for scalable bioinformatics with multicore and cluster computing infrastructure;
 * integrative management and analysis of multiassay experiments, with illustrations from The Cancer Genome Atlas (TCGA);
-* approaches to improving reproducibility of genome-scale analyses;
+* approaches to improving reproducibility of genome-scale analyses.
 
 One week will be devoted to each of these topics.

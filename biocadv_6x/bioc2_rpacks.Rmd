@@ -18,6 +18,7 @@ library(ERBS)
 library(OrganismDbi)
 library(harbChIP)
 library(yeastCC)
+library(TxDb.Scerevisiae.UCSC.sacCer3.sgdGene)
 })
 })
 ```

@@ -111,7 +111,7 @@ Here we establish the exon bins into which we will count reads.
 ```{r createtab}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
-seqlevels(txdb, force=TRUE) = "chr14"
+seqlevels(txdb) = "chr14"
 ebg = exonsBy(txdb, by="gene")
 ```
 
