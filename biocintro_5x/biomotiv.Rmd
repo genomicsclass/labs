@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Bioconductor for genome-scale data -- motivations and core values
+title: Bioconductor for genome-scale data -- motivations and core values (optional, for enrichment)
 ---
 
 ```{r options, echo=FALSE}
