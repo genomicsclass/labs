@@ -113,7 +113,8 @@ that include build versions.  It is very important to avoid
 mixing coordinates from different reference builds.
 In the liftOver video we show how to convert genomic coordinates of
 features between different reference builds, using the UCSC
-"liftOver" utility interfaced to R in the `rtracklayer` package.
+"liftOver" utility interfaced to R in the 
+`r Biocpkg("rtracklayer")` package.
 
 To help users avoid mixing up data collected on incompatible
 genomic coordinate systems from different reference builds, we
@@ -227,6 +228,8 @@ txs <- transcripts(edb, filter = GenenameFilter("ZBTB16"),
 txs
 ```
 
+<a name="importExport"></a>
+
 ## Your data will be someone else's annotation: import/export
 
 The ENCODE project is a good example of the idea that today's
@@ -255,14 +258,18 @@ file in the ERBS package.
 ```{r getgraa}
 f1 = dir(system.file("extdata",package="ERBS"), full=TRUE)[1]
 readLines(f1, 4) # look at a few lines
+```
+The import command is straightforward.
+```{r doimpbg}
 library(rtracklayer)
 imp = import(f1, format="bedGraph")
 imp
 genome(imp)  # genome identifier tag not set, but you should set it
 ```
 
-We have a GRanges in one stroke.  There are some additional fields
-in the metadata columns that will need to be specified, but if we
+We obtain a GRanges in one stroke.  There are some additional fields
+in the metadata columns whose names
+should be specified, but if we
 are interested only in the ranges, we are done, with the exception 
 of adding the genome metadata to protect against illegitimate
 combination with data recorded in an incompatible coordinate system.
@@ -301,18 +308,22 @@ there is stability for ongoing work as well as access to new knowledge.
 And we have made it simple to import and to create representations
 of experimental and annotation data.
 
+<a name="annhub"></a>
+
 ## AnnotationHub
 
 
 The `r Biocpkg("AnnotationHub")` package can be used to obtain GRanges or other
 suitably designed containers for institutionally curated annotation.
-Here we will show that there are a number of experimental data
-objects related to the HepG2 cell line available through AnnotationHub.
 
 ```{r lkah}
 library(AnnotationHub)
 ah = AnnotationHub()
 ah
+```
+There are a number of experimental data
+objects related to the HepG2 cell line available through AnnotationHub.
+```{r doqueah}
 query(ah, "HepG2")
 ```
 
@@ -324,8 +335,9 @@ addressing the histone H4K5, simply add that tag:
 query(ah, c("HepG2", "H4K5"))
 ```
 
+<a name="orgdb"></a>
 
-## The NCBI Entrez Gene annotation maps
+## The OrgDb Gene annotation maps
 
 Packages named org.*.eg.db collect information at the gene level
 with links to location, protein product identifiers, KEGG pathway and
@@ -340,6 +352,8 @@ keytypes(org.Hs.eg.db) # columns() gives same answer
 head(select(org.Hs.eg.db, keys="ORMDL3", keytype="SYMBOL", 
    columns="PMID"))
 ```
+
+<a name="genesets"></a>
 
 ## Resources for gene sets and pathways
 
@@ -493,6 +507,7 @@ glioG
 head(geneIds(glioG[[1]]))
 ```
 
+<a name="organismdb"></a>
 
 ## A unified, self-describing approach for model organisms
 
