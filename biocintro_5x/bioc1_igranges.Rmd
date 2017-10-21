@@ -1,6 +1,5 @@
 ---
 title: "IRanges and GRanges"
-output: pdf_document
 layout: page
 ---
 
@@ -8,10 +7,13 @@ layout: page
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 suppressPackageStartupMessages({
-library(IRanges)
-library(GenomicRanges)
+library(BiocStyle) # for Biocpkg
+#library(IRanges)
+#library(GenomicRanges)
 })
 ```
+
+<a name="IRanges"></a>
 
 The IRanges and GRanges objects are core components of the Bioconductor infrastructure for defining *integer ranges* in general (IRanges), and specifically for addressing locations in the genome and hence including chromosome and strand information (GRanges). Here we will briefly explore what these objects are and a subset of the operations which manipulate IRanges and GRanges.
 
@@ -41,7 +43,11 @@ A single *IRanges* object can hold more than one range. We do this by specifying
 IRanges(start=c(3,5,17), end=c(10,8,20))
 ```
 
-We will continue to work with the single range $[5,10]$ though. We can look up a number of *intra-range* methods for IRanges objects, which mean that the operations work on each range independently. For example, we can shift all the ranges two integers to the left. By left and right, we refer to the direction on the integer number line: $\{ \dots, -2, -1, 0, 1, 2, \dots \}$. Compare `ir` and `shift(ir, -2)`:
+<a name="intrarange"></a>
+
+### Intra-range operations
+
+We will continue to work with the single range $[5,10]$. We can look up a number of *intra-range* methods for IRanges objects, which mean that the operations work on each range independently. For example, we can shift all the ranges two integers to the left. By left and right, we refer to the direction on the integer number line: $\{ \dots, -2, -1, 0, 1, 2, \dots \}$. Compare `ir` and `shift(ir, -2)`:
 
 ```{r}
 # full details on the intra-range methods:
@@ -103,6 +109,10 @@ text(rep(15,12), 1:12, c("ir","shift(ir,-2)","narrow(ir,start=2)",
                          "resize(ir, 1)"), pos=4)
 
 ```
+
+<a name="interrange"></a>
+
+### Inter-range operations
 
 There are also a set of *inter-range* methods. These are operations which work on a set of ranges, and the output depends on all the ranges, thus distinguishes these methods from the *intra-range* methods, for which the other ranges in the set do not change the output. This is best explained with some examples. The `range` function gives the integer range from the start of the leftmost range to the end of the rightmost range:
 
@@ -227,6 +237,8 @@ grl
 mcols(grl)
 ```
 
+<a name="findoverlaps"></a>
+
 ### findOverlaps and %over%
 
 We will demonstrate two commonly used methods for comparing GRanges objects. First we build two sets of ranges:
@@ -260,6 +272,8 @@ gr2 <- GRanges("chrZ",IRanges(1,10),strand="-")
 gr1 %over% gr2
 ```
 
+<a name="rleviews"></a>
+
 ### Rle and Views
 
 Lastly, we give you a short glimpse into two related classes defined in IRanges, the *Rle* and *Views* classes. *Rle* stands for *run-length encoding*, which is a form of compression for repetitive data. Instead of storing: $[1,1,1,1]$, we would store the number 1, and the number of repeats: 4. The more repetitive the data, the greater the compression with *Rle*.
@@ -284,6 +298,112 @@ Note that the internal structure of the Views object is just the original object
 str(v)
 ```
 
+
+<a name="genomic"></a>
+
+## Applications with genomic elements: strand-aware operations
+
+In this document we work with a small set of ranges and
+illustrate basic intra-range operations reduce, disjoin, gaps.
+We then add strand and seqname information and show how
+resize and flank are useful for identifying TSS and promoter regions.
+
+### A simple set of ranges
+
+```{r newr}
+ir <- IRanges(c(3, 8, 14, 15, 19, 34, 40),
+  width = c(12, 6, 6, 15, 6, 2, 7))
+```
+
+```{r plotr,echo=FALSE}
+plotRanges <- function(x, xlim = x, main = deparse(substitute(x)),
+                       col = "black", sep = 0.5, ...)
+{
+  height <- 1
+  if (is(xlim, "Ranges"))
+    xlim <- c(min(start(xlim)), max(end(xlim)))
+  bins <- disjointBins(IRanges(start(x), end(x) + 1))
+  plot.new()
+  plot.window(xlim, c(0, max(bins)*(height + sep)))
+  ybottom <- bins * (sep + height) - height
+  rect(start(x)-0.5, ybottom, end(x)+0.5, ybottom + height, col = col, ...)
+  title(main)
+  axis(1)
+}
+
+plotGRanges = function (x, xlim = x, col = "black", sep = 0.5, xlimits = c(0, 
+    60), ...) 
+{
+    main = deparse(substitute(x))
+    ch = as.character(seqnames(x)[1])
+    x = ranges(x)
+    height <- 1
+    if (is(xlim, "Ranges")) 
+        xlim <- c(min(start(xlim)), max(end(xlim)))
+    bins <- disjointBins(IRanges(start(x), end(x) + 1))
+    plot.new()
+    plot.window(xlim = xlimits, c(0, max(bins) * (height + sep)))
+    ybottom <- bins * (sep + height) - height
+    rect(start(x) - 0.5, ybottom, end(x) + 0.5, ybottom + height, 
+        col = col, ...)
+    title(main, xlab = ch)
+    axis(1)
+}
+```
+
+Let's visualize `ir` and several intra-range operations.
+```{r lkir,fig=TRUE, out.height="800px"}
+par(mfrow=c(4,1), mar=c(4,2,2,2))
+plotRanges(ir, xlim=c(0,60))
+plotRanges(reduce(ir), xlim=c(0,60))
+plotRanges(disjoin(ir), xlim=c(0,60))
+plotRanges(gaps(ir), xlim=c(0,60))
+```
+
+reduce(x) produces a set of
+nonoverlapping ranges that cover all positions covered by x.
+This can be used to reduce complexity of a gene model
+with many transcripts, where we may just want the addresses
+of intervals known to be transcribed, regardless of transcript
+of residence.
+
+disjoin(x) produces a set of ranges that cover all positions
+covered by x, such that none of the ranges in the
+disjoin output overlaps any end points of intervals in x.
+This gives us the largest possible collection of contiguous
+intervals that are separated wherever the original set
+of intervals had an endpoint.
+
+gaps(x) produces a set of ranges covering the positions
+in [start(x), end(x)] that are not covered by any range in x.
+Given coding sequence addresses and exon intervals, this can
+be used to enumerate introns.
+
+### Extension to GRanges
+
+We add chromosome and strand information.
+
+```{r dogr}
+library(GenomicRanges)
+gir = GRanges(seqnames="chr1", ir, strand=c(rep("+", 4), rep("-",3)))
+```
+
+Let's assume the intervals represent genes.
+The following plots illustrate the identification of
+transcription start sites (green), upstream promoter
+regions (purple), downstream promoter regions (brown).
+
+```{r dopr,fig=TRUE, out.height="800px", out.width="500px"}
+par(mfrow=c(4,1), mar=c(4,2,2,2))
+plotGRanges(gir, xlim=c(0,60))
+plotGRanges(resize(gir,1), xlim=c(0,60),col="green")
+plotGRanges(flank(gir,3), xlim=c(0,60), col="purple")
+plotGRanges(flank(gir,2,start=FALSE), xlim=c(0,60), col="brown")
+```
+
+Note that we do not need to take special steps to
+deal with the differences in strand.
+
 ## Footnotes
 
 For more information about the `GenomicRanges` package, check out the PLOS Comp Bio paper, which the authors of GenomicRanges published:
@@ -302,3 +422,5 @@ Or the help pages here:
 help(package="GenomicRanges", help_type="html")
 ```
 
+For users of bedtools, the `r Biocpkg("HelloRanges")` package is useful for converting
+concepts between BED and GRanges conceptual frameworks.
