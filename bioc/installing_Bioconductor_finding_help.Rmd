@@ -26,7 +26,21 @@ http://bioconductor.org/install/
 
 ## Finding help 
 
-There are many ways to find help directly from within R. Typically, every function will have its own manual page which is accessible by typing a question mark ?, followed by the function name and hitting return.
+There are many ways to find help directly from within R. 
+A very comprehensive help page is generated with the command `help.start()` from the
+command line.  This gives links to manuals and manual pages for all documentation in the environment.
+This documentation set is dependent on the set of packages that are installed.  You may
+have seen a help page for a function in a given R session, that cannot be found in
+another R session of the same version.  Only if the package to which the function belongs
+has been installed will the help page be found.
+
+The [Bioconductor support site](https://support.bioconductor.org/) is modeled on [biostar](https://github.com/ialbert/biostar-central) and is a very active and congenial forum for detailed questions about
+Bioconductor tools and analyses.  The [guide for posting](http://www.bioconductor.org/help/support/posting-guide/)
+is worth a visit.
+
+## Help for functions
+
+Typically, every function will have its own manual page which is accessible by typing a question mark ?, followed by the function name and hitting return.
 
 ```{r, eval=FALSE, tidy=FALSE}
 ?mean
@@ -93,18 +107,13 @@ methods(class="ExpressionSet")
 methods(class="lm")
 ```
 
-In `rafalib` we have also worked on a function (with help from Gabe Becker) which will provide a list of methods which are available for a given object:
+R has good capabilities for self-description.  Classes can be formally linked to methods
+that operate usefully on their instances.  The methods available can be
+listed using the `methods` function.
 
 ```{r}
-library(rafalib)
 data(sample.ExpressionSet)
-whatMethods(sample.ExpressionSet)
-```
-
-This is unfortunately only a partial list. If we look up `?ExpressionSet` we see that this class of object inherits from another class `eSet`. Knowing this, we can see more methods which are available:
-
-```{r}
-whatMethods("eSet")
+methods(class=class(sample.ExpressionSet))
 ```
 
 ## Source code
@@ -112,8 +121,11 @@ whatMethods("eSet")
 You can find the source code for many functions by typing out the name of the function without () and pressing enter.
 
 ```{r}
-mad
+read.csv
 ```
+
+Note that this just 'wraps' a call to `read.table`, which is much more involved, but can
+be printed to the terminal by mentioning it to the interpreter.
 
 You might have to specify a particular class if you want source code for a method:
 
@@ -146,3 +158,23 @@ In addition, an HTML browser can be launched with links to the various vignettes
 browseVignettes(package="Biobase")
 ```
 
+## Analysis help
+
+The [workflows repository](http://www.bioconductor.org/help/workflows/) 
+contains extensive _computable documents_ describing how
+certain common analyses can be performed, typically involving published
+data from realistic studies.
+
+## Summary
+
+- All R functions from Bioconductor packages will have _manual pages_ and
+most will have _running examples_;
+- All Bioconductor software packages will have _vignettes_ that describe
+how functions work together to achieve the objectives of the package;
+- Many _workflow documents_ are available that describe how functions from
+different packages can be used together to complete analyses;
+- R has significant _built-in utilities_ for finding documents about basic infrastructure
+and statistical procedures;
+- R's [mailing list for elementary questions](https://stat.ethz.ch/mailman/listinfo/r-help)
+and Bioconductor's [support site](https://support.bioconductor.org/) are useful fora
+with extensive archives.
