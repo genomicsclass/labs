@@ -573,6 +573,7 @@ MAP = function(r, f)
 ali = reduceByRange(gf, MAP=MAP)
 sapply(ali[[1]], length)
 ```
+
 This shows, informally, that there are more reads aligning
 to the HNRNPC region for the first four samples and thus
 tells us which of the samples are wild type, and which have
@@ -766,6 +767,7 @@ we can use an UpSet diagram:
 ```{r doup,fig=TRUE}
 upsetSamples(gbm)
 ```
+
 This shows that the vast majority of participants provide data on
 copy number variation and array-based expression, but much fewer provide
 RNA-seq or proteomic (RPPA, reverse-phase proteomic assay) measurements.
