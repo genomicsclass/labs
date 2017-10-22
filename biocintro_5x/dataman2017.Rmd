@@ -340,6 +340,7 @@ overlapping regions in this list of exon coordinates, we can use the
 ```{r lkredu}
 reduce(rowRanges(airway)$ENSG00000172057)
 ```
+
 This shows that projecting from the set of exons to the genome leads to
 `r length(reduce(rowRanges(airway)$ENSG00000172057))` regions
 harboring subregions that may be transcribed.
