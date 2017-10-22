@@ -8,8 +8,10 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 suppressPackageStartupMessages({
 library(BiocStyle) # for Biocpkg
+library(erma)
+library(Gviz)
 #library(IRanges)
-#library(GenomicRanges)
+library(GenomicRanges)
 })
 ```
 
@@ -403,6 +405,84 @@ plotGRanges(flank(gir,2,start=FALSE), xlim=c(0,60), col="brown")
 
 Note that we do not need to take special steps to
 deal with the differences in strand.
+
+## Applications to visualization of methylation array data
+
+In our discussion of [SummarizedExperiment applications](http://genomicsclass.github.io/book/pages/dataman2017.html#methy), we
+imported data generated using an Illumina 450k methylation array.
+
+In this section we'll indicate how to use GenomicRanges
+and `r Biocpkg("Gviz")` to explore methylation patterns in the
+context of gene-level annotation.  The idea is simple: just
+extract the M-values (log-scaled locus-specific estimates of
+ratio of methylated to total DNA) from all samples and plot
+them in the context of gene models for selected genes.
+
+We recall how the data were acquired and imported:
+```{r doacquis, cache=TRUE}
+library(ArrayExpress)
+if (!file.exists("E-MTAB-5797.sdrf.txt")) nano = getAE("E-MTAB-5797")
+library(minfi)
+pref = unique(substr(dir(patt="idat"),1,17)) # find the prefix strings
+raw = read.metharray(pref)
+glioMeth = preprocessQuantile(raw) # generate SummarizedExperiment
+```
+Those steps require an internet connection and take just a few
+minutes.
+
+Once we have `glioMeth` in our session, add the following
+code to your session too.  We will discuss how it works below.
+
+```{r defineMb}
+MbyGene = function(mset, symbol="TP53", rad=5000) {
+# phase 1: annotated GRanges for the gene
+ require(erma)
+ require(Gviz)
+ gmod = suppressMessages(genemodel(symbol))     # erma utility
+ gseq = as.character(seqnames(gmod)[1])
+ gmod$transcript = symbol
+# phase 2: filter down to the region of interest
+ mlim = mset[which(seqnames(mset)==gseq),] # restrict to chromosome
+ # now focus the methylation data to vicinity of gene
+ d1 = subsetByOverlaps(GRanges(rowRanges(mlim),,, getM(mlim)), 
+         range(gmod)+rad)
+# phase 3: use Gviz
+ plotTracks(list(DataTrack(d1), 
+              GeneRegionTrack(gmod, 
+               transcriptAnnotation="transcript", name=gseq), 
+              GenomeAxisTrack(name=gseq, showTitle=TRUE)))
+}
+```
+
+The comments to the code indicate the three phases: acquire
+gene region and add the `transcript` annotation for
+informative plotting of the union of all exons; reduce
+the `GenomicRatioSet` (which inherits from RangedSummarizedExperiment)
+to the interval of interest, determined by both the
+gene model and the rad argument; use Gviz to construct
+plottable objects and plot them.
+
+The details of Gviz are well-documented in the user manual
+for that package.  We will return to the topic in the 6x
+component of this series.  However, if you have entered
+the code correctly, you can generate gene-centric
+plots as follows:
+```{r doplpl,fig=TRUE,fig.height=3, fig.width=6}
+MbyGene(glioMeth, symbol="TERT")
+```
+The display allows us to see
+
+- The genomic context (chromosome and region in megabase units)
+- The structure of the gene of interest in a single line,
+representing a union of expressed intervals
+- The locations of 450k probes (x coordinates of data points in blue)
+- The between-sample variation in methylation estimates
+- The variation of methylation across the genomic region selected
+
+In the 6x module we will learn how to use additional packages
+to create an interactive display of this type, allowing us
+to select genes and zoom into regions of interest _ad libitum_.
+
 
 ## Footnotes
 
