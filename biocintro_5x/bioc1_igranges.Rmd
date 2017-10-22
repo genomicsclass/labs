@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
 library(BiocStyle) # for Biocpkg
 library(erma)
 library(Gviz)
+library(minfi)
 #library(IRanges)
 library(GenomicRanges)
 })
