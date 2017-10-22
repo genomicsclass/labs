@@ -467,9 +467,11 @@ for that package.  We will return to the topic in the 6x
 component of this series.  However, if you have entered
 the code correctly, you can generate gene-centric
 plots as follows:
+
 ```{r doplpl,fig=TRUE,fig.height=3, fig.width=6}
 MbyGene(glioMeth, symbol="TERT")
 ```
+
 The display allows us to see
 
 - The genomic context (chromosome and region in megabase units)
