@@ -736,7 +736,7 @@ variant-by-individual tables
 collection of data from 14000 individuals, providing genomic
 information on 29 distinct tumor sites.  We can download
 curated public data on Glioblastoma Multiforme through
-an effort of Levi Waldron's lab at CUNY.  R objects of the
+an effort of [Levi Waldron's lab](http://waldronlab.org/) at CUNY.  R objects of the
 `MultiAssayExperiment` class have been stored in Amazon S3,
 and a [Google Sheet](http://tinyurl.com/MAEOurls) provides details and links.
 
@@ -849,7 +849,7 @@ In the following code, we create a `r CRANpkg("DBI")` connection to
 `r CRANpkg("bigrquery")` package maintained by the r-db-stats group.
 We then list the available tables.
 
-```{r dobq}
+```{r dobq, eval=FALSE}
 library(bigrquery)
 library(dplyr)
 library(magrittr)
@@ -857,13 +857,48 @@ tcgaCon = DBI::dbConnect(dbi_driver(), project="isb-cgc",
      dataset="TCGA_hg38_data_v0", billing = Sys.getenv("CGC_BILLING")) 
 dbListTables(tcgaCon)
 ```
+```
+##  [1] "Copy_Number_Segment_Masked"  "DNA_Methylation"            
+##  [3] "DNA_Methylation_chr1"        "DNA_Methylation_chr10"      
+##  [5] "DNA_Methylation_chr11"       "DNA_Methylation_chr12"      
+##  [7] "DNA_Methylation_chr13"       "DNA_Methylation_chr14"      
+##  [9] "DNA_Methylation_chr15"       "DNA_Methylation_chr16"      
+## [11] "DNA_Methylation_chr17"       "DNA_Methylation_chr18"      
+## [13] "DNA_Methylation_chr19"       "DNA_Methylation_chr2"       
+## [15] "DNA_Methylation_chr20"       "DNA_Methylation_chr21"      
+## [17] "DNA_Methylation_chr22"       "DNA_Methylation_chr3"       
+## [19] "DNA_Methylation_chr4"        "DNA_Methylation_chr5"       
+## [21] "DNA_Methylation_chr6"        "DNA_Methylation_chr7"       
+## [23] "DNA_Methylation_chr8"        "DNA_Methylation_chr9"       
+## [25] "DNA_Methylation_chrX"        "DNA_Methylation_chrY"       
+## [27] "Protein_Expression"          "RNAseq_Gene_Expression"     
+## [29] "Somatic_Mutation"            "Somatic_Mutation_Jun2017"   
+## [31] "miRNAseq_Expression"         "miRNAseq_Isoform_Expression"
+```
 
 Now we use the `r CRANpkg("dplyr")` approach to requesting a summary of
 mutation types in GBM.
-```{r dogbmdpl}
+```{r dogbmdpl, eval=FALSE}
 tcgaCon %>% tbl("Somatic_Mutation") %>% dplyr::filter(project_short_name=="TCGA-GBM") %>% 
       dplyr::select(Variant_Classification, Hugo_Symbol) %>% group_by(Variant_Classification) %>%
       summarise(n=n())
+```
+```
+## # Source:   lazy query [?? x 2]
+## # Database: BigQueryConnection
+##    Variant_Classification     n
+##                     <chr> <int>
+##  1                  3'UTR  4166
+##  2                 Intron  3451
+##  3                3'Flank   423
+##  4       Nonstop_Mutation    58
+##  5                    IGR     3
+##  6                    RNA  1338
+##  7            Splice_Site   955
+##  8        Frame_Shift_Del  1487
+##  9      Missense_Mutation 53054
+## 10 Translation_Start_Site    60
+## # ... with more rows
 ```
 
 This is essentially a proof of concept that the entire TCGA archive can be
@@ -875,6 +910,14 @@ Can we envision a SummarizedExperiment-like interface to this data store?
 The answer is yes; see the `seByTumor` function in the `shwetagopaul92/restfulSE`
 package on github.  (This package is under evaluation for Bioconductor but
 may always be acquired through github.)
+
+This concludes the discussion of the Cancer Genomics Cloud pilot
+instance at Institute for Systems Biology.  Other Cloud pilot
+projects were created at [Seven Bridges Genomics](http://www.cancergenomicscloud.org/) and [Broad Institute](https://software.broadinstitute.org/firecloud/).  There is considerable effort underway to federate large
+collections of general genomics data in a cloud-oriented
+framework that would diminish the need for genomics data transfer.
+This [RFA](https://grants.nih.gov/grants/guide/rfa-files/RFA-HG-17-011.html)
+is very informative about what is at stake.
 
 # Overall summary
 
