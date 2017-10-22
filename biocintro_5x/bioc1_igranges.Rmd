@@ -406,6 +406,8 @@ plotGRanges(flank(gir,2,start=FALSE), xlim=c(0,60), col="brown")
 Note that we do not need to take special steps to
 deal with the differences in strand.
 
+<a name="methyviz"></a>
+
 ## Applications to visualization of methylation array data
 
 In our discussion of [SummarizedExperiment applications](http://genomicsclass.github.io/book/pages/dataman2017.html#methy), we
