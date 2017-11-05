@@ -72,6 +72,12 @@ annotated as well.  Genes have internal structure,
 with parts that are transcribed and parts that are not,
 and "gene models" define the ways in which
 these structures are labeled and laid out in genomic coordinates.
+    - Within this concept of _regions of interest_ we also identify
+_platform-oriented annotation_.  This type of annotation is typically
+provided first by the manufacturer of an assay, but then refined
+as research identifies ambiguities or updates to
+initially declared roles for assay probe elements.  The
+[brainarray project](http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/genomic_curated_CDF.asp) at University of Michigan illustrates this process for affymetrix array annotation.  We address this topic of platform-oriented annotation at the very end of this chapter.
 
 - Above this is the organization of regions (most often
 genes or gene products) into
@@ -523,6 +529,45 @@ tx = transcripts(Homo.sapiens)
 keytypes(Homo.sapiens)
 columns(Homo.sapiens)
 ```
+
+<a name="platform"></a>
+
+## Platform-oriented annotation
+
+By sorting information on [the GPL information page](https://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms&sort=series&display=20&page=892) at
+NCBI GEO, we see that the most commonly use oligonucleotide array
+platform (with 4760 series in the archive) is the Affy Human Genome U133 plus 2.0 array (GPL 570).
+We can work with the annotation for this array with the
+`r Biocpkg("hgu133plus2.db")` package.
+
+```{r lkhg}
+library(hgu133plus2.db)
+hgu133plus2.db
+```
+
+The basic purpose of this resource (and of all the instances of the
+ChipDb class) is to map between _probeset_ identifiers and 
+higher-level genomic annotation.
+
+The detailed information on probes, the constituents of probe sets,
+is given in packages with names ending in 'probe'.
+```{r lkprobpa}
+library(hgu133plus2probe)
+head(hgu133plus2probe)
+dim(hgu133plus2probe)
+```
+
+Mapping out a probe set identifier to gene-level information
+can reveal some interesting ambiguities:
+```{r lk1007}
+select(hgu133plus2.db, keytype="PROBEID", 
+  columns=c("SYMBOL", "GENENAME", "PATH", "MAP"), keys="1007_s_at")
+```
+Apparently this probe set includes sequence that may be
+used to quantify abundance of both an mRNA and 
+a micro RNA.  As a sanity check
+we see that the distinct symbols map to the same cytoband.
+
 
 ## Summary
 
