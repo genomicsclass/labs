@@ -235,7 +235,7 @@ data from high-throughput functional genomics experiments, and provides
 these data for reuse to the research community.''  Until recently ArrayExpress
 imported all expression data from NCBI GEO.
 
-The `r Biocpkg("ArrayExpress")` permits direct interrogation
+The `r Biocpkg("ArrayExpress")` package supports direct interrogation
 of the EMBL-EBI archive, with `queryAE`.  We'll examine
 a small subset of the results.
 
@@ -615,6 +615,7 @@ illustrated by the `stateProfile` function.
 ```{r lkstpr,fig=TRUE}
 stateProfile(erset[,26:31], shortCellType=FALSE)
 ```
+
 This depicts the variation between anatomic sites
 in the epigenetic state of the promoter region of gene IL33,
 on the plus strand of chr9.  Of interest is the
