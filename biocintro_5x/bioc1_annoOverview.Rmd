@@ -414,10 +414,10 @@ We can trace the `mitochondrion inheritance` term to
 parent and grandparent terms:
 
 ```{r lkpath}
-dbGetQuery(con, "select * from go_bp_parents where _id=27")
-dbGetQuery(con, "select _id, go_id, term from go_term where _id=26638")
-dbGetQuery(con, "select * from go_bp_parents where _id=26638")
-dbGetQuery(con, "select _id, go_id, term from go_term where _id=5938")
+dbGetQuery(con, "select * from go_bp_parents where _id=30")
+dbGetQuery(con, "select _id, go_id, term from go_term where _id=26616")
+dbGetQuery(con, "select * from go_bp_parents where _id=26616")
+dbGetQuery(con, "select _id, go_id, term from go_term where _id=5932")
 ```
 It makes sense to regard "mitochondrion inheritance" as a conceptual
 refinement of processes "mitochondrion distribution", and "organelle inheritance",
