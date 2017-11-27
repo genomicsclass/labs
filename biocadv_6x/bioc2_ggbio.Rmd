@@ -28,18 +28,20 @@ library(ggbio)
 })
 })
 ```
+
+Here is the layout for the liver cell line:
 ```{r lkd, fig=TRUE}
 library(ERBS)
 data(HepG2)
 library(GenomeInfoDb)  # trim all but autosomal chroms
-seqlevels(HepG2, pruning.mode="coarse") = paste0("chr", 1:22)
+HepG2 = keepStandardChromosomes(HepG2)
 data(GM12878)
-seqlevels(GM12878, pruning.mode="coarse") = paste0("chr", 1:22)
+GM12878 = keepStandardChromosomes(GM12878)
 library(ggbio)
 autoplot(HepG2, layout="karyogram", main="ESRRA binding on HepG2")
 ```
 
-Notice that the title is not printed, currently a bug.
+And for the B-cell line:
 
 ```{r lkm,fig=TRUE}
 autoplot(GM12878, layout="karyogram", main="ESRRA binding on GM12878")
