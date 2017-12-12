@@ -283,10 +283,15 @@ Rectangular or oval regions of focuse can be created using
 the different modes that are started by clicking on dashed region
 icons at the upper right corner of the display.
 
-```{r doggp,fig=TRUE,message=FALSE}
+```{r doggp,message=FALSE, eval=FALSE}
 library(plotly)
 ggplotly(spl)
 ```
+
+At present we don't have a way of easily embedding the interactive
+visualization into book pages.  However you can get a feel for
+the type of display achievable in this way by visiting
+[this plotly site](https://plot.ly/~stvjc/14/).
 
 As of December 2017, it is not possible to have plotly interoperating
 with ggbio visualizations.  But there will undoubtedly be progress
