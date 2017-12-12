@@ -291,7 +291,9 @@ ggplotly(spl)
 At present we don't have a way of easily embedding the interactive
 visualization into book pages.  However you can get a feel for
 the type of display achievable in this way by visiting
-[this plotly site](https://plot.ly/~stvjc/14/).
+[this plotly site](https://plot.ly/~stvjc/14/).  Just click the
+"X" in upper right corner of any login prompt and you
+will be able to manipulate the scatterplot display.
 
 As of December 2017, it is not possible to have plotly interoperating
 with ggbio visualizations.  But there will undoubtedly be progress
