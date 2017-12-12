@@ -130,19 +130,22 @@ s2 = system.time(i2 <- summarizeOverlaps( ebg, fns ))
 s2
 ```
 This is not a thorough way of measuring speedup but it
-shows reasonable enhancement.  
+shows reasonable enhancement.
 In the second computation, we did approximately 8 times as
 much computation, but the clock time elapsed increased only
-by a factor of (`r round(s2[3]/s1[3],2)`).  
-We did nothing by way of configuration
-or request, and the default behavior of BiocParallel on
-the Macbook Air used to compile this document is to use 2 cores.
+by a factor of (`r round(s2[3]/s1[3],2)`).
+The default behavior of BiocParallel on the MacBook
+Air used to produce this document is to pick up the
+value of the option `mc.cores` and use this as the number
+of workers in a `MulticoreParam` configuration; if `options()$mc.cores`
+is NULL, 2 workers are specified.
 
-What happened?  The `summarizeOverlaps` function will iterate
+When BiocParallel is attached,
+the `summarizeOverlaps` function will iterate
 over the files using `bplapply` from the BiocParallel package.
 That function will check the R session 
-for specific parallelization configuration information,
-and if it finds none, will check for multiple cores
+for specific parallelization configuration information.
+If it finds none, it will check for multiple cores
 and make arrangements to use them if present.
 The "check" occurs via the function `bpparam`.
 
@@ -153,7 +156,9 @@ an Intel core i7 processor,
 for four concurrent threads)
 as follows.
 ```{r lkbpp}
+options(mc.cores=NULL)
 library(BiocParallel)
+register(MulticoreParam())
 bpparam()
 ```
 This identifies an object called `MulticoreParam` which is
@@ -180,17 +185,25 @@ some cores idle.  We can accomplish that by using `register`.
 Here we'll check for any advantage of using all logical cores.
 ```{r lkbp}
 library(BiocParallel)
+register(MulticoreParam(workers=1))
+system.time(i3 <- summarizeOverlaps( ebg, fns ))
+register(MulticoreParam(workers=2))
+system.time(i3 <- summarizeOverlaps( ebg, fns ))
 register(MulticoreParam(workers=3))
+system.time(i3 <- summarizeOverlaps( ebg, fns ))
+register(MulticoreParam(workers=4))
 system.time(i3 <- summarizeOverlaps( ebg, fns ))
 all.equal(i3,i2)  # check that the results do not change
 ```
 Note that 
 in this environment, despite increasing the number of CPUs 
-by a factor of 1.5, we
-do not appreciably reduce run time.  This due mainly to communication
-costs that typically increase with the number of CPUs.
+linearly
+do not appreciably reduce run time after
+moving to two cores.  This due mainly to communication
+costs that typically increase with the number of CPUs,
+and this phenomenon will be environment-specific.
 
-In summary, it is very easy to perform embarrassignly parallel
+In summary, it is very easy to perform embarrassingly parallel
 tasks with R, and this carries over to genomic data analysis
 thanks to BiocParallel.  There are some strategic considerations
 concerning control of memory consumption and communication costs,
