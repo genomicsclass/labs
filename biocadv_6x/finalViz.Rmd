@@ -3,7 +3,7 @@ layout: page
 title: "Some final comments on genome-scale visualization"
 ---
 
-```{r options, echo=FALSE}
+```{r options, echo=FALSE, message=FALSE}
 library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 suppressPackageStartupMessages({
@@ -30,7 +30,7 @@ attention.
 In the ph525x package we have added a selection of trans-eQTL
 findings from Westra et al. Nature 2013 (doi: 10.1038/ng.2756).
 We show a few SNP-gene associations from this study:
-```{r lksn,fig=TRUE,message=FALSE,fig.height=5,fig.width=5}
+```{r lksn,fig=TRUE,message=FALSE,fig.height=7,fig.width=7}
 library(ph525x)
 data(westraTransSel)
 westraTransSel[1:3]
