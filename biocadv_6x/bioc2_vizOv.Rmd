@@ -26,6 +26,8 @@ and another that allows direct querying and modification
 of the display.  Many of these notions will be revisited
 with additional details in following lectures and screencasts.
 
+<a name="genemods"></a>
+
 ## Gene models
 
 ### On their own
@@ -55,6 +57,8 @@ ap1 = autoplot(Homo.sapiens, which=oo, gap.geom="chevron")
 attr(ap1, "hasAxis") = TRUE
 ap1 + xlab("chr17")
 ```
+
+<a name="genemodsData"></a>
 
 ### With data
 
@@ -96,8 +100,9 @@ genes without programming R directly.
 display, with tooltips that can provide information about
 selected points.
 
+<a name="vizFunc"></a>
 
-### Basic functions
+### Driving visualization with functions
 
 The construction of tools that enable flexible visualization
 is relatively easy once you know the basic layout.  We
@@ -125,6 +130,8 @@ inspect the situation for a gene of interest.
 ```{r runit,fig=TRUE,message=FALSE}
 vizBsByGene(sym="PLEC", radius=10000)
 ```
+
+<a name="vizShiny"></a>
 
 ### Interactive visualization: driving function calls with the browser 
 
@@ -223,6 +230,7 @@ function is `reactive` -- when any data value connected to the `input` object
 changes, the renderPlot function is re-evaluated, and the corresponding output
 element is updated.
 
+<a name="vizPlotly"></a>
   
 ### Dynamic interactive visualization: plotly for details on hover; pan and zoom 
 
