@@ -18,7 +18,8 @@ library(ph525x)
 
 For an application involving many thousands of files,
 we have found that [NoSQL](https://en.wikipedia.org/wiki/NoSQL)
-strategies may be effective.  The [TxRegInfra](https://github.com/vjcitn/TxRegInfra) is under development and illustrates use of mongodb
+strategies may be effective.  The [TxRegInfra](https://github.com/vjcitn/TxRegInfra) package is under development in github 
+and illustrates use of mongodb
 with a small collection of BED files obtained from the
 ENCODE project.  In this section we sketch the most
 basic aspects of wrapping a mongodb connection in S4 and
@@ -26,6 +27,10 @@ implementing subsetByOverlaps to query the data store.
 
 To carry out the tasks in this section, you will need mongod
 (the database managing daemon) running on your system.  
+The [community server edition](https://www.mongodb.com/download-center?jmp=nav#community) should be easy to install.
+
+After you get mongod running, you can install TxRegInfra using
+`library(BiocInstaller); biocLite("vjcitn/TxRegInfra")`.
 
 ## Basic considerations
 
