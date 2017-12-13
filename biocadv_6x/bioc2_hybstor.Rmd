@@ -8,7 +8,7 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 suppressPackageStartupMessages({
 library(Biobase)
-library(geuvStore)
+library(geuvStore2)
 library(gQTLBase)
 library(gQTLstats)
 library(foreach)
@@ -66,8 +66,8 @@ This system can be stored in a package, exemplified by geuvStore.
 The association test results are organized using a BatchJobs
 registry that is wrapped in an S4 class called ciseStore.
 ```{r lkgv}
-library(geuvStore)
-m = makeGeuvStore()
+library(geuvStore2)
+m = makeGeuvStore2()
 class(m)
 m
 ```
@@ -81,16 +81,16 @@ The traversal of all GRanges available in this selection is
 governed by foreach loops.
 ```{r lksca, cache=TRUE}
 library(gQTLBase)
-ut1 = unix.time(l1 <- storeApply(m, length))
+ut1 = system.time(l1 <- storeApply(m, length))
 ut1
 library(doParallel)
 registerDoParallel(cores=2)
-ut2 = unix.time(l2 <- storeApply(m, length))
+ut2 = system.time(l2 <- storeApply(m, length))
 ut2
 print(sum(unlist(l2)))
 all.equal(unlist(l1), unlist(l2))
 ```
-We see that doubling the number of processors halves the
+We see that doubling the number of processors reduces the
 time required to get the length of each component of the archive.
 With large numbers of cores, we can quickly assemble information
 about many variants.
@@ -102,9 +102,9 @@ used to assemble a histogram in parallel over many chunks.
 
 ```{r lkhhh,cache=TRUE}
 registerDoParallel(cores=1)
-unix.time(ll <- storeToHist(m, getter=function(x)log(mcols(x)$chisq+1), breaks=c(0,seq(.1,5,.1),10)))
+system.time(ll <- storeToHist(m, getter=function(x)log(mcols(x)$chisq+1), breaks=c(0,seq(.1,5,.1),10)))
 registerDoParallel(cores=2)
-unix.time(ll <- storeToHist(m, getter=function(x)log(mcols(x)$chisq+1), breaks=c(0,seq(.1,5,.1),10)))
+system.time(ll <- storeToHist(m, getter=function(x)log(mcols(x)$chisq+1), breaks=c(0,seq(.1,5,.1),10)))
 ```
 
 ## Indexing for targeted retrievals
@@ -120,7 +120,7 @@ extractByRanges(m, myr)
 
 ## Conclusions
 
-geuvStore is a complex architecture that aims to provide a
+geuvStore2 is a complex architecture that aims to provide a
 partly baked representation of quantities from genome-scale
 surveys that can be scalably surveyed and integrated.  This
 is accomplished by keeping ranges for association scores
