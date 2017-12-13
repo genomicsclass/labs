@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
 library(Biobase)
 library(TxRegInfra)
 library(ph525x)
+library(BiocStyle)
 })
 ```
 
