@@ -217,3 +217,20 @@ these would be addressed, but you can learn about them yourself
 by looking at any Bioconductor package.  A good example is 
 `r Biocpkg("IRanges")`, which has extensive unit testing.
 There are many other good examples.
+
+<a name="wrapup"></a>
+
+## Wrapping up
+
+You are now in a good position to revisit the [motivations
+and core values](http://genomicsclass.github.io/book/pages/biomotiv.html) section of the course pages.
+
+In that section we described the concepts of
+functional object-oriented programming and continuous integration
+as they pertain to the development of highly reliable and
+relevant software tools, used in a variety of subdomains of genome
+science.  The software engineering and reproducible research
+underpinnings of the Bioconductor project are at the heart
+of its scientific impact.  For a nice set of remarks on
+usability in upcoming cloud contexts, see this recent
+[Nature Toolbox commentary](https://www.nature.com/articles/d41586-017-07833-1?utm_source=TWT_NatureNews&sf175334725=1).
