@@ -44,7 +44,7 @@ We used the commands
 ```{r lklk,eval=FALSE}
 library(RTCGAToolbox)
 readData = getFirehoseData (dataset="READ", runDate="20150402",forceDownload = TRUE,
-    Clinic=TRUE, Mutation=TRUE, Methylation=TRUE, RNAseq2_Gene_Norm=TRUE)
+    Clinic=TRUE, Mutation=TRUE, Methylation=TRUE, RNASeq2GeneNorm=TRUE)
 ```
 ```{r getd,echo=FALSE,results="hide"}
 if (!exists("readData")) load("/Users/stvjc/Teaching/EDX_2016/readData.rda")
@@ -80,7 +80,7 @@ assume that we can meaningfully combine all the data that we've retrieved.
 
 ### Selecting a severity measure
 ```{r getc}
-clin = getData(readData, "Clinical")
+clin = getData(readData, "clinical")
 names(clin)
 ```
 
@@ -126,7 +126,7 @@ legend(100, .4, lty=1:4, lwd=2, legend=paste(levels(clin$t_stage), ns))
 ### Introducing mutation data
 
 ```{r mut}
-mut = getData(readData, "Mutations")
+mut = getData(readData, "Mutation")
 dim(mut)
 table(mut$Variant_Classification)
 ```
