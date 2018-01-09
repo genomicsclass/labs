@@ -751,7 +751,7 @@ necessitate use of `updateObject`.
 library(MultiAssayExperiment)
 library(RaggedExperiment)
 if (!file.exists("gbmMAEO.rds"))
-   download.file("http://s3.amazonaws.com/multiassayexperiments/gbmMAEO.rds", 
+   download.file("https://s3.amazonaws.com/multiassayexperiments/gbmMAEO.rds", 
       "gbmMAEO.rds")
 gbm = readRDS("gbmMAEO.rds")
 gbm = updateObject(gbm)
