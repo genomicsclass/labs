@@ -5,17 +5,18 @@ title: Installing Bioconductor and finding help
 
 ## Installing Bioconductor
 
-In order to install Bioconductor, copy the following two lines into your R console.
+In order to install Bioconductor, copy the following lines into your R console.
 
 ```{r, eval=FALSE}
-source("http://bioconductor.org/biocLite.R")
-biocLite()
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install()
 ```
 
-This will install the core Bioconductor packages. Further packages can be installed using the `biocLite` function and specifying a character vector of which packages to install. For example, to install the "affy" and "genefilter" libraries you would type:
+This will install the core Bioconductor packages. Further packages can be installed using the `BiocManager::install` function and specifying a character vector of which packages to install. For example, to install the "genefilter" and "geneplotter" libraries, you would type:
 
 ```{r, eval=FALSE}
-biocLite(c("genefilter","geneplotter"))
+BiocManager::install(c("genefilter","geneplotter"))
 ```
 
 Remember, you still need to load the library, e.g., `library(genefilter)`, if you want to use the package.
@@ -28,7 +29,7 @@ http://bioconductor.org/install/
 
 There are many ways to find help directly from within R. 
 A very comprehensive help page is generated with the command `help.start()` from the
-command line.  This gives links to manuals and manual pages for all documentation in the environment.
+R console.  This gives links to manuals and manual pages for all documentation in the environment.
 This documentation set is dependent on the set of packages that are installed.  You may
 have seen a help page for a function in a given R session, that cannot be found in
 another R session of the same version.  Only if the package to which the function belongs
