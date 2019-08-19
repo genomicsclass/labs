@@ -16,7 +16,7 @@ The IRanges and GRanges objects are core components of the Bioconductor infrastr
 
 ## IRanges
 
-First we load the IRanges package. This is included in the base installation of Bioconductor, but as with all Bioconductor packages it can be installed with `biocLite`. R will print out a bunch of messages when you load IRanges about objects which are masked from other packages. This is part of the normal loading process. Here we print these messages, although on some other book pages we suppress the messages for cleanliness:
+First we load the IRanges package. This is included in the base installation of Bioconductor, but as with all Bioconductor packages it can also be installed with `BiocManager::install()`. R will print out a bunch of messages when you load IRanges about objects which are masked from other packages. This is part of the normal loading process. Here we print these messages, although on some other book pages we suppress the messages for cleanliness:
 
 ```{r}
 library(IRanges)
@@ -207,7 +207,7 @@ The length of the *GRangesList* is the number of *GRanges* object within. To get
 
 ```{r}
 length(grl)
-elementLengths(grl)
+elementNROWS(grl)
 grl[[1]]
 ```
 
