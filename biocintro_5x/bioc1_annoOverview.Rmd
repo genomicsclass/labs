@@ -229,7 +229,7 @@ names(listTables(EnsDb.Hsapiens.v75))
 As an illustration:
 ```{r lktxed}
 edb = EnsDb.Hsapiens.v75  # abbreviate
-txs <- transcripts(edb, filter = GenenameFilter("ZBTB16"),
+txs <- transcripts(edb, filter = GeneNameFilter("ZBTB16"),
                    columns = c("protein_id", "uniprot_id", "tx_biotype"))
 txs
 ```
@@ -404,6 +404,7 @@ The graphical structure of the vocabulary is encoded in
 tables in a SQLite database.  We can query this using
 the `RSQLite` interface.
 ```{r lkgo3}
+library(DBI)
 con = GO_dbconn()
 dbListTables(con)
 ```
