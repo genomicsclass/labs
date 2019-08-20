@@ -62,7 +62,7 @@ tt
 
 We will use the [ROAST method](#foot) for gene set testing. We can test a single gene set by looking up the genes which contain a certain GO ID, and providing this to the `roast` function. We will show how to get such lists of genes associated with a GO ID in the next chunk.
 
-The roast function performs an advanced statistical technique, *rotation of residuals*, in order to generate a sense of the null distribution for the test statistic. The test statistics in this case is the summary of the scores from each gene. The tests are *self-contained* because only the summary for a single set is used, whereas other gene set tests might compare a set to all the other genes in the dataset, e.g., a *competitive* gene set test.
+The roast function performs an advanced statistical technique, *rotation of residuals*, in order to generate a sense of the null distribution for the test statistic. The test statistic in this case is the summary of the scores from each gene. The tests are *self-contained* because only the summary for a single set is used, whereas other gene set tests might compare a set to all the other genes in the dataset, e.g., a *competitive* gene set test.
 
 The result here tells us that the *immune response* genes are significantly down-regulated, and additionally, mixed up and down.
 
@@ -82,7 +82,7 @@ r1
 We can also use the `mroast` function to perform multiple roast tests. First we need to create a list, which contains the indices of genes in the ExpressionSet for each of a number of gene sets. We will use the `org.Hs.eg.db` package to gather the gene set information.
 
 ```{r}
-# biocLite("org.Hs.eg.db")
+# BiocManager::install("org.Hs.eg.db")
 library(org.Hs.eg.db)
 org.Hs.egGO2EG
 go2eg <- as.list(org.Hs.egGO2EG)
@@ -122,7 +122,7 @@ r2 <- r2[order(r2$PValue.Mixed),]
 We can use the `GO.db` annotation package to extract the GO terms for the top results, by the *mixed* test.
 
 ```{r}
-# biocLite("GO.db")
+# BiocManager::install("GO.db")
 library(GO.db)
 columns(GO.db)
 keytypes(GO.db)
