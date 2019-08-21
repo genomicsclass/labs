@@ -815,11 +815,6 @@ sort(table(assay(mut, "Hugo_Symbol")[assay(mut, "Variant_Classification")==
   "Frame_Shift_Del"]),decreasing=TRUE)[1:10]
 ```
 
-What are the genes most commonly affected by such deletions?
-```{r lksog}
-sort(table(names(rfs)),decreasing=TRUE)[1:8]
-```
-
 In summary 
 
 - MultiAssayExperiment unifies diverse assays collected on a cohort of individuals
