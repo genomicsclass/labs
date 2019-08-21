@@ -20,8 +20,9 @@ library(org.Dm.eg.db)
 We will use the following libraries to demonstrate visualization of NGS data.
 
 ```{r}
-#biocLite("pasillaBamSubset")
-#biocLite("TxDb.Dmelanogaster.UCSC.dm3.ensGene")
+#BiocManager::install("pasillaBamSubset")
+#BiocManager::install("TxDb.Dmelanogaster.UCSC.dm3.ensGene")
+#BiocManager::install("org.Dm.eg.db")
 library(pasillaBamSubset)
 library(TxDb.Dmelanogaster.UCSC.dm3.ensGene)
 fl1 <- untreated1_chr4()
@@ -151,7 +152,7 @@ arrows(start(gene),rep(0,length(gene)),
 We will briefly show two packages for visualizing genomic data in Bioconductor. Note that each of these have extensive vignettes for plotting many kinds of data. We will show here how to make the coverage plots as before:
 
 ```{r}
-#biocLite("Gviz")
+#BiocManager::install("Gviz")
 library(Gviz)
 gtrack <- GenomeAxisTrack()
 atrack <- AnnotationTrack(gene, name = "Gene Model")
@@ -172,7 +173,7 @@ plotTracks(list(gtrack, atrack, dtrack1, dtrack2), type="polygon")
 ## ggbio
 
 ```{r}
-#biocLite("ggbio")
+#BiocManager::install("ggbio")
 library(ggbio)
 autoplot(gene)
 autoplot(fl1, which=z)

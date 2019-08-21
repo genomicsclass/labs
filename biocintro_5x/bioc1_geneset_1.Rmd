@@ -20,11 +20,10 @@ In these units we learn the statistics behind gene set analysis. Throughout the 
 We will cover each of these three topics in separate units. 
 
 ## Preparing data and gene set database
-For this unit you will need the following library
+For this unit you will need the following library:
 
 ```{r,eval=FALSE}
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("GSEABase")
+BiocManager::install("GSEABase")
 ```
 
 We will need these packages:
@@ -42,8 +41,8 @@ library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 ```
 
-We constructed this data to include batch effect so we 
-correct for them using SVA:
+We constructed this data to include a batch effect, so we 
+correct for that using SVA:
 
 ```{r,message=FALSE}
 library(GSE5859Subset)
@@ -73,7 +72,7 @@ In this example we will use a gene set grouping genes by sections of the chromos
 
 <http://www.broadinstitute.org/gsea/msigdb/download_file.jsp?filePath=/resources/msigdb/4.0/c1.all.v4.0.entrez.gmt>
 
-Once you download the file, you can read it in with the following command
+Once you download the file, you can read it in with the following command: 
 ```{r}
 gsets <- getGmt("c1.all.v4.0.entrez.gmt") ##must provide correct path to file
 ```
@@ -188,13 +187,13 @@ $$
 \bar{t}=\frac{1}{N} \sum_{i \in G} t_i
 $$
 
-Note that under the null hypothesis that the genes in the gene set are not differentially expressed, then these $t$ have mean 0. If they t-statistics are independent of each other (later we will learn approaches that avoid this assumption) then $\sqrt{N} \bar{t}$ has standard deviation 1 and are approximately normal:
+Note that under the null hypothesis that the genes in the gene set are not differentially expressed, then these $t$ have mean 0. If the t-statistics are independent of each other (later we will learn approaches that avoid this assumption), then $\sqrt{N} \bar{t}$ has standard deviation 1 and is approximately normal:
 
 $$
 \sqrt{N} \bar{t} \sim N(0,1)
 $$
 
-Here is a qq-plot of these summary 
+Here is a qq-plot of these summaries: 
 ```{r}
 avgt <- sapply(gsids,function(i) sqrt(length(i))*mean(tt[i]))
 qqnorm(avgt,col=cols,cex=ifelse(cols==1,1,2),pch=16)
@@ -211,7 +210,7 @@ Note that we can construct other scores to test other alternative hypothesis. Fo
 
 ## Hypothesis testing for gene sets
 
-The normal approximation stated above for $\sqrt{N} \bar{t}$ that the t-statistics are independent and identically distributed. For example, the second equality here: 
+The normal approximation stated above for $\sqrt{N} \bar{t}$ is that the t-statistics are independent and identically distributed. For example, the second equality here: 
 
 $$
 Var(\bar{t})= \frac{1}{N^2} \mbox{var}(t_1 + \dots + t_N) = \frac{1}{N^2}(\mbox{var}(t_1)+\dots+\mbox{var}(t_N)) = \frac{1}{N}
