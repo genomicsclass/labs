@@ -178,8 +178,13 @@ to enumerate phenotypes at unique SNPs occupying binding sites.
 fo = findOverlaps(GM12878, reduce(gwrngs19))
 fo
 ovrngs = reduce(gwrngs19)[subjectHits(fo)]
-phset = lapply( ovrngs, function(x)
-  unique( gwrngs19[ which(gwrngs19 %over% x) ]$Disease.Trait ) )
+#phset = lapply( ovrngs, function(x)
+#  unique( gwrngs19[ which(gwrngs19 %over% x) ]$Disease.Trait ) )
+phset = vector("list", length(ovrngs))
+for (i in 1:length(ovrngs)) {
+ phset[[i]] = 
+   unique( gwrngs19[ which(gwrngs19 %over% ovrngs[i]) ]$Disease.Trait ) 
+ }
 sort(table(unlist(phset)), decreasing=TRUE)[1:5]
 ```
 
@@ -202,17 +207,25 @@ integrative bioinformatics.  The Bioconductor GEOmetadb
 package helps with discovery and characterization of
 GEO datasets.
 
-The GEOmetadb database is a 240MB download that decompresses to 3.6 GB
+The GEOmetadb database (in August 2019) 
+is a 503MB download that decompresses to 8.2 GB
 of SQLite.  Once you have acquired the GEOmetadb.sqlite file using
 the `getSQLiteFile` function, you can create a connection
 and start interrogating the database locally.  Here we
 use an environment variable to establish the location of the database.
 Use your operating system environment variables to emulate this.
 
-```{r dosq}
+```{r dosq, eval=FALSE}
 library(RSQLite)
 lcon = dbConnect(SQLite(), Sys.getenv("GEOMETADB_SQLITE_PATH"))
 dbListTables(lcon)
+```
+You will see
+```
+ [1] "gds"               "gds_subset"        "geoConvert"       
+ [4] "geodb_column_desc" "gpl"               "gse"              
+ [7] "gse_gpl"           "gse_gsm"           "gsm"              
+[10] "metaInfo"          "sMatrix"          
 ```
 
 We will build a query that returns all the GEO GSE entries
@@ -222,7 +235,7 @@ we will retrieve a field that records the Bioconductor array
 annotation package name so that we know what technology was
 in use.  We'll tabulate the various platforms used.
 
-```{r doquer}
+```{r doquer, eval=FALSE}
 vbls = "gse.gse, gse.title, gpl.gpl, gpl.bioc_package"
 req1 = " from gse join gse_gpl on gse.gse=gse_gpl.gse"
 req2 = " join gpl on gse_gpl.gpl=gpl.gpl"
@@ -231,6 +244,24 @@ quer = paste0("select ", vbls, req1, req2, goal)
 lkpc = dbGetQuery(lcon, quer)
 dim(lkpc)
 table(lkpc$bioc_package)
+```
+For the August 2019 image you will see
+```
+
+                    hgu133a                    hgu133a2 
+                          3                           3 
+                    hgu133b                 hgu133plus2 
+                          3                          30 
+                     hgu219                   hgug4110b 
+                          1                           1 
+      HsAgilentDesign026652   huex10sttranscriptcluster 
+                          2                           4 
+hugene10sttranscriptcluster IlluminaHumanMethylation27k 
+                          1                           2 
+            illuminaHumanv4 mogene10sttranscriptcluster 
+                         12                           1 
+                 mouse430a2 
+                         11 
 ```
 
 We won't insist that you take the GEOmetadb.sqlite download/expansion,
