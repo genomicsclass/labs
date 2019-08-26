@@ -153,10 +153,9 @@ The text vector `jlines` defines the content.  (Usually
 you will create your documentation and function code
 in a text editor.)
 ```{r continu}
+# when using R markdown, we need to setwd in every chunk
 setwd(tmpd)
-getwd()
 setwd("erbsViz")
-getwd()
 jlines = 
 "#' render a chromosome and locations of ESRRA binding sites
 #' @param chrname character(1) giving UCSC chromosome name
@@ -204,12 +203,12 @@ In summary:
 - We have used `writeLines` to generate a combination of
 roxygen documentation and R code in the file `jux.R`, in
 folder `R`, which was
-created as a subfolder of folder `juxtaPack`.  
-- We then changed to the `juxtaPack` folder and ran `devtools::document()` that
+created as a subfolder of folder `erbsViz`.  
+- We then changed to the `erbsViz` folder and ran `devtools::document()` that
 will translate the roxygen lines to statements in `NAMESPACE`
 and to a .Rd file in `man`.
 - We then ran `install()` to install the package in R, returned
-to our initial folder, and used `library(juxtaPack)` to attach
+to our initial folder, and used `library(erbsViz)` to attach
 our new package.
 
 Full development would include production of a vignette
