@@ -58,6 +58,7 @@ colData(se) <- DataFrame(sample.table)
 A similar function in the *Rsubread* library can be used to construct a count matrix:
 
 ```{r cache=TRUE}
+# not available for Windows - use above method instead
 library(Rsubread)
 fc <- featureCounts(bam.files, annot.ext=gtf.file,
                     isGTFAnnotationFile=TRUE, 
@@ -127,7 +128,7 @@ dds <- DESeqDataSet(airway, design= ~ cell + dex)
 We can also make a *DESeqDataSet* from a count matrix and column data.
 
 ```{r}
-dds.fc <- DESeqDataSetFromMatrix(fc$counts, 
+dds.fc <- DESeqDataSetFromMatrix(assay(se),    # or fc$counts from Rsubread 
                                  colData=sample.table, 
                                  design=~ cell + dex)
 ```
