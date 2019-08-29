@@ -122,11 +122,11 @@ genes(Sac.cer3)
 
 ## Using devtools
 
-Let's use `r CRANpkg("devtools")` to create a package centered
+Let's use `r CRANpkg("usethis")` to create a package centered
 around the `juxta` function.  We will learn about
 roxygen too.
 
-In the following code chunk, we use `devtools::create`
+In the following code chunk, we use `usethis::create_package`
 to generate a package folder structure in a temporary
 directory.
 
@@ -136,11 +136,12 @@ directory.
 curd = getwd()
 kk = dir.create(tmpd <- tempfile()) # always new
 setwd(tmpd)
-library(devtools)
-create("juxtaPack", list(Depends=c("ERBS", "ggbio"), 
+library(usethis)
+create_package("erbsViz", list(Imports="ggbio",
     Description="Juxtapose ESRRA binding and gene models",
     Title="demonstration package"))
-setwd("juxtaPack")
+setwd("erbsViz")
+usethis::use_package("ERBS")    # add ERBS to the Imports field
 ```
 
 <a name="source"></a>
@@ -152,8 +153,9 @@ The text vector `jlines` defines the content.  (Usually
 you will create your documentation and function code
 in a text editor.)
 ```{r continu}
+# when using R markdown, we need to setwd in every chunk
 setwd(tmpd)
-setwd("juxtaPack")
+setwd("erbsViz")
 jlines = 
 "#' render a chromosome and locations of ESRRA binding sites
 #' @param chrname character(1) giving UCSC chromosome name
@@ -177,7 +179,7 @@ juxta = function (chrname='chr22', ...)
 We descend to the `R` folder and write our text file.
 ```{r desc}
 setwd(tmpd)
-setwd("juxtaPack")
+setwd("erbsViz")
 setwd("R")
 writeLines(jlines, "jux.R")
 ```
@@ -188,11 +190,11 @@ We ascend to the package root and run `document` and `install`
 to get access to the new package.
 ```{r dorest}
 setwd(tmpd)
-setwd("juxtaPack")
-document()
-install()
+setwd("erbsViz")
+devtools::document()
+devtools::install()
 setwd(curd) # go back to where you started
-library(juxtaPack)
+library(erbsViz)
 juxta
 ```
 
@@ -201,12 +203,12 @@ In summary:
 - We have used `writeLines` to generate a combination of
 roxygen documentation and R code in the file `jux.R`, in
 folder `R`, which was
-created as a subfolder of folder `juxtaPack`.  
-- We then changed to the `juxtaPack` folder and ran `document()` that
+created as a subfolder of folder `erbsViz`.  
+- We then changed to the `erbsViz` folder and ran `devtools::document()` that
 will translate the roxygen lines to statements in `NAMESPACE`
 and to a .Rd file in `man`.
 - We then ran `install()` to install the package in R, returned
-to our initial folder, and used `library(juxtaPack)` to attach
+to our initial folder, and used `library(erbsViz)` to attach
 our new package.
 
 Full development would include production of a vignette
