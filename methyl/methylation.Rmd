@@ -26,7 +26,7 @@ dim(pd) ##this is sample information
 length(gr)
 ```
 
-The pd object includes clinical information. One the coluumns tells us if the sample is from colon cancer or from normal tissue
+The `pd` object includes clinical information. One the columns tells us if the sample is from colon cancer or from normal tissue
 
 ```{r}
 colnames(pd)
@@ -36,7 +36,7 @@ cancerlIndex <- which(pd$Status=="cancer")
 ```
 
 
-Let's start by taking a quick look at the distribution of methylation measurements for the normal samples
+Let's start by taking a quick look at the distribution of methylation measurements for the normal samples:
 
 ```{r}
 i=normalIndex[1]
@@ -50,23 +50,23 @@ for(i in cancerlIndex){
 }
 ```
 
-We are interested in finding regions of the genome that are different between cancer and normal samples. Furthermore, we want regions that are consistenly different therefore we can treat this as an inference problem. We can compute a t-statistic for each CpG
+We are interested in finding regions of the genome that are different between cancer and normal samples. Furthermore, we want regions that are consistenly different therefore we can treat this as an inference problem. We can compute a t-statistic for each CpG:
 
 ```{r,message=FALSE}
 library(limma)
 X<-model.matrix(~pd$Status)
 fit<-lmFit(meth,X)
-eb <- ebayes(fit)
+eb <- eBayes(fit)
 ```
 
-A volcano plot reveals many differences
+A volcano plot reveals many differences:
 
 ```{r}
 library(rafalib)
 splot(fit$coef[,2],-log10(eb$p.value[,2]),xlab="Effect size",ylab="-log10 p-value")
 ```
 
-If we have reason to believe for DNA methylation to have an effect on gene expression a region of the genome needs to be affected, not just a single CpG, we should look beyond. Here is plot of the region surrounding the top hit
+If we have reason to believe for DNA methylation to have an effect on gene expression a region of the genome needs to be affected, not just a single CpG, we should look beyond. Here is plot of the region surrounding the top hit:
 
 ```{r,message=FALSE}
 library(GenomicRanges)
@@ -81,7 +81,7 @@ plot(pos[Index],fit$coef[Index,2],type="b",xlab="genomic location",ylab="differe
 matplot(pos[Index],meth[Index,],col=cols,xlab="genomic location")
 ```
 
-We can search for these regions explicitely, instead of searching for single points as explained by Jaffe and Irizarry (2012) [http://www.ncbi.nlm.nih.gov/pubmed/22422453]. 
+We can search for these regions explicitly instead of searching for single points, as explained by Jaffe and Irizarry (2012) [http://www.ncbi.nlm.nih.gov/pubmed/22422453]. 
 
 If we are going to perform regional analysis we first have to define a region. But one issue is that not only do we have to separate the analysis by chromosome but that within each chromosome we usually have big gaps creating subgroups of regions to be analyzed.
 
@@ -93,14 +93,14 @@ hist(log10(diff(pos[chr1Index])),main="",xlab="log 10 method")
 We can create groups in the following way.
 
 ```{r,message=FALSE}
-# biocLite("bumphunter")
+# BiocManager::install("bumphunter")
 library(bumphunter)
 cl=clusterMaker(chr,pos,maxGap=500)
 table(table(cl)) ##shows the number of regions with 1,2,3, ... points in them
 ```
 
 
-Now let's consider two example regions
+Now let's consider two example regions:
 
 ```{r}
 ###Select the region with the smallest value
@@ -114,7 +114,7 @@ abline(h=0,lty=2)
 abline(h=c(-.1,.1),lty=2)
 ```
 
-This region shows only a single CpG as different. In contrast notice this region:
+This region shows only a single CpG as different. In contrast, notice this region:
 
 ```{r}
 Index=which(cl==72201) ##we know this is a good example from analysis we have already performed
@@ -145,14 +145,14 @@ lines(x2,lfit$fitted,col=2)
 ```
 
 
-The bumphunter automates this procedure
+The bumphunter automates this procedure:
 
 ```{r}
 res<-bumphunter(meth,X,chr=chr,pos=pos,cluster=cl,cutoff=0.1,B=0)
 tab<-res$table
 ```
 
-We now have a list of regions instead of single points. Here we look at the region with the highest rank if we order by area
+We now have a list of regions instead of single points. Here we look at the region with the highest rank if we order by area:
 
 ```{r}
 Index=(tab[1,7]-3):(tab[1,8]+3)
