@@ -11,8 +11,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 In this unit we will demonstrate how to read idat files from the illumina 450K DNA methylation array. We make use the the Bioconductor minfi package [cite 24478339]
 
 ```{r}
-# source("http://www.bioconductor.org/biocLite.R")
-# biocLite(c("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19"))
+# BiocManager::install(c("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19"))
 library(minfi)
 ```
 
@@ -35,11 +34,11 @@ To make this script work in any working directory  we can edit that column to co
 
 ```{r}
 targets$Basename <- file.path(path,targets$Basename)
-rgset <- read.450k(targets$Basename,verbose=TRUE)
+rgset <- read.metharray(targets$Basename,verbose=TRUE)
 pData(rgset)<-targets
 ```
 
-We now have the raw data, red an green intensities which we have access too
+We now have the raw data, red and green intensities which we have access to:
 ```{r}
 dim(getRed(rgset))
 dim(getGreen(rgset))
@@ -51,7 +50,7 @@ If you are not interested in developing preprocessing algorithms then you can us
 mset <- preprocessIllumina(rgset)
 ```
 
-This performs the default preprocessing algorithm developed by Illumina. However, for this to be useful we want to have the locations of each CpG and to do that we need map the CpGs to genome. Minfi keeps this information modular so that when the genome annotation gets updated one can easilty change the mapping. 
+This performs the default preprocessing algorithm developed by Illumina. However, for this to be useful we want to have the locations of each CpG and to do that we need map the CpGs to genome. minfi keeps this information modular so that when the genome annotation gets updated one can easilty change the mapping. 
 ```{r}
 mset <- mapToGenome(mset)
 ```
