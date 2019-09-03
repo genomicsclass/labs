@@ -13,10 +13,11 @@ library(minfi) ##Bioc
 library(IlluminaHumanMethylation450kmanifest) ##Bioc
 library(doParallel) ##CRAN
 library(pkgmaker)
+library(rafalib)
 ```
 
 ```{r}
-path="/Users/ririzarr/myDocuments/teaching/HarvardX/tcgaMethylationSubset"
+path="/Users/ririzarr/myDocuments/teaching/HarvardX/tcgaMethylationSubset"    # use your own path to downloaded data
 targets=read.delim(file.path (path,"targets.txt"),as.is=TRUE)
 table(targets$Tissue,targets$Status)
 ```
@@ -29,7 +30,7 @@ targets = targets[index,]
 ```
 
 ```{r}
-dat = read.450k.exp(base=path,targets = targets, verbose=TRUE)
+dat = read.metharray.exp(base=path,targets = targets, verbose=TRUE)
 dat = preprocessIllumina(dat)
 dat = mapToGenome(dat)
 dat = ratioConvert(dat,type="Illumina")
@@ -62,14 +63,14 @@ tab = res$tab[res$tab$fwer <= 0.05,]
 tab = makeGRangesFromDataFrame(tab,keep.extra.columns = TRUE)
 
 map=distanceToNearest(tab,cgi)
-d = mcols(map)$dist
-prop.table( table( cut(d,c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
+d = mcols(map)$distance
+prop.table( table( cut(as.numeric(d),c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
 
 null =  granges(dat)
 nulltab = makeGRangesFromDataFrame(null,keep.extra.columns = TRUE)
 
 nullmap=distanceToNearest(nulltab,cgi)
-nulld = mcols(nullmap)$dist
+nulld = mcols(nullmap)$distance
 prop.table( table( cut(nulld,c(0,1,2000,5000,Inf),include.lowest=TRUE,right=FALSE) ))
 ```
 
@@ -79,7 +80,7 @@ cols = as.factor(pData(dat)$Tissue)
 
 tab = tab[order(-mcols(tab)$area)]
 tab = tab+3000 ##add 3000 to each side
-mypar2(1,1)
+mypar(1,1)
 i=17
 dataIndex = which(granges(dat)%over%tab[i])
 cgiIndex = which(cgi%over%tab[i])
