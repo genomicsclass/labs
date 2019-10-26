@@ -14,29 +14,33 @@ library(GEOquery)
 ```
 
 ```{r}
-geoq <- getGEO("GSE9514")
+geoq <- getGEO("GSE9514")    # download a dataset from GEO
 names(geoq)
-e <- geoq[[1]]
+e <- geoq[[1]]    # extract ExpressionSet
 ```
 
 ### ExpressionSet
 
 ```{r}
-dim(e)
+# exprs gives expression matrix
+dim(e)    # number of features and samples in ExpressionSet
 exprs(e)[1:3,1:3]
-dim(exprs(e))
+dim(exprs(e))    # rows are features, columns are samples
 
+# pData gives phenotype data (sample information)
 pData(e)[1:3,1:6]
-dim(pData(e))
+dim(pData(e))    # rows of pData correspond to columns of exprs
 names(pData(e))
 pData(e)$characteristics_ch1
 
+# fData gives feature data (probe information)
 fData(e)[1:3,1:3]
-dim(fData(e))
+dim(fData(e))    # rows of fData correspond to rows of exprs
 names(fData(e))
 head(fData(e)$"Gene Symbol")
 head(rownames(e))
 
+# additional annotation tied to ExpressionSet
 experimentData(e)
 annotation(e)
 ```
@@ -56,23 +60,27 @@ se
 
 
 ```{r}
+# assay contains results of the assay 
 dim(se)
 assay(se)[1:3,1:3]
-dim(assay(se))
+dim(assay(se))    # rows = features (ranges), columns = samples
 
+# colData contains sample information
 colData(se)[1:3,1:6]
 dim(colData(se))
 names(colData(se))
 colData(se)$treatment
 
-rowData(se)[1]
-class(rowData(se))
-length(rowData(se))
+# rowRanges contains feature information
+rowRanges(se)[1]
+class(rowRanges(se))
+length(rowRanges(se))
 head(rownames(se))
-metadata(rowData(se))
+metadata(rowRanges(se))
 
-exptData(se)$MIAME
-abstract(exptData(se)$MIAME)
+# additional metadata, including sample information
+metadata(se)$MIAME
+abstract(metadata(se)$MIAME)
 ```
 
 ## Footnotes
