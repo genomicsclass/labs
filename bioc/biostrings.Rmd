@@ -37,7 +37,7 @@ length(dna)    # number of bases in a DNAString
 
 Not all characters are allowed in *DNAString* objects. Defining a <em>DNAString</em> with invalid characters will produce an error: 
 
-```{r}
+```{r eval=FALSE}
 DNAString("JQX")    # error - invalid bases
 ```
 
