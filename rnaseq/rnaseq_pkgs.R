@@ -22,6 +22,5 @@ biocpkgs <- c("Rsamtools",
               "cummeRbund",
               "pasillaBamSubset",
               "TxDb.Dmelanogaster.UCSC.dm3.ensGene")
-source("http://bioconductor.org/biocLite.R")
-biocLite(biocpkgs)
+BiocManager::install(biocpkgs)
 # note that Rsubread does not have a binary for Windows. This package is not required for class.
