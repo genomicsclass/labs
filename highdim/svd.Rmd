@@ -19,8 +19,8 @@ $$\mathbf{U}^\top\mathbf{Y} = \mathbf{DV}^\top$$
 With:
 
 * $\mathbf{U}$ is an $m \times p$ orthogonal matrix
-* $\mathbf{V}$ is an $p \times p$ orthogonal matrix
-* $\mathbf{D}$ is an $n \times p$ diagonal matrix 
+* $\mathbf{D}$ is an $p \times p$ diagonal matrix
+* $\mathbf{V}$ is an $n \times p$ orthogonal matrix 
 
 with $p=\mbox{min}(m,n)$. $\mathbf{U}^\top$ provides a rotation of our data $\mathbf{Y}$ that turns out to be very useful because the variability (sum of squares to be precise) of the columns of $\mathbf{U}^\top \mathbf{Y}=\mathbf{VD}$ are decreasing.
 Because $\mathbf{U}$ is orthogonal, we can write the SVD like this: 
