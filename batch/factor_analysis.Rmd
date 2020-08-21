@@ -10,7 +10,7 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 ## Factor Analysis
 
-Before we introduce the next type of statistical method for batch effect correction, we introduce the statistical idea that motivates the main idea: Factor Analysis. Factor Analysis was first developed over a century ago. Karl Pearson noted that correlation between different subjects when the correlation was computed across students. To explain this, he posed a model having one factor that was common across subjects for each student that explained this correlation:
+Before we introduce the next type of statistical method for batch effect correction, we introduce the statistical idea that motivates the main idea: Factor Analysis. Factor Analysis was first developed over a century ago. Karl Pearson noted correlation between different subjects when the correlation was computed across individuals. To explain this, he posed a model having one factor that was common across subjects for each student that explained this correlation:
 
 $$
 Y_ij = \alpha_i W_1 + \varepsilon_{ij}
