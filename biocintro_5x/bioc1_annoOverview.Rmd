@@ -1,8 +1,10 @@
 ---
-title: "Genomic annotation in Bioconductor: The general situation"
+title: 'Genomic annotation in Bioconductor: The general situation'
 author: "Vince"
 date: "March 19, 2015"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 layout: page
 toc: yes
 ---
@@ -13,7 +15,10 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 ```
 
 ```{r setup,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressMessages({
 suppressPackageStartupMessages({
+library(BiocStyle)
 library(AnnotationDbi)
 library(BSgenome.Hsapiens.NCBI.GRCh38)
 library(BSgenome.Hsapiens.UCSC.hg19)
@@ -26,10 +31,18 @@ library(png)
 library(KEGGREST)
 library(GO.db)
 library(org.Hs.eg.db)
+library(DBI)
+library(ensembldb)
+library(rols)
+library(EnsDb.Hsapiens.v75)
+library(GSEABase)
+library(ph525x)
+})
+})
 })
 ```
 
-# Basic annotation resources and their discovery
+## Basic annotation resources and their discovery
 
 In this document we will review Bioconductor's facilities for
 handling and annotating genomic sequence.  We'll look at
@@ -41,29 +54,40 @@ Bioconductor is to make it easy to incorporate
 information on genome structure and function 
 into statistical analysis procedures.
 
-## A simple hierarchy of annotation concepts
+<a name="threelev"></a>
+
+### A hierarchy of annotation concepts
 
 Bioconductor includes many different types of genomic annotation.
 We can think of these annotation resources in a hierarchical structure.
 
-- At the base is the reference genomic sequence for an organism.
+- At the base is the _reference genomic sequence_ for an organism.
 This is always arranged into chromosomes, specified by linear
 sequences of nucleotides.
 
 - Above this is the organization of chromosomal sequence into
-regions of interest.  The most prominent regions of interest are
+_regions of interest_.  The most prominent regions of interest are
 genes, but other structures like SNPs or CpG sites are
 annotated as well.  Genes have internal structure,
 with parts that are transcribed and parts that are not,
 and "gene models" define the ways in which
 these structures are labeled and laid out in genomic coordinates.
+    - Within this concept of _regions of interest_ we also identify
+_platform-oriented annotation_.  This type of annotation is typically
+provided first by the manufacturer of an assay, but then refined
+as research identifies ambiguities or updates to
+initially declared roles for assay probe elements.  The
+[brainarray project](http://brainarray.mbni.med.umich.edu/Brainarray/Database/CustomCDF/genomic_curated_CDF.asp) at University of Michigan illustrates this process for affymetrix array annotation.  We address this topic of platform-oriented annotation at the very end of this chapter.
 
-- Above this is the organization of genes or gene products into
-groups with shared structural or functional properties.  Examples
+- Above this is the organization of regions (most often
+genes or gene products) into
+_groups with shared structural or functional properties_.  Examples
 include pathways, groups of genes found together in cells, or
 identified as cooperating in biological processes.
 
-## Discovering available reference genomes
+<a name="findingref"></a>
+
+### Discovering available reference genomes
 
 Bioconductor's collection of annotation packages brings
 all elements of this hierarchy into a programmable environment.
@@ -79,7 +103,7 @@ length(ag)
 head(ag)
 ```
 
-## Reference build versions are important
+### Reference build versions are important
 
 The reference build for an organism is created de novo
 and then refined as algorithms and sequenced data improve.
@@ -95,7 +119,8 @@ that include build versions.  It is very important to avoid
 mixing coordinates from different reference builds.
 In the liftOver video we show how to convert genomic coordinates of
 features between different reference builds, using the UCSC
-"liftOver" utility interfaced to R in the `rtracklayer` package.
+"liftOver" utility interfaced to R in the 
+`r Biocpkg("rtracklayer")` package.
 
 To help users avoid mixing up data collected on incompatible
 genomic coordinate systems from different reference builds, we
@@ -105,7 +130,9 @@ this shortly.  Software for sequence comparison can check
 for compatible tags on the sequences
 being compared, and thereby help to ensure meaningful results.
 
-# A reference genomic sequence for H. sapiens
+<a name="hsap"></a>
+
+## A reference genomic sequence for H. sapiens
 
 The reference sequence for *Homo sapiens* is acquired by installing
 and attaching
@@ -127,10 +154,16 @@ We acquire a chromosome's sequence using the `$` operator.
 Hsapiens$chr17
 ```
 
-# The transcripts and genes for a reference sequence
+<a name="txUCSCnENSEMBLE"></a>
+
+## The transcripts and genes for a reference sequence
+
+### UCSC annotation
 
 The `TxDb` family of packages and data objects manages
-information on transcripts and gene models.
+information on transcripts and gene models.  We consider
+those derived from annotation tables prepared for the
+UCSC genome browser.
 
 ```{r gettx}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -146,7 +179,64 @@ ghs = genes(txdb)
 ghs
 ```
 
-# Your data will be someone else's annotation: import/export
+Filtering is permitted, with suitable identifiers.
+Here we select all exons identified for two
+different genes, identified by their Entrez Gene ids:
+
+```{r doexo}
+exons(txdb, columns=c("EXONID", "TXNAME", "GENEID"),
+                  filter=list(gene_id=c(100, 101)))
+```
+
+### ENSEMBL annotation
+
+From the [Ensembl home page](http://www.ensembl.org/index.html):
+"Ensembl creates, integrates and distributes reference datasets and 
+analysis tools that enable genomics".  This project is lodged
+at the [European Molecular Biology Lab](https://www.ebi.ac.uk/),
+which has been supportive of general interoperation of
+annotation resources with 
+Bioconductor.
+
+The `r Biocpkg("ensembldb")` package includes a vignette
+with the following commentary:
+
+The ensembldb package provides functions to create and use 
+transcript centric annotation databases/packages. The annotation for the 
+databases are 
+directly fetched from Ensembl 1 using their Perl 
+API. The functionality and data is similar to 
+that of the TxDb packages from the  GenomicFeatures 
+package, but, in addition to retrieve all gene/transcript models 
+and annotations from the database, the 
+ensembldb package provides also a filter framework allowing 
+to retrieve annotations for specific entries like 
+genes encoded on a chromosome region or transcript 
+models of lincRNA genes. From version 1.7 on, 
+EnsDb databases created by the ensembldb package contain 
+also protein annotation data 
+(see [Section 11](http://bioconductor.org/packages/release/bioc/vignettes/ensembldb/inst/doc/ensembldb.html#org35014ed) for 
+the database layout and an 
+overview of available attributes/columns). For more information 
+on the use of the protein annotations refer to the proteins vignette.
+
+```{r lkensss}
+library(ensembldb)
+library(EnsDb.Hsapiens.v75)
+names(listTables(EnsDb.Hsapiens.v75))
+```
+
+As an illustration:
+```{r lktxed}
+edb = EnsDb.Hsapiens.v75  # abbreviate
+txs <- transcripts(edb, filter = GeneNameFilter("ZBTB16"),
+                   columns = c("protein_id", "uniprot_id", "tx_biotype"))
+txs
+```
+
+<a name="importExport"></a>
+
+## Your data will be someone else's annotation: import/export
 
 The ENCODE project is a good example of the idea that today's
 experiment is tomorrow's annotation.  You should think of your
@@ -156,6 +246,55 @@ important question about genomic structure or function and must
 answer it with an appropriate, properly executed protocol.
 ENCODE is noteworthy for linking the protocols to the data
 very explicitly.)
+
+
+As an example, we consider estrogen receptor (ER) binding data, published
+by ENCODE as narrowPeak files.  This is ascii text at its base, so
+can be imported as a set of textual lines with no difficulty.
+If there is sufficient regularity to the record fields, 
+the file could be imported as a table.
+
+We want to go beyond this, so that the import is usable as a computable
+object as rapidly as possible.  Recognizing the connection between the
+narrowPeak and bedGraph formats, we can import immediately to a
+GRanges.
+
+To illustrate this, we find the path to the narrowPeak raw data
+file in the ERBS package.
+```{r getgraa}
+f1 = dir(system.file("extdata",package="ERBS"), full=TRUE)[1]
+readLines(f1, 4) # look at a few lines
+```
+The import command is straightforward.
+```{r doimpbg}
+library(rtracklayer)
+imp = import(f1, format="bedGraph")
+imp
+genome(imp)  # genome identifier tag not set, but you should set it
+```
+
+We obtain a GRanges in one stroke.  There are some additional fields
+in the metadata columns whose names
+should be specified, but if we
+are interested only in the ranges, we are done, with the exception 
+of adding the genome metadata to protect against illegitimate
+combination with data recorded in an incompatible coordinate system.
+
+For communicating with other scientists or systems we have two
+main options.  We can save the GRanges as an "RData" object,
+easily transmitted to another R user for immediate use.  Or
+we can export in another standard format.  For example, if we
+are interested only in interval addresses and the binding scores,
+it is sufficient to save in "bed" format.
+
+```{r doexp}
+export(imp, "demoex.bed")  # implicit format choice
+cat(readLines("demoex.bed", n=5), sep="\n")
+```
+
+We have carried out a "round trip" of importing, modeling, and exporting
+experimental data that can be integrated with other data to advance
+biological understanding.
 
 What we have to watch out for is the idea that annotation is somehow
 permanently correct, isolated from the cacophony of research progress
@@ -175,66 +314,36 @@ there is stability for ongoing work as well as access to new knowledge.
 And we have made it simple to import and to create representations
 of experimental and annotation data.
 
-As an example, return to the ER binding data.  These were published
-by ENCODE as narrowPeak files.  This is ascii text at its base, so
-can be imported as a set of textual lines with no difficulty.
-If there is sufficient regularity to the record fields, 
-the file could be imported as a table.
+<a name="annhub"></a>
 
-We want to go beyond this, so that the import is usable as a computable
-object as rapidly as possible.  Recognizing the connection between the
-narrowPeak and bedGraph formats, we can import immediately to a
-GRanges.
+## AnnotationHub
 
-To illustrate this, we find the path to the narrowPeak raw data
-file in the ERBS package.
-```{r getgraa}
-f1 = dir(system.file("extdata",package="ERBS"), full=TRUE)[1]
-readLines(f1, 4) # look at a few lines
-library(rtracklayer)
-imp = import(f1, format="bedGraph")
-imp
-genome(imp)  # genome identifier tag not set, but you should set it
-```
 
-We have a GRanges in one stroke.  There are some additional fields
-in the metadata columns that will need to be specified, but if we
-are interested only in the ranges, we are done, with the exception 
-of adding the genome metadata to protect against illegitimate
-combination with data recorded in an incompatible coordinate system.
-
-For communicating with other scientists or systems we have two
-main options.  First, we can save the GRanges as an "RData" object,
-easily transmitted to another R user for immediate use.  Second,
-we can export in another standard format.  For example, if we
-are interested only in interval addresses and the binding scores,
-it is sufficient to save in "bed" format.
-
-```{r doexp}
-export(imp, "demoex.bed")  # implicit format choice
-cat(readLines("demoex.bed", n=5), sep="\n")
-```
-
-We have carried out a "round trip" of importing, modeling, and exporting
-experimental data that can be integrated with other data to advance
-biological understanding.
-
-To conclude this group, I mention a newly developed package
-called AnnotationHub that can be used to obtain GRanges or other
+The `r Biocpkg("AnnotationHub")` package can be used to obtain GRanges or other
 suitably designed containers for institutionally curated annotation.
-Here we will show that there are a number of experimental data
-objects related to the HepG2 cell line available through AnnotationHub.
 
 ```{r lkah}
 library(AnnotationHub)
 ah = AnnotationHub()
 ah
+```
+There are a number of experimental data
+objects related to the HepG2 cell line available through AnnotationHub.
+```{r doqueah}
 query(ah, "HepG2")
 ```
 
-Advanced users will profit from getting acquainted with this package.
+The `query` method can take a vector of filtering strings.
+To limit response to annotation resources
+addressing the histone H4K5, simply add that tag:
 
-# The NCBI Entrez Gene annotation maps
+```{r doonek}
+query(ah, c("HepG2", "H4K5"))
+```
+
+<a name="orgdb"></a>
+
+## The OrgDb Gene annotation maps
 
 Packages named org.*.eg.db collect information at the gene level
 with links to location, protein product identifiers, KEGG pathway and
@@ -250,9 +359,13 @@ head(select(org.Hs.eg.db, keys="ORMDL3", keytype="SYMBOL",
    columns="PMID"))
 ```
 
-# Resources for gene sets and pathways
+<a name="genesets"></a>
 
-## Gene Ontology
+## Resources for gene sets and pathways
+
+<a name="geneont"></a>
+
+### Gene Ontology
 
 [Gene Ontology](http://www.geneontology.org) (GO) is
 a widely used structured vocabulary that organizes terms relevant to
@@ -291,6 +404,7 @@ The graphical structure of the vocabulary is encoded in
 tables in a SQLite database.  We can query this using
 the `RSQLite` interface.
 ```{r lkgo3}
+library(DBI)
 con = GO_dbconn()
 dbListTables(con)
 ```
@@ -303,10 +417,10 @@ We can trace the `mitochondrion inheritance` term to
 parent and grandparent terms:
 
 ```{r lkpath}
-dbGetQuery(con, "select * from go_bp_parents where _id=27")
-dbGetQuery(con, "select _id, go_id, term from go_term where _id=26638")
-dbGetQuery(con, "select * from go_bp_parents where _id=26638")
-dbGetQuery(con, "select _id, go_id, term from go_term where _id=5938")
+dbGetQuery(con, "select * from go_bp_parents where _id=30")
+dbGetQuery(con, "select _id, go_id, term from go_term where _id=26616")
+dbGetQuery(con, "select * from go_bp_parents where _id=26616")
+dbGetQuery(con, "select _id, go_id, term from go_term where _id=5932")
 ```
 It makes sense to regard "mitochondrion inheritance" as a conceptual
 refinement of processes "mitochondrion distribution", and "organelle inheritance",
@@ -314,7 +428,9 @@ the two terms that are regarded as parents in this database scheme.
 
 The entire database schema can be viewed with `GO_dbschema()`.
 
-## KEGG: Kyoto Encyclopedia of Genes and Genomes
+<a name="kegg"></a>
+
+### KEGG: Kyoto Encyclopedia of Genes and Genomes
 
 The KEGG annotation system has been available in Bioconductor 
 since the latter's inception, but licensing of the database
@@ -358,9 +474,57 @@ brpng = keggGet("hsa05212", "image")
 grid.raster(brpng)
 ```
 
+<a name="rols"></a>
+
+### Additional ontologies
+
+The
+`r Biocpkg("rols")` package interfaces to the EMBL-EBI
+[Ontology Lookup Service](https://www.ebi.ac.uk/ols/index).
+```{r dools, cache=TRUE}
+library(rols)
+oo = Ontologies()
+oo
+oo[[1]]
+```
+
+To control the amount of network traffic involved in
+query retrieval, there are stages of search.
+```{r doglioon,cache=TRUE}
+glis = OlsSearch("glioblastoma")
+glis
+res = olsSearch(glis)
+dim(res)
+resdf = as(res, "data.frame") # get content
+resdf[1:4,1:4]
+resdf[1,5]  # full description for one instance
+```
 
 
-# A unified, self-describing approach
+The `r CRANpkg("ontologyIndex")` supports import of ontologies
+in the Open Biological Ontologies (OBO) format, and includes
+very efficient facilities for querying and visualizing
+ontological systems.  
+
+<a name="gseabase"></a>
+
+### General gene set management
+
+The `r Biocpkg("GSEABase")` package has excellent
+infrastructure for managing gene sets and collections
+thereof.  We illustrate by importing a glioblastoma-related
+gene set from [MSigDb](http://software.broadinstitute.org/gsea/msigdb/search.jsp).
+
+```{r dogsea}
+library(GSEABase)
+glioG = getGmt(system.file("gmt/glioSets.gmt", package="ph525x"))
+glioG
+head(geneIds(glioG[[1]]))
+```
+
+<a name="organismdb"></a>
+
+## A unified, self-describing approach for model organisms
 
 The OrganismDb packages simplify access to annotation.
 Queries that succeed against TxDb, and org.[Nn].eg.db
@@ -375,7 +539,46 @@ keytypes(Homo.sapiens)
 columns(Homo.sapiens)
 ```
 
-# Summary
+<a name="platform"></a>
+
+## Platform-oriented annotation
+
+By sorting information on [the GPL information page](https://www.ncbi.nlm.nih.gov/geo/browse/?view=platforms&sort=series&display=20&page=892) at
+NCBI GEO, we see that the most commonly use oligonucleotide array
+platform (with 4760 series in the archive) is the Affy Human Genome U133 plus 2.0 array (GPL 570).
+We can work with the annotation for this array with the
+`r Biocpkg("hgu133plus2.db")` package.
+
+```{r lkhg}
+library(hgu133plus2.db)
+hgu133plus2.db
+```
+
+The basic purpose of this resource (and of all the instances of the
+ChipDb class) is to map between _probeset_ identifiers and 
+higher-level genomic annotation.
+
+The detailed information on probes, the constituents of probe sets,
+is given in packages with names ending in 'probe'.
+```{r lkprobpa}
+library(hgu133plus2probe)
+head(hgu133plus2probe)
+dim(hgu133plus2probe)
+```
+
+Mapping out a probe set identifier to gene-level information
+can reveal some interesting ambiguities:
+```{r lk1007}
+select(hgu133plus2.db, keytype="PROBEID", 
+  columns=c("SYMBOL", "GENENAME", "PATH", "MAP"), keys="1007_s_at")
+```
+Apparently this probe set includes sequence that may be
+used to quantify abundance of both an mRNA and 
+a micro RNA.  As a sanity check
+we see that the distinct symbols map to the same cytoband.
+
+
+## Summary
 
 We have covered a lot of material, from the nucleotide to the
 pathway level.  The Annotation "view" at bioconductor.org

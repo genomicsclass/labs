@@ -30,7 +30,7 @@ library(S4Vectors)
 })
 ```
 
-# Introduction
+# Introduction (revised July 2017)
 
 It is very common for life scientists to use spreadsheets
 to record and manage experimental data.  In these problems

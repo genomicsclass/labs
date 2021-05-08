@@ -1,0 +1,955 @@
+---
+title: "Management of genome-scale data"
+author: "Vince Carey"
+layout: page
+---
+
+```{r options, echo=FALSE}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(knitr)
+})
+})
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+
+
+```{r setup, echo=FALSE, results="hide"}
+suppressWarnings({
+suppressMessages({
+suppressPackageStartupMessages({
+library(Biobase)
+library(data.table)
+library(GEOquery)
+library(erma)
+library(RNAseqData.HNRNPC.bam.chr14)
+library(ph525x)
+library(airway)
+library(GSE5859Subset)
+library(annotate)
+library(minfi)
+library(locfit)
+library(IlluminaHumanMethylation450kmanifest)
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+library(BiocStyle)
+library(GenomicFiles)
+library(GenomicAlignments)
+library(MultiAssayExperiment)
+library(RaggedExperiment)
+library(VariantAnnotation)
+library(VariantTools)
+library(ph525x)
+library(bigrquery)
+library(dplyr)
+library(magrittr)
+})
+})
+})
+```
+
+# Introduction
+
+Data management is often regarded as a specialized and tedious
+dimension of scientific research.  Because failures of data management
+are extremely costly in terms of resources and reputation, highly
+reliable and efficient methods are essential.
+Customary lab science practice of maintaining data
+in spreadsheets is regarded as risky.  We want to add value
+to data by making it easier to follow
+reliable data management practices.
+
+In Bioconductor, principles that guide software development are
+applied in data management strategy.  High value accrues to
+data structures that are modular and extensible.  Packaging
+and version control protocols apply to data class definitions.
+We will motivate and illustrate these ideas by giving examples
+of transforming spreadsheets to semantically rich objects,
+working with the NCBI GEO archive, dealing with families of
+BAM and BED files, and using external storage to foster
+coherent interfaces to large multiomic archives like TCGA.
+
+<a name="coord"></a>
+
+# Coordinating information from diverse tables, gains from integration
+
+## A demonstration package: tables from GSE5859Subset
+
+GSE5859Subset is a package with expression data derived from
+a study of genetics of gene expression.  Upon attachment and
+loading of package data, we have three data elements:
+```{r dogs}
+library(GSE5859Subset)
+data(GSE5859Subset)
+dim(geneExpression)
+dim(geneAnnotation)
+dim(sampleInfo)
+```
+
+How are these entities (one matrix and two data frames) related?
+```{r chkse}
+all.equal(sampleInfo$filename, colnames(geneExpression))
+all.equal(rownames(geneExpression), geneAnnotation$PROBEID)
+```
+Informally, we can think of `sampleInfo$filename` as a key
+for joining, row by row, the sample information table with a _transposed
+image_ of the gene expression table.  The `colnames` of the
+gene expression matrix link the columns of that matrix to samples
+enumerated in rows of `sampleInfo`.
+
+Likewise, the `rownames` of `geneExpression` coincide exactly
+with the `PROBEID` field of `geneAnnotation`.
+```{r chktx}
+options(digits=2)
+cbind(sampleInfo[1:3,], colnames(geneExpression)[1:3], 
+    t(geneExpression)[1:3,1:4])
+```
+
+<a name="exprset"></a>
+
+## Binding the tables together in an ExpressionSet
+
+The `ExpressionSet` container manages all this information
+in one object.  To improve the visibility of nomenclature
+for genes and samples, we improve the annotation for
+the individual components.
+```{r doan}
+rownames(sampleInfo) = sampleInfo$filename
+rownames(geneAnnotation) = geneAnnotation$PROBEID
+```
+Now we make the `ExpressionSet`.
+```{r doexp}
+library(Biobase)
+es5859 = ExpressionSet(assayData=geneExpression)
+pData(es5859) = sampleInfo
+fData(es5859) = geneAnnotation
+es5859
+```
+
+One of the nice things about this arrangement is that
+we can easily select features using higher level
+concepts annotated in the `fData` and `pData` components.
+For example to obtain expression data for genes on the Y
+chromosome only:
+```{r dosel}
+es5859[which(fData(es5859)$CHR=="chrY"),]
+```
+
+The full set of methods to which ExpressionSet instances respond
+can be seen using
+```{r lkcla}
+methods(class="ExpressionSet")
+```
+The most important methods are 
+
+- `exprs()`: get the numerical expression values
+- `pData()`: get the sample-level data
+- `fData()`: get feature-level data
+- `annotation()`: get a tag that identifies nomenclature for feature names
+- `experimentData()`: get a [MIAME](https://www.ncbi.nlm.nih.gov/geo/info/MIAME.html)-compliant metadata structure
+
+Note that many methods have `setter` versions, e.g., `exprs<-` can be used
+to assign expression values.  Also, all components are optional.  Thus our `es5859`
+has no content for `annotation` or `experimentData`.  We can improve the
+self-describing capacity of this object as follows.  First, set the annotation field:
+```{r doannset}
+annotation(es5859) = "hgfocus.db" # need to look at GSE record in GEO, and know .db
+```
+Second, acquire a MIAME-compliant document of metadata about the experiment.
+```{r getann,cache=TRUE}
+library(annotate)
+mi = pmid2MIAME("17206142")
+experimentData(es5859) = mi
+es5859
+```
+Now, for example, the `abstract` method will function well:
+```{r lkabs}
+nchar(abstract(es5859))
+substr(abstract(es5859),1,50)
+```
+
+A more up-to-date approach to combining these table types
+uses the `SummarizedExperiment` class, that we discuss below.
+
+<a name="endo"></a>
+
+## The endomorphism concept
+
+A final remark about the ExpressionSet container design:  Suppose
+`X` is an ExpressionSet.  The bracket operator has been defined so
+that whenever `G` and `S` are suitable vectors identifying features
+and samples respectively, `X[G, S]` is an ExpressionSet with features
+and samples restricted to those identified in `G` and `S`.  All operations
+that are valid for `X` are valid for `X[G, S]`.  This property is
+called the _endomorphism of ExpressionSet with respect to subsetting
+with bracket_.
+
+
+<a name="geoquery"></a>
+
+# GEO, GEOquery, ArrayExpress for expression array archives
+
+Data from all microarray experiments funded by USA National Institutes
+of Health should be deposited in the Gene Expression Omnibus (GEO).
+Bioconductor's `r Biocpkg("GEOquery")` package simplifies
+harvesting of this archive.  The European Molecular Biology Laboratories
+sponsor ArrayExpress, which can be queried using the `r Biocpkg("ArrayExpress")`
+package.
+
+## GEOmetadb
+
+There are results of tens of thousands of experiments in GEO.
+The `r Biocpkg("GEOmetadb")` includes tools to acquire and
+query a SQLite database with extensive annotation of GEO contents.
+The database retrieved in October 2017 was over 6 GB in size.
+Thus we do not require that you use this package.  If you are
+interested, the vignette is very thorough.  A view of the
+`gse` table is given here:
+
+```{r dogmd,fig=TRUE, echo=FALSE}
+metadb()
+```
+
+## getGEO: obtaining the ExpressionSet for a GEO series
+
+We have an especial interest in the genomics of glioblastoma
+and have identified a paper (PMID 27746144) addressing a metabolic pathway
+whose manipulation may enhance treatment development strategies.
+Affymetrix Primeview arrays were used,
+with quantifications available in GEO.  We use `getGEO`
+to acquire an image of these data.
+```{r dogetg, cache=TRUE}
+library(GEOquery)
+glioMA = getGEO("GSE78703")[[1]]
+glioMA
+```
+In exercises we will see how to use this object
+to check on the assertion that treatment with LXR-623
+affects expression of gene ABCA1.  The associated PubMed ID is 27746144.
+
+<a name="arrayexp"></a>
+
+## ArrayExpress: searching and harvesting from EMBL-EBI ArrayExpress
+
+``The [ArrayExpress Archive of Functional Genomics Data](https://www.ebi.ac.uk/arrayexpress/)
+stores 
+data from high-throughput functional genomics experiments, and provides 
+these data for reuse to the research community.''  Until recently ArrayExpress
+imported all expression data from NCBI GEO.
+
+The `r Biocpkg("ArrayExpress")` package supports direct interrogation
+of the EMBL-EBI archive, with `queryAE`.  We'll examine
+a small subset of the results.
+
+```{r donano,cache=TRUE}
+library(ArrayExpress)
+sets = queryAE(keywords = "glioblastoma", species = "homo+sapiens")
+dim(sets)
+sets[5:7,-c(7,8)]
+```
+
+We see a PubMed ID for one of the experiments retrieved here, and
+acquire the raw data with the `getAE` function.
+
+```{r lknan,cache=TRUE}
+initdir = dir()
+if (!file.exists("E-MTAB-5797.sdrf.txt")) nano = getAE("E-MTAB-5797")
+```
+
+This particular invocation will populate the working
+directory with files related to the experiment:
+```
+afterget = dir()
+setdiff(afterget, initdir)
+##  [1] "9406922003_R01C01_Grn.idat" "9406922003_R01C01_Red.idat"
+##  [3] "9406922003_R02C01_Grn.idat" "9406922003_R02C01_Red.idat"
+##  [5] "9406922003_R03C02_Grn.idat" "9406922003_R03C02_Red.idat"
+##  [7] "9406922003_R04C02_Grn.idat" "9406922003_R04C02_Red.idat"
+##  [9] "9406922003_R05C01_Grn.idat" "9406922003_R05C01_Red.idat"
+## [11] "A-MEXP-2255.adf.txt"        "E-MTAB-5797.idf.txt"       
+## [13] "E-MTAB-5797.raw.1.zip"      "E-MTAB-5797.sdrf.txt"
+```
+
+Below we will demonstrate import and inspection of this data.
+
+<a name="summexp"></a>
+
+# SummarizedExperiment: accommodating more diverse feature concepts
+
+In the microarray era, assay targets were determined by the
+content of the array in use.  
+Greater flexibility for targeted
+quantification is afforded by short read sequencing methods.
+Consequently, Bioconductor developers created a more flexible
+container for genome-scale assays.  A key idea is that
+quantified features of interested may be identified only
+by genomic coordinates.  It should be convenient to organize
+the assay values to permit interrogation using genomic coordinates
+only.  The general method `subsetByOverlaps` can be used
+with SummarizedExperiment instances, and accomplishes this aim.
+
+## General considerations
+
+The methods table for SummarizedExperiment is longer than that
+for ExpressionSet:
+```{r lkseme}
+methods(class="SummarizedExperiment")
+```
+
+Analogs of the key ExpressionSet methods are:
+
+- `assay()`: get the primary numerical assay quantifications, but note that multiple assays are supported and a list of assays can be acquired using `assays()`
+- `colData()`: get the sample-level data
+- `rowData()`: get feature-level data, with `rowRanges()` applicable when features are identified primarily through genomic coordinates
+- `metadata()`: get a list that may hold any relevant metadata about the experiment
+
+<a name="rnaseq"></a>
+
+## An RNA-seq experiment
+
+We'll use the `r Biocpkg("airway")` package to illustrate the
+SummarizedExperiment concept.
+```{r doa}
+library(airway)
+data(airway)
+airway
+```
+Metadata are available in a list.
+```{r lkmeta}
+metadata(airway)
+```
+
+The matrix of quantified features has dimensions `r nrow(assay(airway))` by
+`r ncol(assay(airway))`.  The features that are quantified are exons, annotated
+using ENSEMBL nomenclature.
+```{r lkexo}
+rowRanges(airway)
+```
+
+We may be accustomed to gene-level quantification in microarray studies.
+Here the use of exon-level quantifications necessitates
+special computations
+for gene-level summaries.  For example, gene ORMDL3 has ENSEMBL
+identifier ENSG00000172057.  The coordinates supplied in this
+SummarizedExperiment are
+```{r lkrngs}
+rowRanges(airway)$ENSG00000172057
+```
+We will look closely at the `r Biocpkg("GenomicRanges")` infrastructure
+for working with structures like this.  To check for the existence of
+overlapping regions in this list of exon coordinates, we can use the
+`reduce` method:
+```{r lkredu}
+reduce(rowRanges(airway)$ENSG00000172057)
+```
+
+This shows that projecting from the set of exons to the genome leads to
+`r length(reduce(rowRanges(airway)$ENSG00000172057))` regions
+harboring subregions that may be transcribed.
+Details on how to summarize such counts to gene level are
+available [elsewhere in the genomicsclass book.](http://genomicsclass.github.io/book/pages/rnaseq_gene_level.html)
+
+In addition to detailed annotation of
+features, we need to manage information on samples.
+This occurs using the `colData` method.
+The `$` operator can be used as a shortcut to get
+columns out of the sample data store.
+```{r lkcol}
+names(colData(airway))
+table(airway$dex) # main treatment factor
+```
+
+<a name="methy"></a>
+
+## Handling the ArrayExpress deposit of Illumina 450k Methylation arrays
+
+The SummarizedExperiment class was designed for use with all kinds
+of array or short read sequencing data.  The `getAE` call used
+above retrieved a number of files from ArrayExpress recording
+methylation quantification in glioblastoma tissues.
+
+The sample level data are in the `sdrf.txt` file:
+```{r lk450k}
+library(data.table)
+sd5797 = fread("E-MTAB-5797.sdrf.txt")
+head(sd5797[,c(3,16,18)])
+```
+
+The raw assay data are delivered in `idat` files.  We
+import these using `read.metharray()` from the `r Biocpkg("minfi")` package.
+```{r dominf, cache=TRUE}
+library(minfi)
+pref = unique(substr(dir(patt="idat"),1,17)) # find the prefix strings
+raw = read.metharray(pref)
+raw
+```
+
+A number of algorithms have been proposed to transform
+the raw measures into biologically interpretable measures
+of relative methylation.  Here we use a quantile normalization
+algorithm to transform the red and green signals to measures
+of relative methylation (M) and estimates of local copy number (CN)
+in a SummarizedExperiment instance.
+```{r dominf2, cache=TRUE}
+glioMeth = preprocessQuantile(raw) # generate SummarizedExperiment
+glioMeth
+```
+
+Later in the course we will work on the interpretation of
+the samples obtained in this study.
+
+<a name="extern"></a>
+
+# External storage of large assay data -- HDF5Array, saveHDF5SummarizedExperiment
+
+<a name="memmeas"></a>
+
+## Measuring memory consumption 
+
+In typical interactive use, R data are fully resident in memory.
+We can use the `gc` function to get estimates of quantity of
+memory used in a session.  Space devoted to Ncells is used to
+deal with language constructs such as parse trees and namespaces,
+while space devoted to Vcells is used to store numerical and character
+data loaded in the session.  On my macbook air, a vanilla startup
+of R yields
+```
+> gc()
+         used (Mb) gc trigger (Mb) max used (Mb)
+Ncells 255849 13.7     460000 24.6   350000 18.7
+Vcells 533064  4.1    1023718  7.9   908278  7.0
+```
+After loading the `r Biocpkg("airway")` package:
+```
+> suppressMessages({library(airway)})
+> gc()
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 2772615 148.1    3886542 207.6  3205452 171.2
+Vcells 2302579  17.6    3851194  29.4  3651610  27.9
+```
+After we load the `airway` SummarizedExperiment instance
+```
+> data(airway)
+> gc()
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 3594720 192.0    5684620 303.6  3594935 192.0
+Vcells 6690732  51.1    9896076  75.6  6953991  53.1
+> dim(airway)
+[1] 64102     8
+```
+The memory to be managed will grow as the number of resources
+made available for interaction increases.  The functions
+`rm()` and `gc()` can be used manually to reduce memory consumption
+but this is seldom necessary or efficient.
+
+<a name="externHDF5"></a>
+
+## Demonstrating HDF5 for external storage
+
+[HDF5](https://en.wikipedia.org/wiki/Hierarchical_Data_Format) is a
+widely used data model for numerical arrays, with interfaces
+defined for a wide variety of scientific programming languages.
+The `r Biocpkg("HDF5Array")` package simplifies use of this
+system for managing large numerical arrays.
+
+```{r setuph, echo=FALSE, results="hide"}
+if (file.exists("airass.h5")) system("rm -rf airass.h5")
+```{r dodump}
+library(airway)
+library(HDF5Array)  # setup for external serialization
+data(airway)
+airass = assay(airway)  # obtain numerical data, then save as HDF5
+href = writeHDF5Array(airass, "airass.h5", "airway")
+```
+Now when we acquire access to the same numerical data,
+there is no growth in memory consumption:
+```
+> gc()  # after attaching HDF5Array package
+          used (Mb) gc trigger  (Mb) max used (Mb)
+Ncells 1272290 68.0    2164898 115.7  1495687 79.9
+Vcells 1539420 11.8    2552219  19.5  1938513 14.8
+> myd = HDF5Array("airass.h5", "airway")  # get reference to data
+> gc()
+          used (Mb) gc trigger  (Mb) max used (Mb)
+Ncells 1277344 68.3    2164898 115.7  1495687 79.9
+Vcells 1543344 11.8    2552219  19.5  1938513 14.8
+> dim(myd)
+[1] 64102     8
+```
+This is all well and good, but it is more useful to
+interact with the airway data through a SummarizedExperiment
+container, as we will now show.
+
+<a name="HDF5SE"></a>
+
+## HDF5-backed SummarizedExperiment
+
+Given a SummarizedExperiment, `saveHDF5SummarizedExperiment`
+arranges the data and metadata together, allowing
+control of memory consumption while preserving rich
+semantics of the container.
+
+```{r doexse}
+saveHDF5SummarizedExperiment(airway, "externalAirway", replace=TRUE)
+newse = loadHDF5SummarizedExperiment("externalAirway")
+newse
+assay(newse[c("ENSG00000000005", "LRG_99"), 
+        which(newse$dex == "trt")]) # use familiar subsetting
+```
+In this case the overhead of dealing with the SummarizedExperiment
+metadata wipes out the advantage of externalizing the assay data.
+```
+> gc() # after loading SummarizedExperiment
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 2802892 149.7    3886542 207.6  3205452 171.2
+Vcells 2334204  17.9    3851194  29.4  3625311  27.7
+> newse = loadHDF5SummarizedExperiment("externalAirway")
+> gc()
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 3754945 200.6    5684620 303.6  3972131 212.2
+Vcells 6669078  50.9   10201881  77.9  6962256  53.2
+```
+For very large assay arrays, the HDF5-backed SummarizedExperiment
+permits flexible computation with data that will not fit in
+available memory.
+
+<a name="genomicFiles"></a>
+
+# GenomicFiles: families of files of a given type
+
+The `r Biocpkg("GenomicFiles")` package helps to manage
+collections of files.  This is important for data that
+we do not want to parse and model holistically, and
+do not need to import as a whole.
+
+There are methods for `rowRanges` and `colData` for instances
+of the `GenomicFiles` class.
+We can coordinate metadata about the samples or experiments
+from which files are derived in the `colData` component
+of `GenomicFiles` instances, and can define genomic intervals
+of interest for targeted querying using the `rowRanges` component.
+
+<a name="bam"></a>
+
+## BAM collections
+
+A small-scale illustration with RNA-seq data uses the 2013 of
+[Zarnack and colleagues](http://dx.doi.org/10.1016/j.cell.2012.12.023)
+on a HNRNPC knockout experiment.  
+There are 8 HeLa cell samples, four of which are wild type,
+four of which have had RNA interference treatment to 
+reduce expression of HNRNPC, a gene on chromosome 14.
+
+The 
+`r Biocpkg("RNAseqData.HNRNPC.bam.chr14")` package has
+a collection of aligned reads.  The locations of the BAM files
+are in the vector `RNAseqData.HNRNPC.bam.chr14_BAMFILES`.
+
+```{r getbam}
+library(RNAseqData.HNRNPC.bam.chr14)
+library(GenomicFiles)
+gf = GenomicFiles(files=RNAseqData.HNRNPC.bam.chr14_BAMFILES)
+gf
+```
+
+This compact representation of a file set can be enhanced
+by binding a region of interest to the object.  We'll use
+the GRanges for HNRNPC:
+```{r dobind}
+hn = GRanges("chr14", IRanges(21677296, 21737638), strand="-")
+rowRanges(gf) = hn
+```
+
+To extract all the alignments overlapping the region of interest,
+we can use the `reduceByRange` method of `GenomicFiles`.
+We need to define a MAP function to use this.
+This will be a function of two arguments, `r` referring to
+the range of interest, and `f` referring to the file being
+parsed for alignments overlapping the range.
+`readGAlignmentPairs` is used because we are dealing with
+paired end sequencing data.
+```{r domap}
+library(GenomicAlignments)
+MAP = function(r, f) 
+    readGAlignmentPairs(f, param=ScanBamParam(which=r))
+ali = reduceByRange(gf, MAP=MAP)
+sapply(ali[[1]], length)
+```
+
+This shows, informally, that there are more reads aligning
+to the HNRNPC region for the first four samples and thus
+tells us which of the samples are wild type, and which have
+had HNRNPC knocked down.  Note that the knockdown is imperfect --
+there is still evidence of some transcription in cells
+that underwent the knockdown protocol.
+
+<a name="bed"></a>
+
+## BED collections
+
+The `r Biocpkg("erma")` is developed as a demonstration
+of the utility of packaging voluminous data on epigenomic
+assay outputs on diverse cell types for 'out of memory'
+analysis.  The basic container is a simple extension of
+'GenomicFiles' and is constructed using the `makeErmaSet`
+function:
+```{r lkerma}
+library(erma)
+erset = makeErmaSet()
+erset
+```
+What are the samples managed here?  The `colData` method
+gives a nice report:
+```{r lkerm2}
+colData(erset)
+```
+We can use familiar shortcuts to tabulate metadata about
+the samples.
+```{r lkerm3}
+table(erset$ANATOMY)
+```
+Thus we can have very lightweight interface in R (limited to metadata
+about the samples and file paths) to very large collections
+of BED files.  If these are tabix-indexed we can have very
+fast targeted retrieval of range-specific data.  This is
+illustrated by the `stateProfile` function.
+
+```{r lkstpr,fig=TRUE}
+stateProfile(erset[,26:31], shortCellType=FALSE)
+```
+
+This depicts the variation between anatomic sites
+in the epigenetic state of the promoter region of gene IL33,
+on the plus strand of chr9.  Of interest is the
+fact that the fetal lung sample seems to demonstrate
+enhancer activity in regions where the adult lung
+is found to have quiescent epigenetic state.
+
+<a name="variants"></a>
+
+# Managing information on large numbers of DNA variants
+
+## VCF background
+
+The most common approach to handling large numbers of
+SNP genotypes (or small indels) is in files following the
+Variant Call Format (VCF files).  Explanations of the
+format are available at [Wikipedia](https://en.wikipedia.org/wiki/Variant_Call_Format), 
+through the [spec](http://samtools.github.io/hts-specs/VCFv4.3.pdf),
+and as 
+a [diagram](http://vcftools.sourceforge.net/VCF-poster.pdf).
+The basic design is that there is a header that provides
+metadata about the contents of the VCF file, and one record per
+genomic variant.  The variant records describe the nature
+of the variant (what modifications to the reference have
+been identified) and include a field for each sample describing
+the variant configuration present.  Some variants are "called",
+others may be uncertain and in this case genotype likelihoods
+are recorded.  Variants may also be _phased_, meaning that it
+is possible to locate different variant events on a given
+chromosome. 
+
+The `r Biocpkg("VariantAnnotation")`
+package defines infrastructure for working with this format.
+Since there is a 
+[tabix](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3042176/)
+indexing procedure for these, `r Biocpkg("Rsamtools")` also provides 
+relevant infrastructure.
+
+## 1000 Genomes VCF in the cloud
+
+A very salient example of DNA variant archiving is the
+[1000 genomes project](http://www.internationalgenome.org/).
+Bioconductor's `r Biocpkg("ldblock")` package includes
+a utility that will create references to compressed,
+tabix-indexed VCF files that are maintained by the
+1000 genomes project in the Amazon cloud.
+
+```{r lkldb}
+library(ldblock)
+sta = stack1kg()
+sta
+```
+
+Note that the genome build is tagged as 'b37'.  This is
+unusual but is a feature of the metadata bound to the
+variant data in the VCF.  It cannot be changed.
+
+We would like to add information about geographic
+origin of samples in this file.  The ph525x package
+includes a table of sample information.
+
+```{r getsi}
+library(ph525x)
+data(sampInfo_1kg)
+rownames(sampInfo_1kg) = sampInfo_1kg[,1]
+cd = sampInfo_1kg[ colnames(sta), ]
+colData(sta) = DataFrame(cd)
+```
+
+
+## Importing and using VCF data
+
+We use the `readVcfStack` function from `r Biocpkg("GenomicFiles")`
+to extract content from the VCF store.  We will
+target the coding region of ORMDL3.
+
+```{r doorm, cache=TRUE}
+library(erma)
+orm = range(genemodel("ORMDL3")) # quick lookup
+genome(orm) = "b37"  # must agree with VCF
+seqlevelsStyle(orm) = "NCBI"  # use integer chromosome codes
+ormRead = readVcfStack(sta, orm)
+ormRead
+```
+
+The `CollapsedVCF` class manages the imported genotype
+data.  Information was retrieved on `r length(ormRead)`
+variants.
+We can get a clearer sense of the contents
+by transforming a subset of the result to the
+`VRanges` representation of `r Biocpkg("VariantTools")`.
+
+```{r getvr}
+library(VariantTools)
+vr = as(ormRead[,1:5], "VRanges")
+vr[1:3,]
+```
+This gives a complete representation of the contents of
+the extraction from the VCF.  To tabulate genotypes
+for a given individual:
+```{r dotabgt}
+table(vr[which(sampleNames(vr)=="HG00096"),]$GT)
+```
+
+In summary:
+
+- VCF files store variant information on cohorts and the
+VariantAnnotation package can import such files
+- Chromosome-specific VCF files can be stacked together in
+the VcfStack class
+- colData can be bound to VcfStack to coordinate information
+on sample members with their genotypes
+- The VRanges class from VariantTools can be used to generate metadata-rich
+variant-by-individual tables
+
+<a name="multiomic"></a>
+
+# Multiomics: MultiAssayExperiment, example of TCGA
+
+[The Cancer Genome Atlas](https://cancergenome.nih.gov/) is a
+collection of data from 14000 individuals, providing genomic
+information on 29 distinct tumor sites.  We can download
+curated public data on Glioblastoma Multiforme through
+an effort of [Levi Waldron's lab](http://waldronlab.org/) at CUNY.  R objects of the
+`MultiAssayExperiment` class have been stored in Amazon S3,
+and a [Google Sheet](http://tinyurl.com/MAEOurls) provides details and links.
+
+## Retrieving data on Glioblastoma Multiforme
+
+Here we'll retrieve the archive on GBM.  Some software technicalities
+necessitate use of `updateObject`.
+```{r getmae, cache=TRUE}
+library(MultiAssayExperiment)
+library(RaggedExperiment)
+if (!file.exists("gbmMAEO.rds"))
+   download.file("http://s3.amazonaws.com/multiassayexperiments/gbmMAEO.rds", 
+      "gbmMAEO.rds")
+gbm = readRDS("gbmMAEO.rds")
+gbm = updateObject(gbm)
+gbm
+```
+Thus a single R variable can be used to work with `r length(experiments(gbm))`
+different assays measured on (subsets of) `r length(unique(sampleMap(gbm)$primary))` individuals.
+Constituent assays have classes ExpressionSet, SummarizedExperiment, and RaggedExperiment.
+`r Biocpkg("RaggedExperiment")` has its own package, and the vignette can be
+consulted for motivation.
+
+To get a feel for the scope and completeness of the archive for GBM,
+we can use an UpSet diagram:
+```{r doup,fig=TRUE}
+upsetSamples(gbm)
+```
+
+This shows that the vast majority of participants provide data on
+copy number variation and array-based expression, but much fewer provide
+RNA-seq or proteomic (RPPA, reverse-phase proteomic assay) measurements.
+
+## Working with TCGA mutation data
+
+The mutation data illustrate a basic challenge of unified representation
+of heterogeneous data.  
+
+```{r lkmu}
+mut = experiments(gbm)[["Mutations"]]
+mut
+```
+The names of the 'assays' of mutations are given in a vector of
+length 73.  These are not assays in the usual sense, but characteristics
+or contexts of mutations that may vary between individuals.
+```{r lkannnnn}
+head(assayNames(mut))
+```
+
+### Mutation locations and gene associations
+
+The mutation data includes a GRanges structure recording the
+genomic coordinates of mutations.
+```{r lkrrrr}
+rowRanges(mut)
+```
+It is useful to note that the `names` element links gene symbols
+to the genomic coordinates of mutations.  To see which genes
+are most frequently mutated, we can make a table:
+```{r lkmf}
+sort(table(names(rowRanges(mut))),decreasing=TRUE)[1:5]
+```
+
+### Mutation types
+
+We tabulate the kinds of variants recorded:
+```{r lkvaa}
+table(as.character(assay(mut, "Variant_Classification")))
+```
+
+Which genes have had deletions causing frame shifts?  
+Given that `assay(mut, "Variant_Classification")`
+is a matrix, we can use `apply` over rows
+```{r lkgsh}
+rfs = rowRanges(mut)[ which( apply(
+     assay(mut, "Variant_Classification"), 1, 
+       function(x) any(x=="Frame_Shift_Del"))
+     )]
+rfs
+```
+
+What are the genes most commonly affected by such deletions?
+```{r lksog}
+sort(table(names(rfs)),decreasing=TRUE)[1:8]
+```
+
+In summary 
+
+- MultiAssayExperiment unifies diverse assays collected on a cohort of individuals
+- TCGA tumor-specific datasets have been serialized as MultiAssayExperiments for public use
+from Amazon S3
+- Idiosyncratic data with complex annotation can be managed in RaggedAssay structures; these
+have proven useful for mutation and copy number variants
+
+<a name="cloud"></a>
+
+# Cloud-oriented management strategies: CGC and GDC concepts
+
+In the previous section we indicated how the TCGA data on a tumor can be collected
+in a coherent object that unifies numerous genomic assays.  In this section we
+want to illustrate how the complete data from the TCGA can be accessed for
+interactive analysis through a single R connection object.  To execute the
+commands in this section,
+you will need to be able to authenticate to the Cancer Genomics Cloud as managed
+by the Institute for Systems Biology.  Contact the [ISB project administrators]
+(https://www.systemsbiology.org/research/cancer-genomics-cloud/) to obtain
+an account.
+
+In the following code, we create a `r CRANpkg("DBI")` connection to 
+[Google BigQuery](https://cloud.google.com/bigquery/), using the
+`r CRANpkg("bigrquery")` package maintained by the r-db-stats group.
+We then list the available tables.
+
+```{r dobq, eval=FALSE}
+library(bigrquery)
+library(dplyr)
+library(magrittr)
+tcgaCon = DBI::dbConnect(dbi_driver(), project="isb-cgc", 
+     dataset="TCGA_hg38_data_v0", billing = Sys.getenv("CGC_BILLING")) 
+dbListTables(tcgaCon)
+```
+```
+##  [1] "Copy_Number_Segment_Masked"  "DNA_Methylation"            
+##  [3] "DNA_Methylation_chr1"        "DNA_Methylation_chr10"      
+##  [5] "DNA_Methylation_chr11"       "DNA_Methylation_chr12"      
+##  [7] "DNA_Methylation_chr13"       "DNA_Methylation_chr14"      
+##  [9] "DNA_Methylation_chr15"       "DNA_Methylation_chr16"      
+## [11] "DNA_Methylation_chr17"       "DNA_Methylation_chr18"      
+## [13] "DNA_Methylation_chr19"       "DNA_Methylation_chr2"       
+## [15] "DNA_Methylation_chr20"       "DNA_Methylation_chr21"      
+## [17] "DNA_Methylation_chr22"       "DNA_Methylation_chr3"       
+## [19] "DNA_Methylation_chr4"        "DNA_Methylation_chr5"       
+## [21] "DNA_Methylation_chr6"        "DNA_Methylation_chr7"       
+## [23] "DNA_Methylation_chr8"        "DNA_Methylation_chr9"       
+## [25] "DNA_Methylation_chrX"        "DNA_Methylation_chrY"       
+## [27] "Protein_Expression"          "RNAseq_Gene_Expression"     
+## [29] "Somatic_Mutation"            "Somatic_Mutation_Jun2017"   
+## [31] "miRNAseq_Expression"         "miRNAseq_Isoform_Expression"
+```
+
+Now we use the `r CRANpkg("dplyr")` approach to requesting a summary of
+mutation types in GBM.
+```{r dogbmdpl, eval=FALSE}
+tcgaCon %>% tbl("Somatic_Mutation") %>% dplyr::filter(project_short_name=="TCGA-GBM") %>% 
+      dplyr::select(Variant_Classification, Hugo_Symbol) %>% group_by(Variant_Classification) %>%
+      summarise(n=n())
+```
+```
+## # Source:   lazy query [?? x 2]
+## # Database: BigQueryConnection
+##    Variant_Classification     n
+##                     <chr> <int>
+##  1                  3'UTR  4166
+##  2                 Intron  3451
+##  3                3'Flank   423
+##  4       Nonstop_Mutation    58
+##  5                    IGR     3
+##  6                    RNA  1338
+##  7            Splice_Site   955
+##  8        Frame_Shift_Del  1487
+##  9      Missense_Mutation 53054
+## 10 Translation_Start_Site    60
+## # ... with more rows
+```
+
+This is essentially a proof of concept that the entire TCGA archive can be
+interrogated through operations on a single R variable, in this case `tcgaCon`.
+The underlying infrastructure is Google-specific, but the basic idea should
+replicate well in other environments.
+
+Can we envision a SummarizedExperiment-like interface to this data store?
+The answer is yes; see the `seByTumor` function in the `shwetagopaul92/restfulSE`
+package on github.  (This package is under evaluation for Bioconductor but
+may always be acquired through github.)
+
+This concludes the discussion of the Cancer Genomics Cloud pilot
+instance at Institute for Systems Biology.  Other Cloud pilot
+projects were created at [Seven Bridges Genomics](http://www.cancergenomicscloud.org/) and [Broad Institute](https://software.broadinstitute.org/firecloud/).  There is considerable effort underway to federate large
+collections of general genomics data in a cloud-oriented
+framework that would diminish the need for genomics data transfer.
+This [RFA](https://grants.nih.gov/grants/guide/rfa-files/RFA-HG-17-011.html)
+is very informative about what is at stake.
+
+# Overall summary
+
+We have reviewed basic concepts of genome-scale data managment for several
+experimental paradigms:
+
+- array-based gene expression measures
+- array-based measurement of DNA methylation
+- RNA-seq alignments and gene expression measures derived from these
+- genome-wide genotyping
+- tumor mutation assessment 
+
+Data sources include:
+
+- local files
+- institutional archives (NCBI GEO, EMBL ArrayExpress)
+- high-performance external data stores (HDF5)
+- cloud-resident distributed data stores (Google BigQuery or Amazon S3)
+
+Critical managerial principles include:
+
+- unification of assay, sample characteristics, and experiment metadata in formal object classes (ExpressionSet, SummarizedExperiment)
+- amalgamation of multiple coordinated assay sets when applied to overlapping subsets of a cohort (MultiAssayExperiment)
+- endomorphic character of objects under feature- or sample-level filtering
+- amenability to filtering by genomic coordinates, using GRanges as queries
+- support for consistency checking by labeling object components with key provenance information such as reference genome build
+
+This is a time of great innovation in the domains of molecular assay technology and data storage
+and retrieval.  Benchmarking and support for decisionmaking on choice of strategy are high-value 
+processes that are hard to come by.  This chapter has acquainted you with a spectrum of concepts
+and solutions, many of which will be applied in analytical examples to follow in the course.

@@ -17,7 +17,7 @@ Here we also show the basic steps for performing a `limma` analysis. Note that t
 We start by loading the spike-in data which was introduced in lecture, which has already been normalized.
 
 ```{r}
-# biocLite("SpikeInSubset")
+# BiocManager::install("SpikeInSubset")
 library(SpikeInSubset)
 data(rma95)
 fac <- factor(rep(1:2,each=3))

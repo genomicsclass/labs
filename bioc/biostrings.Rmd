@@ -1,0 +1,221 @@
+---
+title: "Biostrings"
+author: "Amy Gill"
+date: "10/16/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Basics of Biostrings
+
+## DNAString and DNAStringSet objects
+
+The **Biostrings** package contains object classes for representing DNA, RNA and amino acid sequences. It also contains functions for operating on those objects. We will focus on DNA sequences for now. DNA sequences are represented by *DNAString* objects. There are also *RNAString* and *AAString* objects with similar properties for representing RNA and protein, and many of the functions shown here work for all kinds of *Biostrings*.
+
+```{r message=FALSE}
+library(Biostrings)
+```
+
+### DNAStrings
+
+This command defines a *DNAString*:
+
+```{r}
+# define a DNAString
+dna <- DNAString("TCGAGCAAT")
+dna
+```
+
+You can measure the length of a *DNAString*:
+
+```{r}
+length(dna)    # number of bases in a DNAString
+```
+
+Not all characters are allowed in *DNAString* objects. Defining a <em>DNAString</em> with invalid characters will produce an error: 
+
+```{r eval=FALSE}
+DNAString("JQX")    # error - invalid bases
+```
+
+In practice, the most common characters in *DNAStrings* are the four bases (ACGT), the wild card or unknown base (N), and the dash representing a gap (-). Letters from the extended IUPAC genetic code are allowed, but they are rare in sequencing data.
+
+```{r}
+DNAString("NNNACGCGC-TTA-CGGGCTANN")    # valid sequence with unknowns and gaps
+```
+
+You can index into a *DNAString* with `[` to extract a substring:
+
+```{r}
+dna[4:6]    # extract a substring
+```
+
+Sometimes you may need to convert *DNAStrings* back into character strings for manipulation in R. You can do this with `as.character`:
+
+```{r}
+as.character(dna)    # convert DNAString to character
+```
+
+### DNAStringSets
+
+It is often convenient to analyze multiple DNA sequences at once. You can combine multiple sequences into a single object as a *DNAStringSet*:
+
+```{r}
+set1 <- DNAStringSet(c("TCA", "AAATCG", "ACGTGCCTA", "CGCGCA", "GTT", "TCA"))    # define a DNAStringSet
+set1
+```
+
+Note that indexing a *DNAStringSet* with `[`  extracts whole sequences from the set, not subsequences:
+
+```{r}
+set1[2:3]    # extract subset of sequences
+```
+
+Use double brackets `[[` to extract single *DNAStrings* from a *DNAStringSet*:
+
+```{r}
+set1[[4]]    # extract one sequence as a single DNAString
+```
+
+Using `length()` on a *DNAStringSet* returns the length of the set, not the size of each sequence:
+
+```{r}
+length(set1)    # number of DNAstrings in set
+```
+
+The `width()` function returns the size of each individual sequence in a *DNAStringSet*:
+
+```{r}
+width(set1)    # size of each DNAString
+```
+
+You can detect duplicated DNA sequences with `duplicated()` and keep only unique sequences with `unique()`.
+
+```{r}
+duplicated(set1)    # detect which sequences are duplicated
+unique(set1)    # keep only unique sequences
+```
+
+You can also `sort()` sequences alphabetically.
+
+```{r}
+sort(set1)
+```
+
+## Operations on DNAStrings
+
+Consider the DNA sequence ATCGCGCGCGGCTCTTTTAAAAAAACGCTACTACCATGTGTGTCTATC.
+
+```{r}
+dna_seq <- DNAString("ATCGCGCGCGGCTCTTTTAAAAAAACGCTACTACCATGTGTGTCTATC")
+```
+
+`letterFrequency()` counts the number of times a specific letter appears in a *Biostring*. This command can also be used on other Biostrings types, not only *DNAstrings*. 
+
+```{r}
+letterFrequency(dna_seq, "A")    # count A in sequence
+```
+
+If multiple letters are given to `letterFrequency()`, it counts the combined number of times those letters appear. For example, this command counts the frequency of G or C.
+
+```{r}
+letterFrequency(dna_seq, "GC")    # count G or C in sequence
+```
+
+You can also determine the frequency of all dinucleotides or trinucleotides in sliding windows across the sequence. For example, the dinucleotide CG appears 5 times and the trinucleotide TTT appears 2 times.
+
+```{r}
+dinucleotideFrequency(dna_seq)    # frequencies of all dinucleotides
+```
+
+```{r}
+trinucleotideFrequency(dna_seq)    # frequencies of all trinucleotides
+```
+
+
+
+You can find the reverse complement of a *DNAString* in a single step with `reverseComplement()`:
+
+```{r}
+reverseComplement(dna_seq)    # find reverse complement
+```
+
+You can also find the amino acid translation of a *DNAString* in a single step with `translate()`:
+
+```{r}
+translate(dna_seq)    # amino acid translation
+```
+
+## Matching and analyzing Biostrings
+
+Two common tasks with *Biostrings* are to count the number of occurrences of a pattern and find the location of those patterns within a *Biostring* or set of *Biostrings*. We will consider these commands on *DNAStrings* as an example, but they work similarly for all kinds of *Biostrings*.
+
+### Matching on single Biostrings
+
+```{r}
+dna_seq <- DNAString("ATCGCGCGCGGCTCTTTTAAAAAAACGCTACTACCATGTGTGTCTATC")
+dna_seq
+```
+
+`countPattern()` takes two arguments: a pattern and a *Biostring*. It returns the number of times that pattern appears within the *Biostring*.
+
+```{r}
+countPattern("CG", dna_seq)    # pattern "CG" occurs 5 times
+```
+
+`matchPattern()` also takes a pattern and a *Biostring* as arguments. It returns the locations of each pattern occurrence within the *Biostring*. 
+
+```{r}
+matchPattern("CG", dna_seq)    # locations of pattern "CG"
+```
+
+`matchPattern()` returns a Views object, which is similar to an IRanges. For example, you can find the start location of each pattern occurrence with `start()`.
+
+```{r}
+start(matchPattern("CG", dna_seq))    # start locations of the pattern
+```
+
+You can count or match patterns of any length.
+
+```{r}
+matchPattern("CTCTTTTAAAAAAACGCTACTACCATGTGT", dna_seq)    # match patterns of any length
+```
+
+Because DNA is double-stranded, sometimes you might want to consider whether the reverse complement of a pattern matches your string. For example, this can help you determine whether a primer binds to a certain DNA sequence. Combine *DNAString* operations to achieve this.
+
+```{r}
+# check for pattern and its reverse complement
+countPattern("TAG", dna_seq)
+countPattern(reverseComplement(DNAString("TAG")), dna_seq)
+```
+
+### Matching on sets of Biostrings
+
+You can also count and locate patterns in DNAStringSet objects, but the commands and result formats are slightly different.
+
+```{r}
+set2 <- DNAStringSet(c("AACCGGTTTCGA", "CATGCTGCTACA", "CGATCGCGCCGG", "TACAACCGTACA"))
+set2
+```
+
+`vcountPattern()` counts the number of occurrences of a single pattern across many *Biostrings*. It returns a vector listing the number of occurrences in each element of a string set.
+
+```{r}
+vcountPattern("CG", set2)    # CG counts for entire DNAStringSet
+```
+
+`vmatchPattern()` returns the locations of a pattern across many *Biostrings*. The results are formatted similarly to a list of IRanges.
+
+```{r}
+vmatchPattern("CG", set2)
+```
+
+To work with matches from a single string in a set, index into the `vmatchPattern()` results with double brackets `[[`.
+
+```{r}
+vmatchPattern("CG", set2)[[1]]    # access matches for the first element of the DNAStringSet
+```
+

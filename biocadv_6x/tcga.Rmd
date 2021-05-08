@@ -12,6 +12,7 @@ library(ph525x)
 library(microbenchmark)
 library(survival)
 library(RTCGAToolbox)
+library(BiocStyle)
 })
 })
 ```
@@ -32,10 +33,12 @@ on data harmonization and manual analysis.
 Here's an illustration of the download effort for three data types in
 rectal adenoma:
 
-```{r lkdl,eval=FALSE}
+```{r lkdl}
 library(ph525x)
 firehose()
 ```
+
+<a name="firehose"></a>
 
 ## The integrative object
 
@@ -44,7 +47,7 @@ We used the commands
 ```{r lklk,eval=FALSE}
 library(RTCGAToolbox)
 readData = getFirehoseData (dataset="READ", runDate="20150402",forceDownload = TRUE,
-    Clinic=TRUE, Mutation=TRUE, Methylation=TRUE, RNAseq2_Gene_Norm=TRUE)
+    Clinic=TRUE, Mutation=TRUE, Methylation=TRUE, RNASeq2GeneNorm=TRUE)
 ```
 ```{r getd,echo=FALSE,results="hide"}
 if (!exists("readData")) load("/Users/stvjc/Teaching/EDX_2016/readData.rda")
@@ -69,6 +72,8 @@ can be found via
 [1] 485577    109
 ```
 
+<a name="clinical"></a>
+
 ## A view of the clinical data
 
 A complete understanding of the dataset would require attention to the
@@ -78,9 +83,11 @@ along with details on tumor
 sampling and assay procedures.  For the purposes of this course, we'll
 assume that we can meaningfully combine all the data that we've retrieved.
 
+<a name="severity"></a>
+
 ### Selecting a severity measure
 ```{r getc}
-clin = getData(readData, "Clinical")
+clin = getData(readData, "clinical")
 names(clin)
 ```
 
@@ -99,6 +106,8 @@ reduce the T staging to avoid small class sizes.
 clin$t_stage = factor(substr(clin$pathology_T_stage,1,2))
 table(clin$t_stage)
 ```
+
+<a name="survival"></a>
 
 ### Defining survival times
 
@@ -123,10 +132,12 @@ ns = paste("[n=", ntab, "]", sep="")
 legend(100, .4, lty=1:4, lwd=2, legend=paste(levels(clin$t_stage), ns))
 ```
 
+<a name="mutation"></a>
+
 ### Introducing mutation data
 
 ```{r mut}
-mut = getData(readData, "Mutations")
+mut = getData(readData, "Mutation")
 dim(mut)
 table(mut$Variant_Classification)
 ```
@@ -143,6 +154,8 @@ gt[omn[1:20], c(12:13,17,18)]
 
 The fact that KRAS and TP53 are in this list gives another
 crude sanity check.  
+
+<a name="curation"></a>
 
 ## Multiomics 101: Can we combine the mutation and clinical data?
 
@@ -180,6 +193,8 @@ clinwmut = clin[names(nmut),]
 clinwmut$nmut = nmut
 with(clinwmut, boxplot(split(nmut, t_stage), log="y"))
 ```
+
+<a name="expression"></a>
 
 ## The expression data
 
@@ -234,6 +249,8 @@ we will simply eliminate that individual.
 readES = readES[,-97]
 ```
 
+<a name="tstageToExpr"></a>
+
 ## Relating tumor stage to gene expression variation
 
 We'll use a very crude categorical approach and an
@@ -252,6 +269,8 @@ topTable(ef1, 2:4)
 ```{r lkgns,fig=TRUE}
 boxplot(split(exprs(readES)["LOC100128977",], readES$t_stage))
 ```
+
+<a name="methy"></a>
 
 ## Introducing the 450k methylation data
 
@@ -309,12 +328,20 @@ corv("ZNF300")  # learned about it from firebrowse.org
 ## Conclusions
 
 TCGA is an obvious candidate for infrastructure development to support
-multiomic analysis.  We have seen some of the challenges that arise
+multiomic analysis.  
+The `r Biocpkg("MultiAssayExperiment")` and
+`r Biocpkg("curatedTCGAData")` packages are recent
+contributions that address this task.
+We have seen some of the challenges that arise
 when even a nicely developed tool like RTCGAToolbox is used to acquire the data:
 we must be alert to mismatched sample identifier labels, missing data,
 inadequate documentation of sample provenance and assay conduct, and so on.
 Human effort is invariably required; standards for data quality must go beyond
 numerical accuracy and address transparency and usability.
+The curatedTCGAData package does employ manually curated
+representations, so that the harmonization tasks demonstrated
+in this section are not necessary.  But in general we need to
+know how to harmonize, so these tasks are retained in this course.
 
 By suitably varying code snippets in this document, you can get access
 to multiomic data of additional modalities (including microRNA, copy number

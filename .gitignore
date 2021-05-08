@@ -18,3 +18,5 @@ footnotes.md
 */.DS_Store
 */.Rhistory
 *_exercises
+*.Rproj
+.Rproj.user

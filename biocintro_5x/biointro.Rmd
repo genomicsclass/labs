@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Bioconductor for genome-scale data -- quick intro
+title: A few quick examples of genome-scale data with Bioconductor
 ---
 
 ```{r options, echo=FALSE}
@@ -17,11 +17,32 @@ library(annotate)
 library(BiocParallel)
 library(VariantAnnotation)
 library(BSgenome.Hsapiens.UCSC.hg19)
+library(RNAseqData.HNRNPC.bam.chr14)
 })
 })
 ```
 
-# Basic premise and overview
+
+```{r setup2,echo=FALSE,results="hide"}
+suppressMessages({
+suppressWarnings({
+suppressPackageStartupMessages({
+library(png)
+library(grid)
+library(Homo.sapiens)
+library(GenomicRanges)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(GenomicAlignments)
+library(Rsamtools)
+library(ggbio)
+library(ph525x)
+})
+})
+})
+```
+
+<!--
+# Basic premise and overview of 5x
 
 You know to manipulate and analyze data using R, and
 you understand a considerable amount about statistical modeling.
@@ -50,6 +71,8 @@ devoted to each of
 Subsections of this chapter will sketch the concepts to
 be covered, along with some illustrative computations.
 
+-->
+
 ## Motivation and techniques
 
 The videos in "What we measure and why" provide schematic
@@ -68,7 +91,10 @@ One basic approach uses computations on a "reference sequence",
 another focuses on differences between the genomic sequence
 of a given individual, and the reference.
 
+<a name="referseq"></a>
+
 ### Reference sequence access
+
 
 It is very easy to use Bioconductor to work with the
 reference sequence for _Homo sapiens_.
@@ -82,6 +108,8 @@ Of note:
 * the sequence is provided through an R package
 * the name of the package indicates the curating source (UCSC) and reference version (hg19)
 * familiar R syntax `$` for selecting a list element is reused to select a chromosome
+
+<a name="dnavar"></a>
 
 ### Representing DNA variants
 
@@ -105,13 +133,17 @@ Of note:
 * the variable `vcf` has a concise display to the user
 * the variant locations, extracted using `rowRanges`, are shown with a tag indicating their context in the hg19 reference build
 
-### Measures of gene expression
+<a name="yeastcc"></a>
 
-We'll conclude this brief discussion of motivation and technique
-with a look at measurements on gene expression in the model
-organism _Sacchomyces cerevisiae_, baker's yeast.  A highly influential
-experiment undertook to use genome-wide measurement of mRNA abundance
-over a series of time points in the reproductive cycle.  Again
+### Measures of gene expression: microarrays elucidate the transcriptional program of the cell cycle in yeast
+
+A highly influential
+experiment 
+(Spellman PT et al., Mol. Biol. Cell v9, 1998, PMID 9843569)
+undertook to use genome-wide measurement of mRNA abundance
+over a series of time points in the reproductive cycle of
+_Sacchomyces cerevisiae_, baker's yeast.  
+Again
 we use an R package to manage the data, and we use a special
 Bioconductor-defined data structure to provide access to
 information about the experiment and the results.
@@ -141,6 +173,50 @@ Of note:
 * Simple syntax can be used to select components of complex experimental designs; in this case `spYCCES[, spYCCES$syncmeth=="alpha"]` picks out just the colonies whose cell cycling was controlled using alpha pheromone
 * R's plotting tools support general plot annotation and enhancement
 * Statistical modeling tools to help distinguish cycling and non-cycling genes can be used immediately 
+
+<a name="rnaseq"></a>
+
+### Measuring gene expression with RNA-seq
+
+A 2013 paper of [Zarnack and colleagues](http://dx.doi.org/10.1016/j.cell.2012.12.023)
+studies the role of the heterogeneous nuclear ribonucleoproteins C1 and C2
+(coded for by gene HNRNPC) in the prevention of inclusion of cryptic Alu elements
+in spliced transcripts.  One part of the study involves knockdown of HNRNPC
+in HeLa cells, followed by genome-wide observation of frequency of cryptic Alu element
+inclusion.  
+
+The Bioconductor package `RNAseqData.HNRNPC.bam.chr14` includes an extract
+from the RNA-seq data generated in this study.  There are 8 BAM files that have
+been filtered and indexed to include information on mRNA molecules mapped
+to the sequence of chromosome 14.  The protocol creates "paired-end" reads.
+We can have a quick look at the short reads of mRNA sequence as follows:
+
+```{r getlibs}
+library(RNAseqData.HNRNPC.bam.chr14)
+library(GenomicAlignments)
+bf1 = RNAseqData.HNRNPC.bam.chr14_BAMFILES[1] # first of 8 files in package
+r1 = readGappedReads(bf1)
+r1[1:5]
+qseq(r1[1:5])
+```
+
+We can demonstrate the detectability of mRNA coded for by HNRNPC
+using the plotting package `ggbio`.  We use our knowledge of the location
+of the gene to set up a scanning parameter to focus the data extract.
+```{r domo,fig=TRUE,fig.height=4}
+library(Rsamtools)
+library(ggbio)
+hnrnpc_param = 
+   ScanBamParam(which=GRanges("chr14", IRanges(21.67e6,21.74e6)))
+limr1 = readGappedReads(bf1, param=hnrnpc_param, use.names=TRUE)
+autoplot(limr1, geom="line", stat="coverage") + ylim(0,900)
+```
+
+In exercises you will verify that the knockdown experiment succeeded.
+
+<!--
+pr1 = readGAlignmentPairs(bf1, param=ScanBamParam(what="seq"))
+-->
 
 ## Wrap-up
 

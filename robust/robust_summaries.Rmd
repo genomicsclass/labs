@@ -53,9 +53,9 @@ Earlier we saw that the correlation is also sensitive to outliers. Here we const
 
 ```{r, scatter_plot_showing_outlier,fig.cap="Scatterplot showing bivariate normal data with one signal outlier resulting in large values in both dimensions."}
 set.seed(1)
-x=c(rnorm(100,0,1)) ##real distribution
+x=rnorm(100,0,1) ##real distribution
 x[23] <- 100 ##mistake made in 23th measurement
-y=c(rnorm(100,0,1)) ##real distribution
+y=rnorm(100,0,1) ##real distribution
 y[23] <- 84 ##similar mistake made in 23th measurement
 library(rafalib)
 mypar()

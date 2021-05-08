@@ -1,0 +1,197 @@
+---
+layout: page
+title: Bioconductor for genome-scale data -- motivations and core values (optional, for enrichment)
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+```{r setup,echo=FALSE,results="hide"}
+suppressWarnings({
+suppressPackageStartupMessages({
+library(Biobase)
+library(GSE5859)
+library(annotate)
+library(BiocParallel)
+library(VariantAnnotation)
+library(BSgenome.Hsapiens.UCSC.hg19)
+})
+})
+```
+
+
+```{r setup2,echo=FALSE,results="hide"}
+suppressMessages({
+suppressWarnings({
+suppressPackageStartupMessages({
+library(png)
+library(grid)
+library(Homo.sapiens)
+library(GenomicRanges)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(GenomicAlignments)
+library(Rsamtools)
+library(ph525x)
+})
+})
+})
+```
+
+<a name="rlang"></a>
+
+# The R language and its packages and repositories
+
+This course assumes a good working knowledge of the R language.
+The Rstudio environment is recommended.  If you are jumping
+directly to 5x, skipping 1x-4x, and want to
+work through a tutorial before proceeding, 
+[Try R](http://tryr.codeschool.com/) is very comprehensive.
+
+<a name="whyr"></a>
+
+## Why R?
+
+Bioconductor is based on [R](www.r-project.org).  Three key reasons for this are:
+
+- R is used by many statisticians and biostatisticians to create algorithms that advance our ability to understand complex experimental data.
+- R is highly interoperable, and fosters reuse of software components written in other languages. 
+- R is portable to the key operating systems running on commodity computing equipment (Linux, MacOSX, Windows) and can be used immediately by beginners with access to any of these platforms.
+
+In summary, R's ease-of-use and central role in statistics and "data science" make it a natural choice for a tool-set for use by biologists and statisticians confronting genome-scale experimental data.  Since the Bioconductor project's inception in 2001, it has kept pace with growing volumes
+and complexity of data emerging in genome-scale biology.
+
+<a name="funobj"></a>
+
+## Functional object-oriented programming
+
+R combines functional and object-oriented programming paradigms.^[[Chambers 2014](https://projecteuclid.org/euclid.ss/1408368569)]
+
+- In functional programming, notation and program activity mimic the
+concept of function in mathematics.  For example
+```
+square = function(x) x^2
+```
+is valid R code that defines the symbol `square` as a function that
+computes the second power of its input.  The body of the function
+is the program code `x^2`, in which `x` is a "free variable".
+Once `square` has been defined in this way, `square(3)` has
+value `9`.  We say the `square` function has been evaluated on
+argument `3`.  **In R, all computations proceed by evaluation of functions.**
+
+- In object-oriented programming, a strong focus is placed upon
+formalizing data structure, and defining methods that take
+advantage of guarantees established through the formalism.  This
+approach is quite natural but did not get well-established in
+practical computer programming until the 1990s.  As an
+advanced example with Bioconductor, we will consider an 
+approach to defining an "object" representing on the genome
+of *Homo sapiens*:
+```{r lkho}
+library(Homo.sapiens)
+class(Homo.sapiens)
+methods(class=class(Homo.sapiens))
+```
+We say that `Homo.sapiens` is an **instance** of the `OrganismDb` 
+**class**.  Every instance of this class will respond meaningfully
+to the methods
+listed above.  Each method is implemented as an R function.
+What the function does depends upon the class of its arguments.
+Of special note at this juncture are the methods
+`genes`, `exons`, `transcripts` which will yield information about
+fundamental components of genomes.  
+These methods will succeed for human and
+for other model organisms such as *Mus musculus*, *S. cerevisiae*,
+*C. elegans*, and others for which the Bioconductor project and its contributors have defined `OrganismDb` representations.
+
+<a name="rpacks"></a>
+
+## R packages, modularity, continuous integration
+
+This section can be skipped on a first reading.
+
+### Package structure
+
+We can perform object-oriented functional programming with R
+by writing R code.  A basic approach is to create "scripts" that
+define all the steps underlying processes of data import and
+analysis.  When scripts are written in such a way that they
+only define functions and data structures, it becomes possible to
+*package* them for convenient distribution to other users
+confronting similar data management and data analysis problems.
+
+The R software [packaging protocol](https://cran.r-project.org/doc/manuals/r-release/R-exts.html) specifies how source code in R and other languages can be organized together with metadata and documentation to foster
+convenient testing and redistribution.  For example, an early
+version of the package defining this document had the folder 
+layout given below:
+
+```
+├── DESCRIPTION  (text file with metadata on provenance, licensing)
+├── NAMESPACE    (text file defining imports and exports)
+├── R            (folder for R source code)
+├── README.md    (optional for github face page)
+├── data         (folder for exemplary data)
+├── man          (folder for detailed documentation)
+├── tests        (folder for formal software testing code)
+└── vignettes    (folder for high-level documentation)
+    ├── biocOv1.Rmd
+    ├── biocOv1.html
+```
+
+The packaging protocol document "Writing R Extensions" provides
+full details.  The R command `R CMD build [foldername]` will operate on the
+contents of a package folder to create an archive that can
+be added to an R installation using `R CMD INSTALL [archivename]`.
+The R studio system performs these tasks with GUI elements.
+
+### Modularity and formal interdependence of packages
+
+The packaging protocol helps us to isolate software that
+performs a limited set of operations, and to
+identify the **version** of a program collection
+that is inherently changing over time.  There is
+no objective way to determine whether
+a set of operations is the right size for packaging.
+Some very useful packages carry out only a small number of
+tasks, while others have very broad scope.  What is important
+is that the package concept permits **modularization** of
+software.  This is important in two dimensions: scope and time.
+Modularization of scope is important to allow parallel independent
+development of software tools that address distinct problems.
+Modularization in time is important to allow identification of
+versions of software whose behavior is stable.
+
+<a name="contin"></a>
+
+### Continuous integration: testing package correctness and interoperability
+
+The figure below is a snapshot of the [build report](http://bioconductor.org/checkResults/3.6/bioc-LATEST/) for the development branch of Bioconductor.
+
+```{r lkci,fig=TRUE,echo=FALSE,fig.wide=TRUE, fig.cap="Continuous integration report for Bioconductor devel branch.  All packages are checked every night on three major computing platforms."}
+buildRep()
+#im = readPNG("buildRep.png")
+#grid.raster(im)
+```
+
+The six-column subtable in the upper half of the display
+includes a column "Installed pkgs", with entry 1857 for
+the linux platform.  This number varies between platforms
+and is generally increasing over time for the devel branch.
+
+
+## Putting it together
+
+Bioconductor's core developer group works hard to develop
+data structures that allow users to work conveniently with
+genomes and genome-scale data.  Structures are devised to
+support the main phases of experimentation in genome scale biology:
+
+- Parse large-scale assay data as produced by microarray or sequencer flow-cell scanners.
+- Preprocess the (relatively) raw data to support reliable statistical interpretation.
+- Combine assay quantifications with sample-level data to test hypotheses about relationships between molecular processes and organism-level characteristics such as growth, disease state.
+
+In this course we will review the objects and functions that
+you can use to perform these and related tasks in your own
+research.
+

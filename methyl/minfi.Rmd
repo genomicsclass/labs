@@ -8,11 +8,10 @@ library(knitr)
 opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
 ```
 
-In this unit we will demonstrate how to read idat files from the illumina 450K DNA methylation array. We make use the the Bioconductor minfi package [cite 24478339]
+In this unit we will demonstrate how to read idat files from the illumina 450K DNA methylation array. We make use the the Bioconductor minfi package [cite 24478339].
 
 ```{r}
-# source("http://www.bioconductor.org/biocLite.R")
-# biocLite(c("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19"))
+# BiocManager::install(c("minfi","IlluminaHumanMethylation450kmanifest","IlluminaHumanMethylation450kanno.ilmn12.hg19"))
 library(minfi)
 ```
 
@@ -23,7 +22,7 @@ path <- "idats"
 list.files(path)
 ```
 
-Let's start by reading in the csv file which contains clinical information. This has one row for each sample and one of the columns includes the "basenames" for the files
+Let's start by reading in the csv file, which contains clinical information. This has one row for each sample and one of the columns includes the "basenames" for the files.
 
 ```{r}
 targets<-read.csv("idats/targets.csv",as.is=TRUE)
@@ -31,27 +30,27 @@ names(targets)
 targets$Basename
 ```
 
-To make this script work in any working directory  we can edit that column to contain the absolute paths. The we are ready to read in the raw data with read.450k
+To make this script work in any working directory  we can edit that column to contain the absolute paths. Then we are ready to read in the raw data with `read.metharray`:
 
 ```{r}
 targets$Basename <- file.path(path,targets$Basename)
-rgset <- read.450k(targets$Basename,verbose=TRUE)
-pData(rgset)<-targets
+rgset <- read.metharray(targets$Basename,verbose=TRUE)
+pData(rgset)<-as(targets, "DataFrame")
 ```
 
-We now have the raw data, red an green intensities which we have access too
+We now have the raw data, red and green intensities which we have access to:
 ```{r}
 dim(getRed(rgset))
 dim(getGreen(rgset))
 ```
 
-If you are not interested in developing preprocessing algorithms then you can use the built in preprocessing algorithmg and go straight to object that give you access to methylation esimatates 
+If you are not interested in developing preprocessing algorithms then you can use the built in preprocessing algorithm and go straight to an object that give you access to methylation estimates:
 
 ```{r}
 mset <- preprocessIllumina(rgset)
 ```
 
-This performs the default preprocessing algorithm developed by Illumina. However, for this to be useful we want to have the locations of each CpG and to do that we need map the CpGs to genome. Minfi keeps this information modular so that when the genome annotation gets updated one can easilty change the mapping. 
+This performs the default preprocessing algorithm developed by Illumina. However, for this to be useful, we want to have the locations of each CpG, and to do that we need map the CpGs to genome. minfi keeps this information modular so that when the genome annotation gets updated, one can easily change the mapping. 
 ```{r}
 mset <- mapToGenome(mset)
 ```
@@ -63,9 +62,9 @@ dim(getBeta(mset,type="Illumina")) ##the argument type="Illumina" gives us defau
 head(granges(mset))
 ```
 
-We can also use functions such as getSex and getQC on the mset object
+We can also use functions such as `getSex` and `getQC` on the mset object:
 ```{r}
-sex<-getSex(mset)
-plotSex(sex)
+colData(mset)<-getSex(mset)
+plotSex(mset)
 plot(as.matrix(getQC(mset)))
 ```

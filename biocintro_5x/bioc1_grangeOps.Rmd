@@ -2,7 +2,9 @@
 title: "GRanges operations related to gene model, TSS, and promoter region identification"
 author: "Vince"
 date: "March 19, 2015"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 layout: page
 toc: yes
 ---
@@ -78,7 +80,7 @@ plotGRanges = function (x, xlim = x, col = "black", sep = 0.5, xlimits = c(0,
 ```
 
 Let's visualize `ir` and several intra-range operations.
-```{r lkir,fig=TRUE, out.height="1100px"}
+```{r lkir,fig=TRUE, out.height="800px"}
 par(mfrow=c(4,1), mar=c(4,2,2,2))
 plotRanges(ir, xlim=c(0,60))
 plotRanges(reduce(ir), xlim=c(0,60))
@@ -119,7 +121,7 @@ The following plots illustrate the identification of
 transcription start sites (green), upstream promoter
 regions (purple), downstream promoter regions (brown).
 
-```{r dopr,fig=TRUE, out.height="1100px", out.width="1100px"}
+```{r dopr,fig=TRUE, out.height="800px", out.width="500px"}
 par(mfrow=c(4,1), mar=c(4,2,2,2))
 plotGRanges(gir, xlim=c(0,60))
 plotGRanges(resize(gir,1), xlim=c(0,60),col="green")

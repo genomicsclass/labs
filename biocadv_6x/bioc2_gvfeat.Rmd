@@ -51,7 +51,7 @@ symbols for these genes.
 
 ```{r done}
 allg = genes(txdb)
-esrraAddr = genes(txdb, vals=list(gene_id=2101)) # redundant...
+esrraAddr = genes(txdb, filter=list(gene_id=2101)) # redundant...
 esrraNeigh = subsetByOverlaps(allg, esrraAddr+500000)
 esrraNeigh$symbol = mapIds(Homo.sapiens, keys=esrraNeigh$gene_id, keytype="ENTREZID",
   column="SYMBOL")

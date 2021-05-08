@@ -1,0 +1,201 @@
+---
+layout: page
+title: "Combining S4 with NoSQL (mongodb) to query ENCODE bedfiles"
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+suppressPackageStartupMessages({
+library(Biobase)
+library(TxRegInfra)
+library(ph525x)
+library(BiocStyle)
+})
+```
+
+
+## Introduction
+
+For an application involving many thousands of files,
+we have found that [NoSQL](https://en.wikipedia.org/wiki/NoSQL)
+strategies may be effective.  The [TxRegInfra](https://github.com/vjcitn/TxRegInfra) package is under development in github 
+and illustrates use of mongodb
+with a small collection of BED files obtained from the
+ENCODE project.  In this section we sketch the most
+basic aspects of wrapping a mongodb connection in S4 and
+implementing subsetByOverlaps to query the data store.
+
+To carry out the tasks in this section, you will need mongod
+(the database managing daemon) running on your system.  
+The [community server edition](https://www.mongodb.com/download-center?jmp=nav#community) should be easy to install.
+
+After you get mongod running, you can install TxRegInfra using
+`library(BiocInstaller); biocLite("vjcitn/TxRegInfra")`.
+
+## Basic considerations
+
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(TxRegInfra)
+library(GenomicFiles)
+})
+```
+
+Our long term goal is
+to define a package,
+TxRegQuery, to exploration of transcriptional regulatory networks
+by integrating data on eQTL, digital genomic footprinting (DGF), DnaseI
+hypersensitivity binding data (DHS), and transcription
+factor binding site (TFBS) data.  Owing to the volume of emerging tissue-specific
+data, special data modalities are used.  In this document
+we'll focus on DHS.
+
+## Managing bed file content with mongodb
+
+### Importing and querying documents
+
+The package comes with a small number of bed files to demonstrate
+import utilities.
+```{r lkk}
+# ENCODE
+f1 = dir(system.file("bedfiles", package="TxRegInfra"), full=TRUE, patt="ENCFF971VCD")
+cat(readLines(f1, n=3), sep="\n")
+# ChromHMM
+f2 = dir(system.file("bedfiles", package="TxRegInfra"), full=TRUE, patt="E096_imp12")
+cat(readLines(f2, n=3), sep="\n")
+```
+
+The function `importBedToMongo` uses system() to run
+mongodb.
+There is a `bedType` parameter that indicates what fields are available; it
+defaults to `broadPeak`.
+
+The following code imports a broadPeak and chromHMM document.
+We deal with metadata about these documents below.
+We assume a database called 'txregnet' has been established
+for a running mongodb server.
+```{r doimp}
+importBedToMongo(f1, "vjc1", db="txregnet")
+importBedToMongo(f2, "vjc2", db="txregnet", bedType="chromHMM")
+```
+
+Now that the documents are imported, we can query for
+information in an interval specified by a GRanges instance.
+```{r doq}
+library(RMongo)
+con = mongoDbConnect("txregnet") # defaults for local server
+queryBedInMongo(con, "vjc1", GRanges("chr1", IRanges(1, 800000)), skip=0, limit=5)
+queryBedInMongo(con, "vjc2", GRanges("chr17", IRanges(1, 800000)), skip=0, limit=5)
+```
+
+## An integrative container
+
+We need to bind the metadata and information about the mongodb.
+
+### BED file metadata
+
+The BED files are extracted from a few different places.  We have
+metadata on 10 of them:
+```{r lkmeta}
+data(hsFiles_subset) # holds hsFiles
+hsFiles[1:3,1:6]
+```
+We added an additional four.  This will become colData for an
+instance of an extended RaggedExperiment class to be defined.
+```{r donew,echo=FALSE}
+library(S4Vectors)
+e072 = data.frame(File.accession = "E072_imp12_mn_trun",
+   File.format = "bed ChromHMM", Output.type = "states", Experiment.accession=NA,
+    Assay = "ChromHMM", Biosample.term.id=NA, 
+    Biosample.term.name="brain inf. temporal lobe",
+    Biosample.type=NA,
+    Biosample.life.stage=NA, Biosample.sex=NA)
+e073 = data.frame(File.accession = "E073_imp12_mn_trun",
+   File.format = "bed ChromHMM", Output.type = "states", Experiment.accession=NA,
+    Assay = "ChromHMM", Biosample.term.id=NA, 
+    Biosample.term.name="brain prefr. cortex",
+    Biosample.type=NA,
+    Biosample.life.stage=NA, Biosample.sex=NA)
+e088 = data.frame(File.accession = "E088_imp12_mn_trun",
+   File.format = "bed ChromHMM", Output.type = "states", Experiment.accession=NA,
+    Assay = "ChromHMM", Biosample.term.id=NA, 
+    Biosample.term.name="fetal lung",
+    Biosample.type=NA,
+    Biosample.life.stage=NA, Biosample.sex=NA)
+e096 = data.frame(File.accession = "E096_imp12_mn_trun",
+   File.format = "bed ChromHMM", Output.type = "states", Experiment.accession=NA,
+    Assay = "ChromHMM", Biosample.term.id=NA, 
+    Biosample.term.name="adult lung",
+    Biosample.type=NA,
+    Biosample.life.stage=NA, Biosample.sex=NA)
+```
+```{r lkcd}
+cd = DataFrame(rbind(hsFiles, rbind(e072, e073, e088, e096)))
+cd[1:4,1:6]
+```
+
+### S4: Extending the RaggedExperiment class
+
+(From the RaggedExperiment vignette:)
+The `r Biocpkg("RaggedExperiment")` package provides a flexible data
+representation for copy number, mutation and other ragged array schema for 
+genomic location data. It aims to provide a framework for a set of samples
+that have differing numbers of genomic ranges.
+
+In TxRegInfra, we extend the RaggedExperiment class to deal
+with external data managed by mongodb.  We've created
+a database 'txregnet' and we connect this to 
+the extended RaggedExperiment
+'rme1', an instance of `RaggedMongoExpt`.
+
+```{r domor1}
+okdf = DataFrame(hsFiles)
+rownames(okdf) = hsFiles[,1]
+loccon = localMongolite(db="txregnet")
+rme1 = RaggedMongoExpt(loccon, colData=okdf)
+rme1
+```
+
+## The upshot: peak densities by tissue type
+
+In the following, we produce a table of number of
+peaks by tissue type, in a small region of chromosome 1.
+
+```{r ccc}
+brp = which(colData(rme1)$File.format == "bed broadPeak")
+allst = subsetByOverlaps(rme1[,brp], 
+               GRanges("chr1", IRanges(1,8e5))) 
+data.frame(tiss=colData(rme1)[brp, "Biosample.term.name"], 
+             num.peaks=sapply(allst,nrow))
+```
+
+## Some additional details
+
+Ultimately we would like to make use of the RaggedExperiment
+infrastructure directly.  To do this we need to bind
+a GRangesList to the assay data; once this is done,
+we can use the sparseAssay, compactAssay, and qreduceAssay
+methods.  Longer term utility of this approach will be
+demonstrated in the TxRegQuery package, under development.
+
+```{r tst}
+badn = c("seqnames", "ranges", "strand", "seqlevels", 
+   "seqlengths", "isCircular", "start", "end", "width", "element")
+cleanCols = function(x) setdiff(colnames(x), badn)
+grl = GRangesList(lapply(allst, function(x) {
+     ans = GRanges(x$chrom, IRanges(x$chromStart, x$chromEnd)); mcols(ans) = x[,cleanCols(x)]; ans
+     }))
+re = RaggedExperiment(grl, colData=colData(rme1[,brp])) 
+dim(sparseAssay(re))
+dim(compactAssay(re))
+```
+
+To conclude, we peek at the details of the mongodb connection
+established by `r CRANpkg("mongolite")`.  It includes a
+variety of hints concerning the R interface.
+
+```{r dddd}
+rme1@con
+rme1@con@con
+```

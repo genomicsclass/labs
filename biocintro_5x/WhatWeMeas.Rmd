@@ -1,0 +1,111 @@
+---
+layout: page
+title: What we measure and why
+---
+
+```{r options, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::knit_concord$get('infile'))), "-"))
+```
+
+## Motivating example
+
+Bioconductor was initially conceived as a project that would
+help statisticians engage with emerging high-volume data on
+gene expression.  One example discussed in the
+introductory video "Overview of what we measure and why" is the
+Mammaprint breast
+cancer recurrence assay.  The Mammaprint test measures expression
+of 70 genes, but the test was constructed on the basis of measurements of
+tens of thousands of genes in hundreds of women.  Review the
+Wikipedia article linked [here](https://en.wikipedia.org/wiki/MammaPrint) to 
+get acquainted with concepts of medical objectives, tissue collection, 
+and role of clinical trials in establishing medical evidence for
+the utility of expression signature assessment in breast cancer prognosis.
+
+## Molecular targets of genome-scale assays
+
+### DNA sequence variation
+
+Our capacity to measure gene expression and many other submicroscopic
+phenomena of interest in genome biology is rooted in DNA hybridization
+and [forty years of 
+experience](http://www.nature.com/nature/journal/vaop/ncurrent/full/nature24286.html)
+in determining DNA sequences of genomes
+of many species, including humans.  The Wikipedia article [on the
+human genome](https://en.wikipedia.org/wiki/Human_genome) is in need of
+updating but provides a good survey of relevant concepts.
+
+- The reference genome for an organism is typically a 'consensus' that is
+subject to revision
+- Variations between organisms of the same species can arise owing to
+different values of 
+    - specific _single nucleotide polymorphisms_ or configurations of these
+    - gene or chromosomal segment _copy number_
+    - _epigenetic status_ of genomic features such as promoter or enhancer regions
+
+### Variation in messenger RNA abundance
+
+As noted in the video on gene expression, an individual's genome is
+present in the nucleus of all its cells.  But cell function and structure
+vary across the anatomy, and vary over time.  Variation in
+cell function and structure is due to regulatory circuitry
+that is at present only very incompletely known.  One basic
+determinant of cell behavior is the transcription of genomic DNA to
+messenger RNA (mRNA), which is then translated to protein.  While
+protein concentrations are the genuine determinants of cell function,
+measurement and identification of mRNA abundance is technically
+much easier than measurement and identification of proteins.
+Again the Wikipedia article on [regulation of gene expression](https://en.wikipedia.org/wiki/Regulation_of_gene_expression) has
+considerable conceptual detail of use in this course.
+
+### Epigenomics
+
+Knowledge of DNA sequence must be coupled with additional
+elements that define genomic regulatory structures.  A large
+consortium (International Human Epigenome Consortium) has
+been assembled to organize strategies to unearth regulatory
+systems.  An interesting tool to navigate recent developments
+is the concept/publication wheel
+available at [Cell Press](http://www.cell.com/consortium/ihec).
+Suitable navigational steps bring one to the
+publication on the [epigenome data
+portal](http://www.cell.com/cell-systems/fulltext/S2405-4712(16)30362-3).
+After completing this course segment, you should be well-equipped to
+identify and analyze data collected in this project independently.
+
+## Phenotypes, diseases, vocabularies
+
+The primary driving force in human genomics is the ambition to reduce
+human suffering caused by disease.  Many diseases are only imprecisely
+defined, and do not have clear criteria for onset or success of treatment.
+However, assembly of statistical evidence on behalf of genomic theories
+of disease onset, course, and treatability will be dependent on precision
+of characterization of disease state for individuals, and on
+consistency of characterization across independently assembled
+observations and experiments.  Consequently,
+systematic vocabularies for individual phenotypes and diseases 
+play an important role in the construction of databases for
+use in the formulation of strategies of genomic medicine.
+
+Direct contact with this issue arises with the catalog of genome
+wide association studies managed at the European Molecular Biology Laboratory.
+The [diagrammatic overview](https://www.ebi.ac.uk/gwas/diagram) of known
+validated genetic variations associated with human diseases includes
+terms for broad classes of disease: of digestive systems, of cardiovascular
+system, metabolic diseases, and so on.  Structured vocabularies for diseases,
+genes, and gene products are organized in the [Ontology Lookup Service](https://www.ebi.ac.uk/ols/index).
+
+## Glimpses beyond
+
+Experimental and computational genomics are rapidly evolving.  
+In the 5x and 6x modules of this course, some acquaintance will be made with
+most of the following:
+
+- [Single-cell genomics](https://en.wikipedia.org/wiki/Single_cell_sequencing)
+- [integrative (multi-assay) genomics](https://academic.oup.com/bib/article/17/4/603/2240591/Public-data-and-open-source-tools-for-multi-assay): simultaneous assessment of
+multiple molecular characteristics such as DNA variants, transcript profiles, epigenetic characteristics
+- Targeted or large-scale genome modification via [CRISPR-Cas9](https://en.wikipedia.org/wiki/CRISPR)
+- [Topologically associating domains](https://en.wikipedia.org/wiki/Topologically_associating_domain), in which genomic regions that are remote in linear coordinates come into
+contact owing to chromosome folding
+and epigenetic modifications

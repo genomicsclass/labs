@@ -16,7 +16,7 @@ The raw data files for this lab are in the `rawdata` repository, available here:
 
 <https://github.com/genomicsclass/rawdata>
 
-Click Download ZIP in order to download all the files, unzip this file which should result in a `rawdata-master` folder. 
+Click Download ZIP in order to download all the files, then unzip this file, which should result in a `rawdata-master` folder. Make sure this folder is in your current working directory.
 
 First we save the initial working directory, so we can return to it.
 
@@ -27,20 +27,20 @@ wd <- getwd()
 Now we can start reading in the files:
 
 ```{r}
-datadir <- "rawdata-master"
+datadir <- paste0(wd, "/rawdata-master")
 basedir <- paste0(datadir, "/celfiles")
 setwd(basedir)
 library(affy)
 tab <- read.delim("sampleinfo.txt",check.names=FALSE,as.is=TRUE)
 rownames(tab) <- tab$filenames
 tab
-fns <- list.celfiles()
+fns <- list.celfiles(basedir)
 fns
 fns %in% tab[,1] ##check
 ab <- ReadAffy(phenoData=tab)
 ```
 
-This creates an AffyBatch object which object contains the information you need.
+This creates an AffyBatch object which object contains the information you need. (These commands may download some annotation packages to interpret the arrays.)
 
 ```{r}
 dim(pm(ab))
@@ -59,7 +59,7 @@ Now we go back to the previous working directory.
 setwd(wd)
 ```
 
-If you are not interested in probe level data you could can use this function
+If you are not interested in probe level data you could can use this function:
 
 ```{r}
 setwd(basedir)
