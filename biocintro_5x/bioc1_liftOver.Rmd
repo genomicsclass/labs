@@ -68,7 +68,7 @@ ah = AnnotationHub()
 q1 = query(ah, c("chain")) # list all resources with 'chain' in metadata
 q1
 q2 = query(ah, c("chain", "hg38ToHg19")) # the one we want
-ch = ah[[names(q2)]]
+ch = ah[[names(q2)[1]]]
 ```
 
 ```{r domyimport}
