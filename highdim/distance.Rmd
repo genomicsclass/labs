@@ -14,11 +14,11 @@ opts_chunk$set(fig.path=paste0("figure/", sub("(.*).Rmd","\\1",basename(knitr:::
 
 The concept of distance is quite intuitive. For example, when we cluster animals into subgroups, we are implicitly defining a distance that permits us to say what animals are "close" to each other.
 
-![Clustering of animals.](images/handmade/animals.png)
+![Clustering of animals.](https://genomicsclass.github.io/book/pages/images/handmade/animals.png)
 
 Many of the analyses we perform with high-dimensional data relate directly or indirectly to distance. Many clustering and machine learning techniques rely on being able to define distance, using features or predictors. For example, to create _heatmaps_, which are widely used in genomics and other high-throughput fields, a distance is computed explicitly. 
 
-![Example of heatmap. Image Source: Heatmap, Gaeddal, 01.28.2007 Wikimedia Commons](images/handmade/Heatmap.png)
+![Example of heatmap. Image Source: Heatmap, Gaeddal, 01.28.2007 Wikimedia Commons](https://genomicsclass.github.io/book/pages/images/handmade/Heatmap.png)
 
 In these plots the measurements, which are stored in a matrix, are
 represented with colors after the columns and rows have been
@@ -126,5 +126,3 @@ as.matrix(d)[1,87]
 ```
 
 It is important to remember that if we run `dist` on `e`, it will compute all pairwise distances between genes. This will try to create a $22215 \times 22215$ matrix that may crash your R sessions.
-
-

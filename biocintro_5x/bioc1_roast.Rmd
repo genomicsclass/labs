@@ -31,7 +31,7 @@ Briefly, the investigators applied a glucocorticoid hormone to cultured human ai
 The groups are defined in the `characteristics_ch1.2` variable:
 
 ```{r}
-e$condition <- e$characteristics_ch1.2
+e$condition <- as.factor(e$characteristics_ch1.2)
 levels(e$condition) <- c("dex24","dex4","control")
 table(e$condition)
 ```
@@ -128,7 +128,7 @@ columns(GO.db)
 keytypes(GO.db)
 GOTERM[[rownames(r2)[1]]]
 r2tab <- select(GO.db, keys=rownames(r2)[1:10],
-                columns=c("GOID","TERM","DEFINITION"), 
+                columns=c("GOID","TERM","DEFINITION"),
                 keytype="GOID")
 r2tab[,1:2]
 ```
@@ -138,7 +138,7 @@ We can also look for the top results using the standard p-value and in the *up* 
 ```{r}
 r2 <- r2[order(r2$PValue),]
 r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Up"][1:10],
-                columns=c("GOID","TERM","DEFINITION"), 
+                columns=c("GOID","TERM","DEFINITION"),
                 keytype="GOID")
 r2tab[,1:2]
 ```
@@ -147,7 +147,7 @@ Again but for the *down* direction.
 
 ```{r}
 r2tab <- select(GO.db, keys=rownames(r2)[r2$Direction == "Down"][1:5],
-                columns=c("GOID","TERM","DEFINITION"), 
+                columns=c("GOID","TERM","DEFINITION"),
                 keytype="GOID")
 r2tab[,1:2]
 ```

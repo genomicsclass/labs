@@ -32,11 +32,11 @@ In this section we will cover inference in the context of genome-scale experimen
 - there may be unmeasured or unreported sources of biological variation (such as time of day)
 - many features are inherently interrelated, so the tests are not independent
 
-We will apply some of the concepts we have covered in previous 
+We will apply some of the concepts we have covered in previous
 sections including t-tests and multiple comparisons; later we will
-compute standard deviation estimates from hierarchical models. 
+compute standard deviation estimates from hierarchical models.
 
-We start by loading the pooling experiment data 
+We start by loading the pooling experiment data
 
 
 ```{r,message=FALSE}
@@ -68,7 +68,7 @@ tt=rowttests(y,g)
 ```
 
 <a name="naive"></a>
-Now which genes do we report as statistically significant? For somewhat arbitrary reasons, in science p-values of 0.01 and 0.05 are used as cutoff. In this particular example we get 
+Now which genes do we report as statistically significant? For somewhat arbitrary reasons, in science p-values of 0.01 and 0.05 are used as cutoff. In this particular example we get
 
 ```{r}
 NsigAt01 = sum(tt$p.value<0.01)
@@ -90,17 +90,18 @@ set.seed(0)
 shuffledIndex <- factor(sample(c(0,1),sum(g==0),replace=TRUE ))
 nulltt <- rowttests(y[,g==0],shuffledIndex)
 NfalselySigAt01 = sum(nulltt$p.value<0.01)
-NfalselySigAt01 
+NfalselySigAt01
 NfalselySigAt05 = sum(nulltt$p.value<0.05)
 NfalselySigAt05
 ```
 
 <a name="adjusted"></a>
 
-If we use the 0.05 cutoff we will be reporting `r NfalselySigAt05` false positives. We have described several ways to adjust for this including the `qvalue` method available in the `r Biocpkg("qvalue")` package. After this adjustment we acquire 
+If we use the 0.05 cutoff we will be reporting `r NfalselySigAt05` false positives. We have described several ways to adjust for this including the `qvalue` method available in the `r Biocpkg("qvalue")` package. After this adjustment we acquire
 a smaller list of genes.
 
 ```{r}
+library(BiocStyle)
 library(qvalue)
 qvals = qvalue(tt$p.value)$qvalue
 sum(qvals<0.05)
