@@ -37,9 +37,16 @@ Next we create an *Rsamtools* variable which wraps our BAM files, and create a t
 library(Rsamtools)
 bam.list <- BamFileList(bam.files)
 library(GenomicFeatures)
+
 # for Bioc 3.0 use the commented out line
 # txdb <- makeTranscriptDbFromGFF(gtf.file, format="gtf")
 txdb <- makeTxDbFromGFF(gtf.file, format="gtf")
+
+# Since the Bioc V-3.19, `makeTxDbFromGFF()` is  defuncted in 'GenomicFeatures' package.The function has now moved to the 'txdbmaker' package;
+#therefore, for Bioc V-3.19 and higher, use `txdbmaker::makeTxDbFromGFF()` function instead.
+#library(txdbmaker)
+#txdb <- makeTxDbFromGFF(gtf.file, format="gtf")
+
 exons.by.gene <- exonsBy(txdb, by="gene")
 ```
 
