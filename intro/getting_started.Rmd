@@ -49,7 +49,7 @@ library(swirl)
 swirl()
 ```
 
-Alternatively you can take the [try R](http://tryr.codeschool.com/) interactive class from Code School. 
+Alternatively you can take the [interactive R course](https://coddy.tech/landing/r) on Coddy. 
 
 There are also many open and free resources and reference
 guides for R. Two examples are:

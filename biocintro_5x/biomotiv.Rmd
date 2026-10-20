@@ -47,7 +47,7 @@ This course assumes a good working knowledge of the R language.
 The Rstudio environment is recommended.  If you are jumping
 directly to 5x, skipping 1x-4x, and want to
 work through a tutorial before proceeding, 
-[Try R](http://tryr.codeschool.com/) is very comprehensive.
+[Coddy's interactive R course](https://coddy.tech/landing/r) covers the basics.
 
 <a name="whyr"></a>
 
